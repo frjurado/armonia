@@ -1,0 +1,12 @@
+# Salidas de build (regenerables)
+apuntes/build/
+apuntes/tmp/
+app/tests/*.pdf
+
+# Sitio publicado
+_site/
+
+# Basura del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
