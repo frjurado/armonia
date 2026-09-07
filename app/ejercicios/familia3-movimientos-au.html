@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Familia 3 — Audición de movimientos armónicos</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="familia3-movimientos-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Audición de movimientos armónicos</h1>
+  <span class="sub">Familia 3 · Unidad 1</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <p class="prompt">Escucha el fragmento a dos voces: casi todos sus movimientos son del
+     <b>mismo tipo</b> (oblicuo / contrario / directo / paralelo). ¿Cuál?
+     El primero y los dos últimos pueden diferir (los extremos en 8.ª o unísono y la
+     fórmula de cadencia lo exigen).
+     La partitura se muestra al revelar la respuesta. <span id="lvlNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card">
+        <div class="score-wrap">
+          <div id="notation"><span class="ph">Cargando motor de audio…</span></div>
+          <svg id="overlay"></svg>
+        </div>
+      </div>
+      <div class="under">
+        <div class="legend" id="legend">
+          <span><i style="background:var(--voz-sup)"></i>voz superior</span>
+          <span><i style="background:var(--voz-inf)"></i>voz inferior</span>
+        </div>
+      </div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansType">—</div>
+        <div class="det" id="ansDetail"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnPlay" class="primary" title="Escuchar / detener"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" title="Mostrar la respuesta y la partitura"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — audición
+   ------------------------------------------------------------
+   No se muestra la partitura: el fragmento se INTERPRETA
+   (una pareja de notas cada 0,8 s). Para facilitar la escucha,
+   el generador recibe `uniform`: todos los movimientos centrales
+   son del mismo tipo (el primero y los dos últimos quedan exentos
+   por los extremos y la cadencia, Generador-ejercicios.md §4.3).
+   El botón funciona como stop durante la interpretación y como
+   replay al terminar. Al revelar: partitura completa con cifras
+   y líneas (sin animación). El contrapunto se genera en
+   contrapunto-core.js a través de familia3-movimientos-core.js.
+   ============================================================ */
+const LVL_NOTES = {
+  1: '(clave de Sol, modo mayor)',
+  2: '(añade clave de Fa y modo menor, con posible sensible)',
+  3: '(una voz en clave de Sol y otra en clave de Fa)'
+};
+const MAX_NIVEL = 3;
+const PH_LISTEN = '<span class="ph"><span class="icon">🔊</span>Escucha e identifica el tipo de movimiento</span>';
+const PAIR_SECS = 0.8;
+let tk=null, level=1, current=null, revealed=false;
+let playing=false, endTimer=null;
+const $=ArmoniaEj.$;
+const wrap=()=>document.querySelector('.score-wrap');
+
+function renderSVG(){
+  if(!tk || !current || !revealed) return;
+  tk.loadData(Familia3.toMEI(current,{revealed:current.n, intervals:current.n}));
+  $('notation').innerHTML = tk.renderToSVG(1);
+  requestAnimationFrame(()=>{
+    Familia3.drawMotionLines(wrap(), $('overlay'), current.n-1, {animateLast:false});
+  });
+}
+
+function newExercise(){
+  const target = Familia3.MOTION_TYPES[Math.floor(Math.random()*Familia3.MOTION_TYPES.length)];
+  current = Familia3.generate(level, {uniform:target});
+  revealed=false; stopPlayback();
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = LVL_NOTES[level] || '';
+  $('notation').innerHTML = PH_LISTEN;
+  $('overlay').innerHTML='';
+  $('legend').className='legend';
+  $('answer').className='answer';
+  $('btnReveal').disabled=false;
+  $('btnSimilar').style.display='none';
+  $('btnHarder').style.display='none';
+  play();   // suena automáticamente al generar, SIN mostrar la partitura
+}
+
+function reveal(){
+  if(!current) return;
+  revealed=true;
+  renderSVG();
+  $('legend').className='legend show';
+  $('ansType').textContent = 'Movimiento '+current.uniform;
+  $('ansDetail').innerHTML = 'Secuencia completa: '
+    + current.motions.map(m=>'<b>'+m.type+'</b>').join(' · ')
+    + ' <span>(el primer movimiento y los dos últimos pueden diferir del tipo dominante)</span>';
+  $('answer').className='answer show';
+  $('btnReveal').disabled=true;
+  $('btnSimilar').style.display='';
+  $('btnHarder').style.display = level<MAX_NIVEL ? '' : 'none';
+}
+
+function setPlayBtn(){
+  $('btnPlay').innerHTML = playing
+    ? '<span class="ic">◼</span>Detener'
+    : '<span class="ic">↻</span>Repetir';
+}
+function stopPlayback(){
+  ArmoniaEj.detener();
+  if(endTimer){ clearTimeout(endTimer); endTimer=null; }
+  playing=false;
+  $('btnPlay').innerHTML='<span class="ic">▶</span>Escuchar';
+}
+async function play(){
+  if(!current) return;
+  try{
+    stopPlayback();
+    const notas=[];
+    current.upper.forEach((n,i)=>{
+      const dur = (i===current.n-1) ? 1.6 : PAIR_SECS*0.95;
+      notas.push({midi:n.midi,                 at:0.05+i*PAIR_SECS, dur});
+      notas.push({midi:current.lower[i].midi,  at:0.05+i*PAIR_SECS, dur});
+    });
+    await ArmoniaEj.tocar(notas);
+    playing=true; setPlayBtn();
+    endTimer=setTimeout(()=>{ playing=false; setPlayBtn(); },
+                        (current.n*PAIR_SECS+1)*1000);
+  }catch(e){
+    ArmoniaEj.audioNoDisponible($('btnPlay'));
+  }
+}
+
+$('btnPlay').onclick = ()=>{ playing ? stopPlayback() : play(); };
+$('btnReveal').onclick = reveal;
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick  = ()=>{ level=Math.min(level+1,MAX_NIVEL); newExercise(); };
+window.addEventListener('resize', ()=>{ if(revealed) renderSVG(); });
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+// Sin partitura hasta revelar: si Verovio no carga, no hace falta avisar aquí.
+ArmoniaEj.initVerovio(
+  {scale:50, pageWidth:1700, pageMarginTop:30, pageMarginBottom:30},
+  t=>{ tk=t; renderSVG(); }
+);
+</script>
+</body>
+</html>

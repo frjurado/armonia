@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Unidad 0 — Tríadas: cifrado americano</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="unidad0-acordes-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Tríadas: cifrado americano</h1>
+  <span class="sub">Acordes · Unidad 0</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <p class="prompt">Si ves la tríada (en estado fundamental), nombra su <b>cifrado
+     americano</b> (p. ej. D♭m; ° disminuida, + aumentada). La mitad de las veces es al
+     revés: se muestra un <b>cifrado</b> y hay que construir mentalmente la tríada antes
+     de comprobar. <span id="lvlNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar el acorde"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — cifrado americano (dos sentidos)
+   En el sentido "construir" el enunciado es el propio cifrado,
+   mostrado en grande en la tarjeta; el acorde se dibuja al revelar.
+   ============================================================ */
+let tk=null, level=1, current=null, revelado=false;
+const $=ArmoniaEj.$;
+
+function renderSVG(){
+  if(!tk || !current) return;
+  if(current.dir==='construir' && !revelado) return;   // se muestra el cifrado, no partitura
+  tk.loadData(U0Acordes.toMEI(current,{}));
+  $('notation').innerHTML = tk.renderToSVG(1);
+}
+
+function newExercise(){
+  current = U0Acordes.generar(level,'cifrado');
+  revelado=false;
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = U0Acordes.LVL_NOTES[level] || '';
+  $('answer').className='answer';
+  $('btnReveal').disabled=false;
+  $('btnSimilar').style.display='none';
+  $('btnHarder').style.display='none';
+  $('btnListen').disabled = current.dir==='construir';
+  if(current.dir==='construir'){
+    $('notation').innerHTML = '<div class="big-name">'+current.cifrado+'</div>';
+  }else{
+    $('notation').innerHTML = '<span class="ph">Cargando motor de partitura…</span>';
+    renderSVG();
+    playChord();
+  }
+}
+
+function reveal(){
+  if(!current) return;
+  revelado=true;
+  if(current.dir==='ver'){
+    $('ansQ').textContent = current.cifrado;
+    $('ansDet').textContent = 'Tríada '+current.type+' · '+current.nombres.join(' – ');
+  }else{
+    $('ansQ').textContent = current.nombres.join(' – ');
+    $('ansDet').textContent = 'Tríada '+current.type+' ('+current.cifrado+')';
+    renderSVG();
+    if(!tk) $('notation').innerHTML='<span class="ph">(el acorde se dibuja cuando cargue Verovio)</span>';
+    playChord();
+  }
+  $('answer').className='answer show';
+  $('btnReveal').disabled=true;
+  $('btnSimilar').style.display='';
+  $('btnHarder').style.display = level<U0Acordes.MAX_NIVEL ? '' : 'none';
+  $('btnListen').disabled=false;
+}
+
+async function playChord(){
+  if(!current) return;
+  try{ await ArmoniaEj.tocar(U0Acordes.midis(current)); }
+  catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
+}
+
+$('btnReveal').onclick = reveal;
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick = ()=>{ level=Math.min(level+1,U0Acordes.MAX_NIVEL); newExercise(); };
+$('btnListen').onclick = playChord;
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:60, pageWidth:900},
+  t=>{ tk=t; renderSVG(); },
+  ()=>{ if(!current || current.dir==='ver' || revelado)
+          $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

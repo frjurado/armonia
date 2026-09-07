@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Unidad 0 — Armaduras: recorrido cromático</title>
+<!-- Verovio (render de partitura, WASM) desde CDN. Sin audio en esta familia. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="unidad0-armaduras-core.js"></script>
+<script src="tira-partitura.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Armaduras: recorrido cromático</h1>
+  <span class="sub">Armaduras · Unidad 0</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Tonalidad <b id="pos">1</b> / 12</span>
+</header>
+
+<main>
+  <p class="prompt">Una <b>doble escala cromática</b> de tonalidades: la tónica mayor parte
+     de una nota blanca y sube o baja por semitonos toda la octava, con su relativa menor en
+     paralelo. Se muestran los <b>nombres</b> (mayor y/o menor, según los conmutadores) sobre
+     un compás sin armadura: escribe (mentalmente) la <b>armadura</b> y comprueba con
+     «Respuesta», que la dibuja en el pentagrama; tras una pausa, la tira se desliza hasta la
+     siguiente. <span id="dirNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card tira-card">
+        <div class="tira" id="tira">
+          <div class="tira-inner" id="notation"><span class="ph">Cargando motor de partitura…</span></div>
+          <div class="tira-velo izq"></div>
+          <div class="tira-velo der"></div>
+          <div class="tira-resp pregunta sup" id="respSup"></div>
+          <div class="tira-resp pregunta inf" id="respInf"></div>
+          <div class="tira-resp centro" id="respCentro">sin alteraciones</div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnMain" class="primary" title="Dibujar la armadura (después se pasa sola a la siguiente)"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnMayor" class="toggle on" title="Mostrar la tonalidad mayor">Mayor</button>
+      <button id="btnMenor" class="toggle on" title="Mostrar la tonalidad menor (relativa)">menor</button>
+      <div class="sep"></div>
+      <button id="btnOtra" style="display:none" title="Otra serie de 12 tonalidades"><span class="ic">↻</span>Otra serie</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER — armaduras: recorrido cromático
+   ------------------------------------------------------------
+   Inverso de las variantes por quintas/aleatoria: la PREGUNTA son
+   los nombres de tonalidad (capas superpuestas en tinta, mayor
+   arriba / menor abajo) y la RESPUESTA es la armadura, que viaja
+   OCULTA en la tira (visibility:hidden sobre su g.keySig, para que
+   las siguientes nunca se vean antes de tiempo) y se hace visible
+   al revelar; para Do M / La m (sin glifo) se muestra el rótulo
+   «sin alteraciones». Misma tira deslizante con avance automático
+   (unidad0-armaduras-core.js · serieCromatica, tira-partitura.js).
+   ============================================================ */
+let tk=null, serie=null, i=0, revelado=false, tira=null, timer=null, ks=[];
+let conMayor=true, conMenor=true;
+const $=ArmoniaEj.$;
+const PAUSA_AVANCE = 2000;   // ms entre revelar la respuesta y deslizar
+
+function construir(){
+  if(!(tk && serie)) return;
+  tk.loadData(U0Armaduras.meiSerieArmaduras(serie.items.map(it=>it.sig)));
+  $('notation').innerHTML = tk.renderToSVG(1);
+  // Las armaduras son la respuesta: se ocultan todas (la geometría se
+  // conserva, así que las anclas y el espaciado no cambian).
+  ks = Array.from($('notation').querySelectorAll('g.keySig'));
+  ks.forEach(g=>{ g.style.visibility='hidden'; });
+  tira = TiraPartitura.montar({
+    viewport:$('tira'), inner:$('notation'),
+    anclas: TiraPartitura.anclasArmaduras(serie.items.map(it=>it.sig))
+  });
+  mostrarPaso(false);
+}
+
+function mostrarPregunta(){
+  const it=serie.items[i];
+  $('respSup').classList.toggle('show', conMayor);
+  $('respInf').classList.toggle('show', conMenor);
+  if(conMayor) $('respSup').textContent=U0Armaduras.nombre(it.sig,'major');
+  if(conMenor) $('respInf').textContent=U0Armaduras.nombre(it.sig,'minor');
+}
+function reveal(){
+  const it=serie.items[i];
+  if(ks[i]) ks[i].style.visibility='visible';
+  if(it.sig===0) $('respCentro').classList.add('show');   // armadura vacía
+}
+
+function mostrarPaso(animar){
+  $('pos').textContent = i+1;
+  $('respCentro').classList.remove('show');
+  mostrarPregunta();
+  if(tira) tira.irA(i, animar);
+}
+
+function nuevaSerie(){
+  clearTimeout(timer);
+  serie=U0Armaduras.serieCromatica(); i=0; revelado=false;
+  $('dirNote').textContent = serie.dir>0
+    ? '(esta serie asciende por semitonos: tónicas con sostenido)'
+    : '(esta serie desciende por semitonos: tónicas con bemol)';
+  $('btnMain').disabled=false;
+  $('btnOtra').style.display='none';
+  construir();
+}
+
+$('btnMain').onclick = ()=>{
+  if(!serie || revelado) return;
+  revelado=true;
+  reveal();
+  if(i>=U0Armaduras.N-1){                       // fin de la serie
+    $('btnMain').disabled=true;
+    $('btnOtra').style.display='';
+    return;
+  }
+  $('btnMain').disabled=true;                   // pausa para ver la armadura…
+  timer=setTimeout(()=>{                        // …y la tira se desliza sola
+    i++; revelado=false;
+    mostrarPaso(true);
+    $('btnMain').disabled=false;
+  }, PAUSA_AVANCE);
+};
+$('btnOtra').onclick = nuevaSerie;
+
+// Conmutadores inclusivos: al menos uno debe quedar activo. Solo cambian
+// qué nombres se muestran (la doble escala cromática es la misma serie).
+function toggle(btn){
+  if(btn==='M' && conMenor===false && conMayor) return;   // no apagar el último
+  if(btn==='m' && conMayor===false && conMenor) return;
+  if(btn==='M') conMayor=!conMayor; else conMenor=!conMenor;
+  $('btnMayor').classList.toggle('on',conMayor);
+  $('btnMenor').classList.toggle('on',conMenor);
+  mostrarPregunta();   // refresca los nombres visibles
+}
+$('btnMayor').onclick = ()=>toggle('M');
+$('btnMenor').onclick = ()=>toggle('m');
+
+// Primera serie inmediata (texto + botones funcionan ya, sin esperar a Verovio)
+nuevaSerie();
+
+ArmoniaEj.initVerovio(
+  // tira continua: un solo sistema tan ancho como haga falta; spacingLinear
+  // alto ensancha los compases vacíos (≈435 px), de modo que las armaduras
+  // vecinas caen fuera de la ventana clara entre los velos
+  {scale:60, adjustPageWidth:true, pageWidth:60000, spacingLinear:1.0,
+   pageMarginLeft:30, pageMarginRight:30},
+  t=>{ tk=t; construir(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

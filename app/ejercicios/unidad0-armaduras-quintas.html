@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Unidad 0 — Armaduras por quintas</title>
+<!-- Verovio (render de partitura, WASM) desde CDN. Sin audio en esta familia. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="unidad0-armaduras-core.js"></script>
+<script src="tira-partitura.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Armaduras por quintas</h1>
+  <span class="sub">Armaduras · Unidad 0</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Armadura <b id="pos">1</b> / 12</span>
+</header>
+
+<main>
+  <p class="prompt">La serie recorre el <b>círculo de quintas</b> entero, una armadura por
+     compás: nombra la <b>tonalidad</b> de la armadura centrada (mayor y/o menor, según los
+     conmutadores). Al pulsar «Respuesta» aparece la solución sobre la partitura y, tras una
+     pausa, la tira se desliza hasta la siguiente. <span id="dirNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card tira-card">
+        <div class="tira" id="tira">
+          <div class="tira-inner" id="notation"><span class="ph">Cargando motor de partitura…</span></div>
+          <div class="tira-velo izq"></div>
+          <div class="tira-velo der"></div>
+          <div class="tira-resp sup" id="respSup"></div>
+          <div class="tira-resp inf" id="respInf"></div>
+        </div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnMain" class="primary" title="Mostrar la respuesta (después se pasa sola a la siguiente)"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnMayor" class="toggle on" title="Preguntar la tonalidad mayor">Mayor</button>
+      <button id="btnMenor" class="toggle on" title="Preguntar la tonalidad menor (relativa)">menor</button>
+      <div class="sep"></div>
+      <button id="btnOtra" style="display:none" title="Otra serie de 12 armaduras"><span class="ic">↻</span>Otra serie</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER — armaduras por quintas
+   ------------------------------------------------------------
+   La generación de la serie vive en unidad0-armaduras-core.js
+   (compartida con las variantes cromática y aleatoria). La serie
+   entera se renderiza de una vez como tira continua (un compás
+   por armadura) y tira-partitura.js la desliza centrando el
+   compás actual; la respuesta se muestra en capas superpuestas
+   (mayor arriba, menor abajo) y, tras una pausa, se avanza solo.
+   ============================================================ */
+let tk=null, serie=null, i=0, revelado=false, tira=null, timer=null;
+let conMayor=true, conMenor=true;
+const $=ArmoniaEj.$;
+const PAUSA_AVANCE = 2000;   // ms entre revelar la respuesta y deslizar
+
+function construir(){
+  if(!(tk && serie)) return;
+  tk.loadData(U0Armaduras.meiSerieArmaduras(serie.items.map(it=>it.sig)));
+  $('notation').innerHTML = tk.renderToSVG(1);
+  tira = TiraPartitura.montar({
+    viewport:$('tira'), inner:$('notation'),
+    anclas: TiraPartitura.anclasArmaduras(serie.items.map(it=>it.sig))
+  });
+  mostrarPaso(false);
+}
+
+function ocultarResp(){
+  $('respSup').classList.remove('show');
+  $('respInf').classList.remove('show');
+}
+function reveal(){
+  const it=serie.items[i];
+  ocultarResp();
+  if(conMayor){ $('respSup').textContent=U0Armaduras.nombre(it.sig,'major'); $('respSup').classList.add('show'); }
+  if(conMenor){ $('respInf').textContent=U0Armaduras.nombre(it.sig,'minor'); $('respInf').classList.add('show'); }
+}
+
+function mostrarPaso(animar){
+  $('pos').textContent = i+1;
+  ocultarResp();
+  if(tira) tira.irA(i, animar);
+}
+
+function nuevaSerie(){
+  clearTimeout(timer);
+  serie=U0Armaduras.serieQuintas(); i=0; revelado=false;
+  $('dirNote').textContent = serie.dir>0
+    ? '(esta serie gira en sentido horario: hacia los sostenidos)'
+    : '(esta serie gira en sentido antihorario: hacia los bemoles)';
+  $('btnMain').disabled=false;
+  $('btnOtra').style.display='none';
+  construir();
+}
+
+$('btnMain').onclick = ()=>{
+  if(!serie || revelado) return;
+  revelado=true;
+  reveal();
+  if(i>=U0Armaduras.N-1){                       // fin de la serie
+    $('btnMain').disabled=true;
+    $('btnOtra').style.display='';
+    return;
+  }
+  $('btnMain').disabled=true;                   // pausa para leer la solución…
+  timer=setTimeout(()=>{                        // …y la tira se desliza sola
+    i++; revelado=false;
+    mostrarPaso(true);
+    $('btnMain').disabled=false;
+  }, PAUSA_AVANCE);
+};
+$('btnOtra').onclick = nuevaSerie;
+
+// Conmutadores inclusivos: al menos uno debe quedar activo. Solo cambian lo
+// que muestra la respuesta, así que no hace falta regenerar la serie.
+function toggle(btn){
+  if(btn==='M' && conMenor===false && conMayor) return;   // no apagar el último
+  if(btn==='m' && conMayor===false && conMenor) return;
+  if(btn==='M') conMayor=!conMayor; else conMenor=!conMenor;
+  $('btnMayor').classList.toggle('on',conMayor);
+  $('btnMenor').classList.toggle('on',conMenor);
+  if(revelado) reveal();   // refresca la respuesta ya visible
+}
+$('btnMayor').onclick = ()=>toggle('M');
+$('btnMenor').onclick = ()=>toggle('m');
+
+// Primera serie inmediata (texto + botones funcionan ya, sin esperar a Verovio)
+nuevaSerie();
+
+ArmoniaEj.initVerovio(
+  // tira continua: un solo sistema tan ancho como haga falta; spacingLinear
+  // alto ensancha los compases vacíos (≈435 px), de modo que las armaduras
+  // vecinas caen fuera de la ventana clara entre los velos
+  {scale:60, adjustPageWidth:true, pageWidth:60000, spacingLinear:1.0,
+   pageMarginLeft:30, pageMarginRight:30},
+  t=>{ tk=t; construir(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Familia 3 — Identificación de movimientos armónicos</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="familia3-movimientos-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Identificación de movimientos armónicos</h1>
+  <span class="sub">Familia 3 · Unidad 1</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <p class="prompt">El fragmento a dos voces se muestra <b>intervalo a intervalo</b>, y la
+     solución va <b>un paso por detrás</b>: intenta identificar el <b>intervalo armónico</b>
+     y el <b>movimiento</b> (oblicuo / contrario / directo / paralelo) de las últimas notas
+     mostradas; al pulsar «Siguiente» aparece su solución (cifra y línea) y, tras una pausa,
+     las notas siguientes. Los conmutadores ocultan las soluciones si no las quieres ver.
+     <span id="lvlNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card">
+        <div class="score-wrap">
+          <div id="notation"><span class="ph">Cargando motor de partitura…</span></div>
+          <svg id="overlay"></svg>
+        </div>
+      </div>
+      <div class="under">
+        <div class="motion dim" id="motionName">—</div>
+        <div class="legend" id="legend">
+          <span><i style="background:var(--voz-sup)"></i>voz superior</span>
+          <span><i style="background:var(--voz-inf)"></i>voz inferior</span>
+        </div>
+        <div class="step" id="stepInfo"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Volver a oír el último intervalo"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnNext" class="primary" title="Mostrar la solución y avanzar"><span class="ic">»</span>Siguiente</button>
+      <div class="sep"></div>
+      <button id="btnInt" class="toggle on" title="Mostrar/ocultar las cifras de intervalo">Intervalos</button>
+      <button id="btnMov" class="toggle on" title="Mostrar/ocultar las líneas de movimiento">Movimientos</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — identificación (encadenado)
+   ------------------------------------------------------------
+   El contrapunto (10 notas por voz) se genera en contrapunto-
+   core.js (motor genérico) a través de familia3-movimientos-
+   core.js, compartido con canto y audición. El fragmento se
+   revela pareja a pareja (las notas ocultas se exportan como
+   <space>, layout estable), pero la SOLUCIÓN va un paso por
+   detrás: la cifra de intervalo y la línea de movimiento de la
+   última pareja mostrada no aparecen hasta pulsar «Siguiente».
+   Ese clic muestra primero la solución (línea animada + cifra)
+   y, tras una pausa breve, revela las notas siguientes — así el
+   alumno siempre puede adivinar antes de comprobar.
+   ============================================================ */
+const LVL_NOTES = {
+  1: '(clave de Sol, modo mayor)',
+  2: '(añade clave de Fa y modo menor, con posible sensible)',
+  3: '(una voz en clave de Sol y otra en clave de Fa)'
+};
+const MAX_NIVEL = 3;
+const REVEAL_DELAY = 700;      // ms entre mostrar la solución y las notas siguientes
+let tk=null, level=1, current=null;
+let idx=0;                 // última pareja de notas mostrada (0-based)
+let answered=false;        // ¿está ya a la vista la solución de la pareja idx?
+let busy=false;            // pausa entre solución y notas siguientes
+let showInt=true, showMov=true;
+let justAdvanced=false;    // anima solo la línea recién llegada
+const $=ArmoniaEj.$;
+const wrap=()=>document.querySelector('.score-wrap');
+
+// Elementos de solución visibles: cifras hasta intCount(), transiciones hasta lineCount().
+function intCount(){ return answered ? idx+1 : idx; }
+function lineCount(){ return Math.max(answered ? idx : idx-1, 0); }
+
+function renderSVG(){
+  if(!tk || !current) return;
+  tk.loadData(Familia3.toMEI(current,{revealed:idx+1, intervals: showInt?intCount():0}));
+  $('notation').innerHTML = tk.renderToSVG(1);
+  requestAnimationFrame(drawLines);
+}
+function drawLines(){
+  const ov=$('overlay');
+  if(!showMov || !tk){ ov.innerHTML=''; return; }
+  Familia3.drawMotionLines(wrap(), ov, lineCount(), {animateLast: justAdvanced});
+  justAdvanced=false;
+}
+function updateTexts(){
+  const m=$('motionName');
+  const last = (answered ? idx : idx-1) - 1;   // transición resuelta más reciente
+  if(showMov && last>=0){
+    m.textContent=current.motions[last].label;
+    m.className='motion';
+  }else if(last>=0){
+    m.textContent='(movimiento oculto)';
+    m.className='motion dim';
+  }else{
+    m.textContent='—'; m.className='motion dim';
+  }
+  $('legend').className = showMov ? 'legend show' : 'legend';
+  $('stepInfo').textContent = 'intervalo '+(idx+1)+' de '+current.n;
+  $('btnNext').disabled = busy || (idx>=current.n-1 && answered);
+}
+
+function newExercise(){
+  current = Familia3.generate(level);
+  idx=0; answered=false; busy=false; justAdvanced=false;
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = LVL_NOTES[level] || '';
+  $('btnSimilar').style.display='none';
+  $('btnHarder').style.display='none';
+  renderSVG(); updateTexts();
+  playPair(0);   // al cargar suena el primer intervalo
+}
+
+function advance(){
+  if(!current || busy || (idx>=current.n-1 && answered)) return;
+  // 1) muestra la solución de la pareja actual (cifra + línea animada)
+  answered=true; justAdvanced=true;
+  renderSVG(); updateTexts();
+  if(idx>=current.n-1){                    // fragmento completo
+    $('btnSimilar').style.display='';
+    $('btnHarder').style.display = level<MAX_NIVEL ? '' : 'none';
+    return;
+  }
+  // 2) tras una pausa breve, aparecen las notas siguientes (aún sin su solución)
+  busy=true; updateTexts();
+  setTimeout(()=>{
+    idx++; answered=false; busy=false;
+    renderSVG(); updateTexts();
+    playPair(idx);
+  }, REVEAL_DELAY);
+}
+
+async function playPair(i){
+  if(!current) return;
+  try{
+    await ArmoniaEj.tocar([
+      {midi: current.upper[i].midi, dur:1.5},
+      {midi: current.lower[i].midi, dur:1.5}
+    ]);
+  }catch(e){
+    ArmoniaEj.audioNoDisponible($('btnListen'));
+  }
+}
+
+$('btnNext').onclick   = advance;
+$('btnListen').onclick = ()=>playPair(idx);
+$('btnInt').onclick = ()=>{ showInt=!showInt; $('btnInt').classList.toggle('on',showInt); renderSVG(); };
+$('btnMov').onclick = ()=>{ showMov=!showMov; $('btnMov').classList.toggle('on',showMov); drawLines(); updateTexts(); };
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick  = ()=>{ level=Math.min(level+1,MAX_NIVEL); newExercise(); };
+window.addEventListener('resize', ()=>{ justAdvanced=false; drawLines(); });
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:50, pageWidth:1700, pageMarginTop:30, pageMarginBottom:30},
+  t=>{ tk=t; renderSVG(); updateTexts(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

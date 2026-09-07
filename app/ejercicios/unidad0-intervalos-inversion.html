@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Unidad 0 — Intervalos: inversión</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="unidad0-intervalos-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Intervalos: inversión</h1>
+  <span class="sub">Intervalos · Unidad 0</span>
+  <a class="back" href="../index.html">← Menú</a>
+</header>
+
+<main>
+  <p class="prompt">Nombra el intervalo y su <b>inversión</b> (la nota inferior sube una
+     octava): para do–mi, la respuesta es mi–do, <b>6.ª menor</b>. Al revelar, las notas
+     invertidas aparecen en la partitura junto al intervalo original.</p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar el intervalo (y su inversión, si está revelada)"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la inversión"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro intervalo"><span class="ic">↻</span>Otro</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — intervalos con inversión
+   El segundo compás (las notas invertidas) viaja oculto como
+   <space> y se revela con la respuesta: el layout no salta.
+   ============================================================ */
+let tk=null, current=null, revelado=false;
+const $=ArmoniaEj.$;
+
+function renderSVG(){
+  if(tk && current){
+    tk.loadData(current.mei(revelado));
+    $('notation').innerHTML = tk.renderToSVG(1);
+  }
+}
+
+function newExercise(){
+  current = U0Intervalos.generarInversion();
+  revelado=false;
+  $('answer').className='answer';
+  $('btnReveal').disabled=false;
+  $('btnSimilar').style.display='none';
+  renderSVG();
+  playInterval();
+}
+
+function reveal(){
+  if(!current) return;
+  revelado=true;
+  $('ansQ').textContent = current.inv.label;
+  $('ansDet').textContent = 'Intervalo original: '+current.label;
+  $('answer').className='answer show';
+  $('btnReveal').disabled=true;
+  $('btnSimilar').style.display='';
+  renderSVG();
+  playInverted();   // se oye la inversión al revelarla
+}
+
+const midi = n => U0Intervalos.midiOf(n.letter,n.alter,n.oct);
+async function playInterval(){
+  if(!current) return;
+  try{
+    const notas=[{midi:midi(current.lower)},{midi:midi(current.upper)}];
+    if(revelado){
+      notas.push({midi:midi(current.inv.lower), at:1.8},{midi:midi(current.inv.upper), at:1.8});
+    }
+    await ArmoniaEj.tocar(notas);
+  }catch(e){
+    ArmoniaEj.audioNoDisponible($('btnListen'));
+  }
+}
+async function playInverted(){
+  try{
+    await ArmoniaEj.tocar([{midi:midi(current.inv.lower)},{midi:midi(current.inv.upper)}]);
+  }catch(e){
+    ArmoniaEj.audioNoDisponible($('btnListen'));
+  }
+}
+
+$('btnReveal').onclick = reveal;
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnListen').onclick = playInterval;
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:60, pageWidth:900},
+  t=>{ tk=t; renderSVG(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Ejercicios breves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="curriculum-data.js"></script>
+<style>
+  :root{
+    --bg:#f7f7f4; --card:#ffffff; --fg:#1d1d1b; --muted:#6b6b66;
+    --soft:#a5a59e; --disabled:#c9c9c2;
+    --line:#dcdcd6; --line-soft:#e6e6df; --row-hover:#f2f1ec;
+    --ink:#31506e; --ink-hover:#2a4459;
+    --serif:'Source Serif 4',Georgia,serif;
+    --sans:'Source Sans 3',system-ui,-apple-system,sans-serif;
+    --max-w:1240px;
+    /* padding lateral que centra el contenido a partir de --max-w
+       (el fondo entintado sigue ocupando todo el ancho) */
+    --pad-x:max(56px, calc((100% - var(--max-w)) / 2));
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5}
+  .serif{font-family:var(--serif)}
+
+  /* ---------- cabecera entintada ---------- */
+  .masthead{background:var(--ink);color:#fff;padding:36px var(--pad-x) 0}
+  .mast-top{display:flex;align-items:flex-end;gap:28px}
+  .mast-title h1{font-family:var(--serif);font-size:46px;font-weight:600;
+        letter-spacing:-.015em;line-height:1;margin:0}
+  .mast-title .sub{font-family:var(--serif);font-style:italic;font-size:19px;
+        color:rgba(255,255,255,.65);margin-top:6px}
+  .pentagrama{flex:1;height:44px;margin-bottom:6px;
+        background:repeating-linear-gradient(to bottom,
+          rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 10px)}
+
+  /* pestañas de curso */
+  .tabs{display:flex;gap:12px;margin-top:30px}
+  .tab{font-family:var(--serif);font-size:23px;padding:14px 26px 16px;
+        border-radius:12px 12px 0 0;cursor:pointer;border:none;background:rgba(255,255,255,.1);
+        color:rgba(255,255,255,.75);font-weight:400;transition:background .15s ease}
+  .tab:hover{background:rgba(255,255,255,.18)}
+  .tab .tag{font-family:var(--sans);font-size:15px;font-weight:400;color:rgba(255,255,255,.5)}
+  .tab.active{background:var(--bg);color:var(--fg);font-weight:600}
+  .tab.active .tag{color:var(--muted)}
+
+  /* ---------- listado de unidades ---------- */
+  .unidades{padding:8px var(--pad-x) 48px}
+
+  /* unidad expandida */
+  .ud-open{display:grid;grid-template-columns:120px 1fr;gap:24px;
+        padding:30px 0 34px;border-bottom:1px solid var(--line)}
+  .ud-open .num{font-family:var(--serif);font-size:64px;font-weight:600;
+        color:var(--ink);line-height:.9}
+  .ud-open .titulo{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.01em}
+  .familias{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:22px}
+  .familia .fam-nombre{font-size:17px;font-weight:700;padding-bottom:10px;
+        border-bottom:1px solid var(--line-soft)}
+  .familia .botones{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+
+  /* botones de modalidad/variante: neutros en reposo (tarjeta blanca,
+     texto tinta); el azul intenso queda para la interacción */
+  .btn-modo{display:flex;align-items:center;gap:12px;height:56px;padding:0 18px;
+        border-radius:12px;background:var(--card);border:1.5px solid var(--line);
+        color:var(--ink);font-size:16px;font-weight:600;text-decoration:none;
+        transition:background .15s ease,color .15s ease,border-color .15s ease}
+  .btn-modo:hover,.btn-modo:active{background:var(--ink);border-color:var(--ink);color:#fff}
+  .btn-modo.locked{background:transparent;border:1.5px dashed var(--line);
+        color:var(--disabled);cursor:default}
+  .btn-modo.locked:hover,.btn-modo.locked:active{background:transparent;
+        border-color:var(--line);color:var(--disabled)}
+  .btn-modo svg{width:19px;height:19px;flex:none}
+  .btn-modo .ic{width:19px;flex:none;display:flex;align-items:center;justify-content:center}
+  .btn-modo .ic svg{width:19px;height:19px}
+  /* iconos tipográficos de las variantes de la Unidad 0 */
+  .btn-modo .ic-txt{font-size:10px;font-weight:700;letter-spacing:0;line-height:1}
+  .btn-modo .ic-fb{display:flex;flex-direction:column;align-items:center;
+        font-family:var(--serif);font-size:8.5px;line-height:1;font-weight:600}
+
+  /* unidad colapsada */
+  .ud-row{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;
+        padding:22px 0;border-bottom:1px solid var(--line);border-radius:2px}
+  .ud-row .num{font-family:var(--serif);font-size:40px;color:var(--disabled);
+        line-height:.9;padding-left:6px}
+  .ud-row .titulo{font-family:var(--serif);font-size:21px;color:var(--muted)}
+  .ud-row .estado{display:flex;align-items:center;gap:9px;color:var(--soft);
+        font-size:14px;letter-spacing:.06em;text-transform:uppercase}
+  .ud-row .estado svg{width:15px;height:15px}
+  .ud-row.abrible{cursor:pointer}
+  .ud-row.abrible:hover{background:var(--row-hover)}
+  .ud-row.abrible .num{color:var(--ink);font-weight:600}
+  .ud-row.abrible .titulo{color:var(--fg)}
+  .ud-row.abrible .estado{color:var(--ink);text-transform:none;letter-spacing:0;font-weight:600}
+  .unidades > :last-child{border-bottom:none}
+
+  footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px;display:flex;align-items:baseline}
+  footer a{color:var(--ink);text-decoration:none;margin-left:auto}
+  footer a:hover{text-decoration:underline}
+
+  @media(max-width:960px){
+    .masthead{padding:26px 24px 0}
+    .pentagrama{display:none}
+    .unidades{padding:8px 24px 40px}
+    .familias{grid-template-columns:1fr}
+    .ud-open{grid-template-columns:72px 1fr;gap:14px}
+    .ud-open .num{font-size:44px}
+    .ud-row{grid-template-columns:72px 1fr auto;gap:14px}
+    footer{padding:0 24px 32px}
+  }
+</style>
+</head>
+<body>
+
+<div class="masthead">
+  <div class="mast-top">
+    <div class="mast-title">
+      <h1>Armonía</h1>
+      <div class="sub">Ejercicios breves</div>
+    </div>
+    <div class="pentagrama"></div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<main class="unidades" id="unidades"></main>
+
+<footer>
+  <span>Los botones con borde discontinuo aún no están disponibles.</span>
+  <a href="curriculum.html">Currículum (dev) →</a>
+</footer>
+
+<script>
+/* ---------- iconos (inline SVG, stroke) ---------- */
+const ICONS = {
+  id: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>`,
+  au: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`,
+  ct: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>`
+};
+const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+
+/* Iconos de las variantes de la Unidad 0 (claves del campo `icono` en
+   curriculum-data.js; 'texto' y 'apilado' se dibujan con el campo `texto`). */
+const TIPO_ICONS = {
+  reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="4.8" x2="12" y2="7"/><line x1="19.2" y1="12" x2="17" y2="12"/><line x1="12" y1="19.2" x2="12" y2="17"/><line x1="4.8" y1="12" x2="7" y2="12"/></svg>`,
+  escalones: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 20 8 20 8 15 13 15 13 10 18 10 18 5 21 5"/></svg>`,
+  dado: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.1" fill="currentColor" stroke="none"/></svg>`,
+  dosvoces: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="8" rx="2.7" ry="2.1"/><line x1="14.7" y1="8" x2="14.7" y2="2"/><ellipse cx="12" cy="16" rx="2.7" ry="2.1"/><line x1="9.3" y1="16" x2="9.3" y2="22"/></svg>`,
+  triada: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="11" cy="15.5" rx="2.7" ry="2.1"/><ellipse cx="11" cy="11" rx="2.7" ry="2.1"/><ellipse cx="11" cy="6.5" rx="2.7" ry="2.1"/><line x1="13.7" y1="15.5" x2="13.7" y2="2"/></svg>`,
+  flechas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="19.5" y2="18"/><polyline points="19.5 13.5 19.5 18 15 18"/><line x1="3" y1="18" x2="19.5" y2="6"/><polyline points="19.5 10.5 19.5 6 15 6"/></svg>`,
+  grados: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8.5 6.5 12 3 15.5 6.5"/><text x="12" y="20" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="currentColor" stroke="none">3</text></svg>`
+};
+
+/* ---------- estado ---------- */
+let cursoActivo = 0;
+// unidad expandida por curso: por defecto, la primera con familias
+const expandida = CURRICULO.cursos.map(c => {
+  const ud = c.unidades.find(u => u.familias.length);
+  return ud ? ud.n : null;
+});
+
+/* ---------- render (los datos viven en curriculum-data.js) ---------- */
+function modoHTML(fam, m){
+  const modo = fam.modos[m.key];
+  const inner = `${ICONS[m.key]}<span>${m.title}</span>`;
+  return (modo && modo.url)
+    ? `<a class="btn-modo" href="${modo.url}" title="${m.title}: ${fam.nombre}">${inner}</a>`
+    : `<span class="btn-modo locked" title="${m.title}: próximamente">${inner}</span>`;
+}
+
+/* Variantes de la Unidad 0: mismo aspecto que los modos, con icono propio. */
+function tipoIcono(t){
+  if(t.icono==='texto')   return `<span class="ic"><span class="ic-txt">${t.texto}</span></span>`;
+  if(t.icono==='apilado') return `<span class="ic"><span class="ic-fb">${t.texto.split('/').map(x=>`<span>${x}</span>`).join('')}</span></span>`;
+  return `<span class="ic">${TIPO_ICONS[t.icono] || ''}</span>`;
+}
+function tipoHTML(fam, t){
+  const inner = `${tipoIcono(t)}<span>${t.title}</span>`;
+  return t.url
+    ? `<a class="btn-modo" href="${t.url}" title="${t.title}: ${fam.nombre}">${inner}</a>`
+    : `<span class="btn-modo locked" title="${t.title}: próximamente">${inner}</span>`;
+}
+
+function unidadAbierta(ud){
+  return `
+  <section class="ud-open">
+    <div class="num">${ud.n}</div>
+    <div>
+      <div class="titulo">${ud.titulo}</div>
+      <div class="familias">
+        ${ud.familias.map(fam => `
+          <div class="familia">
+            <div class="fam-nombre">${fam.nombre}</div>
+            <div class="botones">${fam.tipos
+              ? fam.tipos.map(t => tipoHTML(fam, t)).join('')
+              : CURRICULO.modos.map(m => modoHTML(fam, m)).join('')}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>`;
+}
+
+function unidadCerrada(ud){
+  const abrible = ud.familias.length > 0;
+  const estado = abrible
+    ? `${CHEVRON}Ver ejercicios`
+    : `${LOCK}Próximamente`;
+  return `
+  <section class="ud-row${abrible ? ' abrible' : ''}" ${abrible
+      ? `data-ud="${ud.n}" role="button" tabindex="0" aria-label="Abrir unidad ${ud.n}"` : ''}>
+    <div class="num">${ud.n}</div>
+    <div class="titulo">${ud.titulo}</div>
+    <div class="estado">${estado}</div>
+  </section>`;
+}
+
+function render(){
+  document.getElementById('tabs').innerHTML = CURRICULO.cursos.map((c,i) => `
+    <button class="tab${i===cursoActivo ? ' active' : ''}" data-curso="${i}">
+      ${c.nombre} <span class="tag">— ${c.tag}</span>
+    </button>`).join('');
+
+  const curso = CURRICULO.cursos[cursoActivo];
+  document.getElementById('unidades').innerHTML = curso.unidades
+    .map(ud => ud.n===expandida[cursoActivo] ? unidadAbierta(ud) : unidadCerrada(ud))
+    .join('');
+
+  document.querySelectorAll('.tab').forEach(t =>
+    t.onclick = () => { cursoActivo = +t.dataset.curso; render(); });
+  document.querySelectorAll('.ud-row.abrible').forEach(row => {
+    const abrir = () => { expandida[cursoActivo] = +row.dataset.ud; render(); };
+    row.onclick = abrir;
+    row.onkeydown = e => { if(e.key==='Enter' || e.key===' '){ e.preventDefault(); abrir(); } };
+  });
+}
+render();
+</script>
+</body>
+</html>

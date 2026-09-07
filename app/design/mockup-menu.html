@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Armonía · Menú (mockup 2b)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f7f7f4;font-family:'Source Sans 3',sans-serif;color:#1d1d1b}
+  .serif{font-family:'Source Serif 4',Georgia,serif}
+  .btn-primary{display:flex;align-items:center;gap:12px;height:56px;padding:0 18px;border-radius:12px;background:#31506e;color:#fff;font-size:16px;font-weight:600;cursor:pointer}
+  .btn-primary:hover{background:#2a4459}
+  .btn-locked{display:flex;align-items:center;gap:12px;height:56px;padding:0 18px;border:1.5px dashed #dcdcd6;border-radius:12px;color:#c9c9c2;font-size:16px;font-weight:600}
+  .tab-inactive{padding:14px 26px 16px;border-radius:12px 12px 0 0;background:rgba(255,255,255,.1);color:rgba(255,255,255,.75);cursor:pointer}
+  .tab-inactive:hover{background:rgba(255,255,255,.18)}
+  .unit-row{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;padding:22px 0;border-bottom:1px solid #dcdcd6;cursor:pointer}
+  .unit-row:hover{background:#f2f1ec}
+</style>
+</head>
+<body>
+  <!-- Cabecera entintada -->
+  <div style="background:#31506e;color:#fff;padding:36px 56px 0">
+    <div style="display:flex;align-items:flex-end;gap:28px">
+      <div style="flex:none">
+        <div class="serif" style="font-size:46px;font-weight:600;letter-spacing:-.015em;line-height:1">Armonía</div>
+        <div class="serif" style="font-style:italic;font-size:19px;color:rgba(255,255,255,.65);margin-top:6px">Ejercicios breves · 3.º y 4.º EE.PP. · Conservatorio</div>
+      </div>
+      <div style="flex:1;height:44px;margin-bottom:6px;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 10px)"></div>
+      <div style="flex:none;display:flex;gap:20px;font-size:14px;color:rgba(255,255,255,.75);align-items:center;margin-bottom:10px">
+        <span style="display:inline-flex;align-items:center;gap:7px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>Identificación</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audición</span>
+        <span style="display:inline-flex;align-items:center;gap:7px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>Canto</span>
+      </div>
+    </div>
+    <!-- Pestañas de curso -->
+    <div style="display:flex;gap:12px;margin-top:30px">
+      <div class="serif" style="padding:14px 26px 16px;border-radius:12px 12px 0 0;background:#f7f7f4;color:#1d1d1b;font-size:23px;font-weight:600;cursor:pointer">Curso 3.º <span style="font-family:'Source Sans 3',sans-serif;font-size:15px;color:#6b6b66;font-weight:400">— Diatónico</span></div>
+      <div class="serif tab-inactive" style="font-size:23px;font-weight:400">Curso 4.º <span style="font-family:'Source Sans 3',sans-serif;font-size:15px;color:rgba(255,255,255,.5);font-weight:400">— Cromático</span></div>
+    </div>
+  </div>
+
+  <!-- Listado de unidades -->
+  <div style="padding:8px 56px 48px">
+    <!-- Unidad 1 (expandida) -->
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:24px;padding:30px 0 34px;border-bottom:1px solid #dcdcd6">
+      <div class="serif" style="font-size:64px;font-weight:600;color:#31506e;line-height:.9">1</div>
+      <div>
+        <div class="serif" style="font-size:26px;font-weight:600;letter-spacing:-.01em">Introducción, morfología, conducción de voces</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:28px;margin-top:22px">
+          <div>
+            <div style="font-size:17px;font-weight:700;padding-bottom:10px;border-bottom:1px solid #e6e6df">Tríadas</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+              <div class="btn-primary"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>Identificar</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audición</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>Canto</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:700;padding-bottom:10px;border-bottom:1px solid #e6e6df">Intervalos</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>Identificar</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audición</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>Canto</div>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:17px;font-weight:700;padding-bottom:10px;border-bottom:1px solid #e6e6df">Movimiento armónico</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px">
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>Identificar</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>Audición</div>
+              <div class="btn-locked"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>Canto</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Unidades colapsadas -->
+    <div class="unit-row">
+      <div class="serif" style="font-size:40px;color:#c9c9c2;line-height:.9;padding-left:6px">2</div>
+      <div class="serif" style="font-size:21px;color:#6b6b66">Tónica y dominante (E.F.; I6, V6, VII6)</div>
+      <div style="display:flex;align-items:center;gap:9px;color:#a5a59e;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Próximamente</div>
+    </div>
+    <div class="unit-row">
+      <div class="serif" style="font-size:40px;color:#c9c9c2;line-height:.9;padding-left:6px">3</div>
+      <div class="serif" style="font-size:21px;color:#6b6b66">Subdominante; cadencia auténtica y semicadencia</div>
+      <div style="display:flex;align-items:center;gap:9px;color:#a5a59e;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Próximamente</div>
+    </div>
+    <div class="unit-row">
+      <div class="serif" style="font-size:40px;color:#c9c9c2;line-height:.9;padding-left:6px">4</div>
+      <div class="serif" style="font-size:21px;color:#6b6b66">Inversiones de V7; 6/4 cadencial y de paso</div>
+      <div style="display:flex;align-items:center;gap:9px;color:#a5a59e;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Próximamente</div>
+    </div>
+    <div class="unit-row">
+      <div class="serif" style="font-size:40px;color:#c9c9c2;line-height:.9;padding-left:6px">5</div>
+      <div class="serif" style="font-size:21px;color:#6b6b66">VI, IV y II; 6/4 bordadura; cadencia rota</div>
+      <div style="display:flex;align-items:center;gap:9px;color:#a5a59e;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Próximamente</div>
+    </div>
+    <div class="unit-row" style="border-bottom:none">
+      <div class="serif" style="font-size:40px;color:#c9c9c2;line-height:.9;padding-left:6px">6</div>
+      <div class="serif" style="font-size:21px;color:#6b6b66">Secuencias diatónicas</div>
+      <div style="display:flex;align-items:center;gap:9px;color:#a5a59e;font-size:14px;letter-spacing:.06em;text-transform:uppercase"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Próximamente</div>
+    </div>
+  </div>
+</body>
+</html>

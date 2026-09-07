@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Currículum (dev)</title>
+<script src="curriculum-data.js"></script>
+<style>
+  :root{
+    --bg:#f7f7f4; --fg:#1d1d1b; --muted:#6b6b66; --line:#dcdcd6;
+    --accent:#3a5a78; --accent-soft:#e8eef4; --card:#ffffff; --disabled:#c9c9c2;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+       background:var(--bg);color:var(--fg);line-height:1.5}
+
+  header{padding:26px 24px 22px;border-bottom:1px solid var(--line);background:var(--card)}
+  .head-inner{max-width:1060px;margin:0 auto;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  header h1{font-size:22px;margin:0;font-weight:700;letter-spacing:-.01em}
+  header h1 span{color:var(--accent)}
+  header .sub{color:var(--muted);font-size:14px}
+  header a.back{margin-left:auto;color:var(--muted);font-size:13px;text-decoration:none;
+       border:1px solid var(--line);padding:5px 10px;border-radius:8px}
+  header a.back:hover{border-color:var(--accent);color:var(--accent)}
+
+  main{max-width:1060px;margin:0 auto;padding:26px 24px 60px}
+  .aviso{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:10px;
+       padding:10px 14px;margin-bottom:8px}
+
+  .curso{margin:34px 0 10px;display:flex;align-items:baseline;gap:10px}
+  .curso h2{font-size:13px;margin:0;font-weight:700;text-transform:uppercase;
+            letter-spacing:.09em;color:var(--accent)}
+  .curso .tag{font-size:12px;color:var(--muted)}
+  .curso::after{content:"";flex:1;height:1px;background:var(--line);align-self:center}
+
+  .unidad{padding:16px 0;border-bottom:1px solid var(--line)}
+  .unidad:last-of-type{border-bottom:none}
+  .ud-head{display:flex;align-items:baseline;gap:10px}
+  .ud-num{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .ud-title{font-size:14.5px;font-weight:600}
+  .ud-vacia{font-size:13px;color:var(--muted);margin-top:4px}
+
+  .familia{background:var(--card);border:1px solid var(--line);border-radius:12px;
+           padding:14px 16px;margin-top:12px}
+  .familia h3{margin:0;font-size:15px;font-weight:650}
+  .familia .desc{font-size:13.5px;color:var(--muted);margin:4px 0 10px}
+  .bloque{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+          color:var(--accent);margin:10px 0 4px}
+  ul{margin:0;padding-left:0;list-style:none}
+  li{font-size:13.5px;padding:3px 0;display:flex;gap:8px;align-items:baseline}
+  .chip{flex-shrink:0;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+        border:1px solid var(--line);border-radius:7px;padding:2px 7px;
+        color:var(--accent);background:var(--accent-soft);text-decoration:none;min-width:34px;text-align:center}
+  a.chip:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chip.off{background:transparent;color:var(--disabled);border-style:dashed}
+  .lvl{flex-shrink:0;font-weight:700;color:var(--accent);min-width:52px}
+  li .txt{color:var(--muted)}
+  li .txt b{color:var(--fg);font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="head-inner">
+    <h1>Currículum <span>·</span> vista de desarrollo</h1>
+    <span class="sub">Bloques, familias, tipos de ejercicio y niveles</span>
+    <a class="back" href="index.html">← Menú</a>
+  </div>
+</header>
+
+<main id="app">
+  <p class="aviso">Página interna de desarrollo: inventario de todo el contenido de la app.
+     Los datos viven en <code>curriculum-data.js</code>, compartidos con el menú principal.</p>
+</main>
+
+<script>
+const app = document.getElementById('app');
+
+function modosHTML(fam){
+  return CURRICULO.modos.map(m=>{
+    const modo = fam.modos[m.key];
+    const chip = (modo && modo.url)
+      ? `<a class="chip" href="${modo.url}">${m.label}</a>`
+      : `<span class="chip off">${m.label}</span>`;
+    const txt = (modo && modo.desc)
+      ? `<span class="txt"><b>${m.title}.</b> ${modo.desc}</span>`
+      : `<span class="txt">${m.title}: no disponible todavía.</span>`;
+    return `<li>${chip}${txt}</li>`;
+  }).join('');
+}
+// Familias de la Unidad 0: variantes (`tipos`) en lugar de modos id/au/ct.
+function tiposHTML(fam){
+  return fam.tipos.map(t=>{
+    const chip = t.url
+      ? `<a class="chip" href="${t.url}">${t.label}</a>`
+      : `<span class="chip off">${t.label}</span>`;
+    return `<li>${chip}<span class="txt"><b>${t.title}.</b> ${t.desc||''}</span></li>`;
+  }).join('');
+}
+function nivelesHTML(fam){
+  if(!fam.niveles || !fam.niveles.length)
+    return `<li><span class="txt">Sin niveles de dificultad.</span></li>`;
+  return fam.niveles.map((d,i)=>
+    `<li><span class="lvl">Nivel ${i+1}</span><span class="txt">${d}</span></li>`).join('');
+}
+
+app.innerHTML += CURRICULO.cursos.map(curso => `
+  <div class="curso"><h2>${curso.nombre}</h2><span class="tag">${curso.tag}</span></div>
+  ${curso.unidades.map(ud => `
+    <section class="unidad">
+      <div class="ud-head">
+        <span class="ud-num">Unidad ${ud.n}</span>
+        <span class="ud-title">${ud.titulo}</span>
+      </div>
+      ${ud.familias.length
+        ? ud.familias.map(fam => `
+            <div class="familia">
+              <h3>${fam.nombre}</h3>
+              <div class="desc">${fam.desc||''}</div>
+              <div class="bloque">${fam.tipos ? 'Tipos' : 'Modos'}</div>
+              <ul>${fam.tipos ? tiposHTML(fam) : modosHTML(fam)}</ul>
+              <div class="bloque">Niveles</div>
+              <ul>${nivelesHTML(fam)}</ul>
+            </div>`).join('')
+        : `<div class="ud-vacia">Sin ejercicios todavía.</div>`}
+    </section>`).join('')}
+`).join('');
+</script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Unidad 0 — Tríadas: inversiones</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="unidad0-acordes-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Tríadas: inversiones</h1>
+  <span class="sub">Acordes · Unidad 0</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <p class="prompt">Si ves la tríada completa, di su <b>inversión</b> y su <b>cifrado</b>
+     (estado fundamental · 5/3, 1.ª inversión · 6/3, 2.ª inversión · 6/4). La mitad de
+     las veces es al revés: se dan el <b>bajo</b> con su <b>cifrado</b> (solo 6/3 o 6/4)
+     y el tipo de tríada, y hay que construir el resto del acorde.
+     <span id="lvlNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under">
+        <div class="motion" id="dato"></div>
+      </div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar el acorde"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — inversiones y bajo cifrado (dos sentidos)
+   En el sentido "construir" se dibuja el bajo con sus cifras
+   (6/3 o 6/4) y se indica el tipo; el acorde completo aparece
+   al revelar, con las cifras aún visibles.
+   ============================================================ */
+let tk=null, level=1, current=null, revelado=false;
+const $=ArmoniaEj.$;
+
+function renderSVG(){
+  if(tk && current){
+    const construir = current.dir==='construir';
+    tk.loadData(U0Acordes.toMEI(current,{
+      solo: construir && !revelado,
+      cifras: construir            // el bajo cifrado es el enunciado
+    }));
+    $('notation').innerHTML = tk.renderToSVG(1);
+  }
+}
+
+function newExercise(){
+  current = U0Acordes.generar(level,'inversion');
+  revelado=false;
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = U0Acordes.LVL_NOTES[level] || '';
+  $('dato').textContent = current.dir==='construir' ? 'Construye: tríada '+current.type : '';
+  $('answer').className='answer';
+  $('btnReveal').disabled=false;
+  $('btnSimilar').style.display='none';
+  $('btnHarder').style.display='none';
+  $('btnListen').disabled = current.dir==='construir';
+  renderSVG();
+  if(current.dir==='ver') playChord();
+}
+
+function reveal(){
+  if(!current) return;
+  revelado=true;
+  $('ansQ').textContent = current.invLabel+' · '+current.invCifra;
+  $('ansDet').textContent = 'Tríada '+current.type+' ('+current.nombres.join(' – ')+')';
+  $('answer').className='answer show';
+  $('btnReveal').disabled=true;
+  $('btnSimilar').style.display='';
+  $('btnHarder').style.display = level<U0Acordes.MAX_NIVEL ? '' : 'none';
+  $('btnListen').disabled=false;
+  renderSVG();
+  if(current.dir==='construir') playChord();
+}
+
+async function playChord(){
+  if(!current) return;
+  try{ await ArmoniaEj.tocar(U0Acordes.midis(current)); }
+  catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
+}
+
+$('btnReveal').onclick = reveal;
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick = ()=>{ level=Math.min(level+1,U0Acordes.MAX_NIVEL); newExercise(); };
+$('btnListen').onclick = playChord;
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:60, pageWidth:900},
+  t=>{ tk=t; renderSVG(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

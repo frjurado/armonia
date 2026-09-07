@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Familia 3 — Canto de movimientos armónicos</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
+     En producción se empaquetarían en local para uso offline. -->
+<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="familia3-movimientos-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Canto a dos voces — movimientos armónicos</h1>
+  <span class="sub">Familia 3 · Unidad 1</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <p class="prompt">Cantad el fragmento a dos voces (por grupos o por parejas). Antes o después
+     de cantar, analizad los <b>intervalos</b> y los <b>movimientos</b> de cada transición:
+     los conmutadores muestran la solución sobre la partitura. El botón de referencia
+     da el primer intervalo. <span id="lvlNote"></span></p>
+
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card">
+        <div class="score-wrap">
+          <div id="notation"><span class="ph">Cargando motor de partitura…</span></div>
+          <svg id="overlay"></svg>
+        </div>
+      </div>
+      <div class="under">
+        <div class="legend" id="legend">
+          <span><i style="background:var(--voz-sup)"></i>voz superior</span>
+          <span><i style="background:var(--voz-inf)"></i>voz inferior</span>
+        </div>
+        <div class="motions-line" id="motionsLine"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnRef" class="primary" title="Oír el primer intervalo de referencia"><span class="ic">♪</span>Referencia</button>
+      <div class="sep"></div>
+      <button id="btnInt" class="toggle" title="Mostrar/ocultar las cifras de intervalo">Intervalos</button>
+      <button id="btnMov" class="toggle" title="Mostrar/ocultar las líneas de movimiento">Movimientos</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — canto
+   ------------------------------------------------------------
+   Igual que la versión de identificación pero el fragmento
+   aparece COMPLETO desde el inicio (no hay botón de avanzar).
+   Los conmutadores muestran/ocultan las cifras de intervalo
+   (integradas en el MEI) y las líneas de movimiento de ambas
+   voces, que aparecen todas de golpe, sin animación.
+   El contrapunto se genera en contrapunto-core.js a través
+   de familia3-movimientos-core.js.
+   ============================================================ */
+const LVL_NOTES = {
+  1: '(clave de Sol, modo mayor)',
+  2: '(añade clave de Fa y modo menor, con posible sensible)',
+  3: '(una voz en clave de Sol y otra en clave de Fa)'
+};
+const MAX_NIVEL = 3;
+let tk=null, level=1, current=null;
+let showInt=false, showMov=false;
+const $=ArmoniaEj.$;
+const wrap=()=>document.querySelector('.score-wrap');
+
+function renderSVG(){
+  if(!tk || !current) return;
+  tk.loadData(Familia3.toMEI(current,{revealed:current.n, intervals: showInt?current.n:0}));
+  $('notation').innerHTML = tk.renderToSVG(1);
+  requestAnimationFrame(drawLines);
+}
+function drawLines(){
+  const ov=$('overlay');
+  if(!showMov || !tk){ ov.innerHTML=''; return; }
+  Familia3.drawMotionLines(wrap(), ov, current.n-1, {animateLast:false});
+}
+function updateTexts(){
+  $('legend').className = showMov ? 'legend show' : 'legend';
+  const ml=$('motionsLine');
+  if(showMov){
+    ml.innerHTML = 'Movimientos: ' + current.motions.map(m=>'<b>'+m.type+'</b>').join(' · ');
+    ml.className='motions-line show';
+  }else ml.className='motions-line';
+}
+
+function newExercise(){
+  current = Familia3.generate(level);
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = LVL_NOTES[level] || '';
+  $('btnHarder').style.display = level<MAX_NIVEL ? '' : 'none';
+  renderSVG(); updateTexts();
+}
+
+async function playReference(){
+  if(!current) return;
+  try{
+    await ArmoniaEj.tocar([
+      {midi: current.upper[0].midi, dur:2},
+      {midi: current.lower[0].midi, dur:2}
+    ]);
+  }catch(e){
+    ArmoniaEj.audioNoDisponible($('btnRef'));
+  }
+}
+
+$('btnRef').onclick = playReference;
+$('btnInt').onclick = ()=>{ showInt=!showInt; $('btnInt').classList.toggle('on',showInt); renderSVG(); };
+$('btnMov').onclick = ()=>{ showMov=!showMov; $('btnMov').classList.toggle('on',showMov); drawLines(); updateTexts(); };
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick  = ()=>{ level=Math.min(level+1,MAX_NIVEL); newExercise(); };
+window.addEventListener('resize', drawLines);
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:50, pageWidth:1700, pageMarginTop:30, pageMarginBottom:30},
+  t=>{ tk=t; renderSVG(); },
+  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+);
+</script>
+</body>
+</html>

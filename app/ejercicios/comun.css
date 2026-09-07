@@ -1,0 +1,153 @@
+/* ============================================================
+   comun.css — estilos compartidos por TODAS las páginas de
+   ejercicios (app/ejercicios/*.html).
+   Capa visual "editorial entintada" (ver app/design/README.md):
+   barra superior entintada (#31506e), tipografía serif de aire
+   editorial (Source Serif 4 + Source Sans 3), esquinas suaves y
+   objetivos táctiles grandes (pizarra digital).
+   Layout común: barra superior + fila con la partitura a la
+   izquierda y la columna de acciones a la derecha (en pantallas
+   estrechas, los botones pasan debajo).
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap');
+
+:root{
+  --bg:#f7f7f4; --card:#ffffff; --fg:#1d1d1b; --muted:#6b6b66;
+  --soft:#a5a59e; --line:#dcdcd6; --line-soft:#e6e6df;
+  --ink:#31506e; --ink-hover:#2a4459;
+  --accent:var(--ink); --accent-soft:#e8eef4;
+  --ok:#2e7d52; --ok-bg:#eef5f0; --ok-line:#bcd6c6;
+  --voz-sup:#3a5a78; --voz-inf:#b06c3a;
+  --serif:'Source Serif 4',Georgia,serif;
+  --sans:'Source Sans 3',system-ui,-apple-system,sans-serif;
+  --main-w:1240px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.5}
+
+/* ---------- barra superior entintada ---------- */
+/* El HTML de la cabecera es plano (h1, .sub, a.back, .level);
+   el grid lo recoloca: volver | título/subtítulo | nivel. */
+header{background:var(--ink);color:#fff;
+       /* el fondo ocupa todo el ancho; el contenido se centra a partir
+          de --main-w gracias al padding lateral variable, alineado con
+          el contenido de main (que lleva 36px de padding propio) */
+       padding:16px max(36px, calc((100% - var(--main-w)) / 2 + 36px));
+       display:grid;grid-template-columns:auto 1fr auto;
+       grid-template-areas:"back title level" "back sub level";
+       column-gap:20px;align-items:center}
+header h1{grid-area:title;font-family:var(--serif);font-size:24px;font-weight:600;
+       margin:0;line-height:1.2;align-self:end}
+header .sub{grid-area:sub;font-size:13px;color:rgba(255,255,255,.6);align-self:start}
+header a.back{grid-area:back;display:inline-flex;align-items:center;height:52px;
+       padding:0 20px;border-radius:12px;background:rgba(255,255,255,.14);
+       color:#fff;font-size:16px;font-weight:600;text-decoration:none;
+       transition:background .15s ease}
+header a.back:hover{background:rgba(255,255,255,.22)}
+.level{grid-area:level;display:flex;align-items:center;gap:10px;
+       font-size:14px;color:rgba(255,255,255,.65)}
+.level b{display:inline-flex;align-items:center;justify-content:center;
+       min-width:40px;height:40px;padding:0 8px;border-radius:10px;
+       background:#fff;color:var(--ink);font-size:16px;font-weight:700}
+
+main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
+.prompt{font-size:18px;color:var(--muted);margin:0 auto 16px;max-width:860px;text-align:center}
+.prompt b{color:var(--fg)}
+
+/* ---------- fila partitura + acciones ---------- */
+.ej-row{display:flex;gap:30px;align-items:flex-start}
+.ej-main{flex:1;min-width:0}
+.score-card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+     min-height:260px;display:flex;align-items:center;justify-content:center;
+     padding:34px;overflow:auto}
+.score-wrap{position:relative;max-width:100%}
+#notation svg{max-width:100%;height:auto;display:block}
+#notation .ph{color:var(--soft);font-size:15px;text-align:center}
+/* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
+   tonalidad o cifrado americano, cuando la partitura es la respuesta) */
+#notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);
+     font-weight:600;color:var(--ink);text-align:center}
+#notation .ph .icon{font-size:30px;display:block;margin-bottom:8px}
+#overlay{position:absolute;inset:0;pointer-events:none;overflow:visible}
+
+/* ---------- acciones (columna a la derecha) ---------- */
+.controls{display:flex;flex-direction:column;gap:12px;width:340px;flex-shrink:0}
+button{font-family:var(--sans);font-size:17px;font-weight:600;
+     border:1.5px solid var(--line);background:var(--card);color:var(--fg);
+     padding:0 20px;min-height:64px;border-radius:14px;cursor:pointer;
+     transition:background .15s ease,border-color .15s ease,color .15s ease;
+     display:inline-flex;align-items:center;gap:12px}
+.controls button{width:100%;justify-content:flex-start;text-align:left}
+button .ic{width:20px;text-align:center;flex-shrink:0}
+button:hover{border-color:var(--ink);color:var(--ink)}
+button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
+button.primary:hover{background:var(--ink-hover);border-color:var(--ink-hover);color:#fff}
+button:disabled{opacity:.45;cursor:default}
+button:disabled:hover{border-color:var(--line);color:var(--fg)}
+button.primary:disabled:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+button.toggle{min-height:56px}
+button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
+     color:var(--ink);font-weight:700}
+.sep{height:1px;width:100%;background:var(--line);margin:4px 0}
+
+/* ---------- tira deslizante (series encadenadas) ----------
+   Visor de tira-partitura.js: la partitura entera (un sistema) se
+   desplaza dentro de .tira; los velos difuminan lo anterior y lo
+   posterior al compás centrado; .tira-resp son las capas de
+   respuesta superpuestas (encima/debajo del pentagrama). */
+.score-card.tira-card{padding:16px 0;display:block}
+.tira{position:relative;overflow:hidden;width:100%;padding:52px 0}
+.tira-inner{width:max-content;min-width:100%;text-align:center;
+     transition:transform .6s ease;will-change:transform}
+.tira-inner svg{max-width:none;display:block}
+.tira-velo{position:absolute;top:0;bottom:0;z-index:2;pointer-events:none;
+     width:max(0px,calc(50% - 210px))}
+.tira-velo.izq{left:0;background:linear-gradient(to right,
+     var(--card) 0,var(--card) calc(100% - 70px),rgba(255,255,255,0) 100%)}
+.tira-velo.der{right:0;background:linear-gradient(to left,
+     var(--card) 0,var(--card) calc(100% - 70px),rgba(255,255,255,0) 100%)}
+.tira-resp{position:absolute;left:0;right:0;z-index:3;text-align:center;
+     font-family:var(--serif);font-size:28px;font-weight:600;line-height:1.1;
+     color:var(--ok);opacity:0;transition:opacity .25s ease;pointer-events:none}
+.tira-resp.sup{top:8px}
+.tira-resp.inf{bottom:8px}
+.tira-resp.show{opacity:1}
+/* variante "pregunta": el dato mostrado (no la respuesta) va en tinta */
+.tira-resp.pregunta{color:var(--ink)}
+/* respuesta centrada sobre el pentagrama (p. ej. «sin alteraciones»
+   cuando la armadura revelada no dibuja nada) */
+.tira-resp.centro{top:50%;left:50%;right:auto;transform:translate(-50%,-50%);
+     font-size:19px;background:var(--card);padding:2px 14px;border-radius:8px}
+
+/* ---------- bajo la partitura ---------- */
+.under{display:flex;align-items:center;gap:14px;margin-top:12px;min-height:32px;flex-wrap:wrap}
+.motion{font-size:24px;font-weight:600;font-family:var(--serif);color:var(--ink)}
+.motion.dim{color:var(--muted);font-weight:400;font-family:var(--sans);font-size:15px}
+.step{font-size:14px;color:var(--muted);margin-left:auto}
+.legend{display:none;gap:12px;font-size:13px;color:var(--muted)}
+.legend.show{display:flex}
+.legend i{display:inline-block;width:16px;height:3px;border-radius:2px;
+     vertical-align:middle;margin-right:5px}
+.motions-line{font-size:14px;color:var(--muted);display:none}
+.motions-line.show{display:block}
+.motions-line b{color:var(--ink);font-weight:600}
+
+/* ---------- panel de respuesta ---------- */
+.answer{margin-top:16px;padding:20px 24px;border:1px solid var(--ok-line);
+     border-radius:14px;background:var(--ok-bg);display:none}
+.answer.show{display:block}
+.answer .q{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--ok);
+     line-height:1.25}
+.answer .det{color:var(--muted);font-size:15px;font-weight:600;margin-top:4px}
+.answer .det b{color:var(--ink);font-weight:600}
+.answer .compound{font-size:15px;font-weight:400;color:var(--muted);margin-left:6px}
+
+@media(max-width:860px){
+  header{padding:12px 16px;column-gap:12px}
+  header h1{font-size:19px}
+  main{padding:20px 16px 32px}
+  .ej-row{flex-direction:column}
+  .controls{flex-direction:row;flex-wrap:wrap;width:auto}
+  .controls button{width:auto;min-height:56px}
+  .sep{width:1px;height:32px;margin:0}
+}
