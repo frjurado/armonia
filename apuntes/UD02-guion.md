@@ -1,0 +1,97 @@
+# UD 2. Tónica y dominante
+
+> Guion de trabajo. Cada epígrafe es un contenedor para redactar después el texto completo.
+> Los "Ej." marcan huecos para ejemplos. Fuentes base: Aldwell/Schachter, *Unit 6* y *Unit 7*;
+> Pascual-Diego, *Temas 5 y 6*.
+
+---
+
+## 0. Punto de partida: la prolongación y los tres recursos del bajo
+
+Toda la música tonal gira en torno a dos acordes: el de **tónica** (I) y el de **dominante** (V). La tónica es el punto de reposo, el lugar al que la música quiere volver; la dominante es la tensión que empuja hacia ella. Ese ir y venir —la progresión **I–V–I**— es una de las fuerzas fundamentales de casi toda la música occidental, y sobre ella se construye gran parte del andamiaje tonal.
+
+Ahora bien, una pieza no puede repetir I–V–I sin más: sonaría pobre y monótona. Aquí aparece la idea central de esta unidad, la **prolongación**. Prolongar una armonía significa mantenerla activa durante más tiempo sin cambiarla en lo esencial: la tónica (o la dominante) sigue siendo la armonía que manda, pero las voces se mueven, el bajo cambia de nota y a veces surgen acordes secundarios. Así la música respira y avanza sin perder su punto de apoyo.
+
+¿Cómo se prolonga un acorde? De formas diversas, pero las más interesantes tienen que ver con el **bajo**, que dispone de tres recursos básicos para moverse sin abandonar la armonía:
+
+- **Arpegio**: el bajo salta entre las notas del propio acorde (por ejemplo, de la fundamental a la 3.ª), cambiando su inversión.
+- **Bordadura**: el bajo se aparta un paso hacia una nota vecina y regresa, generalmente soportando un acorde secundario.
+- **Nota de paso**: el bajo rellena por grados conjuntos el hueco entre dos notas del acorde, igualmente pudiendo generar una armonía secundaria.
+
+Cada uno de estos recursos dará lugar a una de las **inversiones** que vamos a estudiar: el arpegio produce el **I6**, la bordadura el **V6** y la nota de paso el **VII6**. Por eso la unidad los presenta en ese orden, de la conducción más sencilla a la más delicada: primero el estado fundamental (I y V) y después I6, V6 y VII6.
+
+---
+
+## 1. Tónica y dominante en estado fundamental; prolongación armónica
+
+### 1.1 La progresión I–V–I
+
+- Doble conducción del V al I:
+  - **Armónica**: el bajo salta 5.ª descendente (o 4.ª ascendente).
+  - **Contrapuntística**: 5.ª y 3.ª del V (grados 2̂ y 7̂) se dirigen a 1̂.
+- Uso melódico: la melodía sobre 1̂/3̂/5̂ admite **I**; sobre 5̂/7̂/2̂ admite **V**.
+- Ej.: Kuhnau, *Sonata bíblica n.º 5* (pieza construida solo con I y V).
+
+### 1.2 Prolongación del acorde
+
+- Recurso más simple: **bajo inmóvil + cambio de disposición** de las voces superiores (arpegiar el acorde).
+- Al prolongar, el acorde puede quedar **incompleto**: puede faltar la 5.ª, **nunca la 3.ª**.
+- Alternancia I-V como prolongación de tónica o dominante (notación entre paréntesis para acordes secundarios).
+
+### 1.3 La cadencia como contraste (tratamiento informal)
+
+- V–I (o I-V) como **punto de reposo / llegada**, por oposición a la prolongación (que mantiene la situación armónica).
+- Aquí solo se presenta el gesto; la **tipología** (auténtica perfecta/imperfecta, semicadencia) y el papel del V7 **se formalizan en las UUDD 3 y 4**.
+
+### 1.4 Escritura y conducción
+
+- **Duplicaciones**: se duplica la **fundamental**, salvo que haya una buena razón para no hacerlo.
+- **Regla general — no duplicar la sensible** (evita 8.as paralelas al resolver 7̂→1̂). *[Se enuncia aquí; el caso difícil se desarrolla en §4, VII6.]*
+- **Modo menor**: elevar 7̂ para obtener sensible en el V; consecuencia: 4.ª disminuida admisible, mejor en voz interior.
+- **Patrones melódicos I–V–I**: 2̂ y 7̂ como bordadura o nota de paso hacia 1̂/3̂.
+
+---
+
+## 2. Primera inversión
+
+### 2.1 I6 — prolongación por inversión
+
+- **Función**: I6 prolonga el I moviendo el bajo entre fundamental y 3.ª (raíz↔3.ª). Patrón tipo: **I – I6 – V**.
+- **Conducción**: movimiento **paralelo** (10.as entre bajo y soprano) vs. **contrario**; intercambio de voces.
+- Ej.: Mozart (obertura); Bach, *Pequeño preludio*; caso inverso (**I6 - I**) en Schumann.
+- **Extensión a la dominante**: la misma idea aplica al V. Moviendo el bajo entre fundamental y 3.ª (bajo 5̂–7̂) aparece el **V6**, que prolonga la propia dominante. Queda así presentado el acorde; su uso como bordadura de la tónica se ve en §3.
+
+---
+
+### 2.2 V6 — prolongación por bordadura
+
+- Partiendo del V6 ya presentado en §2, aquí se le da su segunda función.
+- **Función principal**: **I – V6 – I**. El V6 actúa como **acorde bordadura** que prolonga la tónica (bajo 1̂–7̂–1̂).
+- **Conducción**: posibilidades de las voces superiores; **bordadura incompleta**.
+- Ej.: *[pendiente]*
+
+---
+
+### 2.3 VII6 — prolongación por paso
+
+- **Por qué no VII en estado fundamental**: contiene 5.ª disminuida en el bajo (disonante); se pospone.
+- **Función**: **I – VII6 – I6** (y viceversa), con el bajo por grados conjuntos 1̂–2̂–3̂ / 3̂–2̂–1̂. El VII6 es un **acorde de paso** que prolonga la tónica (nota más grave: 2̂).
+- **Duplicación (desarrollo del caso difícil)**: se duplica el **bajo (2̂)**; si la conducción de voces lo aconseja, se puede duplicar 4^; **no** duplicar la sensible. *[Conecta con la regla general de §1.4.]*
+- **Resolución del tritono**: 7̂→1̂ y 4̂→3̂; **excepciones** admisibles (p. ej., 5.as desiguales, o el tritono en voces internas).
+- Ej.: coral (a modo de resumen).
+- Hacer notar que, hasta aquí, generalmente, **los acordes secundarios utilizados están en inversión**.
+
+---
+
+## 3. Ritmo armónico
+
+- Distinguir siempre el **cambio real de armonía** frente a la mera **actividad prolongacional**.
+- En ambos planos, destacar la importancia de cómo cuadra el cambio armónico con el compás: duración relativa, tiempo débil vs. fuerte, etc.
+
+---
+
+## 4. Síntesis: prolongación y cadencia
+
+- Repaso de los dos grandes recursos de la unidad: **prolongar** (arpegio / bordadura / paso, vía I6 / V6 / VII6) frente a **cerrar** (V–I, tratado aún de forma informal).
+- Resumen gráfico de los acordes utilizados (tabla grados + bajos)
+- Enlace con la UD3: subdominante y formalización de las cadencias.
