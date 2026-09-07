@@ -2,7 +2,7 @@
    comun.css — estilos compartidos por TODAS las páginas de
    ejercicios (app/ejercicios/*.html).
    Capa visual "editorial entintada" (ver app/design/README.md):
-   barra superior entintada (#31506e), tipografía serif de aire
+   barra superior entintada (#2f4f42), tipografía serif de aire
    editorial (Source Serif 4 + Source Sans 3), esquinas suaves y
    objetivos táctiles grandes (pizarra digital).
    Layout común: barra superior + fila con la partitura a la
@@ -14,9 +14,9 @@
 :root{
   --bg:#f7f7f4; --card:#ffffff; --fg:#1d1d1b; --muted:#6b6b66;
   --soft:#a5a59e; --line:#dcdcd6; --line-soft:#e6e6df;
-  --ink:#31506e; --ink-hover:#2a4459;
-  --accent:var(--ink); --accent-soft:#e8eef4;
-  --ok:#2e7d52; --ok-bg:#eef5f0; --ok-line:#bcd6c6;
+  --ink:#2f4f42; --ink-hover:#264137;
+  --accent:var(--ink); --accent-soft:#e8f0ec;
+  --ok:#8f4a22; --ok-bg:#f7efe8; --ok-line:#e0c9b4;
   --voz-sup:#3a5a78; --voz-inf:#b06c3a;
   --serif:'Source Serif 4',Georgia,serif;
   --sans:'Source Sans 3',system-ui,-apple-system,sans-serif;

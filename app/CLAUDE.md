@@ -102,12 +102,19 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 ## Capa visual ("editorial entintada")
 
 `design/` contiene los mockups hi-fi (`mockup-menu.html`,
-`mockup-ejercicio.html`) y un `README.md` de handoff con los tokens: azul
-tinta `#31506e`, serif Source Serif 4 + sans Source Sans 3, radios 12–14 px,
-objetivos táctiles ≥56 px, **sin sombras ni píldoras**.
+`mockup-ejercicio.html`) y un `README.md` de handoff con los tokens: verde
+tinta `#2f4f42` (hover `#264137`), acierto terroso `#8f4a22`, serif Source
+Serif 4 + sans Source Sans 3, radios 12–14 px, objetivos táctiles ≥56 px,
+**sin sombras ni píldoras**. **Los mockups están en la tinta azul original
+(`#31506e`)**: valen como referencia de todo menos del color.
 
 Esa capa **ya está aplicada**: el menú vive en `index.html` (pestañas de curso
 + unidades acordeón) y las páginas de ejercicio se estilan íntegramente desde
 `comun.css` — la barra superior entintada se consigue recolocando con grid la
 cabecera plana `h1`/`.sub`/`a.back`/`.level`, sin tocar el HTML de las
-páginas. Ante cambios visuales, respetar los tokens de `design/README.md`.
+páginas. `curriculum.html` usa los mismos tokens con densidad de inventario.
+Ante cambios visuales, respetar los tokens de `design/README.md`.
+
+El color de tinta y sus derivados viven **solo en los bloques `:root`** de
+`index.html`, `curriculum.html` y `ejercicios/comun.css`: tres sitios, ningún
+hex suelto en el resto del CSS. Mantenerlo así.
