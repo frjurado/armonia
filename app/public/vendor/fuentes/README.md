@@ -10,14 +10,21 @@ sistema, distinta en cada dispositivo.
 
 Se declara con `@font-face` y `unicode-range` limitado a esos cinco
 códigos, antepuesta a las pilas `--serif` y `--sans`: el navegador solo la
-usa para ellos y el resto del texto no cambia. Va con `size-adjust: 112%`
-porque los glifos de Leland Text son pequeños para el cuerpo del texto.
+usa para ellos y el resto del texto no cambia.
+
+Los contornos **no son los originales tal cual**: Leland Text los dibuja
+pequeños y alzados, pensados para cifrados («B♭»), y en texto corrido
+parecían superíndices. `regenerar.py` los reescala ×1,4 y los apoya en la
+línea base (♯ ♮ ♭ 𝄫 de ≈ −30 a ≈ 700 unidades, la altura de las
+mayúsculas de las Source; 𝄪 centrado a media altura de x) con 18 unidades
+de margen a cada lado.
 
 Es la misma familia que usa Verovio para las partituras (`font: 'Leland'`
 en `ejercicios/comun.js`), para que alteraciones en texto y en pentagrama
 sean del mismo diseño. Si se cambia una, cambiar la otra (Verovio también
 trae Bravura, y el subconjunto se rehace igual a partir de Bravura Text).
 
-Regenerar (fontTools): abrir `LelandText.otf`, crear una tabla cmap
-formato 12 con el mapa Unicode → glifo SMuFL, subconjuntar a esos códigos
-y guardar como woff2.
+Regenerar: `pip install fonttools brotli`, descargar `LelandText.otf`
+del repositorio de Leland y ejecutar `python regenerar.py LelandText.otf`.
+Para Bravura Text valdría el mismo script cambiando escala y desplazamientos
+(sus glifos ya vienen a tamaño de texto y mapeados a Unicode).
