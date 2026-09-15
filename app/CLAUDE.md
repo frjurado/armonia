@@ -63,6 +63,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 
 ## Estructura y patrón por familia
 
+- `public/` es la raíz de lo que se publica (se copia tal cual a
+  `_site/app/`); `docs/`, `design/` y `tests/` se quedan fuera. **Las rutas
+  de este fichero y de `docs/` van relativas a `public/`.**
 - `index.html` — menú principal. `curriculum.html` — vista de desarrollo de
   los mismos datos.
 - `curriculum-data.js` — **fuente única del currículo** para ambas vistas.

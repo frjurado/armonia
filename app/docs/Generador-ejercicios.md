@@ -111,7 +111,7 @@ a tres voces** (ver §4.5).
   o con **situación repetida** (p. ej. un fragmento en el que **todos** los movimientos son
   contrarios).
 - **Generación (implementada):** motor genérico de contrapunto de 1.ª especie
-  (`app/ejercicios/contrapunto-core.js`, reutilizable para variantes con faltas y para la
+  (`app/public/ejercicios/contrapunto-core.js`, reutilizable para variantes con faltas y para la
   versión a tres voces). Fragmentos de **10 sonoridades**; solo consonancias (sin 4.ª sobre
   el bajo); extremos en 8.ª/unísono sobre la tónica; sin paralelas/directas ni sensible
   doblada; **cadencia fija**: penúltimo intervalo 3.ª (7̂ abajo / 2̂ arriba → unísono) o 6.ª

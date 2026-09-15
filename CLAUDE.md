@@ -67,6 +67,14 @@ Cada una costó descubrirla:
   incrustados comparten espacio de nombres y el segundo ejemplo dibuja los
   glifos del primero. Con `<img>` cada SVG tiene su propio ámbito.
 
+## Rutas en lo publicado
+
+El sitio se sirve en GitHub Pages bajo una subruta
+(`https://<usuario>.github.io/<repo>/`), y `_site/` reúne portada, app y
+apuntes en carpetas hermanas. Por tanto **todo enlace, `src` e `@import` es
+relativo**; una ruta que empiece por `/` funciona en local y se rompe al
+publicar.
+
 ## Qué no se versiona
 
 `.gitignore` lo cubre, pero conviene saber por qué: `apuntes/build/` y
