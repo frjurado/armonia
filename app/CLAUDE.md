@@ -60,8 +60,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   preservar la enarmonía. MIDI solo para el audio.
 - **Audio:** samples de piano vía soundfont-player
   (`ArmoniaEj.tocar([{midi, at, dur}])`, en `comun.js`).
-- **Terceros en `public/vendor/`** (Verovio 6.3.0, soundfont-player), no
-  por CDN: copias literales, versión y origen en `vendor/README.md`.
+- **Terceros en `public/vendor/`** (Verovio 6.3.0, soundfont-player, la
+  fuente de alteraciones), no por CDN: copias literales, versión y origen
+  en `vendor/README.md`.
   No volver a enlazar `verovio.org/javascript/latest`: es una build rodante
   de 7 MB sin CDN, y el plazo de carga fallaba en el aula.
 
@@ -128,3 +129,9 @@ Ante cambios visuales, respetar los tokens de `design/README.md`.
 El color de tinta y sus derivados viven **solo en los bloques `:root`** de
 `index.html`, `curriculum.html` y `ejercicios/comun.css`: tres sitios, ningún
 hex suelto en el resto del CSS. Mantenerlo así.
+
+**Alteraciones en texto**: siempre ♯ ♭ ♮ Unicode (nunca `#`/`b`). Source
+Serif/Sans no traen esos glifos; los pone `vendor/fuentes/` (subconjunto de
+Leland Text, `@font-face` con `unicode-range`, antepuesto a `--serif` y
+`--sans` en los tres `:root`). Verovio usa la misma familia (`font:'Leland'`
+en `comun.js`): **si se cambia la fuente musical, cambiar las dos**.

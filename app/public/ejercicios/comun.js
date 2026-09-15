@@ -16,7 +16,10 @@
   /* ---------- Verovio ---------- */
   // Margen izquierdo amplio por defecto: con pentagrama doble la llave (brace)
   // sobresale a la izquierda del sistema y con márgenes pequeños se corta.
+  // Fuente musical: Leland (MuseScore), la misma familia que pone las
+  // alteraciones en el texto (../vendor/fuentes/). Cambiar las dos a la vez.
   const VRV_DEFAULTS = {
+    font:'Leland',
     scale:60, adjustPageHeight:true, pageWidth:900,
     header:'none', footer:'none', breaks:'none',
     pageMarginTop:15, pageMarginBottom:15,
@@ -50,11 +53,12 @@
     const listo  = m  => typeof m._vrvToolkit_constructor === 'function';
     function boot(){
       if(done) return; done=true;
+      let tk;
       try{
-        const tk=new global.verovio.toolkit();
+        tk=new global.verovio.toolkit();
         tk.setOptions(Object.assign({}, VRV_DEFAULTS, options||{}));
-        onReady(tk);
-      }catch(e){ done=false; fail('toolkit', e); }
+      }catch(e){ done=false; fail('toolkit', e); return; }
+      onReady(tk);                     // fuera del try: un error de la página no es de Verovio
     }
     function fail(motivo, err){
       if(done) return; done=true;

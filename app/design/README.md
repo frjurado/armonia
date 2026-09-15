@@ -78,6 +78,7 @@ Los archivos de este paquete son **referencias de diseño creadas en HTML** — 
 **Tipografía**
 - Display/serif: **Source Serif 4** (Google Fonts) — títulos, numerales de unidad, pestañas. Itálica para subtítulos.
 - UI/sans: **Source Sans 3** — botones, etiquetas, cuerpo.
+- Alteraciones (♭ ♮ ♯ 𝄪 𝄫) en cualquier texto: **Leland Text** (subconjunto en `vendor/fuentes/`, vía `unicode-range`), la misma familia con la que Verovio dibuja las partituras (`font:'Leland'`). Ninguna de las dos Source tiene esos glifos; sin esto caen a la fuente de símbolos del sistema. Alternativa probada: Bravura Text (más rotunda; Verovio también la trae).
 - Escala (a 1440 px ref.): 46/26/24/23/21/18/17/16/15/14/13.5/13 px; numerales 64 y 40 px.
 
 **Espaciado y forma**
