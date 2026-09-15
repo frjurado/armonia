@@ -9,7 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   /* Portada del sitio publicado. Mismos tokens que la app
-     (app/design/README.md); solo enlaza a los dos subproyectos. */
+     (app/design/README.md); solo enlaza a los dos subproyectos.
+     Los enlaces apuntan a carpetas hermanas que solo existen en _site/:
+     para probarla en local, `sh sitio/montar.sh` y abrir _site/index.html.
+     Se enlaza `x/index.html` y no `x/` para que funcione también por file://. */
   :root{
     --bg:#f7f7f4; --card:#ffffff; --fg:#1d1d1b; --muted:#6b6b66;
     --soft:#a5a59e; --disabled:#c9c9c2; --line:#dcdcd6;
@@ -47,6 +50,13 @@
   .tarjeta.pronto .ir{background:transparent;color:var(--soft);border:1.5px dashed var(--line);
        font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
 
+  /* QR para escanear desde la pantalla proyectada */
+  .qr{margin-top:40px;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  .qr img{width:200px;height:200px;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .qr .txt{font-size:17px;color:var(--muted);max-width:420px}
+  .qr .txt b{display:block;font-family:var(--serif);font-size:22px;font-weight:600;color:var(--fg);margin-bottom:6px}
+  .qr .txt code{font-family:var(--sans);color:var(--ink);font-weight:600}
+
   footer{padding:20px 32px 32px;color:var(--soft);font-size:14px}
 </style>
 </head>
@@ -62,19 +72,28 @@
 
 <main>
   <div class="inner tarjetas">
-    <a class="tarjeta" href="app/">
+    <a class="tarjeta" href="app/index.html">
       <h2>Ejercicios</h2>
       <p>Ejercicios breves autogenerados: armaduras, intervalos, acordes, movimiento
          armónico. Pensados para la pizarra del aula, pero funcionan en cualquier navegador.</p>
       <span class="ir">Abrir ejercicios →</span>
     </a>
-    <!-- Cuando haya apuntes publicados: convertir en <a href="apuntes/">
+    <!-- Cuando haya apuntes publicados: convertir en <a href="apuntes/index.html">
          y quitar la clase "pronto". -->
     <div class="tarjeta pronto">
       <h2>Apuntes</h2>
       <p>Los apuntes de la asignatura, por unidades, con los ejemplos musicales
          y en PDF y web.</p>
       <span class="ir">En preparación</span>
+    </div>
+  </div>
+
+  <div class="inner qr">
+    <img src="qr-armonia.svg" alt="Código QR de esta página" width="200" height="200">
+    <div class="txt">
+      <b>Llévatelo al móvil</b>
+      Escanea el código para abrir esta misma página:
+      <code>frjurado.github.io/armonia</code>
     </div>
   </div>
 </main>

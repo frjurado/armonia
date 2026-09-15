@@ -12,7 +12,7 @@ cd "$(dirname "$0")/.."
 
 rm -rf _site
 mkdir -p _site
-cp sitio/index.html _site/
+cp sitio/index.html sitio/qr-armonia.svg _site/
 cp -r app/public _site/app
 if [ -d apuntes/build/sitio ]; then
   cp -r apuntes/build/sitio _site/apuntes
