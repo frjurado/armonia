@@ -23,8 +23,9 @@ Tres subproyectos que comparten repositorio porque comparten currículo.
     # abrir app/public/index.html en el navegador, o bien
     python -m http.server 8000 -d app/public
 
-Requiere red mientras Verovio y soundfont-player se sigan cargando por CDN
-(ver *Pendientes*).
+Verovio y soundfont-player van empaquetados en `app/public/vendor/`; solo
+los samples de piano se descargan de la red al primer «Escuchar» (ver
+*Pendientes*).
 
 **Apuntes** — necesita LilyPond y un conversor PDF→SVG:
 
@@ -72,8 +73,11 @@ tarjeta «Apuntes» en enlace.
       `_site/` ya lo permite con rutas relativas (`../app/...`, `../apuntes/...`);
       falta decidir dónde se declaran los enlaces (probablemente en el
       `unidades.yaml` de abajo). Sin prisa.
-- [ ] Empaquetar Verovio y soundfont-player en local (`app/public/vendor/`).
-      Depender de un CDN en el aula es frágil.
+- [x] Empaquetar Verovio y soundfont-player en local (`app/public/vendor/`).
+- [ ] Empaquetar también los samples de piano (`acoustic_grand_piano` de
+      `gleitz.github.io/midi-js-soundfonts`, ~1 MB en MP3) y pasar a
+      `Soundfont.instrument` una `nameToUrl` que apunte a `vendor/`. Es lo
+      único que aún sale a la red desde un ejercicio.
 - [ ] Extraer de `curriculum/Plan-Armonia.md` §2 un `unidades.yaml` que
       alimente a la vez a los apuntes y a `app/curriculum-data.js`.
 - [ ] Sustituir `apuntes/plantilla-demo.typ` y `apuntes/hacer-html.py` por

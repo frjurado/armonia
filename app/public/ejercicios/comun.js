@@ -5,8 +5,8 @@
        carrera cuando el WASM ya está en caché y
        onRuntimeInitialized no dispara)
      · audio por samples de piano (soundfont-player)
-   Depende de los <script> de Verovio y soundfont-player (CDN),
-   cargados por cada página.
+   Depende de los <script> de Verovio y soundfont-player
+   (../vendor/), cargados por cada página.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -24,8 +24,12 @@
   };
 
   // initVerovio(opciones, onReady, onFail): crea el toolkit en cuanto el WASM
-  // está listo y lo pasa a onReady(tk). onFail (opcional) se llama si tras
-  // ~20 s no ha cargado (sin conexión, CDN caído…).
+  // está listo y lo pasa a onReady(tk). onFail (opcional) se llama si el
+  // <script> de Verovio falla al cargar, o si tras ~90 s sigue sin estar:
+  // son 7 MB (el WASM va incrustado) y la primera visita con una conexión
+  // lenta puede tardar bastante; después queda en la caché del navegador.
+  // Mientras tanto, si hay un #notation con .ph, avisa de la espera.
+  const VRV_PLAZO_MS = 90000;
   function initVerovio(options, onReady, onFail){
     let done=false;
     function boot(){
@@ -34,15 +38,28 @@
       tk.setOptions(Object.assign({}, VRV_DEFAULTS, options||{}));
       onReady(tk);
     }
-    (function wait(n){
+    function fail(){ if(done) return; done=true; if(onFail) onFail(); }
+    // fallo de red o 404 del script: avisar ya, sin agotar el plazo
+    const script=document.querySelector('script[src*="verovio"]');
+    if(script) script.addEventListener('error', fail);
+    const t0=Date.now();
+    (function wait(){
       if(done) return;
       if(global.verovio && global.verovio.module){
         if(global.verovio.module.calledRun){ boot(); return; }   // ya inicializado
         global.verovio.module.onRuntimeInitialized = boot;        // o lo hará al terminar
       }
-      if(n>=400){ if(onFail) onFail(); return; }
-      setTimeout(()=>wait(n+1),50);
-    })(0);
+      const t=Date.now()-t0;
+      if(t>=VRV_PLAZO_MS){ fail(); return; }
+      if(t>=4000){                                                // tarda: explicar por qué
+        const ph=document.querySelector('#notation .ph');
+        if(ph && ph.dataset.espera!=='1'){
+          ph.dataset.espera='1';
+          ph.textContent='Cargando motor de partitura… (7 MB; la primera vez puede tardar)';
+        }
+      }
+      setTimeout(wait,50);
+    })();
   }
 
   /* ---------- audio ---------- */

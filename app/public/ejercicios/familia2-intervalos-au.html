@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Armonía · Familia 2 — Audición de intervalos</title>
-<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples) desde CDN.
-     En producción se empaquetarían en local para uso offline. -->
-<script src="https://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/soundfont-player@0.12.0/dist/soundfont-player.min.js"></script>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
 <script src="familia2-intervalos-core.js"></script>
 <script src="comun.js"></script>

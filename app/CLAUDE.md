@@ -60,6 +60,10 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   preservar la enarmonía. MIDI solo para el audio.
 - **Audio:** samples de piano vía soundfont-player
   (`ArmoniaEj.tocar([{midi, at, dur}])`, en `comun.js`).
+- **Terceros en `public/vendor/`** (Verovio 6.3.0, soundfont-player), no
+  por CDN: copias literales, versión y origen en `vendor/README.md`.
+  No volver a enlazar `verovio.org/javascript/latest`: es una build rodante
+  de 7 MB sin CDN, y el plazo de carga fallaba en el aula.
 
 ## Estructura y patrón por familia
 
@@ -81,7 +85,10 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - Una página HTML por variante/modo (`-id`, `-au`, `-ct`, o las variantes de
     la UD 0) que solo contiene UI: carga scripts, pinta, escucha botones.
   - `comun.js` (`ArmoniaEj`: init robusto de Verovio + audio) y `comun.css`,
-    compartidos por todas las páginas.
+    compartidos por todas las páginas. En `comun.css`, la fila
+    partitura + acciones pasa a columna por debajo de 860 px **con
+    `align-items:stretch`**: con `flex-start`, cada hijo tomaría el ancho de
+    su contenido y la tira de armaduras (5000 px) desbordaba en móvil.
   - `tira-partitura.js` (`TiraPartitura`) — tira deslizante para series
     encadenadas: la serie entera se renderiza como un solo sistema
     (`breaks:none` + `adjustPageWidth`) y se centra un compás/glifo cada vez
