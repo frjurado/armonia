@@ -22,11 +22,6 @@
 </header>
 
 <main>
-  <p class="prompt">¿Qué intervalo es? Indica la <b>amplitud</b> (p. ej. "3.ª") y el <b>tipo</b>:
-     consonancia perfecta / consonancia imperfecta / disonancia. Si el intervalo es
-     compuesto (mayor que una 8.ª), vale tanto la forma reducida como la real.
-     <span id="lvlNote"></span></p>
-
   <div class="ej-row">
     <div class="ej-main">
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
@@ -43,6 +38,14 @@
       <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
     </div>
   </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">¿Qué intervalo es? Indica la <b>amplitud</b> (p. ej. "3.ª") y el <b>tipo</b>:
+     consonancia perfecta / consonancia imperfecta / disonancia. Si el intervalo es
+     compuesto (mayor que una 8.ª), vale tanto la forma reducida como la real.
+     <span id="lvlNote"></span></p>
+  </details>
 </main>
 
 <script>

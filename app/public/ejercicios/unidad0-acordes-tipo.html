@@ -22,11 +22,6 @@
 </header>
 
 <main>
-  <p class="prompt">Si ves la tríada completa (en estado fundamental), di su <b>tipo</b>:
-     mayor, menor, aumentada o disminuida. La mitad de las veces es al revés: se dan la
-     <b>fundamental</b> (en el pentagrama) y el <b>tipo</b>, y hay que construir
-     mentalmente el resto del acorde antes de comprobar. <span id="lvlNote"></span></p>
-
   <div class="ej-row">
     <div class="ej-main">
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
@@ -46,6 +41,14 @@
       <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
     </div>
   </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Si ves la tríada completa (en estado fundamental), di su <b>tipo</b>:
+     mayor, menor, aumentada o disminuida. La mitad de las veces es al revés: se dan la
+     <b>fundamental</b> (en el pentagrama) y el <b>tipo</b>, y hay que construir
+     mentalmente el resto del acorde antes de comprobar. <span id="lvlNote"></span></p>
+  </details>
 </main>
 
 <script>

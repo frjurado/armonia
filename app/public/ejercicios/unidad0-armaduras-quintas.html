@@ -20,11 +20,6 @@
 </header>
 
 <main>
-  <p class="prompt">La serie recorre el <b>círculo de quintas</b> entero, una armadura por
-     compás: nombra la <b>tonalidad</b> de la armadura centrada (mayor y/o menor, según los
-     conmutadores). Al pulsar «Respuesta» aparece la solución sobre la partitura y, tras una
-     pausa, la tira se desliza hasta la siguiente. <span id="dirNote"></span></p>
-
   <div class="ej-row">
     <div class="ej-main">
       <div class="score-card tira-card">
@@ -46,6 +41,14 @@
       <button id="btnOtra" style="display:none" title="Otra serie de 12 armaduras"><span class="ic">↻</span>Otra serie</button>
     </div>
   </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">La serie recorre el <b>círculo de quintas</b> entero, una armadura por
+     compás: nombra la <b>tonalidad</b> de la armadura centrada (mayor y/o menor, según los
+     conmutadores). Al pulsar «Respuesta» aparece la solución sobre la partitura y, tras una
+     pausa, la tira se desliza hasta la siguiente. <span id="dirNote"></span></p>
+  </details>
 </main>
 
 <script>

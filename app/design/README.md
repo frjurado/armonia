@@ -42,12 +42,13 @@ Los archivos de este paquete son **referencias de diseño creadas en HTML** — 
   - Título serif 24px/600 «Identificación de tríadas» + subtítulo 13px blanco al 60%.
   - Derecha: selector de **nivel** — etiqueta "Nivel" + 3 cuadrados de 40px, radio 10px; activo fondo blanco/texto tinta; inactivos borde blanco al 35%. (En pizarra real conviene subirlos a ≥56px.)
 - **Cuerpo**: contenedor centrado max-width 1240px, padding `34px 36px 46px`, **grid `1fr 360px`, gap 30px**:
-  - **Columna izquierda**: pregunta centrada 18px `#6b6b66` (términos clave en negrita `#1d1d1b`); debajo, tarjeta de partitura — fondo blanco, borde `1px #dcdcd6`, radio 14px, padding 34px. El SVG del mockup es un placeholder: **sustituir por el render real (Verovio / mini-lilypond-parser del repo)**.
+  - **Columna izquierda**: tarjeta de partitura — fondo blanco, borde `1px #dcdcd6`, radio 14px, padding 34px. El SVG del mockup es un placeholder: **sustituir por el render real (Verovio / mini-lilypond-parser del repo)**.
   - **Columna derecha (acciones)**, flex column gap 12px:
     - «Escuchar acorde» (secundario): 68px alto, borde `1.5px #dcdcd6`, radio 14px, fondo blanco, 18px/600, icono play; hover borde+texto tinta.
     - «Mostrar respuesta» (primario): 68px alto, fondo tinta, blanco, 18px/700, radio 14px; hover tinta-hover.
     - Separador `1px #dcdcd6`; debajo «↻ Otro similar» y «↑ Más difícil» (64px, borde `#dcdcd6`, 17px/600), **deshabilitados (opacity .45) hasta revelar la respuesta**.
     - Nota auxiliar 13.5px `#a5a59e`.
+  - **Ayuda plegada, bajo la fila** (cambio posterior al mockup, que la tenía como pregunta centrada sobre la partitura): botón «(i) Ayuda» de 56px, borde `1.5px #dcdcd6`, radio 12px, icono de trazo; al tocarlo despliega el enunciado largo (18px `#6b6b66`, términos clave en negrita `#1d1d1b`). Es un `<details>` nativo. La pantalla arranca limpia: partitura y acciones; el texto solo si se pide.
 
 ## Interactions & Behavior
 - **Menú**: cambiar pestaña de curso repuebla las unidades. Tocar botón de modalidad disponible navega al ejercicio. Botones bloqueados no responden (candado/«próximamente»).

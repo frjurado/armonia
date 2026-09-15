@@ -51,7 +51,17 @@ header a.back:hover{background:rgba(255,255,255,.22)}
        background:#fff;color:var(--ink);font-size:16px;font-weight:700}
 
 main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
-.prompt{font-size:18px;color:var(--muted);margin:0 auto 16px;max-width:860px;text-align:center}
+/* ---------- ayuda plegada bajo el ejercicio ----------
+   El enunciado largo (.prompt) va dentro de <details class="ayuda">, debajo
+   de la fila partitura + acciones; el <summary> hace de botón (i). */
+.ayuda{margin-top:22px}
+.ayuda summary{display:inline-flex;align-items:center;gap:8px;list-style:none;cursor:pointer;
+     min-height:56px;padding:0 20px 0 16px;border:1.5px solid var(--line);border-radius:12px;
+     background:var(--card);color:var(--muted);font-size:17px;font-weight:600;user-select:none;
+     transition:border-color .15s ease,color .15s ease}
+.ayuda summary::-webkit-details-marker{display:none}
+.ayuda summary:hover,.ayuda[open] summary{border-color:var(--ink);color:var(--ink)}
+.prompt{font-size:18px;color:var(--muted);margin:14px 0 0;max-width:860px}
 .prompt b{color:var(--fg)}
 
 /* ---------- fila partitura + acciones ---------- */
