@@ -1,9 +1,9 @@
 /* ============================================================
    comun.js — utilidades compartidas por TODAS las páginas de
    ejercicios (app/ejercicios/*.html):
-     · inicialización robusta de Verovio (evita la condición de
-       carrera cuando el WASM ya está en caché y
-       onRuntimeInitialized no dispara)
+     · inicialización robusta de Verovio (detecta el runtime ya
+       arrancado aunque onRuntimeInitialized haya disparado antes
+       de engancharlo, y distingue los motivos de fallo)
      · audio por samples de piano (soundfont-player)
    Depende de los <script> de Verovio y soundfont-player
    (../vendor/), cargados por cada página.
@@ -24,34 +24,63 @@
   };
 
   // initVerovio(opciones, onReady, onFail): crea el toolkit en cuanto el WASM
-  // está listo y lo pasa a onReady(tk). onFail (opcional) se llama si el
-  // <script> de Verovio falla al cargar, o si tras ~90 s sigue sin estar:
-  // son 7 MB (el WASM va incrustado) y la primera visita con una conexión
-  // lenta puede tardar bastante; después queda en la caché del navegador.
-  // Mientras tanto, si hay un #notation con .ph, avisa de la espera.
+  // está listo y lo pasa a onReady(tk). onFail(mensaje) recibe un texto
+  // legible con el motivo: el <script> no llegó (red), llegó pero el
+  // navegador no lo ejecuta (demasiado antiguo para la sintaxis de la
+  // build), o el runtime no arranca en ~90 s. Son 7 MB (el WASM va
+  // incrustado): la primera visita con conexión lenta tarda; después queda
+  // en la caché del navegador. Mientras, si hay un #notation con .ph, avisa.
+  //
+  // Cómo se sabe que el runtime está listo (Emscriptem, build 6.x de
+  // Verovio): `Module.onRuntimeInitialized` se invoca UNA vez; si se engancha
+  // tarde no vuelve a disparar, y esta build ya no expone `calledRun`. Lo
+  // que sí hace es asignar los exports del WASM (p. ej.
+  // `_vrvToolkit_constructor`) justo antes de inicializar, sin ceder el hilo
+  // entre medias: si existen al mirarlos desde un timer, ya está listo.
   const VRV_PLAZO_MS = 90000;
+  const MSG = {
+    red:       'No se pudo descargar Verovio (revisa la conexión y recarga).',
+    navegador: 'Este navegador no puede ejecutar Verovio: es demasiado antiguo. Prueba con una versión reciente de Chrome, Edge, Firefox o Safari.',
+    toolkit:   'Verovio se cargó pero no pudo arrancar (ver la consola del navegador).',
+    plazo:     'Verovio no ha terminado de cargar. Recarga la página; si la conexión es lenta, la primera vez puede tardar.'
+  };
   function initVerovio(options, onReady, onFail){
     let done=false;
+    const modulo = () => global.verovio && global.verovio.module;
+    const listo  = m  => typeof m._vrvToolkit_constructor === 'function';
     function boot(){
       if(done) return; done=true;
-      const tk=new global.verovio.toolkit();
-      tk.setOptions(Object.assign({}, VRV_DEFAULTS, options||{}));
-      onReady(tk);
+      try{
+        const tk=new global.verovio.toolkit();
+        tk.setOptions(Object.assign({}, VRV_DEFAULTS, options||{}));
+        onReady(tk);
+      }catch(e){ done=false; fail('toolkit', e); }
     }
-    function fail(){ if(done) return; done=true; if(onFail) onFail(); }
-    // fallo de red o 404 del script: avisar ya, sin agotar el plazo
+    function fail(motivo, err){
+      if(done) return; done=true;
+      if(global.console) console.error('initVerovio:', motivo, err||'');
+      if(onFail) onFail(MSG[motivo]||MSG.plazo);
+    }
+    // Engancha al módulo si ya existe; true si lo ha encontrado.
+    function enganchar(){
+      const m=modulo(); if(!m) return false;
+      if(listo(m)) boot(); else m.onRuntimeInitialized = boot;
+      return true;
+    }
     const script=document.querySelector('script[src*="verovio"]');
-    if(script) script.addEventListener('error', fail);
+    if(script){
+      script.addEventListener('error', ()=>fail('red'));
+      // load dispara tras ejecutarse el script: si no ha definido `verovio`,
+      // lo ha abortado un error de sintaxis (navegador antiguo)
+      script.addEventListener('load', ()=>{ if(!enganchar()) fail('navegador'); });
+    }
     const t0=Date.now();
-    (function wait(){
+    (function wait(){                                              // respaldo por sondeo
       if(done) return;
-      if(global.verovio && global.verovio.module){
-        if(global.verovio.module.calledRun){ boot(); return; }   // ya inicializado
-        global.verovio.module.onRuntimeInitialized = boot;        // o lo hará al terminar
-      }
+      enganchar();
       const t=Date.now()-t0;
-      if(t>=VRV_PLAZO_MS){ fail(); return; }
-      if(t>=4000){                                                // tarda: explicar por qué
+      if(t>=VRV_PLAZO_MS){ fail('plazo'); return; }
+      if(t>=4000){                                                 // tarda: explicar por qué
         const ph=document.querySelector('#notation .ph');
         if(ph && ph.dataset.espera!=='1'){
           ph.dataset.espera='1';

@@ -156,7 +156,7 @@ ArmoniaEj.initVerovio(
   {scale:60, adjustPageWidth:true, pageWidth:60000, spacingLinear:1.0,
    pageMarginLeft:30, pageMarginRight:30},
   t=>{ tk=t; construir(); },
-  ()=>{ $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
 );
 </script>
 </body>

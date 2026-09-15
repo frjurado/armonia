@@ -55,13 +55,15 @@
    compartida con la versión de identificación.
    ============================================================ */
 const PH_LISTEN = '<span class="ph"><span class="icon">🔊</span>Escucha e identifica el intervalo</span>';
-let tk=null, level=1, current=null, revealed=false;
+let tk=null, level=1, current=null, revealed=false, vrvFallo=null;
 const $=ArmoniaEj.$;
 
 function renderSVG(){
   if(tk && current && revealed){
     tk.loadData(current.mei);
     $('notation').innerHTML = tk.renderToSVG(1);
+  }else if(vrvFallo && revealed){          // sin motor: avisar solo al revelar
+    $('notation').innerHTML = '<span class="ph">'+vrvFallo+'</span>';
   }
 }
 
@@ -114,8 +116,9 @@ $('btnListen').onclick = playInterval;
 // Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
 newExercise();
 
-// Sin partitura hasta revelar: si Verovio no carga, no hace falta avisar aquí.
-ArmoniaEj.initVerovio({scale:60, pageWidth:900}, t=>{ tk=t; renderSVG(); });
+// Sin partitura hasta revelar: si Verovio no carga, se avisa al revelar.
+ArmoniaEj.initVerovio({scale:60, pageWidth:900}, t=>{ tk=t; renderSVG(); },
+  msg=>{ vrvFallo=msg; renderSVG(); });
 </script>
 </body>
 </html>

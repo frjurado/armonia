@@ -117,8 +117,8 @@ newExercise();
 ArmoniaEj.initVerovio(
   {scale:60, pageWidth:900},
   t=>{ tk=t; renderSVG(); },
-  ()=>{ if(!current || current.dir==='ver' || revelado)
-          $('notation').innerHTML='<span class="ph">No se pudo cargar Verovio (revisa la conexión).</span>'; }
+  msg=>{ if(!current || current.dir==='ver' || revelado)
+          $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
 );
 </script>
 </body>

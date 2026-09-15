@@ -167,7 +167,8 @@ newExercise();
 // Sin partitura hasta revelar: si Verovio no carga, no hace falta avisar aquí.
 ArmoniaEj.initVerovio(
   {scale:50, pageWidth:1700, pageMarginTop:30, pageMarginBottom:30},
-  t=>{ tk=t; renderSVG(); }
+  t=>{ tk=t; renderSVG(); },
+  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
 );
 </script>
 </body>
