@@ -103,11 +103,13 @@ function decorarGrados(svg){
   svg.querySelectorAll('g.dir text').forEach(text=>{
     const digito = text.textContent.replace(/\D/g,'');
     if(!digito) return;
-    const fs = 640;                          // unidades de Verovio (antes 405)
+    // tamaños en unidades de Verovio (el <dir> original venía a 405):
+    // dígito y circunflejo se fijan por separado para poder ajustarlos
+    const fs = 520, fsCaret = 450;
     const y0 = +text.getAttribute('y');
     const c  = Math.abs(y0-sup.y) < Math.abs(y0-inf.y) ? sup : inf;
-    // el de abajo baja algo más: que el circunflejo no pise el pentagrama
-    const y  = c===inf ? y0 + fs*0.85 : y0;
+    // el de abajo baja algo más: que el circunflejo no pise plica ni pentagrama
+    const y  = c===inf ? y0 + 540 : y0;
     text.setAttribute('y', y);
     text.setAttribute('x', c.x);
     text.setAttribute('text-anchor', 'middle');
@@ -118,10 +120,10 @@ function decorarGrados(svg){
     const NS='http://www.w3.org/2000/svg';
     const num=document.createElementNS(NS,'tspan'); num.textContent=digito;
     const caret=document.createElementNS(NS,'tspan'); caret.textContent='^';
-    // la tinta de «^» queda ~0,45 em por encima de su línea base: con la
-    // base a 0,5 em sobre la del dígito, el acento asoma justo sobre él
-    caret.setAttribute('x', c.x); caret.setAttribute('y', y - fs*0.5);
-    caret.setAttribute('font-size', Math.round(fs*0.7)+'px');
+    // la tinta de «^» queda ~0,45 em por encima de su línea base; la base
+    // va 340 unidades sobre la del dígito, que mide ~0,7 em (≈ 365)
+    caret.setAttribute('x', c.x); caret.setAttribute('y', y - 340);
+    caret.setAttribute('font-size', fsCaret+'px');
     text.textContent=''; text.append(num, caret);
   });
 }
@@ -142,7 +144,7 @@ function reveal(){
   revelado=true;
   // una sola línea: modo · grados apilados (superior sobre inferior) · intervalo
   $('ansQ').innerHTML =
-    `<span class="modo">${current.key.nombre}</span><span class="sep-q">·</span>`+
+    `<span class="modo">Modo ${current.key.mode==='minor' ? 'menor' : 'mayor'}</span><span class="sep-q">·</span>`+
     `<span class="grados">${gradoHTML(current.gradoSup)}${gradoHTML(current.gradoInf)}</span>`+
     `<span class="sep-q">·</span><span>${current.label}</span>`;
   $('ansDet').textContent = '';
