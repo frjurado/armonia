@@ -1,10 +1,12 @@
-# Publica el sitio en GitHub Pages con cada push a master.
+# Publica el sitio en GitHub Pages: la rama `publico` en la raíz (lo que
+# ven los alumnos) y `master` en dev/ (desarrollo). Un solo artefacto, con
+# cada push a cualquiera de las dos ramas.
 # Requisito único (una vez): Settings → Pages → Source: "GitHub Actions".
 name: Publicar
 
 on:
   push:
-    branches: [master]
+    branches: [master, publico]
   workflow_dispatch:
 
 permissions:
@@ -24,13 +26,18 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with: { ref: publico, path: publico }
+      - uses: actions/checkout@v4
+        with: { ref: master, path: master }
 
       # Los apuntes necesitan LilyPond y se añadirán aquí cuando haya
       # material: instalar lilypond, `make -C apuntes ejemplos`, renderizar
       # el HTML a apuntes/build/sitio/. montar.sh ya los recoge si existen.
 
-      - name: Montar _site/
-        run: sh sitio/montar.sh
+      - name: Montar _site/ (publico) y _site/dev/ (master)
+        run: |
+          sh publico/sitio/montar.sh "$PWD/_site" publico
+          sh master/sitio/montar.sh  "$PWD/_site/dev" dev
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

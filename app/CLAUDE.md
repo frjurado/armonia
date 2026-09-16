@@ -75,7 +75,13 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   los mismos datos.
 - `curriculum-data.js` — **fuente única del currículo** para ambas vistas.
   Para publicar un ejercicio se pone su URL en el modo (`id`/`au`/`ct`) de su
-  familia; `null` = no disponible. Excepción: las familias de la **Unidad 0**
+  familia; `null` = no disponible. **Qué ven los alumnos lo decide
+  `publico:true` por unidad**: sin él, en la versión pública la unidad sale
+  como «próximamente» aunque tenga ejercicios. `modo.js` (`'dev'` en el repo;
+  `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
+  versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
+  mantener diferencias de contenido entre `master` y `publico` (se fusionan
+  enteras con `sitio/publicar.sh`). Excepción: las familias de la **Unidad 0**
   no tienen modos sino un array `tipos` (variantes de identificación, cada una
   con su icono).
 - `ejercicios/`, un patrón por familia:

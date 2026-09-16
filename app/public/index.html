@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="curriculum-data.js"></script>
+<script src="modo.js"></script>
 <style>
   /* ♭ ♮ ♯ 𝄪 𝄫 en Leland (ver vendor/fuentes/README.md): solo esos códigos */
   @font-face{font-family:'Leland Alteraciones';src:url('vendor/fuentes/leland-alteraciones.woff2') format('woff2');
@@ -105,6 +106,14 @@
   footer a:hover{text-decoration:underline}
   .tab,.btn-modo,.ud-row.abrible{touch-action:manipulation}
 
+  /* modo dev: franja arriba y marca en lo que los alumnos no ven */
+  .dev-banner{background:#8f4a22;color:#fff;font-size:13px;font-weight:600;
+        letter-spacing:.04em;text-transform:uppercase;text-align:center;padding:6px var(--pad-x)}
+  .dev-banner b{font-weight:600;opacity:.75;text-transform:none;letter-spacing:0;margin-left:10px}
+  .marca-dev{display:inline-block;vertical-align:middle;margin-left:10px;padding:2px 7px;
+        border-radius:6px;background:#f7efe8;color:#8f4a22;border:1px solid #e0c9b4;
+        font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.4}
+
   @media(max-width:960px){
     .masthead{padding:26px 24px 0}
     .pentagrama{display:none}
@@ -193,11 +202,22 @@ const TIPO_ICONS = {
   grados: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8.5 6.5 12 3 15.5 6.5"/><text x="12" y="20" text-anchor="middle" font-family="Georgia,serif" font-size="15" fill="currentColor" stroke="none">3</text></svg>`
 };
 
+/* ---------- modo ---------- */
+// 'publico' (lo que ven los alumnos) o 'dev' (todo, con marcas). Lo fija
+// modo.js; si no ha cargado, público, que es el lado seguro.
+const DEV = window.ARMONIA_MODO === 'dev';
+// Una unidad se puede abrir si tiene familias y, en público, está marcada
+// publico:true en curriculum-data.js. En dev, la marca DEV señala las que
+// los alumnos no ven.
+const abrible = ud => ud.familias.length > 0 && (DEV || ud.publico === true);
+const soloDev = ud => DEV && ud.familias.length > 0 && ud.publico !== true;
+const MARCA_DEV = `<span class="marca-dev" title="No visible en la versión pública">DEV</span>`;
+
 /* ---------- estado ---------- */
 let cursoActivo = 0;
-// unidad expandida por curso: por defecto, la primera con familias
+// unidad expandida por curso: por defecto, la primera que se puede abrir
 const expandida = CURRICULO.cursos.map(c => {
-  const ud = c.unidades.find(u => u.familias.length);
+  const ud = c.unidades.find(abrible);
   return ud ? ud.n : null;
 });
 
@@ -228,7 +248,7 @@ function unidadAbierta(ud){
   <section class="ud-open">
     <div class="num">${ud.n}</div>
     <div>
-      <div class="titulo">${ud.titulo}</div>
+      <div class="titulo">${ud.titulo}${soloDev(ud) ? MARCA_DEV : ''}</div>
       <div class="familias">
         ${ud.familias.map(fam => `
           <div class="familia">
@@ -243,15 +263,15 @@ function unidadAbierta(ud){
 }
 
 function unidadCerrada(ud){
-  const abrible = ud.familias.length > 0;
-  const estado = abrible
+  const abre = abrible(ud);
+  const estado = abre
     ? `${CHEVRON}Ver ejercicios`
     : `${LOCK}Próximamente`;
   return `
-  <section class="ud-row${abrible ? ' abrible' : ''}" ${abrible
+  <section class="ud-row${abre ? ' abrible' : ''}" ${abre
       ? `data-ud="${ud.n}" role="button" tabindex="0" aria-label="Abrir unidad ${ud.n}"` : ''}>
     <div class="num">${ud.n}</div>
-    <div class="titulo">${ud.titulo}</div>
+    <div class="titulo">${ud.titulo}${soloDev(ud) ? MARCA_DEV : ''}</div>
     <div class="estado">${estado}</div>
   </section>`;
 }
@@ -276,6 +296,14 @@ function render(){
   });
 }
 render();
+if(DEV){
+  const b = document.createElement('div');
+  b.className = 'dev-banner';
+  b.innerHTML = 'Versión de desarrollo <b>lo marcado DEV no está en la versión pública</b>';
+  document.body.prepend(b);
+}else{
+  document.querySelector('footer a[href="curriculum.html"]').hidden = true;   // vista interna
+}
 </script>
 </body>
 </html>

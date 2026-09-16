@@ -51,6 +51,10 @@
   .ud-head{display:flex;align-items:baseline;gap:10px}
   .ud-num{font-family:var(--serif);font-size:15px;font-weight:600;color:var(--accent)}
   .ud-title{font-family:var(--serif);font-size:17px;font-weight:600}
+  .ud-pub{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.06em;
+          text-transform:uppercase;padding:2px 7px;border-radius:6px;margin-left:4px}
+  .ud-pub.si{color:var(--accent);background:var(--accent-soft)}
+  .ud-pub.no{color:#8f4a22;background:#f7efe8;border:1px solid #e0c9b4}
   .ud-vacia{font-size:13px;color:var(--muted);margin-top:4px}
 
   .familia{background:var(--card);border:1px solid var(--line);border-radius:14px;
@@ -125,6 +129,9 @@ app.innerHTML += CURRICULO.cursos.map(curso => `
       <div class="ud-head">
         <span class="ud-num">Unidad ${ud.n}</span>
         <span class="ud-title">${ud.titulo}</span>
+        ${ud.familias.length ? (ud.publico===true
+            ? '<span class="ud-pub si">pública</span>'
+            : '<span class="ud-pub no">solo dev</span>') : ''}
       </div>
       ${ud.familias.length
         ? ud.familias.map(fam => `

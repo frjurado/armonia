@@ -44,10 +44,35 @@ un apunte pueda enlazar a su ejercicio con una ruta relativa:
       app/            ejercicios (app/public/)
       apuntes/        apuntes renderizados (apuntes/build/sitio/, cuando exista)
 
-`_site/` es producto de build y no se versiona. Lo monta y publica el flujo
-`.github/workflows/publicar.yml` con cada push a `master`; en local:
+`_site/` es producto de build y no se versiona. En local:
 
     sh sitio/montar.sh && python -m http.server 8000 -d _site
+
+### Desarrollo y público: dos ramas, un sitio
+
+Los alumnos usan el sitio, así que lo que ven no puede cambiar con cada
+commit. Hay dos ramas y el flujo `.github/workflows/publicar.yml` monta las
+dos en el mismo despliegue, con cada push a cualquiera de ellas:
+
+| Rama | Qué es | URL |
+|---|---|---|
+| `master` | desarrollo: todo el trabajo diario | `https://frjurado.github.io/armonia/dev/` |
+| `publico` | lo que ven los alumnos | `https://frjurado.github.io/armonia/` (la del QR) |
+
+La rutina: trabajar y hacer push en `master`, comprobarlo en `/dev/`, y
+cuando algo esté listo para los alumnos:
+
+    sh sitio/publicar.sh        # fusiona master en publico y sube las dos
+
+Un arreglo urgente de producción se hace en `publico` y se fusiona de vuelta
+a `master`. `/dev/` no se enlaza desde ningún sitio y lleva `noindex`.
+
+Además del código, **qué unidades ven los alumnos** es un dato:
+`publico:true` en cada unidad de `app/public/curriculum-data.js`. La copia
+pública (`app/modo.js` = `'publico'`, escrito por `montar.sh`) trata las
+demás como «próximamente»; la de desarrollo (`'dev'`, el valor del repo) lo
+muestra todo, con una marca DEV en lo que los alumnos no ven. Así una
+unidad puede estar en `master` y en `publico` sin verse hasta que se marque.
 
 Para activarlo en un repositorio nuevo, una sola vez: *Settings → Pages →
 Build and deployment → Source: **GitHub Actions***. El sitio queda en

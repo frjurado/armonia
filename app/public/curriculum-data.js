@@ -4,6 +4,10 @@
    desarrollo).
    Para publicar un ejercicio: pon su URL en el modo correspondiente
    (id / au / ct) de su familia. null = todavía no disponible.
+   Qué ven los alumnos: cada unidad lleva `publico:true` cuando está
+   lista para ellos. En modo 'publico' (ver modo.js) el menú trata las
+   unidades sin ese flag como «próximamente», aunque tengan ejercicios;
+   en modo 'dev' se ven todas, marcadas. Granularidad: la unidad.
    Excepción (Unidad 0): sus familias no tienen modos id/au/ct
    (todo es identificación) sino TRES VARIANTES cada una, en el
    array `tipos` [{key, label, title, icono, texto?, url, desc}].
@@ -21,7 +25,7 @@ const CURRICULO = {
     {
       nombre:'Curso 3.º', tag:'Diatónico',
       unidades:[
-        { n:0, titulo:'Preliminares: armaduras, intervalos y acordes',
+        { n:0, titulo:'Preliminares: armaduras, intervalos y acordes', publico:true,
           familias:[
             { nombre:'Armaduras',
               desc:'Relacionar armadura y tonalidad en los dos sentidos: series encadenadas de 12 armaduras, desveladas una a una. Conmutadores inclusivos de mayor/menor. Sin niveles de dificultad.',
@@ -68,7 +72,7 @@ const CURRICULO = {
                 'Posición abierta en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol.'
               ]}
           ]},
-        { n:1, titulo:'Introducción, morfología, conducción de voces',
+        { n:1, titulo:'Introducción, morfología, conducción de voces', publico:false,
           familias:[
             { nombre:'Intervalos',
               desc:'Nombrar la amplitud y la calidad del intervalo a dos voces, y clasificarlo como consonancia perfecta / imperfecta o disonancia.',
