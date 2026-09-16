@@ -1,6 +1,6 @@
 # Armonía — materiales de la asignatura
 
-Materiales digitales de Armonía para 3º y 4º de EE.PP. de conservatorio.
+Materiales digitales de Armonía para 3.º y 4.º de EE.PP. de conservatorio.
 Tres subproyectos que comparten repositorio porque comparten currículo.
 
     curriculum/   Plan de la asignatura: secuenciación en 12 unidades + UD 0,

@@ -11,10 +11,10 @@ Morfología
     Inversión, disposición, abierto/cerrado
 Consonancia y disonancia
     Consonancia perfecta, imperfecta, disonancia
-    El caso de la 4º Justa
+    El caso de la 4.ª Justa
 Conducción
     Conducción melódica: dirección, saltos, intervalos
     Movimientos armónicos: oblicuo, contrario, directo, paralelo
-    Faltas: 5º y 8º paralelas (ejemplos a 2, 3 y 4 voces)
-    5º y 8º directas (casuística más flexible)
+    Faltas: 5.ª y 8.ª paralelas (ejemplos a 2, 3 y 4 voces)
+    5.ª y 8.ª directas (casuística más flexible)
     Otros problemas: registros, cruces, distancias

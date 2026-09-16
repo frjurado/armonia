@@ -1,4 +1,4 @@
-# Armonía — Plan de la asignatura (3º y 4º EE.PP.)
+# Armonía — Plan de la asignatura (3.º y 4.º EE.PP.)
 
 > **Estado del documento.** Borrador de trabajo. Recoge y ordena las notas iniciales
 > sobre secuenciación, estrategia didáctica, ejercicios y materiales. Muchos apartados
@@ -41,9 +41,9 @@ Dos cursos, **seis unidades por curso** (dos por trimestre), **doce en total**, 
 |-------|----|-----------|-------|
 | 1.º | **UD 0** | Preliminares | Repaso de armaduras, intervalos y acordes. |
 | 1.º | **UD 1** | Morfología. Conducción de voces | Tipos de acordes por grados, consonancia y disonancia, principios de conducción. |
-| 1.º | **UD 2** | Tónica y dominante | Estado fundamental, I, V y VII en 1º inversión. |
+| 1.º | **UD 2** | Tónica y dominante | Estado fundamental, I, V y VII en 1.ª inversión. |
 | 2.º | **UD 3** | Subdominante. Cadencias | Cadencia auténtica y semicadencia. |
-| 2.º | **UD 4** | 7º dominante y 6/4 | CAP y CAI, inversiones de V7, 6/4 cadencial y de paso. |
+| 2.º | **UD 4** | 7.ª dominante y 6/4 | CAP y CAI, inversiones de V7, 6/4 cadencial y de paso. |
 | 3.º | **UD 5** | Otros grados. Cadencia rota | VI, IV y II, RO, 6/4 de bordadura. |
 | 3.º | **UD 6** | Secuencias diatónicas | Concepto general, secuencias por C5. |
 
@@ -51,12 +51,12 @@ Dos cursos, **seis unidades por curso** (dos por trimestre), **doce en total**, 
 
 | Trim. | UD | Contenido | Notas |
 |-------|----|-----------|-------|
-| 1.º | **UD 7**  | Repaso. 7º diatónicas | Prolongación, cadencia y secuencia. |
+| 1.º | **UD 7**  | Repaso. 7.ª diatónicas | Prolongación, cadencia y secuencia. |
 | 1.º | **UD 8**  | Modulación y dominante secundaria | Mod. diatónica y cromática. |
-| 2.º | **UD 9**  | Acordes de VII con 7ª | Tangencialmente, acordes de 9º. |
-| 2.º | **UD 10** | VII como D.S. Secuencias modulantes | Secuencias por 2º ascendente y descendente. |
-| 3.º | **UD 11** | Homónimo menor | Incluye 6º napolitana. |
-| 3.º | **UD 12** | Acordes alterados | 6º aumentada, repaso general. |
+| 2.º | **UD 9**  | Acordes de VII con 7.ª | Tangencialmente, acordes de 9º. |
+| 2.º | **UD 10** | VII como D.S. Secuencias modulantes | Secuencias por 2.ª ascendente y descendente. |
+| 3.º | **UD 11** | Homónimo menor | Incluye 6.ª napolitana. |
+| 3.º | **UD 12** | Acordes alterados | 6.ª aumentada, repaso general. |
 
 ### Tonalidades por trimestre
 

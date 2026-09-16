@@ -94,7 +94,7 @@ a tres voces** (ver §4.5).
 - Clave de sol, luego de fa, luego las dos; tonalidades válidas; accidentales limitados (sensible).
 - Se muestra un **intervalo a dos voces** → indicar **amplitud** (p. ej. "3.ª Mayor") y
   **tipo** (consonancia perfecta / imperfecta / disonancia). Respecto a la amplitud, pueden ser
-  intervalos compuestos (9º, 10º...): a partir de la 10º, mostrar primero su versión simple (3º), 
+  intervalos compuestos (9.ª, 10.ª...): a partir de la 10.ª, mostrar primero su versión simple (3.ª), 
   y en menor tamaño/color secundario el intervalo completo.
 - **Versión auditiva:** suena **sin mostrar**; se muestra **después**, al revelar la solución. 
   En el caso auditivo, mostrar primero/más resaltado el tipo (consonancia, etc.) que la amplitud.

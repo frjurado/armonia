@@ -106,7 +106,7 @@ const CURRICULO = {
           ]},
         { n:2, titulo:'Tónica y dominante', familias:[] },
         { n:3, titulo:'Subdominante. Cadencias', familias:[] },
-        { n:4, titulo:'7º dominante y 6/4', familias:[] },
+        { n:4, titulo:'7.ª dominante y 6/4', familias:[] },
         { n:5, titulo:'Otros grados. Cadencia rota', familias:[] },
         { n:6, titulo:'Secuencias diatónicas', familias:[] }
       ]
@@ -114,9 +114,9 @@ const CURRICULO = {
     {
       nombre:'Curso 4.º', tag:'Cromático',
       unidades:[
-        { n:7,  titulo:'Repaso. 7º diatónicas', familias:[] },
+        { n:7,  titulo:'Repaso. 7.ª diatónicas', familias:[] },
         { n:8,  titulo:'Modulación y dominante secundaria', familias:[] },
-        { n:9,  titulo:'Acordes de VII con 7ª', familias:[] },
+        { n:9,  titulo:'Acordes de VII con 7.ª', familias:[] },
         { n:10, titulo:'VII como D.S. Secuencias modulantes', familias:[] },
         { n:11, titulo:'Homónimo menor', familias:[] },
         { n:12, titulo:'Acordes alterados', familias:[] }
