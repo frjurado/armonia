@@ -25,7 +25,7 @@ const CURRICULO = {
     {
       nombre:'Curso 3.º', tag:'Diatónico',
       unidades:[
-        { n:0, titulo:'Preliminares: armaduras, intervalos y acordes', publico:true,
+        { n:0, titulo:'Preliminares', publico:true,
           familias:[
             { nombre:'Armaduras',
               desc:'Relacionar armadura y tonalidad en los dos sentidos: series encadenadas de 12 armaduras, desveladas una a una. Conmutadores inclusivos de mayor/menor. Sin niveles de dificultad.',
@@ -72,7 +72,7 @@ const CURRICULO = {
                 'Posición abierta en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol.'
               ]}
           ]},
-        { n:1, titulo:'Introducción, morfología, conducción de voces', publico:false,
+        { n:1, titulo:'Morfología. Conducción de voces', publico:false,
           familias:[
             { nombre:'Intervalos',
               desc:'Nombrar la amplitud y la calidad del intervalo a dos voces, y clasificarlo como consonancia perfecta / imperfecta o disonancia.',
@@ -104,21 +104,21 @@ const CURRICULO = {
                 'Una voz en clave de Sol y otra en clave de Fa (pentagrama doble).'
               ]}
           ]},
-        { n:2, titulo:'Tónica y dominante (E.F.; I6, V6, VII6)', familias:[] },
-        { n:3, titulo:'Subdominante; cadencia auténtica y semicadencia', familias:[] },
-        { n:4, titulo:'Inversiones de V7; 6/4 cadencial y de paso', familias:[] },
-        { n:5, titulo:'VI, IV y II; 6/4 bordadura; cadencia rota', familias:[] },
+        { n:2, titulo:'Tónica y dominante', familias:[] },
+        { n:3, titulo:'Subdominante. Cadencias', familias:[] },
+        { n:4, titulo:'7º dominante y 6/4', familias:[] },
+        { n:5, titulo:'Otros grados. Cadencia rota', familias:[] },
         { n:6, titulo:'Secuencias diatónicas', familias:[] }
       ]
     },
     {
       nombre:'Curso 4.º', tag:'Cromático',
       unidades:[
-        { n:7,  titulo:'Repaso de 3.º', familias:[] },
+        { n:7,  titulo:'Repaso. 7º diatónicas', familias:[] },
         { n:8,  titulo:'Modulación y dominante secundaria', familias:[] },
-        { n:9,  titulo:'VII con 7.ª; otros acordes de 7.ª', familias:[] },
-        { n:10, titulo:'Secuencias modulantes', familias:[] },
-        { n:11, titulo:'Intercambio modal', familias:[] },
+        { n:9,  titulo:'Acordes de VII con 7ª', familias:[] },
+        { n:10, titulo:'VII como D.S. Secuencias modulantes', familias:[] },
+        { n:11, titulo:'Homónimo menor', familias:[] },
         { n:12, titulo:'Acordes alterados', familias:[] }
       ]
     }
