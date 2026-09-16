@@ -25,15 +25,18 @@
     pageMarginTop:15, pageMarginBottom:15,
     pageMarginLeft:60, pageMarginRight:20
   };
-  // Pizarra (≥ 1700 px de ancho de ventana; la del aula son 1920): la
-  // partitura se dibuja un 50 % más grande. Solo multiplica `scale`, que
+  // Pizarra: la partitura se dibuja un 50 % más grande. Se reconoce por
+  // dos condiciones a la vez — ventana ancha (≥ 1700 px; la del aula son
+  // 1920) Y puntero primario grueso (táctil) —, para no disparar en un
+  // monitor de escritorio grande con ratón. Solo multiplica `scale`, que
   // es tamaño en píxeles; `pageWidth` va en unidades de Verovio, así que
-  // la disposición (qué cabe en un sistema) no cambia. Va a la par del
-  // --main-w ancho de comun.css, que da sitio para ese 50 %.
+  // la disposición (qué cabe en un sistema) no cambia; max-width:100% capa
+  // el SVG al ancho de la tarjeta si se pasa. En un PC se puede probar
+  // emulando «pointer: coarse» en las DevTools.
   const VRV_FACTOR_PIZARRA = 1.5;
   function factorEscala(){
-    return global.matchMedia && global.matchMedia('(min-width:1700px)').matches
-      ? VRV_FACTOR_PIZARRA : 1;
+    const mq = q => global.matchMedia && global.matchMedia(q).matches;
+    return mq('(min-width:1700px)') && mq('(pointer:coarse)') ? VRV_FACTOR_PIZARRA : 1;
   }
 
   // initVerovio(opciones, onReady, onFail): crea el toolkit en cuanto el WASM

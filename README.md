@@ -68,10 +68,13 @@ tarjeta «Apuntes» en enlace.
       PDF→SVG, ejecute `make -C apuntes ejemplos` y renderice el HTML a
       `apuntes/build/sitio/`. Depende de sustituir el andamiaje por Quarto
       (abajo). Después, enlazar la tarjeta «Apuntes» de `sitio/index.html`.
-- [ ] Partituras anchas en móvil (movimiento armónico): rerenderizar con
-      Verovio a `pageWidth` del contenedor y `breaks:auto` en lugar de
-      reducir el SVG por CSS, que las deja diminutas (`design/RESPONSIVE.md`
-      §5). Cuidado con la tira de armaduras, que necesita un solo sistema.
+- [ ] Partituras largas (Unidad 1 y las que vengan): llevarlas a la tira
+      deslizante (`tira-partitura.js`, como armaduras) centrando el acorde
+      actual, con el `#overlay` de líneas de voz dentro del contenedor que
+      se desplaza. Resuelve a la vez que en móvil se vean diminutas (hoy
+      se reducen por CSS) y que en pizarra no quepan más grandes; escala a
+      ejercicios más largos. Decidido frente a «botones abajo» (cambia el
+      formato en el mismo dispositivo) y a más ancho de contenido.
 - [ ] Enlaces cruzados apunte ↔ ejercicio (un apunte enlaza al ejercicio de
       su unidad; un ejercicio, al apunte que lo explica). La disposición de
       `_site/` ya lo permite con rutas relativas (`../app/...`, `../apuntes/...`);

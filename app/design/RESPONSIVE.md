@@ -11,12 +11,14 @@
 > `pageWidth` del contenedor en las partituras anchas (movimiento
 > armónico), que hoy se reducen por CSS y quedan pequeñas en móvil.
 >
-> **Modo `pizarra`** (≥ 1700 px; la del aula son 1920 px CSS): en lugar de
-> la escala fluida, dos ajustes concretos — `--main-w`/`--max-w` suben de
-> 1240 a 1600 px (tarjeta de partitura ≈ 1160 px) y `initVerovio`
-> multiplica `scale` por 1,5 (`VRV_FACTOR_PIZARRA` en `comun.js`). Las
-> partituras anchas (850 px) pasan a caber a tamaño natural; las cortas
-> crecen un 50 %. Texto y botones no cambian.
+> **Modo `pizarra`**: un solo ajuste, la partitura un 50 % mayor
+> (`initVerovio` multiplica `scale`; `VRV_FACTOR_PIZARRA` en `comun.js`).
+> Se reconoce por **ancho ≥ 1700 px y `pointer: coarse` a la vez**: el
+> ancho solo no vale, porque un monitor de escritorio de 1920 px con
+> ratón lo cumpliría. El ancho de contenido se queda en 1240 px (se probó
+> 1600 px y sobre-apaisa el menú); para las partituras largas de la
+> Unidad 1 la solución prevista es la tira deslizante, no más ancho.
+> Texto y botones no cambian.
 
 Un solo código, un solo diseño. La adaptación se hace en CSS con **media queries** (nada de detección de user-agent ni de rutas distintas para móvil). Mockup móvil de referencia: `Versión móvil.dc.html` (raíz del proyecto), 390 px de ancho.
 

@@ -58,6 +58,27 @@
   .qr .txt code{font-family:var(--sans);color:var(--ink);font-weight:600}
 
   footer{padding:20px 32px 32px;color:var(--soft);font-size:14px}
+
+  /* móvil: cabecera apilada como la de la app (app/design/RESPONSIVE.md) */
+  @media(max-width:719.98px){
+    header{padding:26px 20px 22px}
+    header h1{font-size:32px}
+    header .sub{font-size:14px;margin-top:6px}
+    .pentagrama{height:22px;margin-top:16px;
+        background:repeating-linear-gradient(to bottom,
+          rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 5px)}
+    main{padding:22px 20px 32px}
+    .tarjetas{gap:16px}
+    .tarjeta{padding:20px 20px}
+    .tarjeta h2{font-size:24px}
+    .tarjeta p{font-size:16px}
+    .tarjeta .ir{margin-top:16px;padding:12px 18px;font-size:16px}
+    .qr{margin-top:28px;gap:18px}
+    .qr img{width:150px;height:150px}
+    .qr .txt{font-size:15px}
+    .qr .txt b{font-size:19px}
+    footer{padding:12px 20px 28px}
+  }
 </style>
 </head>
 <body>
