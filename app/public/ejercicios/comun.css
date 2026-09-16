@@ -25,6 +25,9 @@
   --sans:'Leland Alteraciones','Source Sans 3',system-ui,-apple-system,sans-serif;
   --main-w:1240px;
 }
+/* pizarra (1920 px): más ancho de contenido, y comun.js dibuja la
+   partitura un 50 % más grande (mismo corte, ver factorEscala) */
+@media(min-width:1700px){ :root{--main-w:1600px} }
 *{box-sizing:border-box}
 body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--fg);line-height:1.5}
 

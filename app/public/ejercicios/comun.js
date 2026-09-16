@@ -25,6 +25,16 @@
     pageMarginTop:15, pageMarginBottom:15,
     pageMarginLeft:60, pageMarginRight:20
   };
+  // Pizarra (≥ 1700 px de ancho de ventana; la del aula son 1920): la
+  // partitura se dibuja un 50 % más grande. Solo multiplica `scale`, que
+  // es tamaño en píxeles; `pageWidth` va en unidades de Verovio, así que
+  // la disposición (qué cabe en un sistema) no cambia. Va a la par del
+  // --main-w ancho de comun.css, que da sitio para ese 50 %.
+  const VRV_FACTOR_PIZARRA = 1.5;
+  function factorEscala(){
+    return global.matchMedia && global.matchMedia('(min-width:1700px)').matches
+      ? VRV_FACTOR_PIZARRA : 1;
+  }
 
   // initVerovio(opciones, onReady, onFail): crea el toolkit en cuanto el WASM
   // está listo y lo pasa a onReady(tk). onFail(mensaje) recibe un texto
@@ -56,7 +66,9 @@
       let tk;
       try{
         tk=new global.verovio.toolkit();
-        tk.setOptions(Object.assign({}, VRV_DEFAULTS, options||{}));
+        const opts=Object.assign({}, VRV_DEFAULTS, options||{});
+        opts.scale=Math.round(opts.scale*factorEscala());
+        tk.setOptions(opts);
       }catch(e){ done=false; fail('toolkit', e); return; }
       onReady(tk);                     // fuera del try: un error de la página no es de Verovio
     }

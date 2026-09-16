@@ -135,6 +135,11 @@ ayuda y barra de acciones sean hijos de `main` y la barra (`order:1`,
 encima de 720 px no cambia nada. Los `:hover` van bajo `@media(hover:hover)`
 (en táctil se quedarían pegados); el feedback táctil es `:active`.
 
+**Pizarra** (≥ 1700 px): `--main-w` sube a 1600 px y `initVerovio` multiplica
+el `scale` de cada página por `VRV_FACTOR_PIZARRA` (1,5). Son dos ajustes
+acoplados: el ancho extra es lo que da sitio a la partitura grande. Una
+página nunca debe compensar el factor por su cuenta.
+
 El color de tinta y sus derivados viven **solo en los bloques `:root`** de
 `index.html`, `curriculum.html` y `ejercicios/comun.css`: tres sitios, ningún
 hex suelto en el resto del CSS. Mantenerlo así.

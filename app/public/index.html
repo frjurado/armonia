@@ -24,6 +24,8 @@
        (el fondo entintado sigue ocupando todo el ancho) */
     --pad-x:max(56px, calc((100% - var(--max-w)) / 2));
   }
+  /* pizarra (1920 px): mismo ancho de contenido que los ejercicios */
+  @media(min-width:1700px){ :root{--max-w:1600px} }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5}
   .serif{font-family:var(--serif)}
