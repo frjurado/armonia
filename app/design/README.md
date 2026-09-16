@@ -110,5 +110,7 @@ El resto de la paleta (fondo, superficies, textos, bordes, mudos) no cambia.
 ## Files
 - `mockup-menu.html` — menú (curso 3.º, Unidad 1 expandida).
 - `mockup-ejercicio.html` — vista de ejercicio (estado inicial, antes de revelar respuesta; el estado revelado se describe arriba).
+- `Versión móvil.dc.html` — mockup móvil (tinta azul; la variante verde es el mismo cambio de token).
+- `RESPONSIVE.md` — puntos de corte, escala fluida y cambios por vista para adaptar automáticamente pizarra ↔ móvil.
 
 Ambos mockups están en la tinta azul original; la verde solo existe ya aplicada en la app (`index.html`, `curriculum.html`, `ejercicios/comun.css`).

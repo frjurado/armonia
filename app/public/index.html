@@ -44,8 +44,9 @@
   .tab{font-family:var(--serif);font-size:23px;padding:14px 26px 16px;
         border-radius:12px 12px 0 0;cursor:pointer;border:none;background:rgba(255,255,255,.1);
         color:rgba(255,255,255,.75);font-weight:400;transition:background .15s ease}
-  .tab:hover{background:rgba(255,255,255,.18)}
+  @media(hover:hover){.tab:hover{background:rgba(255,255,255,.18)}}
   .tab .tag{font-family:var(--sans);font-size:15px;font-weight:400;color:rgba(255,255,255,.5)}
+  .tab .tag::before{content:'— '}
   .tab.active{background:var(--bg);color:var(--fg);font-weight:600}
   .tab.active .tag{color:var(--muted)}
 
@@ -69,7 +70,8 @@
         border-radius:12px;background:var(--card);border:1.5px solid var(--line);
         color:var(--ink);font-size:16px;font-weight:600;text-decoration:none;
         transition:background .15s ease,color .15s ease,border-color .15s ease}
-  .btn-modo:hover,.btn-modo:active{background:var(--ink);border-color:var(--ink);color:#fff}
+  @media(hover:hover){.btn-modo:hover{background:var(--ink);border-color:var(--ink);color:#fff}}
+  .btn-modo:active{background:var(--ink);border-color:var(--ink);color:#fff}
   .btn-modo.locked{background:transparent;border:1.5px dashed var(--line);
         color:var(--disabled);cursor:default}
   .btn-modo.locked:hover,.btn-modo.locked:active{background:transparent;
@@ -92,7 +94,7 @@
         font-size:14px;letter-spacing:.06em;text-transform:uppercase}
   .ud-row .estado svg{width:15px;height:15px}
   .ud-row.abrible{cursor:pointer}
-  .ud-row.abrible:hover{background:var(--row-hover)}
+  @media(hover:hover){.ud-row.abrible:hover{background:var(--row-hover)}}
   .ud-row.abrible .num{color:var(--ink);font-weight:600}
   .ud-row.abrible .titulo{color:var(--fg)}
   .ud-row.abrible .estado{color:var(--ink);text-transform:none;letter-spacing:0;font-weight:600}
@@ -101,6 +103,7 @@
   footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px;display:flex;align-items:baseline}
   footer a{color:var(--ink);text-decoration:none;margin-left:auto}
   footer a:hover{text-decoration:underline}
+  .tab,.btn-modo,.ud-row.abrible{touch-action:manipulation}
 
   @media(max-width:960px){
     .masthead{padding:26px 24px 0}
@@ -111,6 +114,40 @@
     .ud-open .num{font-size:44px}
     .ud-row{grid-template-columns:72px 1fr auto;gap:14px}
     footer{padding:0 24px 32px}
+  }
+
+  /* ---------- modo compacto: móvil vertical (< 720 px) ----------
+     Ver design/RESPONSIVE.md. Cabecera apilada con el pentagrama a ancho
+     completo, dos pestañas a media anchura, numeral junto al título y
+     unidades cerradas reducidas a numeral + título + candado. */
+  @media(max-width:719.98px){
+    .masthead{padding:26px 20px 0}
+    .mast-top{display:block}
+    .mast-title h1{font-size:32px}
+    .mast-title .sub{font-size:14px}
+    .pentagrama{display:block;height:22px;margin:16px 0 0;
+          background:repeating-linear-gradient(to bottom,
+            rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 5px)}
+    .tabs{gap:8px;margin-top:16px}
+    .tab{flex:1;padding:12px 14px;font-size:19px;line-height:1.1;text-align:left}
+    .tab .tag{display:block;font-size:12px;margin-top:3px}
+    .tab .tag::before{content:none}
+    .unidades{padding:0 20px 32px}
+    /* numeral y título en la misma fila; las familias debajo, a todo el
+       ancho: el div envoltorio se disuelve (display:contents) */
+    .ud-open{grid-template-columns:auto 1fr;column-gap:12px;align-items:baseline;padding:22px 0 26px}
+    .ud-open > div{display:contents}
+    .ud-open .num{font-size:40px;line-height:1}
+    .ud-open .titulo{font-size:20px}
+    .familias{grid-column:1/-1;gap:20px;margin-top:18px}
+    .btn-modo{height:52px}
+    .ud-row{grid-template-columns:44px 1fr auto;gap:10px;padding:16px 0}
+    .ud-row .num{font-size:26px;padding-left:0}
+    .ud-row .titulo{font-size:16px}
+    .ud-row .estado{font-size:0;letter-spacing:0;gap:0}
+    .ud-row .estado svg{width:18px;height:18px}
+    footer{padding:0 20px 28px;flex-direction:column;gap:6px}
+    footer a{margin-left:0}
   }
 </style>
 </head>
@@ -222,7 +259,7 @@ function unidadCerrada(ud){
 function render(){
   document.getElementById('tabs').innerHTML = CURRICULO.cursos.map((c,i) => `
     <button class="tab${i===cursoActivo ? ' active' : ''}" data-curso="${i}">
-      ${c.nombre} <span class="tag">— ${c.tag}</span>
+      ${c.nombre} <span class="tag">${c.tag}</span>
     </button>`).join('');
 
   const curso = CURRICULO.cursos[cursoActivo];

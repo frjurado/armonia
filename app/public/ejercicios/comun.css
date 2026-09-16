@@ -46,7 +46,8 @@ header a.back{grid-area:back;display:inline-flex;align-items:center;height:52px;
        padding:0 20px;border-radius:12px;background:rgba(255,255,255,.14);
        color:#fff;font-size:16px;font-weight:600;text-decoration:none;
        transition:background .15s ease}
-header a.back:hover{background:rgba(255,255,255,.22)}
+@media(hover:hover){header a.back:hover{background:rgba(255,255,255,.22)}}
+header a.back:active{background:rgba(255,255,255,.22)}
 .level{grid-area:level;display:flex;align-items:center;gap:10px;
        font-size:14px;color:rgba(255,255,255,.65)}
 .level b{display:inline-flex;align-items:center;justify-content:center;
@@ -63,7 +64,8 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
      background:var(--card);color:var(--muted);font-size:17px;font-weight:600;user-select:none;
      transition:border-color .15s ease,color .15s ease}
 .ayuda summary::-webkit-details-marker{display:none}
-.ayuda summary:hover,.ayuda[open] summary{border-color:var(--ink);color:var(--ink)}
+@media(hover:hover){.ayuda summary:hover{border-color:var(--ink);color:var(--ink)}}
+.ayuda[open] summary{border-color:var(--ink);color:var(--ink)}
 .prompt{font-size:18px;color:var(--muted);margin:14px 0 0;max-width:860px}
 .prompt b{color:var(--fg)}
 
@@ -89,15 +91,21 @@ button{font-family:var(--sans);font-size:17px;font-weight:600;
      border:1.5px solid var(--line);background:var(--card);color:var(--fg);
      padding:0 20px;min-height:64px;border-radius:14px;cursor:pointer;
      transition:background .15s ease,border-color .15s ease,color .15s ease;
-     display:inline-flex;align-items:center;gap:12px}
+     display:inline-flex;align-items:center;gap:12px;touch-action:manipulation}
 .controls button{width:100%;justify-content:flex-start;text-align:left}
 button .ic{width:20px;text-align:center;flex-shrink:0}
-button:hover{border-color:var(--ink);color:var(--ink)}
+/* hover solo donde hay puntero que flote (en táctil se quedaría pegado
+   tras el toque); el feedback táctil es :active */
+@media(hover:hover){
+  button:hover{border-color:var(--ink);color:var(--ink)}
+  button.primary:hover{background:var(--ink-hover);border-color:var(--ink-hover);color:#fff}
+  button:disabled:hover{border-color:var(--line);color:var(--fg)}
+  button.primary:disabled:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+}
+button:active:not(:disabled){border-color:var(--ink);color:var(--ink)}
 button.primary{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700}
-button.primary:hover{background:var(--ink-hover);border-color:var(--ink-hover);color:#fff}
+button.primary:active:not(:disabled){background:var(--ink-hover);border-color:var(--ink-hover);color:#fff}
 button:disabled{opacity:.45;cursor:default}
-button:disabled:hover{border-color:var(--line);color:var(--fg)}
-button.primary:disabled:hover{background:var(--ink);border-color:var(--ink);color:#fff}
 button.toggle{min-height:56px}
 button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
      color:var(--ink);font-weight:700}
@@ -109,7 +117,10 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
    posterior al compás centrado; .tira-resp son las capas de
    respuesta superpuestas (encima/debajo del pentagrama). */
 .score-card.tira-card{padding:16px 0;display:block}
-.tira{position:relative;overflow:hidden;width:100%;padding:52px 0}
+/* contain:inline-size: el visor no propaga a sus ancestros el ancho
+   intrínseco de la tira (5000 px), que overflow:hidden no corta y que en
+   un contenedor flex/grid ensancharía toda la página */
+.tira{position:relative;overflow:hidden;width:100%;padding:52px 0;contain:inline-size}
 .tira-inner{width:max-content;min-width:100%;text-align:center;
      transition:transform .6s ease;will-change:transform}
 #notation.tira-inner svg,.tira-inner svg{max-width:none;display:block}
@@ -167,3 +178,48 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
   .controls button{width:auto;min-height:56px}
   .sep{width:1px;height:32px;margin:0}
 }
+
+/* ---------- modo compacto: móvil vertical (< 720 px) ----------
+   Ver design/RESPONSIVE.md. Solo reorganiza; por encima de 720 px nada
+   de esto se aplica. Cabecera en dos filas (volver + nivel / título),
+   partitura a ancho completo y las acciones en una barra pegada al
+   borde inferior de la pantalla, en filas de dos (los .sep hacen de
+   salto de fila). */
+@media(max-width:719.98px){
+  body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+  header{padding:10px 16px 12px;row-gap:6px;column-gap:12px;
+         grid-template-columns:auto 1fr auto;
+         grid-template-areas:"back . level" "title title title" "sub sub sub"}
+  header h1{font-size:19px;align-self:auto}
+  header .sub{font-size:12px;align-self:auto}
+  header a.back{height:44px;padding:0 14px;font-size:15px}
+  .level{font-size:13px;gap:8px}
+  .level b{min-width:36px;height:36px;font-size:15px}
+
+  /* main pasa a columna flex y .ej-row se disuelve (display:contents):
+     partitura, ayuda y barra de acciones son hijos directos de main, en
+     ese orden; la partitura empuja el resto al fondo y la barra es lo
+     último, pegada al borde inferior */
+  main{flex:1;width:100%;margin:0;display:flex;flex-direction:column;gap:14px;padding:16px 16px 0}
+  .ej-row{display:contents}
+  .ej-main{flex:1}
+  .score-card{padding:18px 14px;min-height:200px}
+  .score-card.tira-card{padding:12px 0}
+  .answer{padding:16px 18px}
+  .answer .q{font-size:26px}
+
+  .controls{position:sticky;bottom:0;z-index:5;order:1;   /* detrás de la ayuda */
+            margin:0 -16px;padding:12px 16px calc(2px + env(safe-area-inset-bottom));
+            background:var(--bg);border-top:1px solid var(--line);
+            flex-direction:row;flex-wrap:wrap;gap:0 10px;align-items:stretch}
+  .controls button{flex:1 1 40%;width:auto;min-height:52px;margin-bottom:10px;
+            justify-content:center;text-align:center;font-size:16px;padding:0 14px}
+  .controls button.primary{flex:2 1 55%}
+  .controls button.toggle{min-height:52px}
+  .controls .sep{flex-basis:100%;width:100%;height:0;margin:0;background:none}
+  .under{margin-top:10px;font-size:13px}
+  .ayuda{margin:0 0 6px}
+  .ayuda summary{min-height:48px;font-size:15px}
+  .prompt{font-size:16px}
+}
+

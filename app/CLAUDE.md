@@ -126,6 +126,15 @@ cabecera plana `h1`/`.sub`/`a.back`/`.level`, sin tocar el HTML de las
 páginas. `curriculum.html` usa los mismos tokens con densidad de inventario.
 Ante cambios visuales, respetar los tokens de `design/README.md`.
 
+**Móvil** (`design/RESPONSIVE.md`): un bloque `@media(max-width:719.98px)` al
+final de `comun.css` y de `index.html` reorganiza sin tocar el marcado — en
+ejercicios, `.ej-row` se disuelve con `display:contents` para que partitura,
+ayuda y barra de acciones sean hijos de `main` y la barra (`order:1`,
+`position:sticky`) quede pegada abajo; en el menú, el envoltorio de
+`.ud-open` se disuelve igual para poner el numeral junto al título. Por
+encima de 720 px no cambia nada. Los `:hover` van bajo `@media(hover:hover)`
+(en táctil se quedarían pegados); el feedback táctil es `:active`.
+
 El color de tinta y sus derivados viven **solo en los bloques `:root`** de
 `index.html`, `curriculum.html` y `ejercicios/comun.css`: tres sitios, ningún
 hex suelto en el resto del CSS. Mantenerlo así.

@@ -109,8 +109,13 @@
   // tocar([{midi, at, dur}, …]): programa las notas relativas a "ahora".
   // at en segundos (0 por defecto), dur en segundos (1.6 por defecto).
   // Lanza si el audio no está disponible: la página decide qué botón anular.
+  // Si el contexto sigue suspendido (móvil: aún no ha habido un gesto del
+  // usuario), no encola nada y vuelve en silencio: si se encolaran, al
+  // primer toque sonarían de golpe todas las acumuladas. La página no
+  // distingue este caso del normal; el usuario pulsa «Escuchar» y suena.
   async function tocar(notas){
     const p=await getPiano();
+    if(p.context.state!=='running') return;
     const now=p.context.currentTime;
     notas.forEach(n=>p.play(n.midi, now+(n.at||0), {duration:(n.dur!=null?n.dur:1.6)}));
   }

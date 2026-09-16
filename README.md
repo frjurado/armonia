@@ -68,6 +68,10 @@ tarjeta «Apuntes» en enlace.
       PDF→SVG, ejecute `make -C apuntes ejemplos` y renderice el HTML a
       `apuntes/build/sitio/`. Depende de sustituir el andamiaje por Quarto
       (abajo). Después, enlazar la tarjeta «Apuntes» de `sitio/index.html`.
+- [ ] Partituras anchas en móvil (movimiento armónico): rerenderizar con
+      Verovio a `pageWidth` del contenedor y `breaks:auto` en lugar de
+      reducir el SVG por CSS, que las deja diminutas (`design/RESPONSIVE.md`
+      §5). Cuidado con la tira de armaduras, que necesita un solo sistema.
 - [ ] Enlaces cruzados apunte ↔ ejercicio (un apunte enlaza al ejercicio de
       su unidad; un ejercicio, al apunte que lo explica). La disposición de
       `_site/` ya lo permite con rutas relativas (`../app/...`, `../apuntes/...`);
