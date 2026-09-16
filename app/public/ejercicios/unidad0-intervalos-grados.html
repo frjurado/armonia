@@ -12,6 +12,19 @@
 <script src="unidad0-intervalos-core.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
+<style>
+  /* Grado de la escala en texto: dígito con el circunflejo apilado encima
+     (el combinado U+0302 no se compone bien sobre cifras en la mayoría
+     de fuentes y sale detrás). En la respuesta, los dos grados van
+     apilados (superior sobre inferior) entre el modo y el intervalo. */
+  .gr{display:inline-flex;flex-direction:column;align-items:center;line-height:.8}
+  .gr i{font-style:normal;font-size:.7em;line-height:.5;margin-bottom:-.08em}
+  .answer .q{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .answer .q .modo{color:var(--muted);font-weight:400}
+  .answer .q .grados{display:inline-flex;flex-direction:column;align-items:center;
+       gap:2px;font-size:.78em;color:var(--ink)}
+  .answer .q .sep-q{color:var(--soft);font-weight:400}
+</style>
 </head>
 <body>
 <header>
@@ -62,7 +75,55 @@ function renderSVG(){
   if(tk && current){
     tk.loadData(current.mei(revelado));
     $('notation').innerHTML = tk.renderToSVG(1);
+    if(revelado) decorarGrados($('notation').querySelector('svg'));
   }
+}
+
+// Grado en HTML: dígito con circunflejo encima (ver CSS .gr).
+const gradoHTML = g => `<span class="gr"><i>^</i>${g}</span>`;
+
+// Los grados en la partitura los pone Verovio como <dir> (texto «1̂»,
+// alineado a la izquierda de la nota, en la fuente de texto por defecto).
+// Se reescriben sobre el SVG: dígito en negrita, más grande, centrado en
+// la cabeza de la nota, y el circunflejo como segundo trozo de texto
+// encima. Cada <dir> se asigna a su nota por posición (arriba/abajo).
+function decorarGrados(svg){
+  if(!svg) return;
+  const centro = id => {
+    const g = svg.querySelector('#'+id+' .notehead');
+    if(!g) return null;
+    const b = g.getBBox();                  // en las mismas unidades que text@x/y
+    return { x:b.x+b.width/2, y:b.y+b.height/2 };
+  };
+  const sup = centro('m0s'), inf = centro('m0b');
+  if(!sup || !inf) return;
+  // los <svg> anidados recortan por defecto; el circunflejo del grado
+  // superior queda por encima del área que Verovio calculó
+  svg.querySelectorAll('svg').forEach(e=>e.setAttribute('overflow','visible'));
+  svg.querySelectorAll('g.dir text').forEach(text=>{
+    const digito = text.textContent.replace(/\D/g,'');
+    if(!digito) return;
+    const fs = 640;                          // unidades de Verovio (antes 405)
+    const y0 = +text.getAttribute('y');
+    const c  = Math.abs(y0-sup.y) < Math.abs(y0-inf.y) ? sup : inf;
+    // el de abajo baja algo más: que el circunflejo no pise el pentagrama
+    const y  = c===inf ? y0 + fs*0.85 : y0;
+    text.setAttribute('y', y);
+    text.setAttribute('x', c.x);
+    text.setAttribute('text-anchor', 'middle');
+    text.setAttribute('font-family', "'Source Serif 4', Georgia, serif");
+    text.setAttribute('font-weight', '700');
+    text.setAttribute('font-size', fs+'px');
+    // (elementos SVG: innerHTML los crearía en el espacio de nombres HTML)
+    const NS='http://www.w3.org/2000/svg';
+    const num=document.createElementNS(NS,'tspan'); num.textContent=digito;
+    const caret=document.createElementNS(NS,'tspan'); caret.textContent='^';
+    // la tinta de «^» queda ~0,45 em por encima de su línea base: con la
+    // base a 0,5 em sobre la del dígito, el acento asoma justo sobre él
+    caret.setAttribute('x', c.x); caret.setAttribute('y', y - fs*0.5);
+    caret.setAttribute('font-size', Math.round(fs*0.7)+'px');
+    text.textContent=''; text.append(num, caret);
+  });
 }
 
 function newExercise(){
@@ -79,9 +140,12 @@ function newExercise(){
 function reveal(){
   if(!current) return;
   revelado=true;
-  $('ansQ').textContent = current.label;
-  $('ansDet').textContent =
-    'Grados: '+current.gradoSupTxt+' (voz superior) · '+current.gradoInfTxt+' (voz inferior)';
+  // una sola línea: modo · grados apilados (superior sobre inferior) · intervalo
+  $('ansQ').innerHTML =
+    `<span class="modo">${current.key.nombre}</span><span class="sep-q">·</span>`+
+    `<span class="grados">${gradoHTML(current.gradoSup)}${gradoHTML(current.gradoInf)}</span>`+
+    `<span class="sep-q">·</span><span>${current.label}</span>`;
+  $('ansDet').textContent = '';
   $('answer').className='answer show';
   $('btnReveal').disabled=true;
   $('btnSimilar').style.display='';
@@ -106,7 +170,8 @@ $('btnListen').onclick = playInterval;
 newExercise();
 
 ArmoniaEj.initVerovio(
-  {scale:60, pageWidth:900},
+  // margen superior amplio: sitio para el circunflejo del grado superior
+  {scale:60, pageWidth:900, pageMarginTop:60, pageMarginBottom:60},
   t=>{ tk=t; renderSVG(); },
   msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
 );
