@@ -75,7 +75,13 @@ muestra todo, con una marca DEV en lo que los alumnos no ven. Así una
 unidad puede estar en `master` y en `publico` sin verse hasta que se marque.
 
 Para activarlo en un repositorio nuevo, una sola vez: *Settings → Pages →
-Build and deployment → Source: **GitHub Actions***. El sitio queda en
+Build and deployment → Source: **GitHub Actions***. Y como despliegan dos
+ramas, el entorno `github-pages` (que por defecto solo admite la rama
+principal) tiene que permitir también `publico`: *Settings → Environments
+→ github-pages → Deployment branches*: añadir `master` y `publico`; o por
+API, `gh api -X POST repos/<usuario>/<repo>/environments/github-pages/deployment-branch-policies -f name=publico -f type=branch`
+(tras poner la política en `custom_branch_policies`). Si falta, el push a
+`publico` falla con «not allowed to deploy to github-pages». El sitio queda en
 `https://<usuario>.github.io/<repo>/`; como cuelga de una subruta, **todas
 las rutas del sitio son relativas**, nunca `/absolutas`.
 
