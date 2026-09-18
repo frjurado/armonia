@@ -8,7 +8,7 @@
 
 ## Cómo usar este documento
 
-- **Secuenciación** (§2) fija el qué y el cuándo: doce unidades didácticas repartidas en dos cursos y seis trimestres.
+- **Secuenciación** (§2) fija el qué y el cuándo: catorce unidades didácticas (una de repaso más seis de contenido por curso) repartidas en dos cursos y seis trimestres.
 - **Estrategia general** (§3) y **específica** (§4) fijan el cómo: modelo *flipped* + construcción de fluidez, y el reparto de tipos de ejercicio entre pizarra/papel/casa.
 - **Ejercicios breves** (§5) y **Materiales** (§6) son los bancos de recursos que se irán llenando UD a UD.
 - **Evaluación y registro** (§7) recoge las cuestiones logísticas todavía abiertas.
@@ -26,14 +26,15 @@
   ⟶ PENDIENTE: redactar la lista de mínimos.
 - **Principios transversales** (presentes desde el principio en todas las UD):
   - Integrar el **ritmo armónico** siempre.
-  - Integrar la **modulación** desde muy pronto (¿UD 3?).
+  - Integrar la **modulación** desde muy pronto (¿ya en 3º UD 3?).
 
 ---
 
 ## 2. Secuenciación
 
-Dos cursos, **seis unidades por curso** (dos por trimestre), **doce en total**, más una
-**UD 0 preliminar** al comienzo de 3.º, repaso de lenguaje musical.
+Dos cursos con la misma estructura: una **UD 0 de repaso** al comienzo del curso más
+**seis unidades de contenido** (dos por trimestre). La numeración es **0–6 en cada curso**;
+cuando haga falta distinguir, se indica el curso (p. ej. «UD 2 de 4.º»).
 
 ### Curso 3.º — Armonía diatónica
 
@@ -51,12 +52,13 @@ Dos cursos, **seis unidades por curso** (dos por trimestre), **doce en total**, 
 
 | Trim. | UD | Contenido | Notas |
 |-------|----|-----------|-------|
-| 1.º | **UD 7**  | Repaso. 7.ª diatónicas | Prolongación, cadencia y secuencia. |
-| 1.º | **UD 8**  | Modulación y dominante secundaria | Mod. diatónica y cromática. |
-| 2.º | **UD 9**  | Acordes de VII con 7.ª | Tangencialmente, acordes de 9º. |
-| 2.º | **UD 10** | VII como D.S. Secuencias modulantes | Secuencias por 2.ª ascendente y descendente. |
-| 3.º | **UD 11** | Homónimo menor | Incluye 6.ª napolitana. |
-| 3.º | **UD 12** | Acordes alterados | 6.ª aumentada, repaso general. |
+| 1.º | **UD 0** | Repaso | Cadencia, prolongación y secuencia. |
+| 1.º | **UD 1** | 7.ª diatónicas | Usos comunes y secuenciales. |
+| 1.º | **UD 2** | Modulación y dominante secundaria | Mod. diatónica y cromática. |
+| 2.º | **UD 3** | Acordes de VII con 7.ª | Tangencialmente, acordes de 9.ª. |
+| 2.º | **UD 4** | VII como D.S. Secuencias modulantes | Secuencias por 2.ª ascendente y descendente. |
+| 3.º | **UD 5** | Homónimo menor | Incluye 6.ª napolitana. |
+| 3.º | **UD 6** | Acordes alterados | 6.ª aumentada, repaso general. |
 
 ### Tonalidades por trimestre
 

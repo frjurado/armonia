@@ -8,7 +8,9 @@
    lista para ellos. En modo 'publico' (ver modo.js) el menú trata las
    unidades sin ese flag como «próximamente», aunque tengan ejercicios;
    en modo 'dev' se ven todas, marcadas. Granularidad: la unidad.
-   Excepción (Unidad 0): sus familias no tienen modos id/au/ct
+   La numeración de unidades (`n`) es 0–6 en cada curso (UD 0 = repaso):
+   solo identifica dentro de su curso, nunca entre cursos.
+   Excepción (Unidad 0 de 3.º): sus familias no tienen modos id/au/ct
    (todo es identificación) sino TRES VARIANTES cada una, en el
    array `tipos` [{key, label, title, icono, texto?, url, desc}].
    `icono` es una clave de TIPO_ICONS (index.html) o 'texto' /
@@ -114,12 +116,13 @@ const CURRICULO = {
     {
       nombre:'Curso 4.º', tag:'Cromático',
       unidades:[
-        { n:7,  titulo:'Repaso. 7.ª diatónicas', familias:[] },
-        { n:8,  titulo:'Modulación y dominante secundaria', familias:[] },
-        { n:9,  titulo:'Acordes de VII con 7.ª', familias:[] },
-        { n:10, titulo:'VII como D.S. Secuencias modulantes', familias:[] },
-        { n:11, titulo:'Homónimo menor', familias:[] },
-        { n:12, titulo:'Acordes alterados', familias:[] }
+        { n:0, titulo:'Repaso', familias:[] },
+        { n:1, titulo:'7.ª diatónicas', familias:[] },
+        { n:2, titulo:'Modulación y dominante secundaria', familias:[] },
+        { n:3, titulo:'Acordes de VII con 7.ª', familias:[] },
+        { n:4, titulo:'VII como D.S. Secuencias modulantes', familias:[] },
+        { n:5, titulo:'Homónimo menor', familias:[] },
+        { n:6, titulo:'Acordes alterados', familias:[] }
       ]
     }
   ]

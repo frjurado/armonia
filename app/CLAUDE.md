@@ -81,7 +81,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
   mantener diferencias de contenido entre `master` y `publico` (se fusionan
-  enteras con `sitio/publicar.sh`). Excepción: las familias de la **Unidad 0**
+  enteras con `sitio/publicar.sh`). Excepción: las familias de la **Unidad 0 de 3.º**
   no tienen modos sino un array `tipos` (variantes de identificación, cada una
   con su icono).
 - `ejercicios/`, un patrón por familia:
@@ -108,7 +108,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 
 ## Convenciones de dominio
 
-- Las **tonalidades disponibles** dependen del trimestre; la UD 0 queda fuera
+- Las **tonalidades disponibles** dependen del trimestre; la UD 0 de 3.º queda fuera
   de esa progresión (su familia de armaduras recorre las 24 por diseño).
 - Niveles de dificultad 1–3 por familia (cuando los hay); «Más difícil» sube
   de nivel.

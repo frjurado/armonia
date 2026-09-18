@@ -3,7 +3,7 @@
 Materiales digitales de Armonía para 3.º y 4.º de EE.PP. de conservatorio.
 Tres subproyectos que comparten repositorio porque comparten currículo.
 
-    curriculum/   Plan de la asignatura: secuenciación en 12 unidades + UD 0,
+    curriculum/   Plan de la asignatura: secuenciación en 2 × (UD 0 + 6 unidades),
                   tonalidades por trimestre, estrategia didáctica, evaluación.
                   Gobierna a los otros dos; ninguno lo gobierna a él.
 
