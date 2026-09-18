@@ -64,7 +64,7 @@ const CURRICULO = {
                 {key:'inversion', label:'INV.', title:'Inversiones', icono:'apilado', texto:'6/4',
                  url:'ejercicios/unidad0-acordes-inversion.html',
                  desc:'Se muestra la tríada y se piden la inversión y su cifrado («1.ª inversión · 6/3»; en el detalle, el cifrado americano con barra, C/E), o se dan el bajo con su cifrado (solo 6/3 o 6/4) y el tipo, y se pide el resto del acorde.'},
-                {key:'grados', label:'GRADOS', title:'Con grados', icono:'grados',
+                {key:'grados', label:'GRADOS', title:'Con grados', icono:'romano',
                  url:'ejercicios/unidad0-acordes-grados.html',
                  desc:'Tríada diatónica en estado fundamental dentro de una tonalidad (armadura + nombre; las 4 del trimestre 1): decir modo, grado de la fundamental y tipo («Modo mayor · II grado · Tríada menor»). En menor, la sensible solo en V y VII; el III se toma de la escala natural.'}
               ],

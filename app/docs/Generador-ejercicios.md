@@ -240,7 +240,7 @@ grande, si la hay, queda entre el bajo y ellas).
   Do mayor, Do♯ menor o Do♯ disminuido. Se mantienen los dos sentidos en los tres niveles:
   leer un bajo cifrado en clave de Fa es precisamente el ejercicio, y el pentagrama doble
   es su medio natural.
-- **Con grados** (icono de número con circunflejo): tríada diatónica en **estado
+- **Con grados** (icono «IV»: aquí el grado se nombra en romanos): tríada diatónica en **estado
   fundamental** dentro de una tonalidad (armadura en la partitura + nombre; las 4 del
   trimestre 1, como en Intervalos con grados) → modo, grado de la fundamental y tipo
   («Modo mayor · II grado · Tríada menor»; en el detalle, cifrado y nombres). Solo sentido
