@@ -213,24 +213,43 @@ de los casos (sin amortiguar dominarían la generación libre).
 
 ### 4b.3. Acordes *(niveles por clave/disposición)*
 
-Reubica la antigua **familia 1** (tríadas de la UD 1). Tríadas **aisladas**, sin
+Reubica la antigua **familia 1** (tríadas de la UD 1). Tres variantes, paralelas a las de
+Intervalos (simple · inversión · grados). En las dos primeras, tríadas **aisladas**, sin
 tonalidad: fundamental libre con alteración simple (se rechazan los acordes que exigirían
-dobles alteraciones, y las fundamentales Mi♯/Si♯/Fa♭/Do♭). Cada ejercicio alterna al 50 %
-**dos sentidos**: *ver* el acorde y nombrarlo, o *construirlo* mentalmente a partir del
-dato y comprobarlo al revelar (en este sentido el audio se retiene hasta la respuesta).
+dobles alteraciones, y las fundamentales Mi♯/Si♯/Fa♭/Do♭), y **dos sentidos** al 50 %:
+*ver* el acorde y nombrarlo, o *construirlo* mentalmente a partir del dato y comprobarlo
+al revelar (en este sentido el audio se retiene hasta la respuesta).
 Niveles: **1** clave de Sol y **2** clave de Fa (posición cerrada); **3** posición abierta
-en pentagrama doble (el bajo en clave de Fa y las otras dos notas en clave de Sol).
+en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol, apiladas
+ascendentes desde Do4, de modo que **nunca distan más de una 8.ª entre sí** (la distancia
+grande, si la hay, queda entre el bajo y ellas).
 
-- **Tipo** (icono de tríada: tres notas apiladas con plica arriba): tríada en estado
-  fundamental → tipo (mayor / menor / aumentada / disminuida); o fundamental (dibujada
-  en el pentagrama) + tipo → el resto del acorde.
-- **Cifrado americano** (icono textual «D♭»): acorde → cifrado (D♭m, F°, C+…); o cifrado
-  (texto grande en la tarjeta) → acorde.
+- **Tipo y cifrado** (icono de tríada: tres notas apiladas con plica arriba): tríada en
+  estado fundamental → tipo (mayor / menor / aumentada / disminuida) **y** cifrado
+  americano (D♭m, F°, C+…); o cifrado (texto grande en la tarjeta) → acorde. Fusiona las
+  antiguas variantes *tipo* y *cifrado*: el cifrado no es más que fundamental + tipo.
+  **En el nivel 3 solo hay sentido *ver***: el sentido *construir* tiene sentido cuando
+  la disposición revelada es la única posible (posición cerrada); en posición abierta es
+  arbitraria y solo se podrían contrastar nombres de notas, con lo que las dos claves no
+  añadirían dificultad, solo ruido.
 - **Inversiones** (icono textual 6/4 apilado, como el bajo cifrado): acorde (cualquier
-  estado) → inversión + cifrado («1.ª inversión · 6/3»); o bajo dibujado con sus cifras
-  (`<harm><fb>` de MEI; solo 6/3 o 6/4) **más el tipo de tríada** → el resto del acorde.
-  El tipo es necesario para que el ejercicio tenga respuesta única: un 6/3 sobre Mi, sin
-  tonalidad, puede ser Do mayor, Do♯ menor o Do♯ disminuido.
+  estado) → inversión + cifrado («1.ª inversión · 6/3»; en el detalle, el cifrado americano
+  con el bajo tras la barra, C/E); o bajo dibujado con sus cifras (`<harm><fb>` de MEI;
+  solo 6/3 o 6/4) **más el tipo de tríada** → el resto del acorde. El tipo es necesario
+  para que el ejercicio tenga respuesta única: un 6/3 sobre Mi, sin tonalidad, puede ser
+  Do mayor, Do♯ menor o Do♯ disminuido. Se mantienen los dos sentidos en los tres niveles:
+  leer un bajo cifrado en clave de Fa es precisamente el ejercicio, y el pentagrama doble
+  es su medio natural.
+- **Con grados** (icono de número con circunflejo): tríada diatónica en **estado
+  fundamental** dentro de una tonalidad (armadura en la partitura + nombre; las 4 del
+  trimestre 1, como en Intervalos con grados) → modo, grado de la fundamental y tipo
+  («Modo mayor · II grado · Tríada menor»; en el detalle, cifrado y nombres). Solo sentido
+  *ver*. En **menor, la sensible aparece solo en V y VII** (mayor y disminuida); **el III se
+  toma de la escala natural** (mayor), no aumentado: es lo que verán en 3.º y evita
+  explicar el III+. Es la única variante de la familia con armadura en el MEI (`keysig`),
+  y en ella solo llevan accidental las notas ajenas a la armadura (la sensible).
+  ⟶ ABIERTO: ampliar a inversiones (habría que hallar la fundamental antes; hoy es tarea
+  de la variante *Inversiones*).
 
 ---
 
@@ -326,7 +345,7 @@ un subconjunto acotado) o se usa un *mock* propio inspirado en su sintaxis pero 
 inline) implementó el pipeline **representación ligera tipo LilyPond → exportador a MEI →
 Verovio**, audio por samples y los botones "otro similar / más difícil". Hoy vive,
 generalizado, en la familia **Acordes de la Unidad 0** (§4 bis.3:
-`ejercicios/unidad0-acordes-core.js` + páginas `-tipo` / `-cifrado` / `-inversion`);
+`ejercicios/unidad0-acordes-core.js` + páginas `-tipo` / `-inversion` / `-grados`);
 la página original se retiró.
 ⟶ EN CURSO: prototipo de la familia 2 (intervalos a dos voces, §4.2) en
 `ejercicios/familia2-intervalos-id.html` (identificación) y `ejercicios/familia2-intervalos-au.html`

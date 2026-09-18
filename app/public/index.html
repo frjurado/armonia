@@ -80,8 +80,7 @@
   .btn-modo svg{width:19px;height:19px;flex:none}
   .btn-modo .ic{width:19px;flex:none;display:flex;align-items:center;justify-content:center}
   .btn-modo .ic svg{width:19px;height:19px}
-  /* iconos tipográficos de las variantes de la Unidad 0 */
-  .btn-modo .ic-txt{font-size:10px;font-weight:700;letter-spacing:0;line-height:1}
+  /* icono tipográfico de cifras (variante Inversiones de la Unidad 0) */
   .btn-modo .ic-fb{display:flex;flex-direction:column;align-items:center;
         font-family:var(--serif);font-size:8.5px;line-height:1;font-weight:600}
 
@@ -191,7 +190,7 @@ const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-
 const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
 /* Iconos de las variantes de la Unidad 0 (claves del campo `icono` en
-   curriculum-data.js; 'texto' y 'apilado' se dibujan con el campo `texto`). */
+   curriculum-data.js; 'apilado' se dibuja con el campo `texto`). */
 const TIPO_ICONS = {
   reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="4.8" x2="12" y2="7"/><line x1="19.2" y1="12" x2="17" y2="12"/><line x1="12" y1="19.2" x2="12" y2="17"/><line x1="4.8" y1="12" x2="7" y2="12"/></svg>`,
   escalones: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 20 8 20 8 15 13 15 13 10 18 10 18 5 21 5"/></svg>`,
@@ -232,7 +231,6 @@ function modoHTML(fam, m){
 
 /* Variantes de la Unidad 0: mismo aspecto que los modos, con icono propio. */
 function tipoIcono(t){
-  if(t.icono==='texto')   return `<span class="ic"><span class="ic-txt">${t.texto}</span></span>`;
   if(t.icono==='apilado') return `<span class="ic"><span class="ic-fb">${t.texto.split('/').map(x=>`<span>${x}</span>`).join('')}</span></span>`;
   return `<span class="ic">${TIPO_ICONS[t.icono] || ''}</span>`;
 }

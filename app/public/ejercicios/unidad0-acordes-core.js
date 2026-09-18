@@ -1,18 +1,22 @@
 /* ============================================================
    Unidad 0 — Acordes / tríadas (núcleo compartido)
    ------------------------------------------------------------
-   Lógica común a las tres variantes (tipo, cifrado americano,
-   inversiones). Reubica y generaliza la antigua familia 1
-   (tríadas de la Unidad 1):
-     · tríadas AISLADAS, sin tonalidad: fundamental libre con
-       alteración simple (se rechazan los acordes que exigirían
-       dobles alteraciones, y las fundamentales Mi♯/Si♯/Fa♭/Do♭);
-     · cada ejercicio alterna dos sentidos: VER el acorde y
-       nombrarlo, o CONSTRUIRLO a partir del dato (fundamental y
-       tipo / cifrado / bajo cifrado);
+   Lógica común a las tres variantes (tipo, inversiones, grados).
+   Reubica y generaliza la antigua familia 1 (tríadas de la
+   Unidad 1):
+     · variantes 'tipo' e 'inversion': tríadas AISLADAS, sin
+       tonalidad: fundamental libre con alteración simple (se
+       rechazan los acordes que exigirían dobles alteraciones, y
+       las fundamentales Mi♯/Si♯/Fa♭/Do♭);
+     · variante 'grados': tríada diatónica en estado fundamental
+       sobre un grado de una tonalidad (las 4 del trimestre 1);
+       en menor, la sensible solo en V y VII (III natural, mayor);
+     · dos sentidos: VER el acorde y nombrarlo, o CONSTRUIRLO a
+       partir del dato (cifrado americano / bajo cifrado). Qué
+       sentidos admite cada variante y nivel lo fija SENTIDOS;
      · niveles: 1 clave de Sol · 2 clave de Fa (posición cerrada)
        · 3 posición abierta en pentagrama doble (el bajo en Fa,
-       las otras dos notas en Sol).
+       las otras dos notas en Sol, nunca a más de una 8.ª).
    Depende de `mini-lilypond-parser.js` (variable global MiniLily).
    ============================================================ */
 (function (global) {
@@ -21,12 +25,26 @@
   const MiniLily = (typeof module !== 'undefined' && module.exports)
     ? require('./mini-lilypond-parser') : global.MiniLily;
 
-  /* ---------- núcleo de alturas ---------- */
+  /* ---------- núcleo de alturas (igual que las otras familias) ---------- */
   const LETTERS = ['C','D','E','F','G','A','B'];
   const LETTER_SEMITONE = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+  const SHARP_ORDER = ['F','C','G','D','A','E','B'];
+  const FLAT_ORDER  = ['B','E','A','D','G','C','F'];
   const ES = {C:'Do',D:'Re',E:'Mi',F:'Fa',G:'Sol',A:'La',B:'Si'};
   function midiOf(letter,alter,oct){ return (oct+1)*12 + LETTER_SEMITONE[letter] + alter; }
   const rnd = a => a[Math.floor(Math.random()*a.length)];
+
+  function keysigAlters(sig){
+    const m={C:0,D:0,E:0,F:0,G:0,A:0,B:0};
+    if(sig>0) for(let i=0;i<sig;i++) m[SHARP_ORDER[i]]=1;
+    else if(sig<0) for(let i=0;i<-sig;i++) m[FLAT_ORDER[i]]=-1;
+    return m;
+  }
+  function scaleLetters(tonic){
+    const s=LETTERS.indexOf(tonic), out=[];
+    for(let i=0;i<7;i++) out.push(LETTERS[(s+i)%7]);
+    return out;
+  }
 
   /* ---------- construcción de la tríada ---------- */
   const TYPES = { mayor:[4,3], menor:[3,4], disminuida:[3,3], aumentada:[4,4] };
@@ -57,6 +75,35 @@
       if(alter===-1 && (letter==='F'||letter==='C')) continue;   // Fa♭, Do♭
       return {letter, alter};
     }
+  }
+
+  /* ---------- tríadas diatónicas (variante 'grados') ---------- */
+  // Tonalidades del trimestre 1 (las mismas que Intervalos con grados).
+  const KEYS = [
+    {tonic:'C', sig:0,  mode:'major', nombre:'Do mayor'},
+    {tonic:'G', sig:1,  mode:'major', nombre:'Sol mayor'},
+    {tonic:'A', sig:0,  mode:'minor', nombre:'La menor'},
+    {tonic:'D', sig:-1, mode:'minor', nombre:'Re menor'}
+  ];
+  const ROMANOS = ['I','II','III','IV','V','VI','VII'];
+
+  // Tríada sobre el grado `grado` (1–7) de `key`, como {letter,alter}[].
+  // En menor, la sensible (7.º grado alterado) solo aparece en V y VII:
+  // el III se toma de la escala natural (mayor), no aumentado.
+  function diatonicTriad(key, grado){
+    const sig=keysigAlters(key.sig), L=scaleLetters(key.tonic);
+    const sensible = key.mode==='minor' && (grado===5 || grado===7);
+    return [0,2,4].map(off=>{
+      const idx=(grado-1+off)%7, letter=L[idx];
+      const alter = sig[letter] + ((sensible && idx===6) ? 1 : 0);
+      return {letter, alter};
+    });
+  }
+  // Tipo de una tríada en fundamental/3.ª/5.ª por sus semitonos.
+  function typeOf(triad){
+    const m=triad.map(n=>midiOf(n.letter,n.alter,4));
+    const a=((m[1]-m[0])%12+12)%12, b=((m[2]-m[1])%12+12)%12;
+    return Object.keys(TYPES).find(t=>TYPES[t][0]===a && TYPES[t][1]===b) || null;
   }
 
   /* ---------- nombres y cifrados ---------- */
@@ -94,7 +141,9 @@
   }
 
   // Posición abierta (nivel 3): el bajo (según la inversión) en clave de Fa
-  // y las otras dos notas en clave de Sol, en cualquier orden y ascendentes.
+  // y las otras dos notas en clave de Sol, en cualquier orden y apiladas
+  // ascendentes desde Do4: así quedan siempre a menos de una 8.ª entre sí
+  // (la distancia grande, si la hay, va entre el bajo y ellas).
   function voiceOpen(triad, inv){
     const rot=[triad[inv%3], triad[(inv+1)%3], triad[(inv+2)%3]];
     const bass={letter:rot[0].letter, alter:rot[0].alter};
@@ -115,29 +164,43 @@
         prev=m;
       }
       if(!ok) continue;
-      // abre algo más la disposición cuando cabe
-      if(Math.random()<0.35 && midiOf(up[1].letter,up[1].alter,up[1].oct+1)<=81) up[1].oct++;
       return { bass, upper:up };
     }
     return null;
   }
 
   /* ---------- generador ---------- */
-  // variante: 'tipo' | 'cifrado' | 'inversion'. En todas, la mitad de las
-  // veces se VE el acorde (dir 'ver') y la otra mitad hay que CONSTRUIRLO
-  // (dir 'construir'). Solo la variante 'inversion' usa inversiones; en el
-  // sentido 'construir' el bajo cifrado se limita a 6/3 y 6/4 (con 5/3 el
-  // dato sería el mismo que en la variante 'tipo').
+  // Sentidos admitidos por variante y nivel. 'construir' solo tiene
+  // sentido cuando la disposición revelada es la única posible (posición
+  // cerrada, niveles 1-2): en el nivel 3 la disposición abierta es
+  // arbitraria y solo se podrían contrastar nombres de notas. En
+  // 'inversion' se mantiene en todos los niveles: leer un bajo cifrado
+  // en clave de Fa es precisamente el ejercicio. 'grados' es solo ver.
+  const SENTIDOS = {
+    tipo:      {1:['ver','construir'], 2:['ver','construir'], 3:['ver']},
+    inversion: {1:['ver','construir'], 2:['ver','construir'], 3:['ver','construir']},
+    grados:    {1:['ver'],             2:['ver'],             3:['ver']}
+  };
+
+  // variante: 'tipo' | 'inversion' | 'grados'. Solo 'inversion' usa
+  // inversiones; en su sentido 'construir' el bajo cifrado se limita a
+  // 6/3 y 6/4 (con 5/3 el dato sería el mismo que en la variante 'tipo').
   function generar(nivel, variante){
     for(let t=0;t<200;t++){
-      const type=rnd(TYPE_POOL);
-      const root=rndRoot();
-      const triad=buildTriad(root,type);
-      if(!triad) continue;
-      const dir = Math.random()<0.5 ? 'ver' : 'construir';
-      let inv=0;
-      if(variante==='inversion')
-        inv = dir==='ver' ? Math.floor(Math.random()*3) : 1+Math.floor(Math.random()*2);
+      const dir = rnd(SENTIDOS[variante][nivel]);
+      let root, type, triad, key=null, grado=0, inv=0;
+      if(variante==='grados'){
+        key=rnd(KEYS); grado=1+Math.floor(Math.random()*7);
+        triad=diatonicTriad(key,grado);
+        root=triad[0]; type=typeOf(triad);
+      }else{
+        type=rnd(TYPE_POOL);
+        root=rndRoot();
+        triad=buildTriad(root,type);
+        if(!triad) continue;
+        if(variante==='inversion')
+          inv = dir==='ver' ? Math.floor(Math.random()*3) : 1+Math.floor(Math.random()*2);
+      }
 
       let ej;
       if(nivel<=2){
@@ -153,9 +216,15 @@
       ej.nivel=nivel; ej.variante=variante; ej.dir=dir;
       ej.root=root; ej.type=type; ej.inv=inv;
       ej.cifrado=cifradoAm(root,type);
+      // cifrado con barra: el bajo tras la barra cuando hay inversión (C/E)
+      ej.cifradoBajo = inv ? ej.cifrado+'/'+triad[inv].letter+sym(triad[inv].alter) : ej.cifrado;
       ej.nombres=triad.map(nombreNota);          // fundamental – 3.ª – 5.ª
       ej.nombreRoot=nombreNota(root);
       ej.invLabel=INV_LABEL[inv]; ej.invCifra=INV_CIFRA[inv];
+      if(key){
+        ej.key=key; ej.grado=grado; ej.gradoRomano=ROMANOS[grado-1];
+        ej.modoTxt = key.mode==='minor' ? 'menor' : 'mayor';
+      }
       return ej;
     }
     return null;   // no debería ocurrir
@@ -173,19 +242,31 @@
   const accMap={1:'s',0:'n','-1':'f',2:'x','-2':'ff'};
   const clefAttr = c => c==='bass' ? 'clef.shape="F" clef.line="4"'
                                    : 'clef.shape="G" clef.line="2"';
-  // Sin tonalidad (keysig 0): toda alteración se escribe como accidental.
-  function noteXml(ev, id){
-    const acc = ev.alter!==0 ? ` accid="${accMap[ev.alter]}"` : '';
-    const xid = id ? ` xml:id="${id}"` : '';
-    return `<note${xid} dur="${ev.base||1}" pname="${ev.letter}" oct="${ev.octave}"${acc}/>`;
-  }
   function parse1(music){ return MiniLily.parseVoice(music,{time:null}).events[0]; }
 
   // toMEI(ej, {solo, cifras}):
   //   solo   → dibuja solo el bajo (sentido 'construir', antes de revelar);
   //   cifras → añade el bajo cifrado (6/3 o 6/4) bajo la nota más grave.
+  // Con tonalidad (variante 'grados') se escribe la armadura y solo llevan
+  // accidental las notas ajenas a ella (la sensible); sin tonalidad
+  // (keysig 0) toda alteración se escribe como accidental.
   function toMEI(ej, opts){
     opts=opts||{};
+    const sig = ej.key ? ej.key.sig : 0;
+    const sigMap = keysigAlters(sig);
+    const noteXml=(ev, id)=>{
+      const L=ev.letter.toUpperCase();
+      const acc = ev.alter!==sigMap[L] ? ` accid="${accMap[ev.alter]}"` : '';
+      const xid = id ? ` xml:id="${id}"` : '';
+      return `<note${xid} dur="${ev.base||1}" pname="${ev.letter}" oct="${ev.octave}"${acc}/>`;
+    };
+    // idBajo: la nota más grave del acorde lleva xml:id="bajo" (ancla de
+    // las cifras) solo cuando ese acorde contiene realmente al bajo.
+    const chordXml = (notas, idBajo) => {
+      const ev=MiniLily.parseVoice('<'+notas.map(pitchToken).join(' ')+'>1',{time:null}).events[0];
+      return `<chord dur="${ev.base}">${
+        ev.notes.map((n,i)=>noteXml(n, (idBajo && i===0)?'bajo':null)).join('')}</chord>`;
+    };
     const harm = opts.cifras
       ? `<harm place="below" startid="#bajo"><fb>${
           ej.invCifra.split('/').map(f=>`<f>${f}</f>`).join('')}</fb></harm>`
@@ -193,31 +274,24 @@
     let staffDefs, staves;
     if(ej.single){
       staffDefs=`<staffDef n="1" lines="5" ${clefAttr(ej.clef)}/>`;
-      let cuerpo;
-      if(opts.solo){
-        cuerpo=noteXml(parse1(pitchToken(ej.notes[0])+'1'),'bajo');
-      }else{
-        const ev=MiniLily.parseVoice('<'+ej.notes.map(pitchToken).join(' ')+'>1',{time:null}).events[0];
-        cuerpo=`<chord dur="${ev.base}">${
-          ev.notes.map((n,i)=>noteXml(n, i===0?'bajo':null)).join('')}</chord>`;
-      }
+      const cuerpo = opts.solo
+        ? noteXml(parse1(pitchToken(ej.notes[0])+'1'),'bajo')
+        : chordXml(ej.notes, true);
       staves=`<staff n="1"><layer n="1">${cuerpo}</layer></staff>`;
     }else{
       staffDefs=`<staffDef n="1" lines="5" ${clefAttr('treble')}/>`+
                 `<staffDef n="2" lines="5" ${clefAttr('bass')}/>`;
-      const sup = opts.solo
-        ? '<space dur="1"/>'
-        : (()=>{ const ev=MiniLily.parseVoice('<'+ej.upper.map(pitchToken).join(' ')+'>1',{time:null}).events[0];
-                 return `<chord dur="${ev.base}">${ev.notes.map(n=>noteXml(n)).join('')}</chord>`; })();
+      const sup = opts.solo ? '<space dur="1"/>' : chordXml(ej.upper, false);
       const baj = noteXml(parse1(pitchToken(ej.bass)+'1'),'bajo');
       staves=`<staff n="1"><layer n="1">${sup}</layer></staff>`+
              `<staff n="2"><layer n="1">${baj}</layer></staff>`;
     }
     const grpAttrs = ej.single ? '' : ' symbol="brace" bar.thru="true"';
+    const sigAttr = sig===0?'0':(Math.abs(sig)+(sig>0?'s':'f'));
     return `<?xml version="1.0" encoding="UTF-8"?>
 <mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="4.0.0">
  <music><body><mdiv><score>
-  <scoreDef keysig="0">
+  <scoreDef keysig="${sigAttr}">
    <staffGrp${grpAttrs}>${staffDefs}</staffGrp>
   </scoreDef>
   <section><measure>${staves}${harm}</measure></section>
@@ -239,7 +313,7 @@
   };
   const MAX_NIVEL = 3;
 
-  const api = { generar, toMEI, midis, LVL_NOTES, MAX_NIVEL, INV_LABEL, INV_CIFRA };
+  const api = { generar, toMEI, midis, midiOf, LVL_NOTES, MAX_NIVEL, SENTIDOS, INV_LABEL, INV_CIFRA, KEYS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.U0Acordes = api;
 })(typeof window !== 'undefined' ? window : globalThis);

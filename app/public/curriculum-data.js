@@ -13,8 +13,8 @@
    Excepción (Unidad 0 de 3.º): sus familias no tienen modos id/au/ct
    (todo es identificación) sino TRES VARIANTES cada una, en el
    array `tipos` [{key, label, title, icono, texto?, url, desc}].
-   `icono` es una clave de TIPO_ICONS (index.html) o 'texto' /
-   'apilado' para iconos tipográficos (con el campo `texto`).
+   `icono` es una clave de TIPO_ICONS (index.html) o 'apilado' para
+   el icono tipográfico de cifras (con el campo `texto`).
    Las familias sin `niveles` no tienen niveles de dificultad.
    ============================================================ */
 const CURRICULO = {
@@ -56,17 +56,17 @@ const CURRICULO = {
                  desc:'Intervalo dentro de una tonalidad (armadura + nombre; las 4 del trimestre 1): nombrar el intervalo y el grado de cada nota (número con circunflejo, encima y debajo del pentagrama). Único accidental posible: la sensible del menor.'}
               ]},
             { nombre:'Acordes',
-              desc:'Tríadas aisladas, con alteraciones simples (reubica la antigua familia de tríadas de la Unidad 1). Cada ejercicio alterna dos sentidos: identificar el acorde que se ve, o construirlo a partir del dato.',
+              desc:'Tríadas con alteraciones simples (reubica la antigua familia de tríadas de la Unidad 1): aisladas, sin tonalidad, salvo en la variante con grados. Las dos primeras variantes alternan dos sentidos: identificar el acorde que se ve, o construirlo a partir del dato (en el nivel 3, posición abierta, solo se identifica en «Tipo y cifrado»).',
               tipos:[
-                {key:'tipo', label:'TIPO', title:'Tipo de tríada', icono:'triada',
+                {key:'tipo', label:'TIPO', title:'Tipo y cifrado', icono:'triada',
                  url:'ejercicios/unidad0-acordes-tipo.html',
-                 desc:'Se muestra la tríada en estado fundamental y se pide el tipo (mayor / menor / aumentada / disminuida), o se dan la fundamental y el tipo y se pide el resto del acorde.'},
-                {key:'cifrado', label:'CIFR.', title:'Cifrado americano', icono:'texto', texto:'D♭',
-                 url:'ejercicios/unidad0-acordes-cifrado.html',
-                 desc:'Lo mismo con cifrado americano: del acorde al cifrado (D♭m) o del cifrado al acorde.'},
+                 desc:'Se muestra la tríada en estado fundamental y se piden el tipo (mayor / menor / aumentada / disminuida) y su cifrado americano (D♭m, F°, C+), o se da el cifrado y se pide el acorde.'},
                 {key:'inversion', label:'INV.', title:'Inversiones', icono:'apilado', texto:'6/4',
                  url:'ejercicios/unidad0-acordes-inversion.html',
-                 desc:'Se muestra la tríada y se piden la inversión y su cifrado («1.ª inversión · 6/3»), o se dan el bajo con su cifrado (solo 6/3 o 6/4) y el tipo, y se pide el resto del acorde.'}
+                 desc:'Se muestra la tríada y se piden la inversión y su cifrado («1.ª inversión · 6/3»; en el detalle, el cifrado americano con barra, C/E), o se dan el bajo con su cifrado (solo 6/3 o 6/4) y el tipo, y se pide el resto del acorde.'},
+                {key:'grados', label:'GRADOS', title:'Con grados', icono:'grados',
+                 url:'ejercicios/unidad0-acordes-grados.html',
+                 desc:'Tríada diatónica en estado fundamental dentro de una tonalidad (armadura + nombre; las 4 del trimestre 1): decir modo, grado de la fundamental y tipo («Modo mayor · II grado · Tríada menor»). En menor, la sensible solo en V y VII; el III se toma de la escala natural.'}
               ],
               niveles:[
                 'Clave de Sol, posición cerrada.',

@@ -47,7 +47,8 @@
   <p class="prompt">Si ves la tríada completa, di su <b>inversión</b> y su <b>cifrado</b>
      (estado fundamental · 5/3, 1.ª inversión · 6/3, 2.ª inversión · 6/4). La mitad de
      las veces es al revés: se dan el <b>bajo</b> con su <b>cifrado</b> (solo 6/3 o 6/4)
-     y el tipo de tríada, y hay que construir el resto del acorde.
+     y el tipo de tríada, y hay que construir el resto del acorde. En la respuesta
+     aparece también el cifrado americano con el bajo tras la barra (C/E).
      <span id="lvlNote"></span></p>
   </details>
 </main>
@@ -92,7 +93,7 @@ function reveal(){
   if(!current) return;
   revelado=true;
   $('ansQ').textContent = current.invLabel+' · '+current.invCifra;
-  $('ansDet').textContent = 'Tríada '+current.type+' ('+current.nombres.join(' – ')+')';
+  $('ansDet').textContent = current.cifradoBajo+' · Tríada '+current.type+' ('+current.nombres.join(' – ')+')';
   $('answer').className='answer show';
   $('btnReveal').disabled=true;
   $('btnSimilar').style.display='';

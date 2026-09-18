@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Armonía · Unidad 0 — Tríadas: tipo</title>
+<title>Armonía · Unidad 0 — Tríadas: tipo y cifrado</title>
 <!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
      Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
@@ -15,7 +15,7 @@
 </head>
 <body>
 <header>
-  <h1>Tríadas: tipo</h1>
+  <h1>Tríadas: tipo y cifrado</h1>
   <span class="sub">Acordes · Unidad 0</span>
   <a class="back" href="../index.html">← Menú</a>
   <span class="level">Nivel <b id="lvl">1</b></span>
@@ -44,56 +44,74 @@
 
   <details class="ayuda">
     <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
-  <p class="prompt">Si ves la tríada completa (en estado fundamental), di su <b>tipo</b>:
-     mayor, menor, aumentada o disminuida. La mitad de las veces es al revés: se dan la
-     <b>fundamental</b> (en el pentagrama) y el <b>tipo</b>, y hay que construir
-     mentalmente el resto del acorde antes de comprobar. <span id="lvlNote"></span></p>
+  <p class="prompt">Si ves la tríada (en estado fundamental), di su <b>tipo</b> —mayor,
+     menor, aumentada o disminuida— y su <b>cifrado americano</b> (p. ej. D♭m; ° disminuida,
+     + aumentada). <span id="construirNote">La mitad de las veces es al revés: se muestra un
+     <b>cifrado</b> y hay que construir mentalmente la tríada antes de comprobar.</span>
+     <span id="lvlNote"></span></p>
   </details>
 </main>
 
 <script>
 /* ============================================================
-   UI / RENDER / AUDIO — tipo de tríada (dos sentidos)
+   UI / RENDER / AUDIO — tipo de tríada y cifrado americano
    (la generación vive en unidad0-acordes-core.js, compartida
-    con las variantes de cifrado americano e inversiones)
+    con las variantes de inversiones y grados)
+   Sentido "ver": se dibuja el acorde; la respuesta da tipo y
+   cifrado. Sentido "construir" (niveles 1-2): el enunciado es el
+   cifrado, en grande en la tarjeta; el acorde se dibuja al revelar.
    ============================================================ */
 let tk=null, level=1, current=null, revelado=false;
 const $=ArmoniaEj.$;
 
 function renderSVG(){
-  if(tk && current){
-    tk.loadData(U0Acordes.toMEI(current,{solo: current.dir==='construir' && !revelado}));
-    $('notation').innerHTML = tk.renderToSVG(1);
-  }
+  if(!tk || !current) return;
+  if(current.dir==='construir' && !revelado) return;   // se muestra el cifrado, no partitura
+  tk.loadData(U0Acordes.toMEI(current,{}));
+  $('notation').innerHTML = tk.renderToSVG(1);
 }
 
 function newExercise(){
   current = U0Acordes.generar(level,'tipo');
   revelado=false;
+  const soloVer = U0Acordes.SENTIDOS.tipo[level].indexOf('construir')<0;
   $('lvl').textContent = level;
-  $('lvlNote').textContent = U0Acordes.LVL_NOTES[level] || '';
-  $('dato').textContent = current.dir==='construir' ? 'Construye: tríada '+current.type : '';
+  $('lvlNote').textContent = (U0Acordes.LVL_NOTES[level] || '')
+    + (soloVer ? ' En este nivel solo se muestra el acorde.' : '');
+  $('construirNote').style.display = soloVer ? 'none' : '';
+  $('dato').textContent = current.dir==='construir' ? 'Construye la tríada' : '';
   $('answer').className='answer';
   $('btnReveal').disabled=false;
   $('btnSimilar').style.display='none';
   $('btnHarder').style.display='none';
   $('btnListen').disabled = current.dir==='construir';   // no delatar el acorde
-  renderSVG();
-  if(current.dir==='ver') playChord();
+  if(current.dir==='construir'){
+    $('notation').innerHTML = '<div class="big-name">'+current.cifrado+'</div>';
+  }else{
+    $('notation').innerHTML = '<span class="ph">Cargando motor de partitura…</span>';
+    renderSVG();
+    playChord();
+  }
 }
 
 function reveal(){
   if(!current) return;
   revelado=true;
-  $('ansQ').textContent = 'Tríada '+current.type;
-  $('ansDet').textContent = current.nombres.join(' – ');
+  if(current.dir==='ver'){
+    $('ansQ').textContent = 'Tríada '+current.type+' · '+current.cifrado;
+    $('ansDet').textContent = current.nombres.join(' – ');
+  }else{
+    $('ansQ').textContent = current.nombres.join(' – ');
+    $('ansDet').textContent = 'Tríada '+current.type+' ('+current.cifrado+')';
+    renderSVG();
+    if(!tk) $('notation').innerHTML='<span class="ph">(el acorde se dibuja cuando cargue Verovio)</span>';
+    playChord();
+  }
   $('answer').className='answer show';
   $('btnReveal').disabled=true;
   $('btnSimilar').style.display='';
   $('btnHarder').style.display = level<U0Acordes.MAX_NIVEL ? '' : 'none';
   $('btnListen').disabled=false;
-  renderSVG();
-  if(current.dir==='construir') playChord();
 }
 
 async function playChord(){
@@ -113,7 +131,8 @@ newExercise();
 ArmoniaEj.initVerovio(
   {scale:60, pageWidth:900},
   t=>{ tk=t; renderSVG(); },
-  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
+  msg=>{ if(!current || current.dir==='ver' || revelado)
+          $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
 );
 </script>
 </body>
