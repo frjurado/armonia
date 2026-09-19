@@ -22,8 +22,9 @@
   Recorrido asimétrico por el círculo de 5.ª: se empieza por **Do, Sol, La m y Re m**.
   Tabla completa por trimestre en §2.
 - **Cifrado americano:** se adopta como notación morfológica de referencia, complementaria a los grados y bajo cifrado.
-- **Mínimos de conducción de voces:** conjunto de reglas no negociables.
-  ⟶ PENDIENTE: redactar la lista de mínimos.
+- **Mínimos de conducción de voces:** conjunto de reglas no negociables (normas) y de
+  preferencias que hacen idiomática la escritura. Lista en `Minimos-conduccion.md`, con
+  identificadores estables que usan la app y los apuntes, y su vigencia por unidad.
 - **Principios transversales** (presentes desde el principio en todas las UD):
   - Integrar el **ritmo armónico** siempre.
   - Integrar la **modulación** desde muy pronto (¿ya en 3º UD 3?).
@@ -193,7 +194,7 @@ Cada unidad o trimestre incluye un *hard gate*, a la manera de "The Big 18": hay
 
 ## 8. Huecos pendientes (índice de TODOs)
 
-- [ ] Lista de mínimos de conducción de voces (§1).
+- [x] ~~Lista de mínimos de conducción de voces (§1)~~ → `Minimos-conduccion.md` (borrador).
 - [ ] Contrato de trabajo previo para el modelo *flipped* (§3).
 - [ ] Marcar ejercicios con versión offline (§5).
 - [ ] Inventario de materiales interactivos (§6).

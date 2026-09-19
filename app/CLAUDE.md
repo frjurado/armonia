@@ -25,6 +25,14 @@ y conviene que siga así.
   desechable (p. ej. "no salen intervalos imposibles en el nivel 1"). Es el
   patrón a seguir ante cualquier cambio en un `-core.js`: generar miles de
   instancias y comprobar invariantes, no inspeccionar una a mano.
+- **El motor a cuatro voces** tiene sus scripts en `tests/` (Node, sin
+  dependencias): `masivo-cadencias.js [nivel] [n]` (miles de realizaciones
+  pasadas por el comprobador independiente, frecuencia de fórmulas y
+  variedad) y `sensibilidad-comprobador.js` (faltas deliberadas: prueba de
+  que el comprobador detecta cada norma). **Al tocar una regla en
+  `curriculum/Minimos-conduccion.md`, cambiar realizador y comprobador y
+  añadir un caso de sensibilidad**; sin ese caso, «cero infracciones» no
+  demuestra nada.
 
 ## Los documentos de diseño mandan
 
@@ -81,9 +89,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
   mantener diferencias de contenido entre `master` y `publico` (se fusionan
-  enteras con `sitio/publicar.sh`). Excepción: las familias de la **Unidad 0 de 3.º**
-  no tienen modos sino un array `tipos` (variantes de identificación, cada una
-  con su icono).
+  enteras con `sitio/publicar.sh`). Excepción: las familias de las **unidades
+  de repaso (UD 0 de ambos cursos)** no tienen modos sino un array `tipos`
+  (variantes de identificación, cada una con su icono).
 - `ejercicios/`, un patrón por familia:
   - `<familia>-core.js` — IIFE que expone un global (`Familia2`, `Familia3`,
     `U0Armaduras`, `U0Intervalos`, `U0Acordes`, `Contrapunto`) con TODA la
@@ -105,6 +113,26 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `contrapunto-core.js` — motor genérico de contrapunto de 1.ª especie
     (reglas melódicas y armónicas), reutilizado por la familia 3 y pensado
     para las variantes con faltas y a tres voces.
+  - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
+    4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
+    normas/preferencias de `curriculum/Minimos-conduccion.md`. Las
+    realizaciones **se buscan, no se escriben**. `cuatro-voces-check.js`
+    (`CuatroVocesCheck`) es el comprobador independiente: **no comparte con
+    el motor las funciones de transición**, a propósito.
+  - `c4u0-cadencias-core.js` (`Cadencias`) — familia Cadencias de 4.º UD 0
+    sobre el motor: catálogo de fórmulas, cláusulas de soprano, plantillas
+    rítmicas (con anacrusa: `partial` en el JSON y en el parser), JSON, MEI
+    y MIDI. Verovio descarta `<fb>` dentro de un `<harm>` con texto: los
+    romanos con cifras van como `<rend>` + `<rend rend="sup|sub">`, y como
+    Verovio los escribe en diagonal, cada página llama a
+    `ArmoniaEj.apilarCifras(contenedor)` justo después de insertar el SVG.
+  - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
+    tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
+    aún llevan sus 4 tonalidades dentro (migración pendiente).
+  - Ficheros **sin prefijo de curso/unidad = compartidos**; las familias
+    nuevas van como `c<curso>u<ud>-<familia>-…` (`docs/Generador-ejercicios.md`
+    §5.4). Los nombres antiguos (`unidad0-`, `familia2-`…) se renombrarán en
+    una pasada aparte.
 
 ## Convenciones de dominio
 

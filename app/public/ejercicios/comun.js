@@ -110,6 +110,28 @@
     })();
   }
 
+  /* ---------- cifras apiladas en los <harm> ---------- */
+  // Los grados con cifras van en el MEI como <rend>I</rend><rend rend="sup">6
+  // </rend><rend rend="sub">4</rend> (Verovio descarta <fb> si el <harm> lleva
+  // texto). Verovio escribe sup y sub uno TRAS otro en la misma línea, así que
+  // «I⁶₄» sale en diagonal; esta función, tras insertar el SVG en el DOM,
+  // retrocede cada cifra sub la anchura medida de la sup anterior para que
+  // queden apiladas. Medir (y no estimar) hace que valga con cualquier fuente.
+  function apilarCifras(root){
+    if(!root || !root.querySelectorAll) return;
+    root.querySelectorAll('g.harm text').forEach(text=>{
+      const rends=Array.from(text.children).filter(c=>c.classList && c.classList.contains('rend'));
+      for(let i=1;i<rends.length;i++){
+        const prev=rends[i-1].querySelector('tspan.text'), cur=rends[i].querySelector('tspan.text');
+        if(!prev || !cur) continue;
+        const dyP=parseFloat(prev.getAttribute('dy')||'0'), dyC=parseFloat(cur.getAttribute('dy')||'0');
+        if(dyP<0 && dyC>0){
+          try{ cur.setAttribute('dx', -prev.getComputedTextLength()); }catch(e){}
+        }
+      }
+    });
+  }
+
   /* ---------- audio ---------- */
   let piano=null;
   async function getPiano(){
@@ -138,5 +160,5 @@
 
   function audioNoDisponible(btn){ btn.textContent='(sin audio)'; btn.disabled=true; }
 
-  global.ArmoniaEj = { $, initVerovio, tocar, detener, audioNoDisponible };
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, tocar, detener, audioNoDisponible };
 })(window);

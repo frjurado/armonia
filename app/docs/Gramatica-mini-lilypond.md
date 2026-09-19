@@ -164,8 +164,12 @@ gs'2 gs'4 ~ gs'4 | a'1
 - **Web (Verovio):** `parse(music)` → modelo de notas `{letter, alter, octave, dur, dots, tie}`
   → exportador a **MEI** (ya existente en el prototipo de tríadas).
 - **Papel (LilyPond + Typst):** envoltorio
-  `\clef <clave> \key <ton> \time <compás> { <music> }` (+ `\language "english"` si se opta por
-  la convención inglesa). La cadena entra **sin retoques**.
+  `\clef <clave> \key <ton> \time <compás> [\partial <dur>] { <music> }` (+ `\language "english"`
+  si se opta por la convención inglesa). La cadena entra **sin retoques**.
+- **Anacrusa:** campo `partial` del `context` (una duración escrita: `"4"`, `"2."`), fuera de
+  la cadena, como clave/tonalidad/compás. El parser exige que el primer compás sume exactamente
+  esa duración y desplaza el cuadre de los siguientes; el envoltorio de papel lo emite como
+  `\partial`. Lo usan las cadencias de 4.º UD 0 (`Generador-ejercicios.md` §4t.5).
 - **Audio:** del modelo de notas se obtienen los MIDI para los samples.
 
 ## 7. Decisiones tomadas y pendientes
@@ -178,6 +182,7 @@ Cerradas:
 - [x] Tresillos `\tuplet`: **deferred** hasta que se vea la necesidad (§2).
 - [x] *Bar check* `|`: **validar** el cuadre del compás (§2).
 - [x] Silencio invisible `s`: **incluido** desde el principio (§2).
+- [x] Anacrusa: campo `partial` del JSON, validado por el parser (§6). 2026-09-19.
 
 - [x] Doble sostenido: **solo `ss`**, sin el alias `x`, por analogía con `ff` (más claro).
 

@@ -10,10 +10,12 @@
      · duraciones 1 2 4 8 16 32 con puntillos, y ARRASTRE
        (si falta, hereda la anterior; negra por defecto)
      · ligadura de prolongación ~ (se adjunta a la nota/acorde previo)
-     · bar check | (valida el cuadre del compás dado en opts.time)
+     · bar check | (valida el cuadre del compás dado en opts.time;
+       con opts.partial —duración de la anacrusa, p. ej. "4" o "2."—
+       el primer compás es incompleto y debe sumar exactamente eso)
    Uso:
      const { parseVoice } = require('./mini-lilypond-parser');  // Node
-     MiniLily.parseVoice(str, { time: "4/4" });                 // navegador
+     MiniLily.parseVoice(str, { time: "4/4", partial: "4" });   // navegador
    ============================================================ */
 (function (global) {
   'use strict';
@@ -24,6 +26,11 @@
   // Duración (en redondas) de {base, dots}: 1/base * (2 - (1/2)^dots)
   function durValue(d) { return (1 / d.base) * (2 - Math.pow(0.5, d.dots)); }
   function meterToWhole(t) { const p = t.split('/').map(Number); return p[0] / p[1]; }
+  // Duración escrita ("4", "2.", "8..") → valor en redondas; null si no es válida.
+  function durTokenValue(s) {
+    const m = /^(1|2|4|8|16|32)(\.*)$/.exec(String(s));
+    return m ? durValue({ base: parseInt(m[1], 10), dots: m[2].length }) : null;
+  }
   function lastPlayable(evs) {
     for (let k = evs.length - 1; k >= 0; k--)
       if (evs[k].type === 'note' || evs[k].type === 'chord') return evs[k];
@@ -34,6 +41,8 @@
     opts = opts || {};
     const time = opts.time || null;
     const measureLen = time ? meterToWhole(time) : null;
+    const partial = opts.partial != null ? durTokenValue(opts.partial) : null;
+    let barChecks = 0;
     const s = String(src);
     let i = 0;
     const events = [];
@@ -76,10 +85,15 @@
 
       if (c === '|') {                               // bar check
         i++;
+        barChecks++;
         if (measureLen == null) {
           errors.push('Bar check "|" sin compás definido (pos ' + i + ')');
+        } else if (partial != null && barChecks === 1) {
+          if (Math.abs(total - partial) > EPS)
+            errors.push('Anacrusa no cuadra: acumulado ' + total +
+                        ' no es la duración parcial ' + partial + ' (pos ' + i + ')');
         } else {
-          const r = total % measureLen;
+          const r = (total - (partial || 0)) % measureLen;
           if (Math.abs(r) > EPS && Math.abs(r - measureLen) > EPS)
             errors.push('Bar check no cuadra: acumulado ' + total +
                         ' no es múltiplo de ' + measureLen + ' (pos ' + i + ')');
@@ -134,7 +148,7 @@
     return { events, errors, totalDuration: total };
   }
 
-  const api = { parseVoice, durValue, meterToWhole };
+  const api = { parseVoice, durValue, meterToWhole, durTokenValue };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.MiniLily = api;
 })(typeof window !== 'undefined' ? window : globalThis);

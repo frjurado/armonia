@@ -251,6 +251,243 @@ grande, si la hay, queda entre el bajo y ellas).
   ⟶ ABIERTO: ampliar a inversiones (habría que hallar la fundamental antes; hoy es tarea
   de la variante *Inversiones*).
 
+## 4 ter. Curso 4.º — Unidad 0 (repaso): familia Cadencias
+
+Unidad de repaso al comienzo de 4.º (trimestre 4). Tres familias —**Cadencias**, **Bajo
+dado** y **Canto dado**— que comparten el **motor a cuatro voces** (§5.3) y las reglas de
+`../curriculum/Minimos-conduccion.md`. Como la UD 0 de 3.º, cada familia ofrece
+**variantes** (`tipos` en `curriculum-data.js`) en lugar de modos id/au/ct, y niveles 1–3.
+Esta sección diseña la primera familia; las otras dos se diseñarán sobre el mismo motor.
+
+Ficheros (convención de §5.4): `ejercicios/c4u0-cadencias-core.js` (global `Cadencias`)
+y páginas `c4u0-cadencias-tipo.html`, `-bajo.html`, `-canto.html`.
+
+### 4t.1. Alcance: esqueleto general, contenido de ahora
+
+⟶ DECIDIDO. Se diseñan **en general** solo las dos cosas que costaría rehacer: el **modelo
+de acorde** del motor (cualquier acorde de 3 o 4 sonidos, con alteraciones, duplicaciones y
+tendencias propias) y la **fórmula por casillas** de §4t.3. El **contenido** —qué acordes,
+qué cadencias, con qué pesos— se limita a lo que se repasa en esta unidad. Napolitana,
+6.ª aumentada, dominantes secundarias o la cadencia plagal serán **filas nuevas** en las
+tablas de §4t.2 y §4t.3 cuando se enseñen, con sus restricciones escritas entonces y no
+adivinadas ahora; la columna *desde* de cada tabla es la que capa lo que sale en cada nivel.
+
+### 4t.2. Catálogo de cadencias
+
+Criterio CAP/CAI: **solo la soprano** (Caplin). V y I van siempre en estado fundamental
+por construcción (§4t.3), así que la distinción no depende de nada más.
+
+| Sigla | Nombre | Fórmula | Condición | Desde |
+|-------|--------|---------|-----------|-------|
+| **CAP** | Auténtica perfecta | [T] [PD] [I6/4] V(7) I | soprano acaba en **1̂** | nivel 1 |
+| **CAI** | Auténtica imperfecta | [T] [PD] [I6/4] V(7) I | soprano acaba en **3̂ o 5̂** | nivel 1 |
+| **SC** | Semicadencia | [T] [PD] [I6/4] V | V **sin 7.ª**; al menos un acorde antes | nivel 1 |
+| **SC (frigia)** | Semicadencia frigia | [T] IV6 V | solo **menor** (bajo 6̂–5̂) | nivel 2 |
+| **CR** | Rota | [T] [PD] [I6/4] V(7) VI | VI con 3.ª duplicada (N7, §4) | nivel 2 |
+| **CR** | Rota sobre IV6 | [T] [PD] [I6/4] V(7) IV6 | — | nivel 3 |
+| *(no cad.)* | Gesto no cadencial | [T] V6 · V6/5 · V4/3 · V4/2 → I / I6 | solo variante *Tipo*, como distractor | ⟶ APLAZADO |
+
+Corchetes = casilla opcional. **Plagal: fuera** por ahora. Otras resoluciones de la rota,
+más adelante. ⟶ APLAZADO: el gesto no cadencial (dominante invertida → I, contraste con la
+cadencia; respuesta «no es cadencia») se decide **después de ver qué genera** el motor con
+el catálogo actual; no entra en ningún nivel por ahora.
+
+### 4t.3. Casillas, acordes y pesos
+
+Cinco casillas en orden fijo: **T0** (tónica inicial), **PD** (predominante), **D64** (6/4
+cadencial), **D** (dominante) y **TF** (meta). D es obligatoria; TF falta en SC.
+
+| Casilla | Acorde | Bajo | Peso mayor | Peso menor | Desde | Notas |
+|---------|--------|------|-----------:|-----------:|-------|-------|
+| T0 | I | 1̂ | 3 | 3 | 1 | |
+| T0 | I6 | 3̂ | 6 | 6 | 1 | |
+| T0 | VI | 6̂ | 1 | 1 | 3 | |
+| PD | IV | 4̂ | 3 | 3 | 1 | menor: iv |
+| PD | II6 | 4̂ | 5 | 5 | 1 | en menor, disminuido |
+| PD | II | 2̂ | 1 | **0** | 2 | en menor, II° solo invertido (N10) |
+| PD | IV6 | 6̂ | 1 | 3 | 2 (menor) · 3 (mayor) | en menor ante V sin 7.ª = SC frigia |
+| D64 | I6/4 | 5̂ | — | — | 2 | presencia 60 % desde el nivel 2 |
+| D | V | 5̂ | 2 | 2 | 1 | única opción en SC |
+| D | V7 | 5̂ | 3 | 3 | 1 | |
+| TF | I | 1̂ | — | — | 1 | |
+| TF | VI | 6̂ | — | — | 2 | solo CR |
+| TF | IV6 | 6̂ | — | — | 3 | solo CR |
+
+**Presencia de las casillas opcionales:** T0 80 %, PD 90 %, D64 60 % (0 % en nivel 1).
+Se rechaza la instancia si quedan menos de dos acordes, o si es SC con solo V. La fórmula
+de dos acordes (V–I) queda así por debajo del 10 %.
+
+**Encadenamientos.** Con este catálogo todo par T0 → PD → D64 → D es correcto; no hace
+falta tabla de transiciones, solo los pesos. **Guardas contra cadencias raras:** (a) el
+espacio de fórmulas es pequeño y enumerable (menos de 200 combinaciones), así que el script
+de generación masiva (§4t.9) **imprime la frecuencia de cada fórmula** para vetar a ojo;
+(b) una lista `FORMULAS_VETADAS` en el core recoge esos vetos explícitamente, como
+**pares de acordes consecutivos**. Vetos actuales: **VI–IV6** (el bajo repite 6̂ entre dos
+casillas; en general, dos casillas seguidas no comparten bajo), **I6–IV6** (bajo 3̂–6̂ sin
+sentido) e **I–II** (fuera del estilo).
+⟶ ABIERTO: ajustar pesos y vetos a la vista de esa tabla (la tabla actual está en la
+salida de `tests/masivo-cadencias.js`; con los pesos de arriba ninguna fórmula supera el
+5 % en el nivel 1 ni el 3,5 % en el 3).
+
+### 4t.4. Soprano: cláusulas preferidas
+
+⟶ DECIDIDO: sí, se definen líneas de soprano preferidas, **como pesos, no como normas**
+(P8 de los mínimos). Las normas solas producen escritura correcta pero atípica —es
+exactamente lo que pasa con los contrapuntos de 3.º—, y la cadencia se reconoce por su
+cláusula. El mecanismo «normas duras + preferencias puntuadas» es general: lo reutilizan
+Bajo dado, Canto dado y, pendiente, `contrapunto-core.js`.
+
+**Cláusulas como líneas de 2 a 5 grados**, alineadas al **final** de la fórmula (la última
+nota cae en el último acorde): cada línea tiene un peso de 1 a 4, y la puntuación busca la
+línea **más larga** que coincide con la soprano. Una línea corta (2̂→1̂) vale como
+respaldo cuando ninguna larga encaja; si ninguna encaja, la penalización es alta pero no
+invalida (P8, no norma). El grado **final** sí es norma de cada tipo (Caplin): CAP 1̂; CAI
+3̂ o 5̂; SC 2̂, 7̂ o 5̂; frigia 5̂ o 7̂; CR 1̂ o 3̂. La búsqueda puntúa también las
+coincidencias **parciales** en cada acorde (la mitad), para encaminar la soprano antes de
+llegar al final.
+
+⟶ PROPUESTA (2026-09-19, borrador para revisar; los pesos, en `CLAUSULA` del core):
+
+| Cadencia | Líneas de soprano (peso) |
+|----------|--------------------------|
+| CAP | 4̂–3̂–2̂–1̂ (4) · 3̂–2̂–1̂ (4) · 5̂–4̂–3̂–2̂–1̂ (4) · 5̂–4̂–2̂–1̂ (3) · 3̂–2̂–1̂–7̂–1̂ (4) · 3̂–2̂–7̂–1̂ (3) · 1̂–7̂–1̂ (3) · 1̂–1̂–7̂–1̂ (2) · 3̂–3̂–2̂–1̂ (2) · 3̂–4̂–2̂–1̂ (2) · 3̂–4̂–3̂–2̂–1̂ (2) · 2̂–1̂ (3) · 1̂–2̂–7̂–1̂ (2) · 7̂–1̂ (2) |
+| CAI | 1̂–2̂–3̂ (3) · 5̂–4̂–3̂ (4, exige V7) · 6̂–5̂–4̂–3̂ (4) · 6̂–5̂–3̂ (4) · 3̂–2̂–3̂ (3) · 3̂–4̂–4̂–3̂ (2) · 5̂–6̂–5̂ (2) · 5̂–5̂–5̂ (1) · 2̂→3̂ (4) · 4̂→3̂ (3) · 5̂→3̂ (2) · 5̂→5̂ (1) |
+| SC | 4̂–3̂–2̂ (3) · 5̂–4̂–3̂–2̂ (4) · 1̂–1̂–2̂ (3) · 3̂–3̂–2̂ (3) · 3̂–4̂–2̂ (2) · 3̂–2̂–1̂–7̂ (4) · 1̂–1̂–7̂ (2) · 3̂–4̂–5̂ (1) · 5̂–6̂–5̂ (1) · 1̂→2̂ (3) · 3̂→2̂ (3) · 1̂→7̂ (2) · 6̂→5̂ (1) · 4̂→5̂ (1) |
+| SC (frigia) | 3̂–4̂–5̂ (3) · 1̂–1̂–7̂ (2) · 5̂–4̂–5̂ (2) · 4̂→5̂ (3) · 1̂→7̂ (3) |
+| CR | 4̂–3̂–2̂–1̂ (4) · 3̂–2̂–1̂ (4) · 1̂–7̂–1̂ (3) · 1̂–1̂–7̂–1̂ (2) · 2–1̂–7̂–1̂ (2) · 5̂–4̂–3̂ (2, exige V7) · 6̂–5̂–4̂–3̂ (2) · 2̂–2̂–1̂ (2) · 2̂→1̂ (2) · 7̂→1̂ (3) · 4̂→3̂ (1) |
+
+Criterios del boceto: (a) las líneas largas son las **descendentes por grado hacia la
+meta** (4̂–3̂–2̂–1̂, 6̂–5̂–4̂–3̂) y las de **bordadura de la tónica** (1̂–7̂–1̂, 3̂–2̂–3̂),
+que son las que hacen reconocible la cadencia; (b) las líneas con nota repetida
+(1̂–1̂–7̂–1̂, 3̂–3̂–2̂) pesan menos; (c) las que exigen V7 (4̂ sobre la dominante) solo
+casan si la fórmula lo lleva; (d) qué grado cabe sobre cada acorde lo decide el motor
+(1̂ sobre II6 no existe), así que una línea puede no ser realizable en una fórmula y
+entonces manda la siguiente. Los ejemplos de dos notas se mantienen como respaldo.
+⟶ ABIERTO: revisar líneas y pesos a la vista de la tabla de sopranos que imprime
+`tests/masivo-cadencias.js`.
+
+Antes de la cláusula, la soprano se rige por P7/P8 (grado conjunto, un ápice, sin
+repeticiones largas). La posición del primer acorde (1̂, 3̂ o 5̂ en la soprano) se reparte
+al azar: es la principal fuente de variedad junto con la disposición.
+
+### 4t.5. Ritmo: tabla de plantillas, no reglas
+
+Qué significa «tabla, no reglas»: el generador **no calcula** duraciones a partir de
+reglas métricas (meta en parte fuerte, 6/4 más fuerte que su V…). Elige una **plantilla
+escrita a mano** de una lista indexada por (compás, número de acordes); cada plantilla ya
+es válida por construcción y lleva marcada la fuerza de cada casilla. Solo queda una
+comprobación: el par I6/4–V debe caer en dos casillas del **mismo compás** con la primera
+**más fuerte** que la segunda; si la plantilla no lo permite, se elige otra. Menos variedad
+rítmica que con un generador, pero la variedad rítmica no es el objetivo, y la lista se
+amplía añadiendo líneas.
+
+Invariante de todas las plantillas: el último acorde (TF, o la V de una SC) cae en **parte
+fuerte del último compás y lo ocupa entero**. Duraciones en mini-LilyPond; `|` compás;
+`↑` anacrusa (compás inicial incompleto).
+
+| Compás | 2 acordes | 3 acordes | 4 acordes | 5 acordes |
+|--------|-----------|-----------|-----------|-----------|
+| 4/4 | `1 \| 1` · `↑2 \| 1` | `2 2 \| 1` · `↑4 4 \| 1` | `1 \| 2 2 \| 1` · `2 4 4 \| 1` · `↑4 \| 2 2 \| 1` | `1 \| 2 4 4 \| 1` · `2 2 \| 2 2 \| 1` · `↑4 \| 2 4 4 \| 1` |
+| 3/4 | `2. \| 2.` · `↑4 \| 2.` | `2 4 \| 2.` · `↑4 4 \| 2.` | `4 4 4 \| 2.` · `2. \| 2 4 \| 2.` · `↑4 \| 2 4 \| 2.` | `2. \| 4 4 4 \| 2.` · `2 4 \| 2 4 \| 2.` · `↑4 \| 4 4 4 \| 2.` |
+| 2/4 | `2 \| 2` · `↑4 \| 2` | `4 4 \| 2` · `↑4 \| 2 \| 2` | `2 \| 4 4 \| 2` · `↑4 \| 4 4 \| 2` | `4 4 \| 4 4 \| 2` · `↑4 \| 2 \| 4 4 \| 2` |
+
+**Excepción: semicadencia con 6/4 cadencial.** La V es el último acorde, así que no puede
+ocupar el último compás entero y a la vez seguir al 6/4 dentro de él: en ese caso (y solo en
+él) el 6/4 y la V **comparten el último compás**, el 6/4 en la parte fuerte:
+
+| Compás | 2 acordes | 3 acordes | 4 acordes |
+|--------|-----------|-----------|-----------|
+| 4/4 | `2 2` | `1 \| 2 2` · `↑4 \| 2 2` | `2 2 \| 2 2` · `↑4 \| 1 \| 2 2` |
+| 3/4 | `2 4` | `2. \| 2 4` · `↑4 \| 2 4` | `2 4 \| 2 4` · `↑4 \| 2. \| 2 4` |
+| 2/4 | `4 4` | `2 \| 4 4` · `↑4 \| 4 4` | `4 4 \| 4 4` · `↑4 \| 2 \| 4 4` |
+
+Nivel 1: sin anacrusa. La anacrusa va como campo `partial` en el `context` del JSON y el
+parser exige que el primer compás sume exactamente esa duración (⟶ HECHO, gramática §6).
+En el MEI, el compás de anacrusa lleva `metcon="false"` y numera desde 0.
+
+### 4t.6. Tonalidades y modo menor
+
+- ⟶ DECIDIDO: la tabla de tonalidades por trimestre (`Plan-Armonia.md` §2) sale del código
+  de cada core a un fichero de datos compartido, `public/tonalidades.js` (global
+  `TONALIDADES`: tónica, armadura, modo, nombre, trimestre; y una función «acumuladas
+  hasta el trimestre t»). Los cores de 3.º UD 0 que hoy llevan las 4 del trimestre 1
+  escritas dentro migran después. ⟶ PENDIENTE.
+- Niveles 1–2: las **12** tonalidades de 3.º (trimestres 1–3). Nivel 3: **16** (+ trimestre 4).
+- **Menor: escala armónica** como colección (V y V7 con sensible, II6 disminuido, IV menor, VI mayor,
+  I6/4 natural). N12 (sin 2.ª aumentada) es norma del motor: el único riesgo es 6̂→7̂ en una
+  voz superior al pasar de IV/VI/II6 a V, y la búsqueda lo descarta.
+
+### 4t.7. Las tres variantes
+
+Presentación común: **pentagrama doble**; soprano y contralto en clave de Sol (capas 1 y 2,
+plicas arriba/abajo), tenor y bajo en Fa (igual). Armadura y compás siempre. Cifrados al
+revelar: **cifrado americano encima** del pentagrama superior (C, G7, Am, F/A…) y **grados
+romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cuatro voces.
+
+- **Tipo** (icono: la sigla «CAP»): se muestra la realización completa y el nombre de la
+  tonalidad (y el compás); se pide el **tipo de cadencia**. Respuesta: sigla y nombre en
+  grande, el nombre en Title Case («CAP · Cadencia Auténtica Perfecta»); detalle: los cifrados dibujados sobre la
+  partitura y la sucesión de acordes en texto. ⟶ HECHO (2026-09-19):
+  `c4u0-cadencias-core.js` (global `Cadencias`) + `c4u0-cadencias-tipo.html`; en el menú,
+  4.º UD 0 con `publico:false`.
+- **Bajo dado** (icono: clave de Fa; ⟶ PENDIENTE): se muestra **solo el bajo** (pentagrama
+  superior con `<space>`, como en Intervalos con inversión), armadura y compás, **sin nombre
+  de tonalidad**; se piden **tonalidad, tipo y acordes** (grado e inversión). Respuesta
+  principal: tonalidad + tipo. Como el bajo no decide CAP/CAI, el tipo se responde como
+  «Auténtica», «Semicadencia (frigia)» o «Rota»; al revelar la realización se añade en el
+  detalle «CAP en esta realización». Bajo cada nota del bajo, además del acorde usado,
+  **«otras opciones»**: los acordes del catálogo de esa casilla con ese bajo, en ese nivel
+  (bajo 4̂ → IV o II6; bajo 6̂ como meta → VI o IV6). Se generan con la gramática, no a
+  mano. La tonalidad es **única por construcción**: la casilla D exige bajo 5̂, y el 5̂ de
+  una tonalidad es 7̂ o 3̂ de su relativa, que nunca es bajo de la casilla D en este
+  catálogo; al ampliar el catálogo, repetir el razonamiento (o descartar la instancia si
+  la relativa la lee).
+- **Canto dado** (icono: clave de Sol; ⟶ PENDIENTE): se muestra **solo la soprano**, armadura,
+  compás, nombre de la tonalidad y **el tipo** («CAP»); se pide **la línea del bajo**.
+  Respuesta: el bajo dibujado con sus cifrados; las voces internas se revelan a la vez, como
+  detalle. **«Otros bajos posibles»**: se vuelve a lanzar el motor con la soprano fijada
+  sobre todas las fórmulas del tipo en ese nivel y se listan las secuencias de grados del
+  bajo distintas que tienen realización válida («4̂–5̂–1̂ · IV–V–I»), hasta tres.
+
+En las dos últimas variantes la soprano/el bajo mostrados **se generan primero como
+realización completa**; no se generan sueltos. Así lo mostrado siempre tiene solución.
+
+### 4t.8. Niveles
+
+| Nivel | Cadencias | T0 | PD | D | Otros |
+|-------|-----------|----|----|---|-------|
+| 1 | CAP, CAI, SC | I, I6 | IV, II6 | V, V7 | sin I6/4; 12 tonalidades; 2/4, 3/4, 4/4 sin anacrusa |
+| 2 | + CR (VI), SC frigia | = | + II (mayor), IV6 (menor) | = | + I6/4 cadencial; anacrusa |
+| 3 | + CR sobre IV6 | + VI | + IV6 (mayor) | = | 16 tonalidades |
+
+«Más difícil» sube de nivel, como en las demás familias. ⟶ ABIERTO: revisar el reparto tras
+usarlo en clase.
+
+### 4t.9. Validación por generación masiva
+
+Script desechable (patrón de `CLAUDE.md`), por nivel, variante y tonalidad:
+
+1. **Cero infracciones** según el comprobador independiente (§5.3), sobre miles de instancias.
+2. **Tabla de frecuencia de fórmulas** (para vetar, §4t.3).
+3. **Variedad:** para cada (fórmula, tonalidad), número de realizaciones distintas en 200
+   extracciones; objetivo: ninguna realización supera el 25 % de su fórmula.
+4. **Bajo dado:** unicidad de tonalidad (§4t.7) y porcentaje de descartes.
+5. **Tipo:** la clasificación CAP/CAI recalculada desde la soprano coincide con la etiqueta.
+6. **Cuadre rítmico:** cada voz pasa el bar check del parser con el compás y `partial`.
+
+7. **Render real:** una muestra de instancias se carga en Verovio (que funciona también en
+   Node desde `vendor/`) y se cuentan notas, cifrados y compases en el SVG.
+
+⟶ HECHO (2026-09-19): `tests/masivo-cadencias.js [nivel] [n]` sobre el core de la familia
+(puntos 1, 2, 3, 5, 6 y 7; el 4 es por construcción). Resultado: **0 infracciones**,
+**0 errores de cuadre** y **0 problemas de render** en 2000 instancias por nivel, 0,4 ms por
+instancia; ninguna realización por encima del 18 % de su fórmula salvo V7–I a secas (23 %).
+El punto 6 pilló un error real de la tabla rítmica (un compás de 2/4 con una sola negra) y
+el 2 explicó por qué faltaban semicadencias con 6/4 (§4t.5, excepción). Complemento
+imprescindible: `tests/sensibilidad-comprobador.js` demuestra que el comprobador **detecta**
+cada norma con un caso de falta deliberada (19/19); sin eso, «cero infracciones» no
+probaría nada.
+
 ---
 
 ## 5. Esbozo técnico (muy preliminar)
@@ -446,6 +683,92 @@ por construcción al generar música y anotaciones a la vez; ids explícitos sol
 ⟶ ABIERTO: validar que el subconjunto elegido es **LilyPond compilable** sin retoques (test del
 camino a papel).
 
+### 5.3. Motor a cuatro voces (`ejercicios/cuatro-voces-core.js`)
+
+⟶ DECIDIDO: las realizaciones **no se escriben a mano** (ni siquiera «una o dos
+disposiciones por acorde»): se **buscan** bajo las normas de `Minimos-conduccion.md` y se
+eligen por sus preferencias. Es el motor de todo 4.º (Cadencias, Bajo dado, Canto dado,
+y después 7.ª diatónicas, modulación…), análogo a `contrapunto-core.js` para 3.º. Sin DOM,
+cargable en Node. Tres partes:
+
+**Modelo de acorde.** Un acorde es `{grado, inversión, tonos, duplicación, tendencias}`:
+los tonos como grados de la escala con alteración (la sensible en menor), el bajo como uno
+de ellos, la duplicación según la tabla §4 de los mínimos, y las tendencias como pares
+«este tono debe ir a aquel grado en el acorde siguiente» (N7, N8, N9). Se construye desde
+la tonalidad con los auxiliares de deletreo que ya usan las otras familias (letra +
+alteración, armadura, escala por letras): las alturas **nunca son MIDI** salvo para el audio.
+
+**Realizador.** Entrada: tonalidad, secuencia de acordes, tesituras, y opcionalmente una voz
+fijada (la soprano en Canto dado; el bajo lo fija siempre el acorde). Por acorde se
+**enumeran** las disposiciones candidatas: octava del bajo dentro de N1, y toda asignación
+de soprano/contralto/tenor a tonos del acorde que cumpla N1–N3 y la duplicación (decenas
+por acorde, no miles). Entre acordes consecutivos se **filtra** por N4–N13 y se **puntúa**
+por P1–P9 más las cláusulas de §4t.4. Búsqueda en profundidad con **orden aleatorio
+ponderado por puntuación** y reinicios: devuelve la primera solución completa que supera un
+umbral, o la mejor de k. La aleatoriedad ponderada, no una lista fija, es lo que da variedad
+sin perder idiomatismo. Semilla opcional para pruebas reproducibles.
+
+**Comprobador independiente** (`ejercicios/cuatro-voces-check.js`). `comprobar(voces,
+acordes, tonalidad)` devuelve la lista de infracciones `{regla:'N4', voces:[0,3], evento:2,
+texto}`. Se escribe **aparte del realizador y sin compartir con él las funciones de
+transición** (solo la aritmética de alturas), para que la validación masiva no sea
+tautológica. Segundo uso previsto: la familia de **detección de faltas** de 3.º UD 1
+(§4.4) puede corromper una realización correcta y pedir la infracción; el identificador de
+regla es la respuesta.
+
+**Salida.** El motor devuelve alturas (`{abs, alter, letter, oct, midi, deg, rol}` por voz
+y evento) y `token()` para el mini-LilyPond; el JSON de §5.2 —`voices[]` = cuatro cadenas
+(soprano, contralto, tenor, bajo), `context.time` y `context.partial`, y anotaciones por
+evento `{romano, cifras, americano}` y la cadencia— lo compone la familia. **MEI:** dos
+pentagramas con dos capas cada uno; cifrado americano como `<harm place="above">`, romanos
+con cifras como `<harm place="below">` con texto y `<fb>`.
+
+⟶ HECHO (2026-09-19): `cuatro-voces-core.js` (global `CuatroVoces`: `acorde`,
+`candidatos`, `realizar`, `escala`, `token`…), `cuatro-voces-check.js` (global
+`CuatroVocesCheck`: `comprobar`) y `tonalidades.js`. Detalles que fija el código:
+- **Modelo de acorde**: `acorde(key, {grado, inv, septima, dup?, cadencial64?, id?})`;
+  las duplicaciones por defecto salen de la tabla §4 de los mínimos por (grado, inversión,
+  calidad); la familia sobrescribe con `dup` (VI tras V: `{oblig:'3'}`; I final tras V7:
+  `{omitir:'5'}`). Nombres: ⟶ DECIDIDO romanos **en mayúscula siempre y sin marca de
+  calidad** (ni `°`): `II6`, `I6/4`, `V7`; la calidad la da la tonalidad. El cifrado
+  americano sí la lleva, con barra en las inversiones (`Dm/F`, `F°/A`, `G7`).
+- **Búsqueda**: `reinicios` 6 (cada uno, la primera solución de una búsqueda en
+  profundidad con orden aleatorio ponderado por `exp(-beta·pen)`, `beta` 0,8, tope
+  `maxNodos` 5000) y elección final por el mismo softmax entre las soluciones. `seed`
+  para reproducir. Penalizaciones: duplicación (pref 0 / adm 1 / sin listar 2), P1 1,
+  P2 3 (0,5 tenor–bajo), P3 1, P4 1 por voz, P5 0,5 por grado en cada interna, P6 2,
+  P7 0,25·d·(d−1) por salto de d grados en la soprano (3.ª 0,5 · 5.ª 3) y 3 por segundo
+  salto, P8 2, P9 1,5 (y 2 más si la soprano sigue en la dirección del salto), P10 0,4
+  por acorde en zona extrema y 1 más a partir del tercero seguido, P11 2, P12 −4 (una
+  bonificación: el salto de 8.ª descendente del bajo en I6/4 → V). Se revisan a la vista
+  de lo generado, no a priori.
+- **Ganchos**: `filtro(path, cand, k, acordes)` (norma propia de la familia: p. ej. la
+  soprano de una CAP acaba en 1̂) y `puntuar(...)` (preferencia propia: las cláusulas de
+  §4t.4). `fija: {voz, alturas}` fija una voz (Canto dado); «otros bajos posibles» es
+  relanzar con la misma soprano sobre las otras fórmulas del tipo y quedarse con las que
+  devuelven realización.
+⟶ PENDIENTE: comprobar en Verovio 6.3 que un `<harm>` admite texto y `<fb>` a la vez;
+si no, dos `<harm>` o cifras en Unicode (⁶₅).
+
+### 5.4. Convención de nombres de ficheros
+
+⟶ DECIDIDO. El prefijo lleva **curso y unidad**, para que no se repita el problema de
+`unidad0-` (ocupado por 3.º) al llegar a la UD 0 de 4.º:
+
+- Familias: `c<curso>u<ud>-<familia>-core.js` y `c<curso>u<ud>-<familia>-<variante|modo>.html`
+  (`c4u0-cadencias-core.js`, `c4u0-cadencias-tipo.html`). Global: nombre de la familia en
+  PascalCase (`Cadencias`); si dos cursos repiten familia, se sufija el curso.
+- Motores y datos compartidos, **sin prefijo**: `contrapunto-core.js`,
+  `cuatro-voces-core.js`, `cuatro-voces-check.js`, `tonalidades.js`. Sin prefijo = compartido.
+- Los ficheros existentes se renombran en una pasada aparte (`unidad0-*` → `c3u0-*`,
+  `familia2-intervalos-*` → `c3u1-intervalos-*`, `familia3-movimientos-*` →
+  `c3u1-movimientos-*`), con sus URL en `curriculum-data.js`, `CLAUDE.md` y este documento.
+  Cambia la URL pública de esas páginas; el QR apunta a la raíz, así que no le afecta.
+  ⟶ PENDIENTE.
+- `tipos` deja de ser una excepción de la UD 0 de 3.º: es el esquema de las **unidades de
+  repaso** (n = 0) de ambos cursos. El menú ya lo trata de forma genérica; actualizar la
+  nota de `CLAUDE.md` al implementar.
+
 ---
 
 ## 6. Decisiones abiertas (índice)
@@ -474,3 +797,24 @@ camino a papel).
 - [x] ~~Arquitectura: app única vs. piezas independientes~~ → **app única** de cliente puro (§5).
 - [x] ~~¿Offline viable?~~ → **sí**, sin backend (no hay datos de usuario) (§5).
 - [ ] Mecanismo concreto de empaquetado offline (PWA / bundle / *service worker*) (§5).
+- [x] ~~Cadencias de 4.º UD 0: ¿disposiciones a mano o búsqueda?~~ → **búsqueda** bajo
+      normas + preferencias, motor compartido `cuatro-voces-core.js` (§5.3).
+- [x] ~~Alcance del catálogo de cadencias~~ → esqueleto general, contenido de la unidad (§4t.1).
+- [ ] Pesos y vetos de fórmulas cadenciales tras la tabla de frecuencias (§4t.3).
+- [ ] Gesto no cadencial como distractor en *Tipo*: aplazado hasta ver qué genera el motor (§4t.2).
+- [x] ~~N6 (5.ª dism. → justa) entre voces superiores~~ → solo desde el bajo (`Minimos-conduccion.md` §2).
+- [x] ~~Anacrusa: campo `partial` en gramática y parser~~ → hecho (§4t.5, gramática §6).
+- [ ] Migración de los cores de 3.º UD 0 a `tonalidades.js` (ya existe) (§4t.6).
+- [x] ~~Core de la familia Cadencias y página *Tipo*~~ → hechos (§4t.7).
+- [ ] Páginas *Bajo dado* y *Canto dado* (§4t.7); «otras opciones» y «otros bajos posibles».
+- [ ] Revisar a ojo/oído las realizaciones generadas y ajustar penalizaciones (§5.3).
+- [x] ~~Iconos de las tres variantes de Cadencias~~ → sigla «CAP», clave de Fa, clave de Sol (§4t.7).
+- [x] ~~`<harm>` con texto y `<fb>` a la vez en Verovio~~ → **no**: Verovio 6.3 descarta el
+      `<fb>` si el `<harm>` lleva texto. Solución: `<rend>II</rend><rend rend="sup">6</rend>`
+      (y `rend="sub"` para la segunda cifra). Verovio escribe sup y sub **en diagonal** (uno
+      tras otro); `ArmoniaEj.apilarCifras()` (`comun.js`) retrocede la cifra sub la anchura
+      medida de la sup tras insertar el SVG, y queda «I⁶₄» apilado. Un `ho` en un segundo
+      `<harm>` con `<fb>` también funciona, pero el desplazamiento depende de la anchura del
+      romano y de la fuente del sistema. Comprobado con capturas (§5.3).
+- [ ] Renombrado de ficheros a la convención `c<curso>u<ud>-` (§5.4).
+- [ ] Preferencias como puntuación en `contrapunto-core.js` (contrapuntos sosos de 3.º).

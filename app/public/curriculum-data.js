@@ -10,9 +10,9 @@
    en modo 'dev' se ven todas, marcadas. Granularidad: la unidad.
    La numeración de unidades (`n`) es 0–6 en cada curso (UD 0 = repaso):
    solo identifica dentro de su curso, nunca entre cursos.
-   Excepción (Unidad 0 de 3.º): sus familias no tienen modos id/au/ct
-   (todo es identificación) sino TRES VARIANTES cada una, en el
-   array `tipos` [{key, label, title, icono, texto?, url, desc}].
+   Excepción (unidades de repaso, UD 0 de ambos cursos): sus familias
+   no tienen modos id/au/ct (todo es identificación) sino VARIANTES,
+   en el array `tipos` [{key, label, title, icono, texto?, url, desc}].
    `icono` es una clave de TIPO_ICONS (index.html) o 'apilado' para
    el icono tipográfico de cifras (con el campo `texto`).
    Las familias sin `niveles` no tienen niveles de dificultad.
@@ -116,7 +116,27 @@ const CURRICULO = {
     {
       nombre:'Curso 4.º', tag:'Cromático',
       unidades:[
-        { n:0, titulo:'Repaso', familias:[] },
+        { n:0, titulo:'Repaso', publico:false,
+          familias:[
+            { nombre:'Cadencias',
+              desc:'Cadencias a cuatro voces (CAP, CAI, SC —también frigia— y CR), realizadas al vuelo por el motor a cuatro voces según los mínimos de conducción; 12 tonalidades (16 en el nivel 3), compases de 2/4, 3/4 y 4/4, anacrusa desde el nivel 2. Al revelar, cifrado americano encima y grados con cifras debajo.',
+              tipos:[
+                {key:'tipo', label:'TIPO', title:'Tipo', icono:'cadencia',
+                 url:'ejercicios/c4u0-cadencias-tipo.html',
+                 desc:'Se muestra la cadencia completa y la tonalidad; se pide el tipo. CAP y CAI se distinguen solo por la soprano (1̂ frente a 3̂ o 5̂).'},
+                {key:'bajo', label:'BAJO', title:'Bajo dado', icono:'clavefa',
+                 url:null,
+                 desc:'Solo el bajo, con armadura y compás pero sin nombre de tonalidad: se piden tonalidad, tipo y acordes (grado e inversión), con las otras opciones posibles para cada bajo.'},
+                {key:'canto', label:'CANTO', title:'Canto dado', icono:'clavesol',
+                 url:null,
+                 desc:'Solo la soprano, con tonalidad y tipo: se pide la línea del bajo; al revelar, el bajo cifrado y otros bajos posibles.'}
+              ],
+              niveles:[
+                'CAP, CAI y SC; tónica inicial I o I6, predominante IV o II6, V o V7; 12 tonalidades; sin anacrusa.',
+                'Añade la cadencia rota (sobre VI), la semicadencia frigia, el 6/4 cadencial, II en fundamental (mayor), IV6 (menor) y la anacrusa.',
+                'Añade VI como tónica inicial, IV6 en mayor y la rota sobre IV6; 16 tonalidades.'
+              ]}
+          ]},
         { n:1, titulo:'7.ª diatónicas', familias:[] },
         { n:2, titulo:'Modulación y dominante secundaria', familias:[] },
         { n:3, titulo:'Acordes de VII con 7.ª', familias:[] },

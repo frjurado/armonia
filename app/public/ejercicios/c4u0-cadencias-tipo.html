@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · 4.º · Unidad 0 — Tipo de cadencia</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="cuatro-voces-core.js"></script>
+<script src="c4u0-cadencias-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* Respuesta: sigla grande · nombre; detalle: la sucesión de acordes */
+  .answer .q{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+  .answer .q .nombre{color:var(--muted);font-weight:400;font-size:.72em}
+  .answer .det .sep-q{color:var(--soft);padding:0 .35em}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tipo de cadencia</h1>
+  <span class="sub">Cadencias · Unidad 0 · 4.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under">
+        <div class="motion" id="keyName">—</div>
+      </div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar la cadencia"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Se muestra una cadencia a cuatro voces en la <b>tonalidad</b> indicada:
+     di de qué <b>tipo</b> es —<b>CAP</b> (auténtica perfecta), <b>CAI</b> (auténtica
+     imperfecta), <b>SC</b> (semicadencia, también la frigia) o <b>CR</b> (rota)—. CAP y CAI
+     se distinguen solo por la soprano: acaba en 1̂ en la perfecta, en 3̂ o 5̂ en la
+     imperfecta. Al revelar aparecen el cifrado americano (encima) y los grados con sus
+     cifras (debajo). <span id="lvlNote"></span></p>
+  </details>
+</main>
+
+<script>
+/* ============================================================
+   UI / RENDER / AUDIO — tipo de cadencia
+   La lógica musical (catálogo, realización, ritmo, MEI, MIDI)
+   vive en c4u0-cadencias-core.js; aquí solo se pinta y se escucha.
+   ============================================================ */
+let tk=null, level=1, current=null, revelado=false;
+const $=ArmoniaEj.$;
+
+function renderSVG(){
+  if(tk && current){
+    tk.loadData(Cadencias.toMEI(current,{cifrados:revelado}));
+    $('notation').innerHTML = tk.renderToSVG(1);
+    ArmoniaEj.apilarCifras($('notation'));
+  }
+}
+
+function newExercise(){
+  current = Cadencias.generar(level);
+  revelado=false;
+  $('lvl').textContent = level;
+  $('lvlNote').textContent = Cadencias.NIVELES[level-1] || '';
+  $('keyName').textContent = current.key.nombre + ' · ' + current.ritmo.time;
+  $('answer').className='answer';
+  $('btnReveal').disabled=false;
+  $('btnSimilar').style.display='none';
+  $('btnHarder').style.display='none';
+  renderSVG();
+  play();
+}
+
+function reveal(){
+  if(!current) return;
+  revelado=true;
+  const a=current.json.answer;
+  $('ansQ').innerHTML = `<span>${a.sigla}</span><span class="nombre">${a.nombre}</span>`;
+  $('ansDet').innerHTML = a.acordes.map(x=>x.romano).join('<span class="sep-q">·</span>')
+    + ' &nbsp;—&nbsp; ' + a.acordes.map(x=>x.americano).join('<span class="sep-q">·</span>');
+  $('answer').className='answer show';
+  $('btnReveal').disabled=true;
+  $('btnSimilar').style.display='';
+  $('btnHarder').style.display = level<Cadencias.MAX_NIVEL ? '' : 'none';
+  renderSVG();
+}
+
+async function play(){
+  if(!current) return;
+  try{ await ArmoniaEj.tocar(Cadencias.midis(current)); }
+  catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
+}
+
+$('btnReveal').onclick = reveal;
+$('btnSimilar').onclick = ()=>newExercise();
+$('btnHarder').onclick = ()=>{ level=Math.min(level+1,Cadencias.MAX_NIVEL); newExercise(); };
+$('btnListen').onclick = play;
+
+// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+newExercise();
+
+ArmoniaEj.initVerovio(
+  {scale:60, pageWidth:1000},
+  t=>{ tk=t; renderSVG(); },
+  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
+);
+</script>
+</body>
+</html>
