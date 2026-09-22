@@ -62,6 +62,10 @@ Cada una costó descubrirla:
   SVG. Así todo queda en trazos, sin depender de fuentes instaladas.
 - **`-dcrop` no es opcional.** Sin él cada ejemplo sale como una página A4
   entera con márgenes alrededor de dos compases.
+- **Rutas relativas al llamar a las herramientas, siempre.** La carpeta de
+  trabajo lleva tilde (*Armonía*) y `pdftocairo` —entre otros— no abre
+  ficheros cuya ruta absoluta tenga caracteres no ASCII. `construir.py` lanza
+  todo desde `apuntes/`; un script nuevo tiene que hacer lo mismo.
 - **No incrustar SVG dentro del HTML: referenciarlos con `<img src>`.**
   Los `id` de glifo (`glyph-0-0`…) se numeran desde cero en cada fichero;
   incrustados comparten espacio de nombres y el segundo ejemplo dibuja los

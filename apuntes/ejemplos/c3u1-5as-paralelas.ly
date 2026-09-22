@@ -1,6 +1,6 @@
 \version "2.24.0"
 
-%% UD01 — Quintas paralelas entre las voces extremas.
+%% 3.º UD 1 — Quintas paralelas entre las voces extremas.
 %% Ejemplo de apuntes: usa \markup, colores y dos voces, todo lo que
 %% mini-LilyPond excluye a propósito (§2 de la gramática).
 

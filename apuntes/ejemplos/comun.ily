@@ -13,3 +13,9 @@
   print-page-number = ##f
   tagline = ##f              % fuera el "Music engraving by LilyPond"
 }
+
+%% Los ejemplos son fragmentos, no partituras: el número de compás que
+%% LilyPond pone al empezar cada sistema solo despista.
+\layout {
+  \context { \Score \omit BarNumber }
+}

@@ -27,9 +27,9 @@ Verovio y soundfont-player van empaquetados en `app/public/vendor/`; solo
 los samples de piano se descargan de la red al primer «Escuchar» (ver
 *Pendientes*).
 
-**Apuntes** — necesita LilyPond y un conversor PDF→SVG:
+**Apuntes** — necesita LilyPond, Pandoc, Typst y un conversor PDF→SVG:
 
-    cd apuntes && make ejemplos
+    python apuntes/herramientas/construir.py
 
 Detalles y requisitos completos en [`apuntes/README.md`](apuntes/README.md).
 
@@ -42,7 +42,7 @@ un apunte pueda enlazar a su ejercicio con una ruta relativa:
     _site/
       index.html      portada (sitio/index.html)
       app/            ejercicios (app/public/)
-      apuntes/        apuntes renderizados (apuntes/build/sitio/, cuando exista)
+      apuntes/        apuntes renderizados (apuntes/build/, cuando exista el paso)
 
 `_site/` es producto de build y no se versiona. En local:
 
@@ -85,20 +85,21 @@ API, `gh api -X POST repos/<usuario>/<repo>/environments/github-pages/deployment
 `https://<usuario>.github.io/<repo>/`; como cuelga de una subruta, **todas
 las rutas del sitio son relativas**, nunca `/absolutas`.
 
-Los apuntes aún no entran: falta el paso que instale LilyPond en el flujo y
-renderice a `apuntes/build/sitio/` (ver *Pendientes*). Cuando exista,
-`montar.sh` los recoge sin más cambios y en la portada basta convertir la
-tarjeta «Apuntes» en enlace.
+Los apuntes aún no entran: falta el paso que instale LilyPond y Pandoc en el
+flujo y ejecute `construir.py` (ver *Pendientes*). Cuando exista, `montar.sh`
+recoge `apuntes/build/` sin más cambios —ya lleva las rutas relativas
+cuadradas— y en la portada basta convertir la tarjeta «Apuntes» en enlace.
 
 ## Pendientes
 
 - [x] Separar en `app/` lo que se publica (`app/public/`) de lo que no
       (`docs/`, `design/`, `tests/`).
 - [ ] Publicar los apuntes: paso en `publicar.yml` que instale LilyPond
-      (`apt-get install lilypond`, 2.24 en Ubuntu 24.04) y un conversor
-      PDF→SVG, ejecute `make -C apuntes ejemplos` y renderice el HTML a
-      `apuntes/build/sitio/`. Depende de sustituir el andamiaje por Quarto
-      (abajo). Después, enlazar la tarjeta «Apuntes» de `sitio/index.html`.
+      (`apt-get install lilypond`, 2.24 en Ubuntu 24.04), Pandoc y un
+      conversor PDF→SVG, y ejecute `python apuntes/herramientas/construir.py`.
+      Lo que deja en `apuntes/build/` ya es publicable tal cual. Falta
+      decidir el índice de las unidades y enlazar la tarjeta «Apuntes» de
+      `sitio/index.html`.
 - [ ] Partituras largas (Unidad 1 y las que vengan): llevarlas a la tira
       deslizante (`tira-partitura.js`, como armaduras) centrando el acorde
       actual, con el `#overlay` de líneas de voz dentro del contenedor que
@@ -118,5 +119,7 @@ tarjeta «Apuntes» en enlace.
       único que aún sale a la red desde un ejercicio.
 - [ ] Extraer de `curriculum/Plan-Armonia.md` §2 un `unidades.yaml` que
       alimente a la vez a los apuntes y a `app/curriculum-data.js`.
-- [ ] Sustituir `apuntes/plantilla-demo.typ` y `apuntes/hacer-html.py` por
-      Quarto: un `.qmd` y `quarto render` para las dos salidas.
+- [x] ~~Sustituir el andamiaje de `apuntes/` por un flujo de verdad~~ →
+      `apuntes/herramientas/construir.py`: Markdown + LilyPond a HTML y PDF
+      con Pandoc y Typst. Se descartó Quarto (una dependencia grande para lo
+      que aquí hace Pandoc solo) y también `make` (no viene con Windows).

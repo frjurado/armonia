@@ -1,0 +1,222 @@
+#!/usr/bin/env python
+"""Construye los apuntes: de los ficheros fuente a HTML y PDF.
+
+    python herramientas/construir.py              todo lo que esté desactualizado
+    python herramientas/construir.py c4u0         solo esa unidad
+    python herramientas/construir.py ejemplos     solo los SVG
+    python herramientas/construir.py --forzar     sin mirar fechas
+    python herramientas/construir.py --limpiar    borra build/ y tmp/
+
+El camino es este:
+
+    ejemplos/x.ly  --LilyPond-->  tmp/x.cropped.pdf  --pdftocairo-->
+                                                     build/imagenes/x.svg
+    c4u0.md        --Pandoc---->  build/c4u0.html
+                   --Pandoc + Typst -->  build/c4u0.pdf
+
+y `build/` queda siendo justo lo publicable: los documentos, sus
+imágenes y la hoja de estilo, con rutas relativas entre ellos.
+
+Por qué no hay Makefile: `make` no viene con Windows y aquí no está
+instalado. Las dependencias que necesitamos son pocas y una de ellas
+—qué ejemplos usa cada unidad— se calcula mejor leyendo el Markdown que
+declarándola a mano.
+
+Antes de llamar a Pandoc, de cada `.md` se hacen dos cosas:
+
+1. **Se quita el bloque de guion**, entre `<!-- guion:inicio -->` y
+   `<!-- guion:fin -->`: el esquema de trabajo sirve para escribir, no
+   para publicar.
+2. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
+   `build/imagenes/x.svg`, que es lo que resuelve la vista previa del
+   editor; Pandoc corre dentro de `build/`, donde sobra ese prefijo.
+   Ahí, y solo ahí, cuadran las rutas para las dos salidas a la vez: el
+   HTML referencia `imagenes/x.svg` con `<img src>` (nunca incrustado:
+   ver CLAUDE.md) y Typst lo busca desde su propia raíz.
+
+El formato (papel, márgenes, tipografía) está en
+`_formato/metadatos.yaml`; lo que declare cada unidad en su cabecera
+YAML tiene prioridad sobre ese fichero.
+"""
+
+import pathlib
+import re
+import shutil
+import subprocess
+import sys
+
+RAIZ = pathlib.Path(__file__).resolve().parent.parent
+BUILD = RAIZ / "build"
+IMAGENES = BUILD / "imagenes"
+TMP = RAIZ / "tmp"
+EJEMPLOS = RAIZ / "ejemplos"
+FORMATO = RAIZ / "_formato"
+
+INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily"]
+METADATOS = FORMATO / "metadatos.yaml"
+CSS = FORMATO / "apuntes.css"
+YO = pathlib.Path(__file__)
+
+GUION_INICIO = "<!-- guion:inicio -->"
+GUION_FIN = "<!-- guion:fin -->"
+RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
+
+forzar = False
+
+
+# --- utilidades ------------------------------------------------------
+
+def caduco(destino, fuentes):
+    """¿Falta el destino, o alguna fuente es más reciente?"""
+    if forzar or not destino.exists():
+        return True
+    return any(f.exists() and f.stat().st_mtime > destino.stat().st_mtime for f in fuentes)
+
+
+def ejecutar(orden, **kwargs):
+    """Lanza una orden SIEMPRE desde apuntes/ y con rutas relativas.
+
+    No es manía: la carpeta del proyecto lleva tilde («Armonía») y
+    algunas de estas herramientas —pdftocairo, entre otras— no abren
+    ficheros cuya ruta absoluta tenga caracteres no ASCII.
+    """
+    kwargs.setdefault("cwd", RAIZ)
+    hecho = subprocess.run([str(x) for x in orden], **kwargs)
+    if hecho.returncode:
+        sys.exit(f"\nFalló: {' '.join(str(x) for x in orden)}")
+
+
+def conversor_svg():
+    """pdftocairo si está; si no, el pdf2svg.py de al lado (PyMuPDF)."""
+    if shutil.which("pdftocairo"):
+        return ["pdftocairo", "-svg"]
+    return [sys.executable, "herramientas/pdf2svg.py"]
+
+
+# --- ejemplos musicales ----------------------------------------------
+
+def grabar(ly):
+    """Un .ly -> un SVG recortado.
+
+    -dcrop, porque sin él cada ejemplo sale como un A4 entero con dos
+    compases en una esquina. Y se pasa por PDF (--pdf) en lugar de usar
+    el backend SVG de LilyPond, que no incrusta las fuentes de texto y
+    deja los \\markup con tipografía de sustitución.
+    """
+    svg = IMAGENES / f"{ly.stem}.svg"
+    if not caduco(svg, [ly, *INCLUIDOS]):
+        return False
+    IMAGENES.mkdir(parents=True, exist_ok=True)
+    TMP.mkdir(exist_ok=True)
+    ejecutar(["lilypond", "-dcrop", "--pdf", "-I", "ejemplos",
+              "-o", f"tmp/{ly.stem}", f"ejemplos/{ly.name}"],
+             stdout=subprocess.DEVNULL)
+    ejecutar([*conversor_svg(), f"tmp/{ly.stem}.cropped.pdf",
+              f"build/imagenes/{svg.name}"],
+             stdout=subprocess.DEVNULL)
+    print(f"  {svg.relative_to(RAIZ)}")
+    return True
+
+
+def grabar_todos(unidad=None):
+    usados = ejemplos_de(unidad) if unidad else None
+    hechos = 0
+    for ly in sorted(EJEMPLOS.glob("*.ly")):
+        if usados is None or f"{ly.stem}.svg" in usados:
+            hechos += grabar(ly)
+    return hechos
+
+
+# --- texto ------------------------------------------------------------
+
+def ejemplos_de(unidad):
+    return set(RE_IMAGEN.findall((RAIZ / f"{unidad}.md").read_text(encoding="utf-8")))
+
+
+def sin_guion(texto):
+    while GUION_INICIO in texto:
+        i = texto.index(GUION_INICIO)
+        j = texto.find(GUION_FIN, i)
+        if j < 0:
+            sys.exit(f"Falta {GUION_FIN} (abierto en la línea "
+                     f"{texto[:i].count(chr(10)) + 1})")
+        texto = texto[:i] + texto[j + len(GUION_FIN):]
+    return texto
+
+
+def preparar(md):
+    texto = sin_guion(md.read_text(encoding="utf-8"))
+    return texto.replace("build/imagenes/", "imagenes/")
+
+
+def pandoc(texto, salida, extra):
+    BUILD.mkdir(exist_ok=True)
+    ejecutar(["pandoc", "--from=markdown", "--standalone",
+              "--toc", "--toc-depth=2",
+              f"--metadata-file=../_formato/{METADATOS.name}",
+              "--output", salida.name, *extra],
+             input=texto.encode("utf-8"), cwd=BUILD)
+    print(f"  {salida.relative_to(RAIZ)} ({salida.stat().st_size // 1024} kB)")
+
+
+def documentar(md):
+    """Un .md -> su HTML y su PDF, si alguno de los dos está caduco."""
+    svgs = [IMAGENES / n for n in ejemplos_de(md.stem)]
+    comunes = [md, METADATOS, YO, *svgs]
+    hechos = 0
+
+    html = BUILD / f"{md.stem}.html"
+    if caduco(html, [*comunes, CSS]):
+        shutil.copy2(CSS, BUILD / CSS.name)
+        pandoc(preparar(md), html, [f"--css={CSS.name}"])
+        hechos += 1
+
+    pdf = BUILD / f"{md.stem}.pdf"
+    if caduco(pdf, comunes):
+        pandoc(preparar(md), pdf, ["--pdf-engine=typst"])
+        hechos += 1
+    return hechos
+
+
+# --- principal --------------------------------------------------------
+
+def unidades():
+    return sorted(p for p in RAIZ.glob("c[34]u*.md"))
+
+
+def main(argv):
+    global forzar
+    forzar = "--forzar" in argv
+    argv = [a for a in argv if a != "--forzar"]
+
+    if "--limpiar" in argv:
+        for d in (BUILD, TMP):
+            shutil.rmtree(d, ignore_errors=True)
+        print("build/ y tmp/ borrados")
+        return
+
+    objetivo = argv[0] if argv else None
+    hechos = 0
+
+    if objetivo == "ejemplos":
+        print("Ejemplos:")
+        hechos = grabar_todos()
+    elif objetivo:
+        md = RAIZ / f"{objetivo}.md"
+        if not md.exists():
+            sys.exit(f"No existe {md.name}. Unidades: "
+                     f"{', '.join(u.stem for u in unidades())}")
+        print(f"{md.name}:")
+        hechos = grabar_todos(objetivo) + documentar(md)
+    else:
+        print("Ejemplos:")
+        hechos = grabar_todos()
+        for md in unidades():
+            print(f"{md.name}:")
+            hechos += documentar(md)
+
+    print("Nada que hacer." if not hechos else f"Listo ({hechos}).")
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

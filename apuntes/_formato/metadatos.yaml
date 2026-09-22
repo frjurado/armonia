@@ -1,0 +1,25 @@
+# Formato común a todas las unidades. Cada unidad declara en su cabecera
+# solo lo suyo (title, subtitle); lo que declare ahí gana sobre esto.
+#
+# Los nombres de variable son los de la plantilla Typst de Pandoc
+# (`pandoc -D typst`): cambiarlos por gusto rompe el PDF.
+
+lang: es
+papersize: a4
+margin:
+  x: 3cm
+  y: 2.5cm
+# DejaVu Serif, y no Georgia ni Constantia. Los grados (1̂, 5̂, ♯7̂) son
+# dígito + circunflejo combinante (U+0302), y casi ninguna fuente de
+# texto lo compone: Georgia deja el acento suelto detrás del número, y
+# Constantia lo compone en redonda pero lo PIERDE en negrita, que es
+# peor porque no se nota. DejaVu Serif lo compone en los dos pesos y
+# numera con cifras de caja alta (Constantia las usa elzevirianas y su
+# cero parece una «o»: «UD 0» se leía «UD o»).
+#
+# Antes de tocar esta línea: compilar y mirar «**4̂ → 3̂**» en negrita.
+mainfont: DejaVu Serif
+fontsize: 10.5pt   # DejaVu Serif pesa más que una Garamond
+linestretch: 1.15
+page-numbering: "1"
+figure-caption-position: bottom

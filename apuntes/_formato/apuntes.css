@@ -1,0 +1,90 @@
+/* Estilo de los apuntes en HTML. El PDF no pasa por aquí: lo compone
+   Typst con las variables de _formato/metadatos.yaml. Mantener los dos
+   parecidos es deliberado; idénticos, imposible y tampoco deseable.
+
+   DejaVu Serif encabeza la pila por la misma razón que en el PDF: es
+   la que compone los grados con circunflejo (1̂, 5̂, ♯7̂) —dígito + marca
+   combinante— también en negrita. Aviso: el PDF incrusta la fuente, el
+   HTML no; quien lea el HTML sin DejaVu Serif instalada verá el acento
+   suelto. Si algún día molesta, la salida es servir un woff2 recortado
+   desde _formato/ (no un CDN: el sitio va en una subruta). */
+
+:root {
+  --tinta: #1a1a1a;
+  --suave: #666;
+  --regla: #ddd;
+  --fondo-nota: #f6f6f4;
+  --acento: #7a1f1f;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  max-width: 40rem;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  font: 1rem/1.6 "DejaVu Serif", Georgia, "Times New Roman", serif;
+  color: var(--tinta);
+  background: #fff;
+}
+
+/* --- titulares ---------------------------------------------------- */
+
+h1.title { font-size: 1.6rem; margin-bottom: .2rem; }
+p.subtitle { margin-top: 0; color: var(--suave); font-style: italic; }
+
+h1, h2, h3 { line-height: 1.25; font-weight: 600; }
+h2 { font-size: 1.25rem; margin-top: 2.4rem; padding-bottom: .2rem;
+     border-bottom: 1px solid var(--regla); }
+h3 { font-size: 1.05rem; margin-top: 1.8rem; }
+h4 { font-size: 1rem; margin-top: 1.4rem; color: var(--acento); }
+
+/* --- cuerpo ------------------------------------------------------- */
+
+p { text-align: justify; hyphens: auto; }
+ul, ol { padding-left: 1.3rem; }
+li { margin: .25rem 0; }
+strong { font-weight: 600; }
+
+blockquote {
+  margin: 1.5rem 0;
+  padding: .8rem 1.1rem;
+  background: var(--fondo-nota);
+  border-left: 3px solid var(--regla);
+  font-size: .94rem;
+}
+blockquote p { text-align: left; }
+
+table { border-collapse: collapse; margin: 1.5rem 0; font-size: .94rem; width: 100%; }
+th, td { padding: .35rem .6rem; text-align: left; vertical-align: top; }
+thead th { border-bottom: 1.5px solid var(--tinta); }
+tbody tr + tr td { border-top: 1px solid var(--regla); }
+
+hr { border: 0; border-top: 1px solid var(--regla); margin: 2.5rem 0; }
+
+/* --- ejemplos musicales -------------------------------------------
+   Los SVG van con <img src>, nunca incrustados: los identificadores de
+   glifo se numeran desde cero en cada fichero y al incrustarlos el
+   segundo ejemplo dibuja los glifos del primero (ver CLAUDE.md). */
+
+figure { margin: 2rem 0; text-align: center; }
+figure img { max-width: 100%; height: auto; }
+figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
+             text-align: center; }
+
+/* --- índice ------------------------------------------------------- */
+
+nav#TOC { margin: 2rem 0 3rem; font-size: .92rem; }
+nav#TOC ul { list-style: none; padding-left: 1rem; }
+nav#TOC > ul { padding-left: 0; }
+nav#TOC a { color: var(--tinta); text-decoration: none; }
+nav#TOC a:hover { text-decoration: underline; }
+
+/* --- impresión desde el navegador --------------------------------- */
+
+@media print {
+  body { max-width: none; margin: 0; font-size: 11pt; }
+  h2 { page-break-after: avoid; }
+  figure { page-break-inside: avoid; }
+  nav#TOC { display: none; }
+}
