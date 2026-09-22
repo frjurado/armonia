@@ -132,7 +132,10 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     llama a `ArmoniaEj.apilarCifras(contenedor)` tras insertar el SVG—; y
     **apila varios `<harm>` en filas solo si llevan `n="1"`, `n="2"`…**
     (sin `n` se superponen), que es como se dibujan los acordes
-    alternativos bajo el mismo bajo.
+    alternativos bajo el mismo bajo. Esa fila se marca `type="alt"` —el
+    `@type` de MEI llega al SVG como **clase**, así que se puede estilar
+    desde CSS— y se separa un poco con `vo` (negativo = hacia abajo en
+    `place="below"`).
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).

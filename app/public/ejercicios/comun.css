@@ -78,6 +78,9 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
 .score-wrap{position:relative;max-width:100%}
 #notation svg{max-width:100%;height:auto;display:block}
 #notation .ph{color:var(--soft);font-size:15px;text-align:center}
+/* Cifrados alternativos (segunda fila de <harm>, marcada type="alt" en el MEI:
+   Verovio lo vuelca a la clase del SVG). Gris, como las alternativas del texto. */
+#notation g.harm.alt, #notation g.harm.alt text{fill:var(--soft)}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);

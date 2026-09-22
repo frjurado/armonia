@@ -457,6 +457,7 @@
   const durAttrs = d => { const m=/^(\d+)(\.*)$/.exec(d); return `dur="${m[1]}"`+(m[2].length?` dots="${m[2].length}"`:''); };
   const sigStr = sig => sig===0 ? '0' : Math.abs(sig)+(sig>0?'s':'f');
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  const VO_ALT = -1.5;    // separación extra de la fila de alternativas
 
   // toMEI(inst, {cifrados, ocultas, alternativas}):
   //   cifrados: dibuja el americano encima y los romanos con cifras debajo;
@@ -493,9 +494,12 @@
           ? `<harm place="above" staff="2" startid="#b${x.k}">${esc(a.americano)}</harm>`
           : `<harm place="above" staff="1" startid="#s${x.k}">${esc(a.americano)}</harm>`;
         harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1">${romanoXml(a)}</harm>`;
+        // Filas de alternativas: `n` las apila, `type="alt"` llega al SVG como
+        // clase (las pinta en gris comun.css) y `vo` las separa un poco más de
+        // la principal (negativo = hacia abajo en place="below").
         const alt=(opts.alternativas||[])[x.k]||[];
         alt.forEach((id,j)=>{
-          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}">`
+          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt" vo="${VO_ALT}">`
                  + romanoXml(CV.acorde(inst.key, ACORDES[id]))+`</harm>`;
         });
       });

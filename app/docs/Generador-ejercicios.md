@@ -450,7 +450,10 @@ romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cu
     con ese bajo. Las filas las hace Verovio: varios `<harm place="below">` con `n="1"`,
     `n="2"`… se apilan alineados bajo la misma nota (comprobado; sin `n` se superponen).
     Fila 1 = la realización; fila 2 = la alternativa. **Nunca más de una alternativa por
-    casilla** (§4t.7 bis), así que bastan dos filas.
+    casilla** (§4t.7 bis), así que bastan dos filas. La fila de alternativas se distingue
+    como en el texto: **en gris** (el MEI la marca `type="alt"`, que Verovio vuelca a la
+    clase del SVG, y `comun.css` la pinta con `--soft`) y **algo más separada** de la
+    principal (`vo` negativo en el `<harm>`, que en `place="below"` empuja hacia abajo).
   - La **tonalidad es única**: comprobado por enumeración exhaustiva (§4t.7 bis).
 - **Canto dado** (icono: clave de Sol; ⟶ HECHO 2026-09-22, `c4u0-cadencias-canto.html` +
   `Cadencias.generarCanto()`): se muestra **solo la soprano**, armadura,
