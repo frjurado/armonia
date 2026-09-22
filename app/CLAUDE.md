@@ -122,10 +122,17 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `c4u0-cadencias-core.js` (`Cadencias`) — familia Cadencias de 4.º UD 0
     sobre el motor: catálogo de fórmulas, cláusulas de soprano, plantillas
     rítmicas (con anacrusa: `partial` en el JSON y en el parser), JSON, MEI
-    y MIDI. Verovio descarta `<fb>` dentro de un `<harm>` con texto: los
-    romanos con cifras van como `<rend>` + `<rend rend="sup|sub">`, y como
-    Verovio los escribe en diagonal, cada página llama a
-    `ArmoniaEj.apilarCifras(contenedor)` justo después de insertar el SVG.
+    y MIDI. Tres variantes: `generar()` (Tipo), `generarBajo()` y
+    `generarCanto()`; las dos últimas enumeran el catálogo entero para dar
+    las lecturas alternativas, y **nunca se listan como fórmulas completas**
+    (serían ocho), sino comprimidas por casilla.
+    Dos cosas de Verovio que costó descubrir: descarta `<fb>` dentro de un
+    `<harm>` con texto —los romanos con cifras van como `<rend>` +
+    `<rend rend="sup|sub">`, y como los escribe en diagonal, cada página
+    llama a `ArmoniaEj.apilarCifras(contenedor)` tras insertar el SVG—; y
+    **apila varios `<harm>` en filas solo si llevan `n="1"`, `n="2"`…**
+    (sin `n` se superponen), que es como se dibujan los acordes
+    alternativos bajo el mismo bajo.
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).

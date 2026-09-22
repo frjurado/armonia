@@ -5,9 +5,13 @@
 //   3. variedad de realizaciones por fórmula y tonalidad;
 //   5. la etiqueta CAP/CAI coincide con la soprano final;
 //   6. cuadre rítmico: cada voz pasa el bar check del parser (compás + partial);
-//   7. el MEI carga y se renderiza en Verovio sin avisos (muestra de instancias).
-// (La numeración sigue a docs/Generador-ejercicios.md §4t.9; el punto 4 —unicidad
-// de tonalidad en Bajo dado— es por construcción.)
+//   7. el MEI carga y se renderiza en Verovio sin avisos (muestra de instancias);
+//   8. Bajo dado: la tonalidad es la única posible (se comprueba leyendo el bajo
+//      escrito en la relativa, con enumeración propia) y ninguna casilla ofrece
+//      más de una alternativa;
+//   9. Canto dado: ninguna instancia superviviente se lee en la relativa con la
+//      misma sigla, y las listas de «otros bajos» no se disparan.
+// (La numeración sigue a docs/Generador-ejercicios.md §4t.9.)
 // Uso: node tests/masivo-cadencias.js [nivel 1–3] [n instancias] [--sin-verovio]
 const path = require('path');
 const BASE = path.join(__dirname, '..', 'public') + '/';
@@ -88,6 +92,53 @@ pruebas.forEach(([tipo,ids])=>{
   Object.entries(cuenta).sort((a,b)=>b[1]-a[1]).slice(0,2).forEach(([s,c])=>console.log('   '+c+'×  '+s));
 });
 
+// 8 y 9. Bajo dado y Canto dado (más lentos: enumeran el catálogo por instancia)
+const NVAR = Math.min(N, 150);
+console.log(`\n8-9. Bajo dado y Canto dado (${NVAR} instancias de cada una):`);
+{
+  const TONS = require(BASE + 'tonalidades.js');
+  // Comprobación INDEPENDIENTE de la unicidad de tonalidad del bajo: se lee el
+  // bajo escrito en la relativa y se mira si ahí también es una cadencia.
+  const bajosValidos = (nivel, modo) => new Set(
+    C.enumerarFormulas(nivel, modo).map(f => C.bajoDe(f.ids).join('-')));
+  function ambiguoElBajo(inst){
+    return TONS.TODAS.filter(k=>k.sig===inst.key.sig && k.mode!==inst.key.mode).some(rel=>{
+      const esc=CV.escala(rel), grado={};
+      esc.forEach((e,i)=>{ grado[e.letter+'|'+e.alter]=i+1; });
+      const seq=inst.voces[3].map(p=>grado[p.letter+'|'+p.alter]);
+      if(seq.some(d=>!d)) return false;                 // alguna nota no es de esa escala
+      return bajosValidos(inst.nivel, rel.mode).has(seq.join('-'));
+    });
+  }
+  let bAmb=0, bMulti=0, bNulos=0, bTot=0, tB=Date.now();
+  const bajoEj=[];
+  for(let i=0;i<NVAR;i++){
+    const inst=C.generarBajo(nivel);
+    if(!inst){ bNulos++; continue; }
+    bTot++;
+    if(ambiguoElBajo(inst)){ bAmb++; if(bAmb<4) console.log('   BAJO AMBIGUO', inst.key.nombre, inst.ids.join('–')); }
+    const max=Math.max.apply(null, inst.alternativas.map(a=>a.length));
+    if(max>1){ bMulti++; if(bMulti<4) console.log('   MÁS DE UNA ALTERNATIVA', inst.ids.join('–'), JSON.stringify(inst.alternativas)); }
+    if(bajoEj.length<3) bajoEj.push(inst.json.answer.bajo+' · '+inst.json.answer.tipos.map(x=>x.sigla).join('/')+' ('+inst.json.answer.tipoRealizado+') · '+inst.json.answer.acordes.map(a=>a.romano+(a.alternativas.length?'/'+a.alternativas.join(''):'')).join(' '));
+  }
+  console.log(`   8. Bajo dado: ${bTot} instancias en ${Date.now()-tB} ms · sin instancia ${bNulos} · tonalidad ambigua ${bAmb} · casillas con >1 alternativa ${bMulti}`);
+  bajoEj.forEach(e=>console.log('      '+e));
+
+  let cAmb=0, cNulos=0, cTot=0, maxOtros=0, sumOtros=0, tC=Date.now();
+  const cantoEj=[];
+  for(let i=0;i<NVAR;i++){
+    const inst=C.generarCanto(nivel);
+    if(!inst){ cNulos++; continue; }
+    cTot++;
+    if(C.leeEnRelativa(inst)){ cAmb++; if(cAmb<4) console.log('   CANTO AMBIGUO', inst.key.nombre, inst.tipo, inst.ids.join('–')); }
+    const no=inst.json.answer.otrosBajos.length;
+    sumOtros+=no; if(no>maxOtros) maxOtros=no;
+    if(cantoEj.length<3) cantoEj.push(inst.json.answer.sigla+' bajo '+inst.json.answer.bajo+' · otros: '+(inst.json.answer.otrosBajos.map(o=>o.bajo).join(' | ')||'(ninguno)'));
+  }
+  console.log(`   9. Canto dado: ${cTot} instancias en ${Date.now()-tC} ms · sin instancia ${cNulos} · tonalidad ambigua ${cAmb} · otros bajos: media ${(sumOtros/cTot).toFixed(1)}, máximo ${maxOtros}`);
+  cantoEj.forEach(e=>console.log('      '+e));
+}
+
 // 7. Verovio
 if(conVerovio){
   const verovio=require(BASE+'vendor/verovio/verovio-toolkit-wasm.js');
@@ -96,7 +147,7 @@ if(conVerovio){
     tk.setOptions({scale:60,adjustPageHeight:true,pageWidth:900,header:'none',footer:'none',breaks:'none',font:'Leland'});
     let mal=0; const t1=Date.now();
     muestraMEI.forEach(({inst,fk})=>{
-      const mei=C.toMEI(inst,{cifrados:true});
+      const mei=C.toMEI(inst,{cifrados:true, alternativas:inst.alternativas});
       const ok=tk.loadData(mei);
       const svg=ok ? tk.renderToSVG(1) : '';
       const notas=(svg.match(/class="note"/g)||[]).length, harms=(svg.match(/class="harm"/g)||[]).length, medidas=(svg.match(/class="measure"/g)||[]).length;

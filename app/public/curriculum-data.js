@@ -125,11 +125,11 @@ const CURRICULO = {
                  url:'ejercicios/c4u0-cadencias-tipo.html',
                  desc:'Se muestra la cadencia completa y la tonalidad; se pide el tipo. CAP y CAI se distinguen solo por la soprano (1̂ frente a 3̂ o 5̂).'},
                 {key:'bajo', label:'BAJO', title:'Bajo dado', icono:'clavefa',
-                 url:null,
-                 desc:'Solo el bajo, con armadura y compás pero sin nombre de tonalidad: se piden tonalidad, tipo y acordes (grado e inversión), con las otras opciones posibles para cada bajo.'},
+                 url:'ejercicios/c4u0-cadencias-bajo.html',
+                 desc:'Solo el bajo, con armadura y compás pero sin nombre de tonalidad: se piden tonalidad, tipo y acordes (grado e inversión). El bajo no distingue CAP de CAI, así que se responde CA; al revelar, una realización con su cifrado y, en una segunda fila, los acordes que también habrían cabido.'},
                 {key:'canto', label:'CANTO', title:'Canto dado', icono:'clavesol',
-                 url:null,
-                 desc:'Solo la soprano, con tonalidad y tipo: se pide la línea del bajo; al revelar, el bajo cifrado y otros bajos posibles.'}
+                 url:'ejercicios/c4u0-cadencias-canto.html',
+                 desc:'Solo la soprano, con su armadura, su compás y el tipo de cadencia: se piden la tonalidad y la línea del bajo. Al revelar, una realización completa con su cifrado y la lista de las demás líneas de bajo que también servirían.'}
               ],
               niveles:[
                 'CAP, CAI y SC; tónica inicial I o I6, predominante IV o II6, V o V7; 12 tonalidades; sin anacrusa.',

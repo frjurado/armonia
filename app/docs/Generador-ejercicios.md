@@ -287,6 +287,11 @@ por construcción (§4t.3), así que la distinción no depende de nada más.
 | **CR** | Rota sobre IV6 | [T] [PD] [I6/4] V(7) IV6 | — | nivel 3 |
 | *(no cad.)* | Gesto no cadencial | [T] V6 · V6/5 · V4/3 · V4/2 → I / I6 | solo variante *Tipo*, como distractor | ⟶ APLAZADO |
 
+En **menor**, IV6 justo antes de V es **siempre la frigia**: la SC común no ofrece IV6 en
+esa posición, para que los mismos acordes no salgan con dos etiquetas (§4t.7 bis). La sigla
+**CA** («Cadencia Auténtica», sin decidir P/I) **no es un tipo**: es solo la respuesta de
+*Bajo dado*, donde la soprano no se ve.
+
 Corchetes = casilla opcional. **Plagal: fuera** por ahora. Otras resoluciones de la rota,
 más adelante. ⟶ APLAZADO: el gesto no cadencial (dominante invertida → I, contraste con la
 cadencia; respuesta «no es cadencia») se decide **después de ver qué genera** el motor con
@@ -430,27 +435,103 @@ romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cu
   partitura y la sucesión de acordes en texto. ⟶ HECHO (2026-09-19):
   `c4u0-cadencias-core.js` (global `Cadencias`) + `c4u0-cadencias-tipo.html`; en el menú,
   4.º UD 0 con `publico:false`.
-- **Bajo dado** (icono: clave de Fa; ⟶ PENDIENTE): se muestra **solo el bajo** (pentagrama
+- **Bajo dado** (icono: clave de Fa; ⟶ HECHO 2026-09-22, `c4u0-cadencias-bajo.html` +
+  `Cadencias.generarBajo()`): se muestra **solo el bajo** (pentagrama
   superior con `<space>`, como en Intervalos con inversión), armadura y compás, **sin nombre
-  de tonalidad**; se piden **tonalidad, tipo y acordes** (grado e inversión). Respuesta
-  principal: tonalidad + tipo. Como el bajo no decide CAP/CAI, el tipo se responde como
-  «Auténtica», «Semicadencia (frigia)» o «Rota»; al revelar la realización se añade en el
-  detalle «CAP en esta realización». Bajo cada nota del bajo, además del acorde usado,
-  **«otras opciones»**: los acordes del catálogo de esa casilla con ese bajo, en ese nivel
-  (bajo 4̂ → IV o II6; bajo 6̂ como meta → VI o IV6). Se generan con la gramática, no a
-  mano. La tonalidad es **única por construcción**: la casilla D exige bajo 5̂, y el 5̂ de
-  una tonalidad es 7̂ o 3̂ de su relativa, que nunca es bajo de la casilla D en este
-  catálogo; al ampliar el catálogo, repetir el razonamiento (o descartar la instancia si
-  la relativa la lee).
-- **Canto dado** (icono: clave de Sol; ⟶ PENDIENTE): se muestra **solo la soprano**, armadura,
-  compás, nombre de la tonalidad y **el tipo** («CAP»); se pide **la línea del bajo**.
-  Respuesta: el bajo dibujado con sus cifrados; las voces internas se revelan a la vez, como
-  detalle. **«Otros bajos posibles»**: se vuelve a lanzar el motor con la soprano fijada
-  sobre todas las fórmulas del tipo en ese nivel y se listan las secuencias de grados del
-  bajo distintas que tienen realización válida («4̂–5̂–1̂ · IV–V–I»), hasta tres.
+  de tonalidad**; se piden **tonalidad, tipo y acordes** (grado e inversión).
+  - **Respuesta principal** (texto): tonalidad + tipo. Como el bajo nunca decide CAP/CAI
+    (§4t.7 bis), el tipo se responde con la sigla **CA · Cadencia Auténtica**, y en el
+    detalle «aquí, CAP» por la realización mostrada. «CA» es una etiqueta **solo de
+    respuesta de esta variante**, no un tipo del catálogo (§4t.2). Los demás tipos se dan
+    con su sigla normal; la única otra indecisión del bajo es 6̂–5̂ en menor, que se
+    responde «SC (frigia) o SC» con las dos lecturas.
+  - **Respuesta en la partitura**: se dibuja **una** realización con sus cifrados, y bajo
+    ella, en **filas secundarias**, los acordes que también habrían cabido en esa casilla
+    con ese bajo. Las filas las hace Verovio: varios `<harm place="below">` con `n="1"`,
+    `n="2"`… se apilan alineados bajo la misma nota (comprobado; sin `n` se superponen).
+    Fila 1 = la realización; fila 2 = la alternativa. **Nunca más de una alternativa por
+    casilla** (§4t.7 bis), así que bastan dos filas.
+  - La **tonalidad es única**: comprobado por enumeración exhaustiva (§4t.7 bis).
+- **Canto dado** (icono: clave de Sol; ⟶ HECHO 2026-09-22, `c4u0-cadencias-canto.html` +
+  `Cadencias.generarCanto()`): se muestra **solo la soprano**, armadura,
+  compás y **el tipo** con su sigla exacta («CAP»); se piden **tonalidad y línea del bajo**.
+  - El tipo **se da** porque sin él la soprano no distingue CA de CR (ambas pueden acabar
+    en 1̂) y porque acota las líneas de bajo posibles a unas pocas (§4t.7 bis).
+  - **Respuesta**: la realización completa con sus cifrados (el bajo es lo pedido; las voces
+    internas vienen de propina) y, en texto, la tonalidad. **«Otros bajos posibles»**: se
+    relanza el motor con la soprano fijada sobre todas las fórmulas del tipo y la longitud,
+    y se listan las **secuencias de grados del bajo** distintas que tienen realización
+    válida, cada una con su lectura de acordes («1̂–4̂–5̂–1̂ · I–IV–V–I o I–II6–V–I»), hasta
+    **tres** y «y N más» si sobran. Van como lista de texto, no en pentagrama: lo que se
+    compara es la línea, y tres pentagramas más no caben en pizarra.
+  - **Guarda de tonalidad**: al revés que en Bajo dado, la soprano **sí** puede leerse en la
+    relativa (§4t.7 bis: SC hasta el 41 %, CR hasta el 18 %). Se **descarta la instancia**
+    si la misma soprano escrita admite una realización con la **misma sigla** en la
+    tonalidad relativa. Solo así «se pide tonalidad» tiene respuesta única.
 
 En las dos últimas variantes la soprano/el bajo mostrados **se generan primero como
 realización completa**; no se generan sueltos. Así lo mostrado siempre tiene solución.
+El **audio** sigue a lo que se ve: antes de revelar suena solo la voz mostrada; al revelar,
+las cuatro. En las dos, la tonalidad **no** se nombra hasta la respuesta.
+
+Al implementarlas apareció un detalle de presentación: las lecturas de una línea de bajo
+**no se escriben nunca como fórmulas enteras** tampoco en el texto de la respuesta (serían
+ocho: «I–IV–I6/4–V–VI o I–IV–I6/4–V–IV6 o …»), sino comprimidas por casilla, igual que en
+la partitura: «I · IV (o II6) · I6/4 · V7 (o V) · VI (o IV6)». Lo hace
+`comprimeLecturas()`, y la primera fila es siempre el acorde de la realización dibujada.
+Los grados con circunflejo (1̂) no componen bien en el titular de la respuesta (serif, 30 px):
+ahí va la tonalidad, y la línea de bajo baja al detalle.
+
+### 4t.7 bis. Cuánta ambigüedad hay (medida, no estimada)
+
+El catálogo es pequeño y enumerable, así que antes de programar las dos variantes se
+contaron **todas** sus fórmulas y se agruparon por línea de bajo (script de medida, no
+incluido en la app; resultados de 2026-09-22).
+
+| Nivel | Fórmulas (CAP/CAI unidas) | Líneas de bajo | Lecturas por línea |
+|-------|--------------------------:|---------------:|--------------------|
+| 1 (mayor) | 26 | 11 | 1 (2 líneas) · 2 (6) · 4 (3) |
+| 2 (mayor) | 109 | 47 | 1 (9) · 2 (26) · 4 (12) |
+| 3 (menor) | 197 | 53 | 1 (6) · 2 (18) · 3 (1) · 4 (18) · 8 (10) |
+
+Lo que importa no es el número de lecturas, sino su **forma**: son siempre el producto de
+elecciones **independientes casilla a casilla**, y cada casilla tiene **a lo sumo dos**
+acordes con el mismo bajo:
+
+| Bajo | Casilla | Alternativas | Desde |
+|------|---------|--------------|-------|
+| 4̂ | PD | IV · II6 | nivel 1 |
+| 5̂ | D | V · V7 | nivel 1 |
+| 6̂ | TF (rota) | VI · IV6 | nivel 3 |
+| 6̂ | T0 / PD | VI · IV6 | nivel 3 (menor: PD desde el 2) |
+
+Por eso las ocho lecturas de una línea del nivel 3 **no se listan como ocho fórmulas**
+(ilegible), sino como **una alternativa bajo cada casilla que la tenga**: dos filas de
+cifrado bastan siempre.
+
+**Tipo a partir del bajo.** Enumerando los tres niveles, ninguna línea de bajo admite dos
+tipos distintos, salvo: (a) **CAP/CAI**, que el bajo *nunca* distingue (es cosa de la
+soprano, §4t.2); y (b) en **menor**, el bajo 6̂–5̂, que es **IV6–V** (frigia) o **VI–V** (SC).
+
+**Tonalidad a partir del bajo: siempre única.** Comprobado sobre todas las líneas de bajo
+de los tres niveles y los dos modos (0 choques de 22, 94 y 124 líneas): leída en la
+relativa, ninguna da otra cadencia válida. La razón es estructural: la casilla D exige
+bajo 5̂, que en la relativa es 7̂ o 3̂, y ninguno de los dos es bajo de la casilla D. Al
+ampliar el catálogo (napolitana, dominantes secundarias…), **rehacer esta medida**.
+
+**Tonalidad a partir de la soprano: NO es única.** Con la sigla exacta dada, el porcentaje
+de instancias cuya soprano escrita admite también una realización del mismo tipo en la
+tonalidad relativa es: CAP 0 % · CAI 0 % · SC (frigia) 0 % · **CR 12–18 %** · **SC 19–41 %**.
+De ahí la guarda de Canto dado. (CAP es inmune porque su soprano acaba en la tónica.)
+
+**Cuántas líneas de bajo caben bajo una soprano dada**, con el tipo dado: nivel 1, una o
+dos; nivel 2, entre una y tres (máximo medido 7); nivel 3, tres o cuatro (máximo 6). Es una
+lista corta, que es lo que hace viable mostrar «otros bajos posibles».
+
+**Fleco detectado al medir.** En menor, la fórmula `[T0] IV6 V` se generaba con **dos
+etiquetas**: como SC (con IV6 de predominante) y como SC frigia, siendo los mismos acordes.
+⟶ DECIDIDO: en menor, IV6 inmediatamente antes de V es **siempre** la frigia; la casilla PD
+no ofrece IV6 a la SC común (sí con I6/4 por medio, que ya no es la frigia).
 
 ### 4t.8. Niveles
 
@@ -477,6 +558,18 @@ Script desechable (patrón de `CLAUDE.md`), por nivel, variante y tonalidad:
 
 7. **Render real:** una muestra de instancias se carga en Verovio (que funciona también en
    Node desde `vendor/`) y se cuentan notas, cifrados y compases en el SVG.
+
+8. **Bajo dado:** la tonalidad es la única posible —comprobado **leyendo el bajo escrito
+   en la relativa** con una enumeración propia del script, no con la del core— y ninguna
+   casilla ofrece más de una alternativa.
+9. **Canto dado:** ninguna instancia superviviente se lee en la relativa con la misma sigla.
+
+⟶ HECHO (2026-09-22) los puntos 8 y 9, con 150 instancias de cada variante por nivel:
+**0 tonalidades ambiguas** en las dos, **0 casillas con más de una alternativa** (la
+afirmación de §4t.7 bis, ahora verificada también en el nivel 3) y «otros bajos» de media
+0,8 · 1,5 · 2,3 por nivel, con máximo 7. Coste: unos 10 ms por instancia de Bajo dado y
+25 ms de Canto dado (enumeran el catálogo entero), frente a 1,7 ms de *Tipo*; imperceptible
+al pulsar un botón, pero por eso la validación usa 150 y no miles.
 
 ⟶ HECHO (2026-09-19): `tests/masivo-cadencias.js [nivel] [n]` sobre el core de la familia
 (puntos 1, 2, 3, 5, 6 y 7; el 4 es por construcción). Resultado: **0 infracciones**,
@@ -806,7 +899,18 @@ si no, dos `<harm>` o cifras en Unicode (⁶₅).
 - [x] ~~Anacrusa: campo `partial` en gramática y parser~~ → hecho (§4t.5, gramática §6).
 - [ ] Migración de los cores de 3.º UD 0 a `tonalidades.js` (ya existe) (§4t.6).
 - [x] ~~Core de la familia Cadencias y página *Tipo*~~ → hechos (§4t.7).
-- [ ] Páginas *Bajo dado* y *Canto dado* (§4t.7); «otras opciones» y «otros bajos posibles».
+- [x] ~~¿Cuántas alternativas hay en la práctica? ¿Hace falta simplificar?~~ → medido
+      (§4t.7 bis): las lecturas son independientes por casilla y **nunca más de dos**, así
+      que no hay que simplificar el catálogo, solo presentarlas por casilla.
+- [x] ~~Ambigüedad CAP/CAI en Bajo dado~~ → se responde **CA** y, en el detalle, cuál es en
+      la realización mostrada (§4t.7).
+- [x] ~~Cómo mostrar las alternativas~~ → Bajo dado, **filas de cifrado** bajo la casilla
+      (`<harm n="1|2">`, Verovio las apila); Canto dado, **lista de líneas de bajo** en
+      texto, hasta tres (§4t.7).
+- [x] ~~Páginas *Bajo dado* y *Canto dado*~~ → hechas (§4t.7), con la guarda de tonalidad
+      de Canto dado (descarta el 9 % de las instancias) y el arreglo de la frigia (§4t.7 bis).
+- [ ] Revisar en clase el reparto de niveles y los pesos, ahora que las tres variantes
+      existen (§4t.3, §4t.8).
 - [ ] Revisar a ojo/oído las realizaciones generadas y ajustar penalizaciones (§5.3).
 - [x] ~~Iconos de las tres variantes de Cadencias~~ → sigla «CAP», clave de Fa, clave de Sol (§4t.7).
 - [x] ~~`<harm>` con texto y `<fb>` a la vez en Verovio~~ → **no**: Verovio 6.3 descarta el

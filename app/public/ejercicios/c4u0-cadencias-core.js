@@ -17,6 +17,13 @@
        por voz, con bar checks y `partial`), exportador a MEI
        (pentagrama doble, dos capas por pentagrama, cifrado
        americano encima y romanos con cifras debajo) y notas MIDI.
+     · VARIANTES: generar() (Tipo), generarBajo() y generarCanto().
+       Las dos últimas parten de una realización completa y añaden
+       las LECTURAS ALTERNATIVAS, que se obtienen enumerando el
+       catálogo entero (es pequeño) y quedándose con las fórmulas
+       realizables: por casilla en Bajo dado, por línea de bajo en
+       Canto dado. Canto dado descarta además las instancias que
+       se leerían igual en la tonalidad relativa (§4t.7 bis).
    Depende de cuatro-voces-core.js (CuatroVoces), tonalidades.js
    (TONALIDADES) y mini-lilypond-parser.js (MiniLily). Sin DOM.
    ============================================================ */
@@ -65,6 +72,11 @@
   // bajo; I6–IV6, bajo 3̂–6̂ sin sentido; I–II, fuera del estilo.
   const FORMULAS_VETADAS = [['VI','IV6'], ['I6','IV6'], ['I','II']];
   const vetada = ids => ids.some((id,k)=>k>0 && FORMULAS_VETADAS.some(v=>v[0]===ids[k-1] && v[1]===id));
+  // En MENOR, IV6 justo antes de V es SIEMPRE la frigia: la SC común no puede
+  // usar esa combinación, o los mismos acordes saldrían con dos etiquetas
+  // (§4t.7 bis). Con el 6/4 cadencial por medio ya no es la frigia, y vale.
+  const etiquetaChocante = (tipo, ids, modo) =>
+    modo==='minor' && tipo==='SC' && ids.some((id,k)=>id==='IV6' && ids[k+1]==='V');
 
   function casilla(nombre, nivel, modo){
     return CASILLAS[nombre]
@@ -88,7 +100,7 @@
       if(tipo==='CAP'||tipo==='CAI') ids.push('I');
       if(tipo==='CR') ids.push(nivel>=3 && rnd()<0.3 ? 'IV6' : 'VI');
     }
-    if(ids.length<2 || vetada(ids)) return null;
+    if(ids.length<2 || vetada(ids) || etiquetaChocante(tipo, ids, modo)) return null;
     return {tipo, ids};
   }
   // Modelos de acorde de una fórmula (con las duplicaciones contextuales).
@@ -262,6 +274,183 @@
     return null;
   }
 
+  /* ---------- lecturas alternativas (§4t.7, §4t.7 bis) ---------- */
+  // Grado del bajo de cada acorde del catálogo.
+  const BAJO_DE = {I:1, I6:3, VI:6, IV:4, II6:4, II:2, IV6:6, I64:5, V:5, V7:5};
+  const bajoDe = ids => ids.map(id=>BAJO_DE[id]);
+  const GRADO_TXT = ['','1̂','2̂','3̂','4̂','5̂','6̂','7̂'];
+  const bajoTxt = ids => bajoDe(ids).map(d=>GRADO_TXT[d]).join('–');
+
+  // Etiqueta de respuesta de BAJO DADO: el bajo nunca distingue CAP de CAI
+  // (§4t.7 bis), así que las dos se responden «CA». No es un tipo del catálogo.
+  const CA = {sigla:'CA', nombre:'Cadencia Auténtica'};
+  const tipoDesdeBajo = t => (t==='CAP'||t==='CAI') ? CA : TIPOS[t];
+
+  // Enumeración EXHAUSTIVA de las fórmulas de un nivel y modo (decenas, pocos
+  // cientos en el nivel 3). Mismas reglas que formula(), sin azar.
+  function enumerarFormulas(nivel, modo){
+    const T0=[null].concat(casilla('T0',nivel,modo).map(x=>x.x));
+    const PD=[null].concat(casilla('PD',nivel,modo).map(x=>x.x));
+    const D  = casilla('D',nivel,modo).map(x=>x.x);
+    const D64 = nivel>=2 ? [null,'I64'] : [null];
+    const out=[];
+    const add=(tipo,ids)=>{
+      if(ids.length>=2 && !vetada(ids) && !etiquetaChocante(tipo,ids,modo)) out.push({tipo, ids});
+    };
+    tiposDisponibles(nivel,modo).forEach(tipo=>{
+      if(tipo==='SCF'){ T0.forEach(t0=>add(tipo,[t0,'IV6','V'].filter(Boolean))); return; }
+      T0.forEach(t0=>PD.forEach(pd=>D64.forEach(d64=>{
+        (tipo==='SC' ? ['V'] : D).forEach(d=>{
+          const base=[t0,pd,d64,d].filter(Boolean);
+          if(tipo==='SC') add(tipo, base);
+          else if(tipo==='CAP'||tipo==='CAI') add(tipo, base.concat(['I']));
+          else if(tipo==='CR'){
+            add(tipo, base.concat(['VI']));
+            if(nivel>=3) add(tipo, base.concat(['IV6']));
+          }
+        });
+      })));
+    });
+    return out;
+  }
+
+  // ¿Tiene realización esta fórmula (con la soprano fijada, si se da) y sigue
+  // siendo del tipo pedido? Devuelve la realización o null.
+  function realizaCon(key, f, alturasSoprano, tipoExigido){
+    const opts=ganchos(f.tipo);
+    if(alturasSoprano) opts.fija={voz:0, alturas:alturasSoprano};
+    const r=CV.realizar(key, acordesDe(key, f.ids), opts);
+    if(!r) return null;
+    if(tipoExigido && tipoPorSoprano(f.tipo, r.voces[0][r.voces[0].length-1].deg)!==tipoExigido) return null;
+    return r;
+  }
+
+  // BAJO DADO: fórmulas del nivel con la MISMA línea de bajo que `ids` y con
+  // alguna realización válida.
+  function lecturasDelBajo(nivel, key, ids){
+    const objetivo=bajoDe(ids).join('-');
+    return enumerarFormulas(nivel, key.mode).filter(f=>
+      f.ids.length===ids.length && bajoDe(f.ids).join('-')===objetivo && realizaCon(key, f, null, null));
+  }
+  // Por casilla, los OTROS acordes que caben con ese mismo bajo (§4t.7 bis:
+  // nunca más de uno, pero se devuelve lista por si el catálogo crece).
+  function alternativasPorCasilla(ids, lecturas){
+    return ids.map((id,k)=>[...new Set(lecturas.map(l=>l.ids[k]).filter(x=>x!==id))]);
+  }
+
+  // Un grupo de fórmulas con la MISMA línea de bajo, comprimido a «un acorde
+  // por casilla + sus alternativas». Nunca se listan las fórmulas enteras: con
+  // tres casillas ambiguas serían ocho (§4t.7 bis), ilegibles.
+  // `preferida` fija qué acorde va en la primera fila (el de la realización
+  // mostrada); si no se da, el primero de la enumeración.
+  function comprimeLecturas(key, listaIds, preferida){
+    const base=preferida || listaIds[0];
+    const alt=alternativasPorCasilla(base, listaIds.map(ids=>({ids})));
+    const romano=id=>CV.acorde(key, ACORDES[id]).romano;
+    return base.map((id,k)=>({romano:romano(id), alternativas:alt[k].map(romano)}));
+  }
+
+  // CANTO DADO: líneas de bajo distintas que admiten realización con esa
+  // soprano y ese tipo. → [{bajo:'1̂–4̂–5̂–1̂', lecturas:[[ids]…]}]
+  function bajosPosibles(nivel, key, tipo, n, alturasSoprano){
+    const compat = (tipo==='CAP'||tipo==='CAI') ? ['CAP','CAI'] : [tipo];
+    const mapa=new Map();
+    enumerarFormulas(nivel, key.mode).forEach(f=>{
+      if(f.ids.length!==n || !compat.includes(f.tipo)) return;
+      if(!realizaCon(key, f, alturasSoprano, tipo)) return;
+      const b=bajoTxt(f.ids);
+      if(!mapa.has(b)) mapa.set(b, {bajo:b, lecturas:[]});
+      mapa.get(b).lecturas.push(f.ids);
+    });
+    return [...mapa.values()];
+  }
+
+  // Tonalidad relativa (misma armadura, otro modo); puede haber dos entradas
+  // enarmónicas con 6 alteraciones, y cuentan las dos.
+  function relativas(key){
+    return TON.TODAS.filter(k=>k.sig===key.sig && k.mode!==key.mode);
+  }
+  // GUARDA DE CANTO DADO (§4t.7 bis): ¿la misma soprano escrita admite una
+  // realización con la MISMA sigla en la relativa? Si sí, «se pide tonalidad»
+  // no tendría respuesta única y la instancia se descarta. Filtro previo
+  // barato: si alguna nota de la soprano no pertenece a la escala de la
+  // relativa, no hace falta probar nada.
+  function leeEnRelativa(inst){
+    const alturas=inst.voces[0].map(p=>({abs:p.abs, alter:p.alter}));
+    return relativas(inst.key).some(rel=>{
+      const esc=CV.escala(rel), porLetra={};
+      esc.forEach(e=>{ porLetra[e.letter]=e.alter; });
+      if(inst.voces[0].some(p=>porLetra[p.letter]!==p.alter)) return false;
+      const compat = (inst.tipo==='CAP'||inst.tipo==='CAI') ? ['CAP','CAI'] : [inst.tipo];
+      return enumerarFormulas(inst.nivel, rel.mode).some(f=>
+        f.ids.length===inst.ids.length && compat.includes(f.tipo) &&
+        realizaCon(rel, f, alturas, inst.tipo));
+    });
+  }
+
+  /* ---------- variantes Bajo dado y Canto dado ---------- */
+  // generarBajo(nivel) → instancia + answer con tipo(s), tonalidad y las
+  // alternativas por casilla. Se muestra solo el bajo hasta revelar.
+  function generarBajo(nivel, opts){
+    for(let i=0;i<30;i++){
+      const inst=generar(nivel, opts);
+      if(!inst) continue;
+      const lecturas=lecturasDelBajo(nivel, inst.key, inst.ids);
+      if(!lecturas.length) continue;                       // no debería ocurrir
+      const alternativas=alternativasPorCasilla(inst.ids, lecturas);
+      const siglas=[]; const vistas=new Set();
+      lecturas.forEach(l=>{
+        const e=tipoDesdeBajo(l.tipo);
+        if(!vistas.has(e.sigla)){ vistas.add(e.sigla); siglas.push(e); }
+      });
+      inst.variante='bajo';
+      inst.lecturas=lecturas;
+      inst.alternativas=alternativas;
+      inst.json.prompt='¿En qué tonalidad estás, qué cadencia es y con qué acordes?';
+      inst.json.answer=Object.assign({}, inst.json.answer, {
+        tonalidad: inst.key.nombre,
+        tipos: siglas,                                     // lo que el bajo permite afirmar
+        tipoRealizado: TIPOS[inst.tipo].sigla,             // el de la realización mostrada
+        bajo: bajoTxt(inst.ids),
+        acordes: inst.acordes.map((a,k)=>({
+          id:a.id, romano:a.romano, cifras:a.cifras, americano:a.americano,
+          alternativas: alternativas[k].map(id=>CV.acorde(inst.key, ACORDES[id]).romano)
+        }))
+      });
+      return inst;
+    }
+    return null;
+  }
+
+  // generarCanto(nivel) → instancia + answer con tonalidad y otras líneas de
+  // bajo. Se muestra solo la soprano (y el tipo) hasta revelar.
+  function generarCanto(nivel, opts){
+    for(let i=0;i<30;i++){
+      const inst=generar(nivel, opts);
+      if(!inst) continue;
+      if(leeEnRelativa(inst)) continue;                    // guarda de tonalidad
+      const alturas=inst.voces[0].map(p=>({abs:p.abs, alter:p.alter}));
+      const bajos=bajosPosibles(nivel, inst.key, inst.tipo, inst.ids.length, alturas);
+      const propio=bajoTxt(inst.ids);
+      const mio=bajos.find(b=>b.bajo===propio);
+      const otros=bajos.filter(b=>b.bajo!==propio);
+      const mias=mio ? mio.lecturas : [inst.ids];
+      inst.variante='canto';
+      inst.lecturas=mias.map(ids=>({tipo:inst.tipo, ids}));
+      inst.alternativas=alternativasPorCasilla(inst.ids, inst.lecturas);
+      inst.json.prompt='¿En qué tonalidad estás y cuál es la línea del bajo?';
+      inst.json.answer=Object.assign({}, inst.json.answer, {
+        tonalidad: inst.key.nombre,
+        sigla: TIPOS[inst.tipo].sigla,                     // dato, no respuesta
+        bajo: propio,
+        acordes: comprimeLecturas(inst.key, mias, inst.ids),
+        otrosBajos: otros.map(b=>({bajo:b.bajo, acordes:comprimeLecturas(inst.key, b.lecturas)}))
+      });
+      return inst;
+    }
+    return null;
+  }
+
   /* ---------- MEI ---------- */
   const accMap={1:'s',0:'n','-1':'f',2:'x','-2':'ff'};
   const clefAttr = c => c==='bass' ? 'clef.shape="F" clef.line="4"' : 'clef.shape="G" clef.line="2"';
@@ -269,10 +458,14 @@
   const sigStr = sig => sig===0 ? '0' : Math.abs(sig)+(sig>0?'s':'f');
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
-  // toMEI(inst, {cifrados, ocultas}):
+  // toMEI(inst, {cifrados, ocultas, alternativas}):
   //   cifrados: dibuja el americano encima y los romanos con cifras debajo;
   //   ocultas: array de índices de voz que se ocultan (<space>), p. ej.
-  //     [0,1,2] en Bajo dado, [1,2,3] en Canto dado.
+  //     [0,1,2] en Bajo dado, [1,2,3] en Canto dado;
+  //   alternativas: por casilla, ids de acorde que también caben con ese bajo;
+  //     van en una SEGUNDA fila de cifrado. Verovio apila los <harm> por su
+  //     atributo `n` (sin él se superponen): n="1" la realización, n="2" la
+  //     alternativa (§4t.7).
   function toMEI(inst, opts){
     opts=opts||{};
     const ocultas=opts.ocultas||[];
@@ -295,8 +488,16 @@
       let harms='';
       if(opts.cifrados) m.forEach(x=>{
         const a=inst.acordes[x.k];
-        harms += `<harm place="above" staff="1" startid="#s${x.k}">${esc(a.americano)}</harm>`
-               + `<harm place="below" staff="2" startid="#b${x.k}">${romanoXml(a)}</harm>`;
+        // el americano se ancla a la soprano salvo que esté oculta
+        const arriba = ocultas.includes(0)
+          ? `<harm place="above" staff="2" startid="#b${x.k}">${esc(a.americano)}</harm>`
+          : `<harm place="above" staff="1" startid="#s${x.k}">${esc(a.americano)}</harm>`;
+        harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1">${romanoXml(a)}</harm>`;
+        const alt=(opts.alternativas||[])[x.k]||[];
+        alt.forEach((id,j)=>{
+          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}">`
+                 + romanoXml(CV.acorde(inst.key, ACORDES[id]))+`</harm>`;
+        });
       });
       return `<measure n="${inst.ritmo.anacrusa ? i : i+1}"${attrs}>`
         + `<staff n="1">${capa(0,m,'s')}${capa(1,m,'a')}</staff>`
@@ -336,7 +537,10 @@
   ];
 
   const api = {
-    generar, toMEI, midis, MAX_NIVEL, NIVELES, TIPOS, NOMBRE_VOZ,
+    generar, generarBajo, generarCanto, toMEI, midis, MAX_NIVEL, NIVELES, TIPOS, CA, NOMBRE_VOZ,
+    // lecturas alternativas (Bajo dado / Canto dado)
+    enumerarFormulas, lecturasDelBajo, alternativasPorCasilla, comprimeLecturas, bajosPosibles,
+    leeEnRelativa, bajoDe, bajoTxt, tipoDesdeBajo, etiquetaChocante,
     // gramática (para pruebas y para las variantes Bajo dado / Canto dado)
     formula, acordesDe, ganchos, casilla, tiposDisponibles, tonalidades, ritmo, leerPlantilla,
     FORMULAS_VETADAS, vetada, PLANTILLAS, PLANTILLAS_SC64, FINAL, CLAUSULA, penClausula, tipoPorSoprano
