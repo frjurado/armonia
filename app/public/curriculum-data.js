@@ -116,7 +116,7 @@ const CURRICULO = {
     {
       nombre:'Curso 4.º', tag:'Cromático',
       unidades:[
-        { n:0, titulo:'Repaso', publico:false,
+        { n:0, titulo:'Repaso', publico:true,
           familias:[
             { nombre:'Cadencias',
               desc:'Cadencias a cuatro voces (CAP, CAI, SC —también frigia— y CR), realizadas al vuelo por el motor a cuatro voces según los mínimos de conducción; 12 tonalidades (16 en el nivel 3), compases de 2/4, 3/4 y 4/4, anacrusa desde el nivel 2. Al revelar, cifrado americano encima y grados con cifras debajo.',
