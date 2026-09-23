@@ -78,12 +78,12 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
 .score-wrap{position:relative;max-width:100%}
 #notation svg{max-width:100%;height:auto;display:block}
 #notation .ph{color:var(--soft);font-size:15px;text-align:center}
-/* Dato de partida dentro de la partitura (<dir type="dato">, ver toMEI en
+/* Dato de partida dentro de la partitura (<reh type="dato">, ver toMEI en
    c4u0-cadencias-core.js): lo que el ejercicio DA —tonalidad, tipo de
    cadencia…—, anclado al primer tiempo y por tanto alineado con el comienzo
    de la música. Entintado y en serif para que no se confunda ni con el
    cifrado (negro, dentro de la partitura) ni con la respuesta (terroso). */
-#notation .dir.dato text{fill:var(--ink);font-family:var(--serif);font-weight:600}
+#notation .reh.dato text{fill:var(--ink);font-family:var(--serif);font-weight:600}
 
 /* Cifrados alternativos (segunda fila de <harm>, marcada type="alt" en el MEI:
    Verovio lo vuelca a la clase del SVG). Gris, como las alternativas del texto. */

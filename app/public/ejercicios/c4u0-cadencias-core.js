@@ -471,7 +471,13 @@
   //     sobre el primer tiempo. Va en la partitura, no en el enunciado: es
   //     información que se DA, y ahí queda alineada con el comienzo de la
   //     música. `type="dato"` llega al SVG como clase (lo entinta comun.css).
-  //     Verovio lo coloca por debajo de la fila del americano: no chocan.
+  //     Va como `<reh>` (marca de ensayo) y no como `<dir>` a propósito: es el
+  //     elemento al que Verovio da la franja MÁS ALTA sobre el pentagrama, así
+  //     que al revelar queda por ENCIMA de la fila del americano sin ajustar
+  //     nada. Con `<dir>` cae por debajo, y subirlo exige un `vo` a ojo que
+  //     depende de la altura de la soprano. `<reh>` se centra sobre el primer
+  //     tiempo (Verovio ignora `halign` aquí); con nombres de hasta
+  //     «Sol♭ mayor» no se sale del pentagrama.
   function toMEI(inst, opts){
     opts=opts||{};
     const ocultas=opts.ocultas||[];
@@ -492,7 +498,7 @@
       const last = i===inst.ritmo.compases.length-1;
       const attrs = (inst.ritmo.anacrusa && i===0 ? ' metcon="false"' : '') + (last ? ' right="end"' : '');
       let harms = (i===0 && opts.dato)
-        ? `<dir place="above" staff="1" tstamp="1" type="dato">${esc(opts.dato)}</dir>` : '';
+        ? `<reh place="above" staff="1" tstamp="1" type="dato">${esc(opts.dato)}</reh>` : '';
       if(opts.cifrados) m.forEach(x=>{
         const a=inst.acordes[x.k];
         // el americano se ancla a la soprano salvo que esté oculta

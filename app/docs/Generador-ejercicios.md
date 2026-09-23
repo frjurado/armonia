@@ -432,12 +432,19 @@ romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cu
 **Tres capas, cada una en su sitio** (⟶ HECHO 2026-09-23). Lo que se ve se reparte en
 dato → pregunta → respuesta, y **nada se dice dos veces**:
 
-1. **El dato de partida va en la partitura**, no en el enunciado: un `<dir type="dato">`
+1. **El dato de partida va en la partitura**, no en el enunciado: un `<reh type="dato">`
    anclado al **primer tiempo**, o sea alineado con el comienzo de la música
-   (`toMEI(…,{dato})`). Entintado y en serif (`comun.css`, `.dir.dato`) para no
-   confundirlo ni con el cifrado ni con la respuesta. Verovio lo coloca **por debajo de la
-   fila del americano**: comprobado que no chocan (1080 render, las tres variantes, los
-   tres niveles, antes y después de revelar).
+   (`toMEI(…,{dato})`). Entintado y en serif (`comun.css`, `.reh.dato`) para no
+   confundirlo ni con el cifrado ni con la respuesta. Va como **marca de ensayo** (`<reh>`)
+   y no como `<dir>` **a propósito**: al revelar tiene que quedar **por encima de la fila
+   del americano**, y `<reh>` es el elemento al que Verovio da la franja más alta sobre el
+   pentagrama. Con `<dir>` cae por debajo y subirlo exige un `vo` a ojo que depende de la
+   altura de la soprano (medido: holgura de 49–97 unidades y ajustado a mano, frente a
+   396–439 con `<reh>` sin tocar nada). `<reh>` se **centra** sobre el primer tiempo
+   —Verovio ignora `halign` aquí—; con los nombres más largos («Sol♭ mayor») el borde
+   izquierdo llega justo al comienzo del pentagrama, y aún quedan 600 unidades de margen
+   de página, así que no se recorta. Comprobado en 1080 render: las tres variantes, los
+   tres niveles, antes y después de revelar.
 2. **La pregunta va debajo de la partitura** (`.pregunta`), en una línea y con menos peso
    que el dato y que la respuesta. El enunciado largo sigue dentro de «Ayuda».
 3. **La respuesta no repite lo que ya está dibujado.** Al revelar, los cifrados aparecen
