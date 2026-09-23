@@ -109,6 +109,20 @@ figure img { max-width: 100%; height: auto; }
 figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
              text-align: center; }
 
+/* --- tira de navegación --------------------------------------------
+   Solo en el HTML: abre la unidad con la vuelta al índice de apuntes y
+   la descarga del PDF. El PDF no la lleva —ya es el fichero que se
+   descargaría, y no tiene índice al que volver—. */
+
+.barra { display: flex; align-items: baseline; gap: 1rem;
+         margin-bottom: 2.5rem; font-size: .9rem; }
+.barra a { text-decoration: none; }
+.barra .volver { color: var(--acento); font-weight: 600; }
+.barra .pdf { margin-left: auto; color: var(--suave); }
+.barra a:hover { text-decoration: underline; }
+
+@media print { .barra { display: none; } }
+
 /* --- índice ------------------------------------------------------- */
 
 nav#TOC { margin: 3.5rem 0 4.5rem; font-size: .92rem; }

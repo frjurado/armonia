@@ -21,21 +21,26 @@ el día que cambie el formato del texto no hay que tocarlos.
     _formato/metadatos.yaml  papel, márgenes, tipografía (PDF)
     _formato/apuntes.css     lo mismo para el HTML
     _formato/fuentes/        la fuente del texto, y el script que la hace
+    _formato/indice.html     plantilla de la página de índice de unidades
 
     herramientas/construir.py  todo el flujo
     herramientas/pdf2svg.py    conversor de reserva, sin binarios de sistema
 
-    build/                 generado: c4u0.html, c4u0.pdf, imagenes/, fuentes/,
-                           apuntes.css
+    build/                 generado: todas las unidades compiladas, más
+                           imagenes/, fuentes/, apuntes.css y un index.html
+                           de trabajo que las lista todas
+    build/sitio/           generado: SOLO lo publicable (ver abajo)
     tmp/                   generado: intermedios de LilyPond
 
-`build/` es exactamente lo publicable, con las rutas relativas ya cuadradas
-entre documento, imágenes, fuentes y hoja de estilo.
+Las rutas relativas entre documento, imágenes, fuentes y hoja de estilo ya
+están cuadradas en las dos carpetas.
 
 ## Requisitos
 
 - **LilyPond** ≥ 2.24 y **Pandoc** ≥ 3.0. Obligatorios.
-- **Typst** para el PDF (`pip install typst` o el binario). Pandoc lo llama solo.
+- **Typst** para el PDF: el **binario**, y en el PATH, porque es a quien llama
+  Pandoc. `pip install typst` NO vale: instala el módulo de Python y no deja
+  ningún ejecutable. Se descarga de <https://github.com/typst/typst/releases>.
 - **Un conversor PDF→SVG**, cualquiera de los dos:
   - `pdftocairo`, del paquete *poppler* / *poppler-utils* (se usa si está); o
   - `pip install pymupdf`, y entonces se usa el `pdf2svg.py` incluido — **la vía
@@ -59,6 +64,31 @@ El camino completo:
     _formato/fuentes/*.woff2  --se copian-->  build/fuentes/
     c4u0.md           --Pandoc-->            build/c4u0.html
                       --Pandoc + Typst-->    build/c4u0.pdf
+
+## Publicar una unidad
+
+`build/` es el resultado de compilarlo todo, incluidas las unidades a medias.
+Lo que se publica es **`build/sitio/`**, que es lo que recoge `sitio/montar.sh`,
+y ahí solo entran las unidades cuya cabecera YAML lleve
+
+    publico: true
+
+Es el mismo mecanismo que `publico:true` en `app/public/curriculum-data.js`:
+**qué ve el alumnado es un dato**, no una consecuencia de que el fichero
+exista. Así se puede escribir y revisar una unidad, compilándola y mirándola
+en `build/`, sin que se le aparezca a nadie.
+
+Hay por eso dos índices, los dos generados a partir de `_formato/indice.html`:
+
+- `build/sitio/index.html` — el que ven los alumnos; solo lista lo publicado,
+  y lo demás sale como «En preparación».
+- `build/index.html` — el de trabajo; lista todo lo compilado y marca **DEV**
+  lo que aún no sale.
+
+Las filas de los dos —las catorce unidades, con su título y su descripción—
+salen de las tablas de `curriculum/Plan-Armonia.md`, no se copian aquí: el
+plan manda sobre los apuntes, y así una unidad no puede acabar con un nombre
+distinto del que tiene en el plan.
 
 ## Los ejemplos que no son partitura
 
@@ -205,14 +235,16 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
 
 El flujo está completo y las tres salidas se generan.
 
-- **`c3u0.md`** — redactada, con sus seis ejemplos hechos (el círculo de 5.as,
+- **`c3u0.md`** — redactada, con sus siete ejemplos hechos (el círculo de 5.as,
   las parejas de inversión, los compuestos, las dos claves, los cuatro tipos de
-  tríada, las inversiones cifradas y el bajo cifrado realizado).
+  tríada, las inversiones cifradas y el bajo cifrado realizado). **Es la única
+  con `publico: true`**, y por tanto la única que sale al sitio.
 - **`c4u0.md`** — redactada, con tres ejemplos hechos —disposiciones, los tres
-  6/4 y las cuatro cadencias—; los demás siguen marcados con `- Ej.:`.
+  6/4 y las cuatro cadencias—; los demás siguen marcados con `- Ej.:`. Sin
+  publicar: le falta una revisión.
 - **`c3u1.md` y `c3u2.md`** — todavía guiones, sin redactar. Sus dos `.ly`
   (`c3u1-5as-paralelas`, `c3u1-triada-im`) están hechos pero aún no enlazados
   desde ningún texto.
 
-Pendiente de decidir: cómo se publica el conjunto (una página por unidad más
-un índice) y los enlaces cruzados con la app.
+Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
+unidad y al revés). `_site/` ya lo permite con rutas relativas.

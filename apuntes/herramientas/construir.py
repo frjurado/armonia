@@ -61,11 +61,25 @@ FORMATO = RAIZ / "_formato"
 
 SVG_FIJOS = EJEMPLOS / "svg"
 FUENTES = FORMATO / "fuentes"
+SITIO = BUILD / "sitio"
+PLAN = RAIZ.parent / "curriculum" / "Plan-Armonia.md"
 
 INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily"]
 METADATOS = FORMATO / "metadatos.yaml"
 CSS = FORMATO / "apuntes.css"
+PLANTILLA = FORMATO / "indice.html"
 YO = pathlib.Path(__file__)
+
+# El índice: sus filas salen de las tablas de unidades del plan, y una
+# unidad se publica cuando su cabecera YAML lleva `publico: true`.
+MARCA_UNIDADES = "<!-- unidades -->"
+RE_FILA_PLAN = re.compile(
+    r"^\|[^|]*\|\s*\*\*UD (\d)\*\*\s*\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|", re.M)
+RE_PUBLICO = re.compile(r"^publico:\s*true\b", re.M)
+CANDADO = ('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" '
+           'stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" '
+           'height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>')
+MARCA_DEV = '<span class="marca-dev" title="No sale al sitio publicado">DEV</span>'
 
 GUION_INICIO = "<!-- guion:inicio -->"
 GUION_FIN = "<!-- guion:fin -->"
@@ -294,6 +308,25 @@ def pandoc(texto, salida, extra):
     print(f"  {salida.relative_to(RAIZ)} ({salida.stat().st_size // 1024} kB)")
 
 
+def barra(md):
+    """La tira de navegación que abre el HTML de una unidad.
+
+    Solo en el HTML: el PDF ya es el fichero que se descargaría, y no
+    tiene índice de apuntes al que volver. Va por `--include-before-body`
+    porque la plantilla de Pandoc lo pone antes del título y del índice
+    del documento, que es donde tiene sentido; un bloque en bruto dentro
+    del texto caería detrás del índice.
+    """
+    TMP.mkdir(exist_ok=True)
+    fichero = TMP / f"barra-{md.stem}.html"
+    fichero.write_text(
+        '<nav class="barra">'
+        '<a class="volver" href="index.html">← Apuntes</a>'
+        f'<a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>'
+        '</nav>\n', encoding="utf-8")
+    return f"--include-before-body=../{fichero.relative_to(RAIZ).as_posix()}"
+
+
 def documentar(md):
     """Un .md -> su HTML y su PDF, si alguno de los dos está caduco."""
     svgs = [IMAGENES / n for n in ejemplos_de(md.stem)]
@@ -308,7 +341,7 @@ def documentar(md):
     if caduco(html, [*comunes, CSS]):
         shutil.copy2(CSS, BUILD / CSS.name)
         copiar_fuentes()
-        pandoc(texto, html, [f"--css={CSS.name}"])
+        pandoc(texto, html, [f"--css={CSS.name}", barra(md)])
         hechos += 1
 
     pdf = BUILD / f"{md.stem}.pdf"
@@ -320,6 +353,128 @@ def documentar(md):
                 f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}"])
         hechos += 1
     return hechos
+
+
+# --- el índice y la carpeta publicable --------------------------------
+
+def unidades_del_plan():
+    """Las unidades de cada curso, tal como las declara el plan.
+
+    `curriculum/Plan-Armonia.md` es la fuente de verdad de la asignatura
+    (ver el CLAUDE.md de la raíz), así que los títulos se leen de sus
+    tablas y no se copian aquí: el índice enseña las catorce unidades
+    aunque casi ninguna esté escrita todavía, y ninguna se queda con un
+    nombre distinto del que tiene en el plan.
+    """
+    if not PLAN.exists():
+        sys.exit(f"No encuentro {PLAN}; el índice sale de sus tablas")
+    texto = PLAN.read_text(encoding="utf-8")
+    cursos = []
+    for curso, etiqueta in (("3", "Armonía diatónica"), ("4", "Armonía cromática")):
+        marca = f"### Curso {curso}.º"
+        if marca not in texto:
+            sys.exit(f"{PLAN.name} no trae «{marca}»")
+        i = texto.index(marca)
+        j = texto.find("###", i + len(marca))
+        filas = RE_FILA_PLAN.findall(texto[i:j if j > 0 else len(texto)])
+        if not filas:
+            sys.exit(f"{PLAN.name}: no leo ninguna unidad de {curso}.º")
+        cursos.append((curso, etiqueta, filas))
+    return cursos
+
+
+def es_publica(md):
+    """¿Lleva `publico: true` en su cabecera YAML?
+
+    Igual que `publico:true` en app/public/curriculum-data.js: qué ve el
+    alumnado es un dato, no una consecuencia de que el fichero exista.
+    Una unidad puede estar escrita y compilándose sin salir al sitio.
+    """
+    cabecera = md.read_text(encoding="utf-8").split("---", 2)
+    return len(cabecera) > 2 and RE_PUBLICO.search(cabecera[1]) is not None
+
+
+def indice(destino, solo_publicas):
+    """Escribe el índice de unidades en `destino`.
+
+    Se genera dos veces y por eso lleva `solo_publicas`: el de
+    `build/sitio/` es el que ven los alumnos y solo lista lo publicado;
+    el de `build/` es el de trabajo, lista todo lo compilado y marca con
+    DEV lo que aún no sale. Es la misma distinción que hace la app entre
+    su copia pública y la de desarrollo.
+    """
+    hechas = {p.stem: p for p in unidades() if (BUILD / f"{p.stem}.html").exists()}
+    partes = []
+    for curso, etiqueta, filas in unidades_del_plan():
+        partes.append(f'<section class="curso">\n'
+                      f'  <h2>Curso {curso}.º <span class="tag">{etiqueta}</span></h2>')
+        for numero, titulo, nota in filas:
+            md = hechas.get(f"c{curso}u{numero}")
+            publica = md is not None and es_publica(md)
+            if md is None or (solo_publicas and not publica):
+                estado = f'{CANDADO}En preparación'
+                titulo_html = titulo
+                clase = ""
+            else:
+                # El título también enlaza: en el móvil el par «Leer · PDF»
+                # queda debajo y en pequeño, y el blanco grande al que se
+                # tira a tocar es el título.
+                estado = (f'<a href="c{curso}u{numero}.html">Leer</a>'
+                          f'<a class="pdf" href="c{curso}u{numero}.pdf">PDF</a>')
+                titulo_html = f'<a href="c{curso}u{numero}.html">{titulo}</a>'
+                clase = " lista"
+            # DEV marca lo compilado que aún no sale; lo que no existe
+            # todavía no está pendiente de publicar, está sin escribir.
+            marca = MARCA_DEV if md is not None and not publica and not solo_publicas else ""
+            partes.append(
+                f'  <div class="ud-row{clase}">\n'
+                f'    <div class="num">{numero}</div>\n'
+                f'    <div><div class="titulo">{titulo_html}{marca}</div>\n'
+                f'         <div class="nota">{nota}</div></div>\n'
+                f'    <div class="estado">{estado}</div>\n'
+                f'  </div>')
+        partes.append('</section>')
+
+    plantilla = PLANTILLA.read_text(encoding="utf-8")
+    if MARCA_UNIDADES not in plantilla:
+        sys.exit(f"{PLANTILLA.name} ya no trae la marca «{MARCA_UNIDADES}»")
+    destino.write_text(plantilla.replace(MARCA_UNIDADES, "\n".join(partes)),
+                       encoding="utf-8")
+    print(f"  {destino.relative_to(RAIZ)}")
+
+
+def montar_sitio():
+    """Reúne en build/sitio/ lo publicable, y solo eso.
+
+    `build/` es el resultado de compilar todo, incluidas las unidades a
+    medias; `build/sitio/` es el subconjunto que se publica, que es lo
+    que recoge sitio/montar.sh. Separarlos permite compilar y revisar una
+    unidad sin que se le aparezca a nadie.
+    """
+    SITIO.mkdir(parents=True, exist_ok=True)
+    publicas = [p for p in unidades()
+                if (BUILD / f"{p.stem}.html").exists() and es_publica(p)]
+    if not publicas:
+        print("  (ninguna unidad lleva `publico: true`: sitio/ queda sin unidades)")
+
+    usados = set()
+    for md in publicas:
+        usados |= ejemplos_de(md.stem)
+        for ext in ("html", "pdf"):
+            shutil.copy2(BUILD / f"{md.stem}.{ext}", SITIO / f"{md.stem}.{ext}")
+        print(f"  {(SITIO / md.stem).relative_to(RAIZ)}.html + .pdf")
+
+    (SITIO / "imagenes").mkdir(exist_ok=True)
+    for nombre in sorted(usados):
+        shutil.copy2(IMAGENES / nombre, SITIO / "imagenes" / nombre)
+    (SITIO / "fuentes").mkdir(exist_ok=True)
+    for f in sorted(FUENTES.glob("*.woff2")):
+        shutil.copy2(f, SITIO / "fuentes" / f.name)
+    shutil.copy2(CSS, SITIO / CSS.name)
+
+    indice(SITIO / "index.html", solo_publicas=True)
+    indice(BUILD / "index.html", solo_publicas=False)
+    return 1
 
 
 # --- principal --------------------------------------------------------
@@ -358,6 +513,10 @@ def main(argv):
         for md in unidades():
             print(f"{md.name}:")
             hechos += documentar(md)
+
+    if objetivo != "ejemplos":
+        print("Sitio:")
+        hechos += montar_sitio()
 
     print("Nada que hacer." if not hechos else f"Listo ({hechos}).")
 

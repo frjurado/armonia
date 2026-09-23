@@ -30,9 +30,35 @@ jobs:
       - uses: actions/checkout@v4
         with: { ref: master, path: master }
 
-      # Los apuntes necesitan LilyPond y se añadirán aquí cuando haya
-      # material: instalar lilypond, `make -C apuntes ejemplos`, renderizar
-      # el HTML a apuntes/build/sitio/. montar.sh ya los recoge si existen.
+      # --- apuntes -----------------------------------------------------
+      # Requisitos de apuntes/herramientas/construir.py. Ubuntu 24.04 trae
+      # LilyPond 2.24 y Pandoc 3.1, que valen; Typst no está en apt y
+      # **hace falta el binario**: `pip install typst` instala solo el
+      # módulo de Python, y Pandoc llama al ejecutable.
+      - name: Instalar LilyPond, Pandoc y Typst
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends lilypond pandoc poppler-utils
+          python3 -m pip install --quiet fonttools   # solo para el aviso de cobertura
+          curl -sSLf "https://github.com/typst/typst/releases/download/v${TYPST}/typst-x86_64-unknown-linux-musl.tar.xz" \
+            | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
+          lilypond --version | head -1; pandoc --version | head -1; typst --version
+        env:
+          TYPST: 0.14.2
+
+      # Cada rama construye los suyos. Se comprueba que el script exista
+      # porque `publico` puede ir por detrás y no tenerlo todavía; sin
+      # apuntes/build/sitio/, montar.sh sigue adelante sin la carpeta.
+      - name: Construir los apuntes de cada rama
+        run: |
+          for rama in publico master; do
+            if [ -f "$rama/apuntes/herramientas/construir.py" ]; then
+              echo "== apuntes de $rama"
+              python3 "$rama/apuntes/herramientas/construir.py"
+            else
+              echo "== $rama todavía no trae apuntes"
+            fi
+          done
 
       - name: Montar _site/ (publico) y _site/dev/ (master)
         run: |

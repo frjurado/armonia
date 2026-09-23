@@ -27,7 +27,8 @@ Verovio y soundfont-player van empaquetados en `app/public/vendor/`; solo
 los samples de piano se descargan de la red al primer «Escuchar» (ver
 *Pendientes*).
 
-**Apuntes** — necesita LilyPond, Pandoc, Typst y un conversor PDF→SVG:
+**Apuntes** — necesita LilyPond, Pandoc, el binario de Typst y un conversor
+PDF→SVG:
 
     python apuntes/herramientas/construir.py
 
@@ -42,7 +43,7 @@ un apunte pueda enlazar a su ejercicio con una ruta relativa:
     _site/
       index.html      portada (sitio/index.html)
       app/            ejercicios (app/public/)
-      apuntes/        apuntes renderizados (apuntes/build/, cuando exista el paso)
+      apuntes/        apuntes publicados (apuntes/build/sitio/)
 
 `_site/` es producto de build y no se versiona. En local:
 
@@ -85,21 +86,25 @@ API, `gh api -X POST repos/<usuario>/<repo>/environments/github-pages/deployment
 `https://<usuario>.github.io/<repo>/`; como cuelga de una subruta, **todas
 las rutas del sitio son relativas**, nunca `/absolutas`.
 
-Los apuntes aún no entran: falta el paso que instale LilyPond y Pandoc en el
-flujo y ejecute `construir.py` (ver *Pendientes*). Cuando exista, `montar.sh`
-recoge `apuntes/build/` sin más cambios —ya lleva las rutas relativas
-cuadradas— y en la portada basta convertir la tarjeta «Apuntes» en enlace.
+Los apuntes también se construyen en el flujo (instala LilyPond, Pandoc y
+Typst y ejecuta `construir.py`), y `montar.sh` recoge `apuntes/build/sitio/`.
+
+Y, como con la app, **qué unidades ven los alumnos es un dato**: una unidad
+sale al sitio cuando su cabecera YAML lleva `publico: true`. `build/` tiene
+todo lo compilado y `build/sitio/` solo lo publicado, así que una unidad se
+puede escribir y revisar sin que se le aparezca a nadie. Detalles en
+[`apuntes/README.md`](apuntes/README.md), «Publicar una unidad».
 
 ## Pendientes
 
 - [x] Separar en `app/` lo que se publica (`app/public/`) de lo que no
       (`docs/`, `design/`, `tests/`).
-- [ ] Publicar los apuntes: paso en `publicar.yml` que instale LilyPond
-      (`apt-get install lilypond`, 2.24 en Ubuntu 24.04), Pandoc y un
-      conversor PDF→SVG, y ejecute `python apuntes/herramientas/construir.py`.
-      Lo que deja en `apuntes/build/` ya es publicable tal cual. Falta
-      decidir el índice de las unidades y enlazar la tarjeta «Apuntes» de
-      `sitio/index.html`.
+- [x] Publicar los apuntes: `publicar.yml` instala LilyPond, Pandoc,
+      poppler-utils y el binario de Typst (que no está en apt, y que
+      `pip install typst` **no** proporciona: eso instala solo el módulo de
+      Python) y ejecuta `construir.py`. El índice de unidades lo genera
+      `construir.py` a partir de las tablas de `curriculum/Plan-Armonia.md`,
+      y la tarjeta «Apuntes» de `sitio/index.html` ya enlaza.
 - [ ] Partituras largas (Unidad 1 y las que vengan): llevarlas a la tira
       deslizante (`tira-partitura.js`, como armaduras) centrando el acorde
       actual, con el `#overlay` de líneas de voz dentro del contenedor que

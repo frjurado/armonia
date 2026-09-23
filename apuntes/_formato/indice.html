@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Apuntes</title>
+<!--
+  Índice de los apuntes. Lo rellena construir.py: la marca
+  <!~~ unidades ~~> de abajo se sustituye por las filas, sacadas de las
+  tablas de curriculum/Plan-Armonia.md (el plan manda: si un apunte y el
+  plan no coinciden, el que está mal es el apunte).
+
+  Los tokens de color y tipografía son los mismos que la portada
+  (sitio/index.html) y el menú de ejercicios (app/public/index.html), y
+  las filas de unidad copian a propósito las de ese menú: es la misma
+  lista de unidades vista desde el otro subproyecto.
+
+  Aquí NO se usa «Armonia Serif», que es la fuente de los documentos:
+  esto es una página del sitio, no un apunte, y va con las Source como
+  todo lo demás. Las dos salidas del apunte sí la llevan.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f7f7f4; --card:#ffffff; --fg:#1d1d1b; --muted:#6b6b66;
+    --soft:#a5a59e; --disabled:#c9c9c2;
+    --line:#dcdcd6; --line-soft:#e6e6df; --row-hover:#f2f1ec;
+    --ink:#2f4f42; --ink-hover:#264137;
+    --serif:'Source Serif 4',Georgia,serif;
+    --sans:'Source Sans 3',system-ui,-apple-system,sans-serif;
+    --max-w:1240px;
+    --pad-x:max(56px, calc((100% - var(--max-w)) / 2));
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5}
+
+  /* ---------- cabecera entintada (como el menú de ejercicios) ---------- */
+  .masthead{background:var(--ink);color:#fff;padding:20px var(--pad-x) 30px}
+  .masthead a.back{display:inline-flex;align-items:center;height:52px;
+        margin-bottom:12px;padding:0 20px;border-radius:12px;
+        background:rgba(255,255,255,.14);color:#fff;font-size:16px;
+        font-weight:600;text-decoration:none;transition:background .15s ease}
+  @media(hover:hover){.masthead a.back:hover{background:rgba(255,255,255,.22)}}
+  .masthead a.back:active{background:rgba(255,255,255,.22)}
+  .mast-top{display:flex;align-items:flex-end;gap:28px}
+  .mast-title h1{font-family:var(--serif);font-size:46px;font-weight:600;
+        letter-spacing:-.015em;line-height:1;margin:0}
+  .mast-title .sub{font-family:var(--serif);font-style:italic;font-size:19px;
+        color:rgba(255,255,255,.65);margin-top:6px}
+  .pentagrama{flex:1;height:44px;margin-bottom:6px;
+        background:repeating-linear-gradient(to bottom,
+          rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 10px)}
+
+  /* ---------- cursos y unidades ---------- */
+  main{padding:8px var(--pad-x) 48px}
+  .curso{margin-top:34px}
+  .curso > h2{font-family:var(--serif);font-size:30px;font-weight:600;
+        margin:0 0 4px;color:var(--ink)}
+  .curso > h2 .tag{font-family:var(--sans);font-size:15px;font-weight:400;color:var(--muted)}
+  .curso > h2 .tag::before{content:'— '}
+
+  .ud-row{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;
+        padding:22px 0;border-bottom:1px solid var(--line)}
+  /* Sin esto, un hijo de rejilla no baja de su ancho de contenido
+     (min-width:auto) y el texto largo de .nota desborda a la derecha en
+     lugar de partirse. */
+  .ud-row > *{min-width:0}
+  .curso > :last-child{border-bottom:none}
+  .ud-row .num{font-family:var(--serif);font-size:40px;color:var(--disabled);
+        line-height:.9;padding-left:6px}
+  .ud-row .titulo{font-family:var(--serif);font-size:21px;color:var(--muted)}
+  .ud-row .nota{font-family:var(--sans);font-size:15px;color:var(--soft);margin-top:2px}
+  .ud-row .estado{display:flex;align-items:center;gap:9px;color:var(--soft);
+        font-size:14px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+  .ud-row .estado svg{width:15px;height:15px;flex:none}
+
+  /* disponible: numeral y título entintados, y el par de enlaces a la derecha */
+  .ud-row.lista .num{color:var(--ink);font-weight:600}
+  .ud-row.lista .titulo{color:var(--fg)}
+  .ud-row.lista .titulo a{color:inherit;text-decoration:none}
+  .ud-row.lista .titulo a:hover{text-decoration:underline}
+  .ud-row.lista .estado{color:var(--ink);text-transform:none;letter-spacing:0}
+  .ud-row.lista .estado a{color:var(--ink);text-decoration:none;font-weight:600}
+  .ud-row.lista .estado a:hover{text-decoration:underline}
+  /* El enlace principal es el HTML; el PDF va detrás y en pequeño. Quien
+     usa el sitio lee en web, y se lleva el PDF solo si va a imprimirlo. */
+  .ud-row.lista .estado .pdf{font-weight:400;font-size:13px;color:var(--muted)}
+  .ud-row.lista .estado .pdf::before{content:'· '}
+
+  footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px}
+
+  /* marca de lo que no ve el alumnado; solo sale en el índice de trabajo */
+  .marca-dev{display:inline-block;vertical-align:middle;margin-left:10px;padding:2px 7px;
+        border-radius:6px;background:#f7efe8;color:#8f4a22;border:1px solid #e0c9b4;
+        font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.4}
+
+  @media(max-width:960px){
+    .masthead{padding:26px 24px 30px}
+    .pentagrama{display:none}
+    main{padding:8px 24px 40px}
+    .ud-row{grid-template-columns:72px 1fr auto;gap:14px}
+    footer{padding:0 24px 32px}
+  }
+  @media(max-width:719.98px){
+    .masthead{padding:14px 20px 22px}
+    .masthead a.back{height:44px;margin-bottom:10px;padding:0 14px;font-size:15px}
+    .mast-top{display:block}
+    .mast-title h1{font-size:32px}
+    .mast-title .sub{font-size:14px}
+    .pentagrama{display:block;height:22px;margin:16px 0 0;
+          background:repeating-linear-gradient(to bottom,
+            rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 5px)}
+    .curso > h2{font-size:24px}
+    .ud-row{grid-template-columns:56px 1fr;gap:12px;padding:16px 0}
+    .ud-row .num{font-size:30px}
+    .ud-row .titulo{font-size:18px}
+    /* el estado pasa debajo del título, alineado con él */
+    .ud-row .estado{grid-column:2;font-size:13px;margin-top:6px;white-space:normal}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <a class="back" href="../index.html">← Portada</a>
+  <div class="mast-top">
+    <div class="mast-title">
+      <h1>Apuntes</h1>
+      <div class="sub">Armonía · 3.º y 4.º de EE.PP.</div>
+    </div>
+    <div class="pentagrama"></div>
+  </div>
+</header>
+
+<main>
+<!-- unidades -->
+</main>
+
+<footer>Materiales de uso docente.</footer>
+
+</body>
+</html>
