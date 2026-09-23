@@ -459,14 +459,19 @@
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const VO_ALT = -1.5;    // separación extra de la fila de alternativas
 
-  // toMEI(inst, {cifrados, ocultas, alternativas}):
+  // toMEI(inst, {cifrados, ocultas, alternativas, dato}):
   //   cifrados: dibuja el americano encima y los romanos con cifras debajo;
   //   ocultas: array de índices de voz que se ocultan (<space>), p. ej.
   //     [0,1,2] en Bajo dado, [1,2,3] en Canto dado;
   //   alternativas: por casilla, ids de acorde que también caben con ese bajo;
   //     van en una SEGUNDA fila de cifrado. Verovio apila los <harm> por su
   //     atributo `n` (sin él se superponen): n="1" la realización, n="2" la
-  //     alternativa (§4t.7).
+  //     alternativa (§4t.7);
+  //   dato: el DATO DE PARTIDA (tonalidad, tipo de cadencia…) como texto
+  //     sobre el primer tiempo. Va en la partitura, no en el enunciado: es
+  //     información que se DA, y ahí queda alineada con el comienzo de la
+  //     música. `type="dato"` llega al SVG como clase (lo entinta comun.css).
+  //     Verovio lo coloca por debajo de la fila del americano: no chocan.
   function toMEI(inst, opts){
     opts=opts||{};
     const ocultas=opts.ocultas||[];
@@ -486,7 +491,8 @@
     const measures=inst.ritmo.compases.map((m,i)=>{
       const last = i===inst.ritmo.compases.length-1;
       const attrs = (inst.ritmo.anacrusa && i===0 ? ' metcon="false"' : '') + (last ? ' right="end"' : '');
-      let harms='';
+      let harms = (i===0 && opts.dato)
+        ? `<dir place="above" staff="1" tstamp="1" type="dato">${esc(opts.dato)}</dir>` : '';
       if(opts.cifrados) m.forEach(x=>{
         const a=inst.acordes[x.k];
         // el americano se ancla a la soprano salvo que esté oculta

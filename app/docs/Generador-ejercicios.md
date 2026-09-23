@@ -429,22 +429,44 @@ plicas arriba/abajo), tenor y bajo en Fa (igual). Armadura y compás siempre. Ci
 revelar: **cifrado americano encima** del pentagrama superior (C, G7, Am, F/A…) y **grados
 romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cuatro voces.
 
-- **Tipo** (icono: la sigla «CAP»): se muestra la realización completa y el nombre de la
-  tonalidad (y el compás); se pide el **tipo de cadencia**. Respuesta: sigla y nombre en
-  grande, el nombre en Title Case («CAP · Cadencia Auténtica Perfecta»); detalle: los cifrados dibujados sobre la
-  partitura y la sucesión de acordes en texto. ⟶ HECHO (2026-09-19):
+**Tres capas, cada una en su sitio** (⟶ HECHO 2026-09-23). Lo que se ve se reparte en
+dato → pregunta → respuesta, y **nada se dice dos veces**:
+
+1. **El dato de partida va en la partitura**, no en el enunciado: un `<dir type="dato">`
+   anclado al **primer tiempo**, o sea alineado con el comienzo de la música
+   (`toMEI(…,{dato})`). Entintado y en serif (`comun.css`, `.dir.dato`) para no
+   confundirlo ni con el cifrado ni con la respuesta. Verovio lo coloca **por debajo de la
+   fila del americano**: comprobado que no chocan (1080 render, las tres variantes, los
+   tres niveles, antes y después de revelar).
+2. **La pregunta va debajo de la partitura** (`.pregunta`), en una línea y con menos peso
+   que el dato y que la respuesta. El enunciado largo sigue dentro de «Ayuda».
+3. **La respuesta no repite lo que ya está dibujado.** Al revelar, los cifrados aparecen
+   en la partitura; el texto solo lleva lo que ahí **no** se lee. Excepción: la **línea de
+   bajo en grados** de *Canto dado*, que en la partitura está implícita (se ven las notas,
+   no los grados).
+
+Qué da cada variante, por tanto: *Tipo* → la **tonalidad**; *Bajo dado* → **nada** (solo
+el bajo escrito); *Canto dado* → el **tipo de cadencia**. El **compás no se escribe nunca**
+en texto: está en la partitura.
+
+- **Tipo** (icono: la sigla «CAP»): se muestra la realización completa, con la
+  **tonalidad como dato sobre el primer tiempo**; se pide el **tipo de cadencia**.
+  Respuesta: sigla y nombre en grande, el nombre en Title Case («CAP · Cadencia Auténtica
+  Perfecta») y nada más: la sucesión de acordes se lee en los cifrados que aparecen al
+  revelar. ⟶ HECHO (2026-09-19):
   `c4u0-cadencias-core.js` (global `Cadencias`) + `c4u0-cadencias-tipo.html`; en el menú,
   4.º UD 0 con `publico:false`.
 - **Bajo dado** (icono: clave de Fa; ⟶ HECHO 2026-09-22, `c4u0-cadencias-bajo.html` +
   `Cadencias.generarBajo()`): se muestra **solo el bajo** (pentagrama
-  superior con `<space>`, como en Intervalos con inversión), armadura y compás, **sin nombre
-  de tonalidad**; se piden **tonalidad, tipo y acordes** (grado e inversión).
+  superior con `<space>`, como en Intervalos con inversión), armadura y compás, **sin dato
+  ninguno**; se piden **tonalidad, tipo y acordes** (grado e inversión).
   - **Respuesta principal** (texto): tonalidad + tipo. Como el bajo nunca decide CAP/CAI
     (§4t.7 bis), el tipo se responde con la sigla **CA · Cadencia Auténtica**, y en el
     detalle «aquí, CAP» por la realización mostrada. «CA» es una etiqueta **solo de
     respuesta de esta variante**, no un tipo del catálogo (§4t.2). Los demás tipos se dan
     con su sigla normal; la única otra indecisión del bajo es 6̂–5̂ en menor, que se
-    responde «SC (frigia) o SC» con las dos lecturas.
+    responde «SC (frigia) o SC» con las dos lecturas. Los **acordes no se listan en
+    texto**: son justo lo que dibuja la partitura al revelar, con su fila de alternativas.
   - **Respuesta en la partitura**: se dibuja **una** realización con sus cifrados, y bajo
     ella, en **filas secundarias**, los acordes que también habrían cabido en esa casilla
     con ese bajo. Las filas las hace Verovio: varios `<harm place="below">` con `n="1"`,
@@ -456,12 +478,15 @@ romanos con cifras debajo** del inferior (I, II6, I6/4, V7, V6/5…). Audio a cu
     principal (`vo` negativo en el `<harm>`, que en `place="below"` empuja hacia abajo).
   - La **tonalidad es única**: comprobado por enumeración exhaustiva (§4t.7 bis).
 - **Canto dado** (icono: clave de Sol; ⟶ HECHO 2026-09-22, `c4u0-cadencias-canto.html` +
-  `Cadencias.generarCanto()`): se muestra **solo la soprano**, armadura,
-  compás y **el tipo** con su sigla exacta («CAP»); se piden **tonalidad y línea del bajo**.
+  `Cadencias.generarCanto()`): se muestra **solo la soprano**, con armadura, compás
+  y **el tipo** como dato sobre el primer tiempo, con su sigla exacta («CAP»); se piden
+  **tonalidad y línea del bajo**.
   - El tipo **se da** porque sin él la soprano no distingue CA de CR (ambas pueden acabar
     en 1̂) y porque acota las líneas de bajo posibles a unas pocas (§4t.7 bis).
   - **Respuesta**: la realización completa con sus cifrados (el bajo es lo pedido; las voces
-    internas vienen de propina) y, en texto, la tonalidad. **«Otros bajos posibles»**: se
+    internas vienen de propina) y, en texto, la tonalidad y la **línea de bajo en grados**
+    —el único caso en que el texto repite algo dibujado, porque los grados no están
+    escritos en la partitura—. **«Otros bajos posibles»**: se
     relanza el motor con la soprano fijada sobre todas las fórmulas del tipo y la longitud,
     y se listan las **secuencias de grados del bajo** distintas que tienen realización
     válida, cada una con su lectura de acordes («1̂–4̂–5̂–1̂ · I–IV–V–I o I–II6–V–I»), hasta

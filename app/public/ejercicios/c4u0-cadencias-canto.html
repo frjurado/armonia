@@ -15,9 +15,8 @@
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 <style>
-  /* Dato de partida (el tipo de cadencia) junto al compás */
-  .dato{font-size:15px;color:var(--muted)}
-  .dato b{color:var(--ink);font-family:var(--serif);font-size:19px}
+  /* El dato de partida (el tipo de cadencia) va en la partitura, no aquí:
+     ver .dir.dato en comun.css. */
   .answer .q{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
   .answer .q .ton{font-size:.8em}
   .answer .q .sep-q{color:var(--soft);font-weight:400}
@@ -40,7 +39,7 @@
     <div class="ej-main">
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
       <div class="under">
-        <div class="dato" id="datos">—</div>
+        <p class="pregunta">¿En qué <b>tonalidad</b> estás? ¿Cuál sería el <b>bajo</b>?</p>
       </div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
@@ -81,9 +80,12 @@ const $=ArmoniaEj.$;
 
 function renderSVG(){
   if(!tk || !current) return;
+  // El tipo de cadencia es el dato de partida: va en la partitura, sobre el
+  // primer tiempo, y sigue ahí tras revelar.
+  const dato = current.json.answer.sigla;
   tk.loadData(Cadencias.toMEI(current, revelado
-    ? {cifrados:true, alternativas:current.alternativas}
-    : {ocultas:[1,2,3]}));
+    ? {cifrados:true, alternativas:current.alternativas, dato}
+    : {ocultas:[1,2,3], dato}));
   $('notation').innerHTML = tk.renderToSVG(1);
   ArmoniaEj.apilarCifras($('notation'));
 }
@@ -93,9 +95,6 @@ function newExercise(){
   revelado=false;
   $('lvl').textContent = level;
   $('lvlNote').textContent = Cadencias.NIVELES[level-1] || '';
-  const a=current.json.answer;
-  $('datos').innerHTML = 'Compás ' + current.ritmo.time
-    + ' · cadencia <b>' + a.sigla + '</b> · tonalidad por averiguar';
   $('answer').className='answer';
   $('btnReveal').disabled=false;
   $('btnSimilar').style.display='none';
@@ -113,7 +112,7 @@ function reveal(){
   const acordes = xs => xs.map(x=>x.romano + (x.alternativas.length
     ? ` <span class="alt">(o ${x.alternativas.join(', ')})</span>` : '')).join(' · ');
   $('ansQ').innerHTML = `<span class="ton">${a.tonalidad}</span>`;
-  $('ansDet').innerHTML = `Bajo <b>${a.bajo}</b> &nbsp;—&nbsp; ` + acordes(a.acordes);
+  $('ansDet').innerHTML = `Bajo <b>${a.bajo}</b>`;
   $('ansOtros').innerHTML = a.otrosBajos.length
     ? 'Otros bajos posibles:<ul class="otros">'
       + a.otrosBajos.slice(0,3).map(o=>`<li><b>${o.bajo}</b> · ${acordes(o.acordes)}</li>`).join('')
