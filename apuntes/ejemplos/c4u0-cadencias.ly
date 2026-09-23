@@ -16,9 +16,9 @@
 
 soprano = {
   \voiceOne
-  \rotulo "CAP"  c''4 d''  d''2  | c''1 \bar "||" \break
-  \rotulo "CAI"  c''4 d''  d''2  | e''1 \bar "||" \break
-  \rotulo "SC"   c''4 d''  d''2  \bar "||" \break
+  \rotulo "CAP"  c''4 d''  d''2  | c''1 \bar "||"
+  \rotulo "CAI"  c''4 d''  d''2  | e''1 \bar "||"
+  \rotulo "SC"   c''4 d''  d''2  \bar "||"
   \rotulo "CR"   c''4 d''  b'2   | c''1 \bar "|."
 }
 

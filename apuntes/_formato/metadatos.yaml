@@ -29,3 +29,13 @@ fontsize: 10.5pt   # esta fuente pesa más que una Garamond
 linestretch: 1.15
 page-numbering: "1"
 figure-caption-position: bottom
+
+# El pie de figura, más pequeño y gris, como en el HTML (apuntes.css):
+# explica lo que hay que mirar en el ejemplo, pero no es el texto.
+# Va como bloque typst en bruto porque la plantilla de Pandoc no tiene
+# variable para esto; en el HTML, Pandoc lo descarta solo.
+header-includes:
+  - |
+    ```{=typst}
+    #show figure.caption: set text(size: 8.8pt, fill: rgb("#666666"))
+    ```

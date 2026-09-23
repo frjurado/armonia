@@ -22,12 +22,15 @@ instalado. Las dependencias que necesitamos son pocas y una de ellas
 —qué ejemplos usa cada unidad— se calcula mejor leyendo el Markdown que
 declarándola a mano.
 
-Antes de llamar a Pandoc, de cada `.md` se hacen dos cosas:
+Antes de llamar a Pandoc, de cada `.md` se hacen tres cosas:
 
 1. **Se quita el bloque de guion**, entre `<!-- guion:inicio -->` y
    `<!-- guion:fin -->`: el esquema de trabajo sirve para escribir, no
    para publicar.
-2. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
+2. **Se quitan los párrafos «Fuentes:»**, por lo mismo: la cita de
+   bibliografía es para quien escribe la unidad, no para quien la
+   estudia.
+3. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
    `build/imagenes/x.svg`, que es lo que resuelve la vista previa del
    editor; Pandoc corre dentro de `build/`, donde sobra ese prefijo.
    Ahí, y solo ahí, cuadran las rutas para las dos salidas a la vez: el
@@ -167,8 +170,29 @@ def sin_guion(texto):
     return texto
 
 
+def sin_fuentes(texto):
+    """Quita los párrafos que empiezan por «Fuentes:».
+
+    La cita de bibliografía es para quien escribe la unidad, no para
+    quien la estudia: al alumno no le dice nada y le distrae de lo que
+    va detrás (los «→ 3.º UD n», que sí le sirven). Se queda en el
+    fuente y se cae al publicar, igual que el bloque de guion.
+    """
+    fuera = []
+    dentro = False
+    for linea in texto.splitlines(keepends=True):
+        if linea.startswith("Fuentes:"):
+            dentro = True
+        elif dentro and not linea.strip():
+            dentro = False
+            continue          # también la línea en blanco que lo cerraba
+        if not dentro:
+            fuera.append(linea)
+    return "".join(fuera)
+
+
 def preparar(md):
-    texto = sin_guion(md.read_text(encoding="utf-8"))
+    texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
     return texto.replace("build/imagenes/", "imagenes/")
 
 
@@ -208,8 +232,10 @@ def revisar_cobertura(texto, md):
 
 def pandoc(texto, salida, extra):
     BUILD.mkdir(exist_ok=True)
+    # toc-depth=3 llega hasta los «1.1»: en una unidad larga, un índice
+    # de cuatro entradas no sirve para orientarse.
     ejecutar(["pandoc", "--from=markdown", "--standalone",
-              "--toc", "--toc-depth=2",
+              "--toc", "--toc-depth=3",
               f"--metadata-file=../_formato/{METADATOS.name}",
               "--output", salida.name, *extra],
              input=texto.encode("utf-8"), cwd=BUILD)

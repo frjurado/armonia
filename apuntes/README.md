@@ -134,9 +134,31 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
    previa del editor encuentre el SVG**; al construir se quita, porque Pandoc
    corre dentro de `build/`.
 
-6. **Citar fuentes** al final de cada apartado, por tema y epígrafe, nunca por
-   página: `Fuentes: P-D Tema 6 (§1–2); A/S Unit 7, 10, 19. → 3.º UD 2.`
+   El `width` no se pone a ojo: se calcula, para que el pentagrama salga igual
+   de grande en todas las figuras, sean anchas o estrechas. La caja de texto
+   mide 425 pt (A4 con márgenes de 3 cm) y el SVG trae su ancho en la primera
+   línea, así que
+
+       width ≈ 1,3 × (ancho del SVG en pt) / 425
+
+   Un ejemplo de 300 pt se pone al 92 %; uno de 100 pt, al 31 %. El 1,3 es el
+   aumento sobre el tamaño grabado: subirlo agranda todos los ejemplos a la vez.
+
+6. **Varios casos del mismo asunto, un solo `.ly`.** Los tres 6/4 o las cuatro
+   cadencias van en un fichero y **sin `\break`**, para que salgan en fila y no
+   uno debajo de otro: ocupan mucho menos y se comparan de un vistazo.
+
+7. **Citar fuentes** al final de cada apartado, en un párrafo que empiece por
+   `Fuentes:`, por tema y epígrafe, nunca por página:
+   `Fuentes: P-D Tema 6 (§1–2); A/S Unit 7, 10, 19. → 3.º UD 2.`
    Las páginas están en `bibliography/INDICE.md`, fuera del repo.
+   Ese párrafo **no se publica**: es para quien escribe la unidad, no para
+   quien la estudia. Por eso tiene que empezar exactamente por `Fuentes:`, que
+   es lo que busca `construir.py` para quitarlo.
+
+8. **Quitar el `- Ej.:`** en cuanto exista la figura que lo sustituye. El hueco
+   está para que se vea lo que falta; si se queda al lado de la imagen, anuncia
+   como pendiente algo que ya está hecho.
 
 ## Decisiones que conviene no deshacer sin querer
 

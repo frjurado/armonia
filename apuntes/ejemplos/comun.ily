@@ -5,7 +5,7 @@
 \version "2.24.0"
 \language "english"          % coherente con mini-LilyPond §2: s/f = sostenido/bemol
 
-#(set-global-staff-size 18)  % grosor del grabado, igual en todos los ejemplos
+#(set-global-staff-size 15)  % grosor del grabado, igual en todos los ejemplos
 
 \paper {
   indent = 0

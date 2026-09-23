@@ -115,9 +115,6 @@ def main():
                                 cy + radio * math.sin(angulo) + cuerpo * 0.35,
                                 cuerpo, color))
 
-    partes.append(texto(negrita, "5.ª", cx, cy - 4, 17, SUAVE))
-    partes.append(texto(redonda, "ascendente →", cx, cy + 20, 13, SUAVE))
-
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {ancho} {alto}" '
            f'width="{ancho}" height="{alto}">\n'
            + "\n".join(p for p in partes if p) + "\n</svg>\n")

@@ -13,9 +13,9 @@
 soprano = {
   \voiceOne
   \rotulo "a) cadencial"
-  c''2 c''  | c'' b'  | c''1 \bar "||" \break
+  c''2 c''  | c'' b'  | c''1 \bar "||"
   \rotulo "b) de bordadura"
-  c''2 c''  | c''1 \bar "||" \break
+  c''2 c''  | c''1 \bar "||"
   \rotulo "c) de paso"
   e''2 d''  | c''1 \bar "|."
 }

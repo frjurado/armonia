@@ -14,7 +14,7 @@
 
 rotulo =
 #(define-music-function (texto) (markup?)
-   #{ s1*0^\markup { \bold \fontsize #1 #texto } #})
+   #{ s1*0^\markup { \bold \fontsize #-1 #texto } #})
 
 grado =
 #(define-music-function (texto) (markup?)
