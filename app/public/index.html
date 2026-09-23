@@ -30,7 +30,17 @@
   .serif{font-family:var(--serif)}
 
   /* ---------- cabecera entintada ---------- */
-  .masthead{background:var(--ink);color:#fff;padding:36px var(--pad-x) 0}
+  .masthead{background:var(--ink);color:#fff;padding:20px var(--pad-x) 0}
+  /* Vuelta a la portada: la MISMA píldora que el «← Menú» de las páginas de
+     ejercicio (ejercicios/comun.css), en su propia fila y a la izquierda.
+     Así el control de volver está en la misma esquina en los tres niveles
+     —portada, menú, ejercicio— y no cruza la pizarra de un lado a otro. */
+  .masthead a.back{display:inline-flex;align-items:center;height:52px;
+        margin-bottom:12px;padding:0 20px;border-radius:12px;
+        background:rgba(255,255,255,.14);color:#fff;font-size:16px;
+        font-weight:600;text-decoration:none;transition:background .15s ease}
+  @media(hover:hover){.masthead a.back:hover{background:rgba(255,255,255,.22)}}
+  .masthead a.back:active{background:rgba(255,255,255,.22)}
   .mast-top{display:flex;align-items:flex-end;gap:28px}
   .mast-title h1{font-family:var(--serif);font-size:46px;font-weight:600;
         letter-spacing:-.015em;line-height:1;margin:0}
@@ -103,7 +113,7 @@
   footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px;display:flex;align-items:baseline}
   footer a{color:var(--ink);text-decoration:none;margin-left:auto}
   footer a:hover{text-decoration:underline}
-  .tab,.btn-modo,.ud-row.abrible{touch-action:manipulation}
+  .tab,.btn-modo,.ud-row.abrible,.masthead a.back{touch-action:manipulation}
 
   /* modo dev: franja arriba y marca en lo que los alumnos no ven */
   .dev-banner{background:#8f4a22;color:#fff;font-size:13px;font-weight:600;
@@ -129,7 +139,8 @@
      completo, dos pestañas a media anchura, numeral junto al título y
      unidades cerradas reducidas a numeral + título + candado. */
   @media(max-width:719.98px){
-    .masthead{padding:26px 20px 0}
+    .masthead{padding:14px 20px 0}
+    .masthead a.back{height:44px;margin-bottom:10px;padding:0 14px;font-size:15px}
     .mast-top{display:block}
     .mast-title h1{font-size:32px}
     .mast-title .sub{font-size:14px}
@@ -162,6 +173,7 @@
 <body>
 
 <div class="masthead">
+  <a class="back" href="../index.html">← Inicio</a>
   <div class="mast-top">
     <div class="mast-title">
       <h1>Armonía</h1>
