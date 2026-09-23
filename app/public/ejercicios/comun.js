@@ -160,5 +160,22 @@
 
   function audioNoDisponible(btn){ btn.textContent='(sin audio)'; btn.disabled=true; }
 
+  /* ---------- vuelta al menú ---------- */
+  // El enlace «← Menú» de cada página apunta a ../index.html a secas. Aquí
+  // se le añade el nombre de fichero de esta página; el menú lo busca en
+  // curriculum-data.js y abre la pestaña de curso y la unidad de las que
+  // salió el ejercicio. Así ninguna página repite a qué curso pertenece:
+  // el dato sigue estando solo en el curículo.
+  function marcarEnlaceMenu(){
+    const a = document.querySelector('a.back');
+    if(!a) return;
+    const fichero = location.pathname.split('/').pop();
+    if(!fichero) return;
+    a.href = a.getAttribute('href').split('#')[0] + '#de=' + encodeURIComponent(fichero);
+  }
+  if(document.readyState === 'loading')
+    document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
+  else marcarEnlaceMenu();
+
   global.ArmoniaEj = { $, initVerovio, apilarCifras, tocar, detener, audioNoDisponible };
 })(window);

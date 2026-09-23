@@ -226,6 +226,27 @@ const expandida = CURRICULO.cursos.map(c => {
   return ud ? ud.n : null;
 });
 
+// Al volver de un ejercicio, comun.js deja en el hash el fichero del que se
+// sale (#de=<fichero.html>). Se busca en el currículo —único sitio donde
+// consta a qué curso y unidad pertenece cada ejercicio— y se abre ahí.
+// Si no aparece (o la unidad no es abrible en público), se queda el inicio.
+(function abrirDondeSeSalió(){
+  const m = /^#de=(.+)$/.exec(location.hash);
+  if(!m) return;
+  const fichero = decodeURIComponent(m[1]);
+  const urls = fam => fam.tipos
+    ? fam.tipos.map(t => t.url)
+    : CURRICULO.modos.map(mo => fam.modos[mo.key] && fam.modos[mo.key].url);
+  CURRICULO.cursos.forEach((c,i) => c.unidades.forEach(ud => {
+    if(!abrible(ud)) return;
+    const hay = ud.familias.some(fam =>
+      urls(fam).some(u => u && u.split('/').pop() === fichero));
+    if(hay){ cursoActivo = i; expandida[i] = ud.n; }
+  }));
+  // El hash ya ha hecho su trabajo: fuera, para que recargar no lo repita.
+  history.replaceState(null, '', location.pathname + location.search);
+})();
+
 /* ---------- render (los datos viven en curriculum-data.js) ---------- */
 function modoHTML(fam, m){
   const modo = fam.modos[m.key];
