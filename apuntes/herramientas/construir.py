@@ -100,7 +100,13 @@ SALTO_TYPST = "```{=typst}\n#pagebreak()\n```"
 ESCALA = 1.3
 CAJA_PT = 425
 RE_AUTO = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)\)(\{[^}]*?)width=auto")
-RE_ANCHO_SVG = re.compile(r'\bwidth="([0-9.]+)pt"')
+# El ancho del SVG se busca primero en el atributo `width` y, si no está o
+# viene en porcentaje, en el tercer número del `viewBox`. Las dos cosas
+# hacen falta: cada versión de cairo (la de pdftocairo) escribe la
+# cabecera a su manera, y la de Ubuntu no la escribe como la de aquí.
+RE_TAG_SVG = re.compile(r"<svg\b[^>]*>", re.S)
+RE_ANCHO_SVG = re.compile(r'\bwidth="\s*([0-9.]+)\s*(pt|px)?\s*"')
+RE_VIEWBOX = re.compile(r'\bviewBox="\s*[-0-9.]+\s+[-0-9.]+\s+([0-9.]+)\s')
 
 forzar = False
 cobertura = None    # cmap de la fuente, cargado una vez (ver revisar_cobertura)
@@ -226,6 +232,32 @@ def sin_fuentes(texto):
     return "".join(fuera)
 
 
+def cabecera_svg(svg):
+    """La etiqueta <svg ...> del fichero, para poder enseñarla al fallar."""
+    tag = RE_TAG_SVG.search(svg.read_text(encoding="utf-8", errors="replace"))
+    return tag.group(0)[:200] if tag else "(no tiene etiqueta <svg>)"
+
+
+def ancho_svg(svg):
+    """El ancho del SVG en puntos, o None si no hay manera de saberlo.
+
+    No se puede dar por buena la cabecera que escribe un pdftocairo
+    concreto: la versión de esta máquina pone `width="171pt"` y la de
+    Ubuntu, donde corre el flujo de publicación, no. Así que se mira el
+    atributo `width` y, si falta o viene en porcentaje, el `viewBox`,
+    cuyo tercer número es el ancho. Como el SVG viene de recortar un PDF,
+    sus unidades de usuario son puntos y las dos vías dan lo mismo.
+    """
+    tag = RE_TAG_SVG.search(svg.read_text(encoding="utf-8", errors="replace"))
+    if not tag:
+        return None
+    for expresion in (RE_ANCHO_SVG, RE_VIEWBOX):
+        hallazgo = expresion.search(tag.group(0))
+        if hallazgo:
+            return float(hallazgo.group(1))
+    return None
+
+
 def anchos_automaticos(texto, md):
     """Sustituye cada `width=auto` por el porcentaje que le toca.
 
@@ -246,11 +278,12 @@ def anchos_automaticos(texto, md):
     """
     def ancho(m):
         svg = IMAGENES / m.group(1)
-        hallazgo = RE_ANCHO_SVG.search(svg.read_text(encoding="utf-8")[:400])
-        if not hallazgo:
-            sys.exit(f"{md.name}: {svg.name} no dice su ancho en pt, así que "
-                     f"`width=auto` no vale; ponle un `width=N%` a ojo")
-        por_ciento = min(ESCALA * float(hallazgo.group(1)) / CAJA_PT, 1.0)
+        puntos = ancho_svg(svg)
+        if puntos is None:
+            sys.exit(f"{md.name}: no leo el ancho de {svg.name}, así que "
+                     f"`width=auto` no vale; ponle un `width=N%` a ojo.\n"
+                     f"  su cabecera es: {cabecera_svg(svg)}")
+        por_ciento = min(ESCALA * puntos / CAJA_PT, 1.0)
         return f"{m.group(0)[:-len('width=auto')]}width={round(por_ciento * 100)}%"
     return RE_AUTO.sub(ancho, texto)
 
