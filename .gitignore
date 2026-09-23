@@ -6,6 +6,9 @@ app/tests/*.pdf
 # Sitio publicado
 _site/
 
+# Caché de Python
+__pycache__/
+
 # Basura del sistema
 .DS_Store
 Thumbs.db
