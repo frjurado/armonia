@@ -52,6 +52,9 @@ TMP = RAIZ / "tmp"
 EJEMPLOS = RAIZ / "ejemplos"
 FORMATO = RAIZ / "_formato"
 
+SVG_FIJOS = EJEMPLOS / "svg"
+FUENTES = FORMATO / "fuentes"
+
 INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily"]
 METADATOS = FORMATO / "metadatos.yaml"
 CSS = FORMATO / "apuntes.css"
@@ -62,6 +65,7 @@ GUION_FIN = "<!-- guion:fin -->"
 RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
 
 forzar = False
+cobertura = None    # cmap de la fuente, cargado una vez (ver revisar_cobertura)
 
 
 # --- utilidades ------------------------------------------------------
@@ -118,12 +122,31 @@ def grabar(ly):
     return True
 
 
+def copiar_svg(svg):
+    """Un SVG dibujado a mano -> build/imagenes/, sin pasar por LilyPond.
+
+    No todo ejemplo es una partitura: el circulo de 5.as, por ejemplo,
+    es un diagrama. Esos viven en ejemplos/svg/ —dentro del repo, porque
+    no se regeneran— y desde el .md se referencian igual que los demas.
+    """
+    destino = IMAGENES / svg.name
+    if not caduco(destino, [svg]):
+        return False
+    IMAGENES.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(svg, destino)
+    print(f"  {destino.relative_to(RAIZ)}")
+    return True
+
+
 def grabar_todos(unidad=None):
     usados = ejemplos_de(unidad) if unidad else None
     hechos = 0
     for ly in sorted(EJEMPLOS.glob("*.ly")):
         if usados is None or f"{ly.stem}.svg" in usados:
             hechos += grabar(ly)
+    for svg in sorted(SVG_FIJOS.glob("*.svg")):
+        if usados is None or svg.name in usados:
+            hechos += copiar_svg(svg)
     return hechos
 
 
@@ -149,6 +172,40 @@ def preparar(md):
     return texto.replace("build/imagenes/", "imagenes/")
 
 
+def copiar_fuentes():
+    """Los woff2 al lado del HTML; el CSS los pide por ruta relativa."""
+    destino = BUILD / "fuentes"
+    destino.mkdir(parents=True, exist_ok=True)
+    for f in sorted(FUENTES.glob("*.woff2")):
+        if caduco(destino / f.name, [f]):
+            shutil.copy2(f, destino / f.name)
+
+
+def revisar_cobertura(texto, md):
+    """Avisa si el texto usa algo que no esté en la fuente.
+
+    «Armonia Serif» va recortada a lo que se usa en un apunte (ver
+    _formato/fuentes/regenerar.py). Un carácter fuera de ese recorte no
+    rompe la compilación: sale un hueco, o el cuadradito del sustituto,
+    y eso se cuela con facilidad. Mejor decirlo aquí.
+    """
+    global cobertura
+    if cobertura is None:
+        try:
+            from fontTools.ttLib import TTFont
+        except ImportError:
+            cobertura = False      # sin fontTools no se comprueba, y ya está
+            return
+        cobertura = set(TTFont(FUENTES / "armonia-serif.ttf").getBestCmap())
+    if cobertura is False:
+        return
+    fuera = sorted({c for c in texto if ord(c) not in cobertura and c not in "\n\t"})
+    if fuera:
+        detalle = ", ".join(f"{c!r} (U+{ord(c):04X})" for c in fuera)
+        print(f"  AVISO: {md.name} usa caracteres que la fuente no trae: {detalle}")
+        print("         añádelos a RANGOS en _formato/fuentes/regenerar.py")
+
+
 def pandoc(texto, salida, extra):
     BUILD.mkdir(exist_ok=True)
     ejecutar(["pandoc", "--from=markdown", "--standalone",
@@ -162,18 +219,27 @@ def pandoc(texto, salida, extra):
 def documentar(md):
     """Un .md -> su HTML y su PDF, si alguno de los dos está caduco."""
     svgs = [IMAGENES / n for n in ejemplos_de(md.stem)]
-    comunes = [md, METADATOS, YO, *svgs]
+    fuentes = sorted(FUENTES.glob("*"))
+    comunes = [md, METADATOS, YO, *svgs, *fuentes]
     hechos = 0
+
+    texto = preparar(md)
+    revisar_cobertura(texto, md)
 
     html = BUILD / f"{md.stem}.html"
     if caduco(html, [*comunes, CSS]):
         shutil.copy2(CSS, BUILD / CSS.name)
-        pandoc(preparar(md), html, [f"--css={CSS.name}"])
+        copiar_fuentes()
+        pandoc(texto, html, [f"--css={CSS.name}"])
         hechos += 1
 
     pdf = BUILD / f"{md.stem}.pdf"
     if caduco(pdf, comunes):
-        pandoc(preparar(md), pdf, ["--pdf-engine=typst"])
+        # --font-path: «Armonia Serif» no está instalada en el sistema,
+        # vive en el repo y solo la ve quien compila esto.
+        pandoc(texto, pdf,
+               ["--pdf-engine=typst",
+                f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}"])
         hechos += 1
     return hechos
 

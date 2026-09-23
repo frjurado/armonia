@@ -10,24 +10,27 @@ el día que cambie el formato del texto no hay que tocarlos.
 
 ## Estructura
 
-    c4u0.md                una unidad: c<curso>u<unidad>, como en la app
+    c3u0.md, c4u0.md       una unidad: c<curso>u<unidad>, como en la app
     c3u1.md, c3u2.md       (todavía guiones, sin redactar)
 
     ejemplos/comun.ily     preámbulo de grabado: idioma, tamaño, \paper
     ejemplos/etiquetas.ily rótulos de análisis: \grado, \cifra, \rotulo
     ejemplos/c4u0-*.ly     un fichero por ejemplo, con el prefijo de su unidad
+    ejemplos/svg/          los ejemplos que NO son partitura (ver más abajo)
 
     _formato/metadatos.yaml  papel, márgenes, tipografía (PDF)
     _formato/apuntes.css     lo mismo para el HTML
+    _formato/fuentes/        la fuente del texto, y el script que la hace
 
     herramientas/construir.py  todo el flujo
     herramientas/pdf2svg.py    conversor de reserva, sin binarios de sistema
 
-    build/                 generado: c4u0.html, c4u0.pdf, imagenes/, apuntes.css
+    build/                 generado: c4u0.html, c4u0.pdf, imagenes/, fuentes/,
+                           apuntes.css
     tmp/                   generado: intermedios de LilyPond
 
 `build/` es exactamente lo publicable, con las rutas relativas ya cuadradas
-entre documento, imágenes y hoja de estilo.
+entre documento, imágenes, fuentes y hoja de estilo.
 
 ## Requisitos
 
@@ -50,10 +53,51 @@ No hace falta `make` (no viene con Windows) ni Quarto.
 
 El camino completo:
 
-    ejemplos/x.ly   --LilyPond-->  tmp/x.cropped.pdf  --pdftocairo-->
-                                                       build/imagenes/x.svg
-    c4u0.md         --Pandoc-->            build/c4u0.html
-                    --Pandoc + Typst-->    build/c4u0.pdf
+    ejemplos/x.ly     --LilyPond-->  tmp/x.cropped.pdf  --pdftocairo-->
+                                                         build/imagenes/x.svg
+    ejemplos/svg/x.svg  --se copia-->  build/imagenes/x.svg
+    _formato/fuentes/*.woff2  --se copian-->  build/fuentes/
+    c4u0.md           --Pandoc-->            build/c4u0.html
+                      --Pandoc + Typst-->    build/c4u0.pdf
+
+## Los ejemplos que no son partitura
+
+No todo ejemplo sale de LilyPond: el círculo de 5.as de 3.º UD 0 es un
+diagrama. Esos van en `ejemplos/svg/`, **se versionan** (no se regeneran en
+cada compilación) y `construir.py` los copia a `build/imagenes/` sin tocarlos.
+Desde el `.md` se referencian igual que los demás, así que el texto no
+distingue de dónde viene cada imagen.
+
+Un SVG así **no puede llevar `<text>`**: referenciado con `<img src>` es un
+documento aparte, al que no llega ni el CSS ni la fuente que incrusta el PDF,
+y cada salida elegiría una fuente de sustitución por su cuenta (los ♯ y ♭ son
+lo primero que se pierde). El texto va convertido a trazos. El círculo lo
+dibuja `ejemplos/svg/circulo.py`, que saca los trazos de la propia fuente de
+los apuntes; un diagrama hecho a mano en un editor vale igual, siempre que
+salga con el texto vectorizado.
+
+## La fuente
+
+La compone `_formato/fuentes/regenerar.py`, y solo hay que volver a lanzarlo
+si se cambia de fuente de texto o de alteraciones:
+
+    pip install fonttools brotli
+    python _formato/fuentes/regenerar.py
+
+Es **DejaVu Serif recortada y con dos arreglos**: el circunflejo combinante
+recolocado sobre la cifra (los grados `1̂`, `5̂`, `♯7̂`) y las alteraciones
+sustituidas por las de Leland, la misma familia que Verovio usa en las
+partituras de la app. Los dos arreglos van *dentro* de la fuente y no en otra
+antepuesta, porque Typst y los navegadores eligen fuente por **clúster**: la
+cifra y su marca combinante son uno solo, así que el circunflejo no puede
+venir de otra fuente que la cifra.
+
+El `.ttf` lo lee Typst para el PDF y el `.woff2` lo sirve el HTML, así que las
+dos salidas componen con exactamente lo mismo y ninguna depende de lo que haya
+instalado quien las lea. Al ir recortada, `construir.py` avisa si un `.md` usa
+un carácter que se haya quedado fuera; entonces hay que ampliar `RANGOS` en
+`regenerar.py` y volver a lanzarlo. Las licencias (DejaVu y Leland, las dos
+permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
 
 ## Escribir una unidad
 
@@ -78,7 +122,8 @@ El camino completo:
    por `- Ej.:` describiendo lo que hará falta. Se publican tal cual: son
    visibles a propósito, para que se vea lo que falta.
 
-5. **Ejemplos hechos.** Un `.ly` en `ejemplos/`, con el prefijo de la unidad, y
+5. **Ejemplos hechos.** Un `.ly` en `ejemplos/` (o un `.svg` en `ejemplos/svg/`
+   si no es partitura), con el prefijo de la unidad, y
    en el texto una imagen sola en su párrafo (con **línea en blanco delante**,
    o Pandoc se la traga dentro de la lista anterior y pierde el pie):
 
@@ -109,18 +154,28 @@ El camino completo:
   cuya ruta absoluta tenga caracteres no ASCII.
 
 - **La tipografía de los grados manda sobre el gusto.** `1̂`, `5̂`, `♯7̂` son
-  dígito + circunflejo combinante, y casi ninguna fuente los compone: el
-  porqué de la elegida está comentado en `_formato/metadatos.yaml`.
+  dígito + circunflejo combinante, y casi ninguna fuente los compone: de ahí
+  que la fuente sea la que es, y que esté parcheada. El porqué, medido, en
+  `_formato/fuentes/regenerar.py`; la decisión, en `_formato/metadatos.yaml`.
+
+- **Ningún SVG de estos lleva `<text>`.** Ni los de LilyPond ni los dibujados:
+  el texto va siempre en trazos (ver arriba).
 
 - Las demás reglas de render (por qué `-dcrop`, por qué no `-dbackend=svg`, por
   qué no incrustar los SVG en el HTML) están en el `CLAUDE.md` de la raíz.
 
 ## Estado
 
-El flujo está completo y las tres salidas se generan. Falta contenido: de
-`c4u0.md` solo están hechos tres ejemplos —disposiciones, los tres 6/4 y las
-cuatro cadencias—, y los demás siguen marcados con `- Ej.:`. `c3u1.md` y
-`c3u2.md` son todavía guiones sin redactar.
+El flujo está completo y las tres salidas se generan.
+
+- **`c3u0.md`** — redactada, con sus seis ejemplos hechos (el círculo de 5.as,
+  las parejas de inversión, los compuestos, las dos claves, los cuatro tipos de
+  tríada, las inversiones cifradas y el bajo cifrado realizado).
+- **`c4u0.md`** — redactada, con tres ejemplos hechos —disposiciones, los tres
+  6/4 y las cuatro cadencias—; los demás siguen marcados con `- Ej.:`.
+- **`c3u1.md` y `c3u2.md`** — todavía guiones, sin redactar. Sus dos `.ly`
+  (`c3u1-5as-paralelas`, `c3u1-triada-im`) están hechos pero aún no enlazados
+  desde ningún texto.
 
 Pendiente de decidir: cómo se publica el conjunto (una página por unidad más
 un índice) y los enlaces cruzados con la app.

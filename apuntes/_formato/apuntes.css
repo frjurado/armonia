@@ -2,14 +2,51 @@
    Typst con las variables de _formato/metadatos.yaml. Mantener los dos
    parecidos es deliberado; idénticos, imposible y tampoco deseable.
 
-   DejaVu Serif encabeza la pila por la misma razón que en el PDF: es
-   la que compone los grados con circunflejo (1̂, 5̂, ♯7̂) —dígito + marca
-   combinante— también en negrita. Aviso: el PDF incrusta la fuente, el
-   HTML no; quien lea el HTML sin DejaVu Serif instalada verá el acento
-   suelto. Si algún día molesta, la salida es servir un woff2 recortado
-   desde _formato/ (no un CDN: el sitio va en una subruta). */
+   La fuente es la misma en los dos, y se sirve desde aquí. */
+
+/* --- la fuente ----------------------------------------------------
+   «Armonia Serif» es DejaVu Serif recortada y con dos arreglos: el
+   circunflejo de los grados (1̂, 5̂, ♯7̂) recolocado sobre la cifra, y las
+   alteraciones sustituidas por las de Leland, que es la familia de las
+   partituras de la app. El porqué, con medidas, en fuentes/regenerar.py.
+
+   Se sirve desde el propio sitio (nunca un CDN: esto va en una subruta
+   de GitHub Pages) y los ficheros los copia construir.py a
+   build/fuentes/. Antes se confiaba en que quien leyera tuviera DejaVu
+   Serif instalada, y sin ella los grados salían con el acento suelto.
+
+   No lleva `unicode-range`: es la fuente del texto entero, no un
+   parche. Y no vale como parche: los navegadores —y Typst— eligen
+   fuente por CLÚSTER, y cifra + marca combinante son un solo clúster,
+   así que el circunflejo no puede venir de una fuente distinta a la de
+   su cifra. De ahí que los arreglos vayan dentro de esta y no aparte. */
+
+@font-face {
+  font-family: "Armonia Serif";
+  src: url("fuentes/armonia-serif.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+@font-face {
+  font-family: "Armonia Serif";
+  src: url("fuentes/armonia-serif-negrita.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+@font-face {
+  font-family: "Armonia Serif";
+  src: url("fuentes/armonia-serif-cursiva.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+
+@font-face {
+  font-family: "Armonia Serif";
+  src: url("fuentes/armonia-serif-negrita-cursiva.woff2") format("woff2");
+  font-weight: 700; font-style: italic; font-display: swap;
+}
 
 :root {
+  --serif: "Armonia Serif", "DejaVu Serif", Georgia, "Times New Roman", serif;
   --tinta: #1a1a1a;
   --suave: #666;
   --regla: #ddd;
@@ -23,7 +60,7 @@ body {
   max-width: 40rem;
   margin: 3rem auto;
   padding: 0 1.5rem;
-  font: 1rem/1.6 "DejaVu Serif", Georgia, "Times New Roman", serif;
+  font: 1rem/1.6 var(--serif);
   color: var(--tinta);
   background: #fff;
 }
