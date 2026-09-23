@@ -116,7 +116,12 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
 
 3. **Epígrafes.** `##` numerado para el primer nivel (`## 1. Materiales y
    conducción`), `###` para el segundo, `####` para el tercero. El índice llega
-   hasta el segundo.
+   hasta el segundo (`1.1`).
+
+   La unidad abre con un `## Qué repasa esta unidad` sin numerar, y detrás va
+   un `<!-- salto -->`: en el PDF, la introducción se queda sola en su página
+   con el índice, y el temario empieza en la siguiente. En el HTML no hay
+   páginas y la marca se ignora sola.
 
 4. **Huecos de ejemplo.** Mientras no exista el ejemplo, una línea que empiece
    por `- Ej.:` describiendo lo que hará falta. Se publican tal cual: son
@@ -182,6 +187,12 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
 
 - **Ningún SVG de estos lleva `<text>`.** Ni los de LilyPond ni los dibujados:
   el texto va siempre en trazos (ver arriba).
+
+- **Dos pentagramas se agrupan siempre con `\new GrandStaff`**, nunca con
+  `ChoirStaff`: llave y líneas divisorias continuas entre los dos, como en la
+  escritura de piano. `ChoirStaff` da corchete y líneas independientes, que es
+  igual de defendible pero distinto, y tener las dos cosas a la vez en los
+  mismos apuntes es lo único que no vale.
 
 - Las demás reglas de render (por qué `-dcrop`, por qué no `-dbackend=svg`, por
   qué no incrustar los SVG en el HTML) están en el `CLAUDE.md` de la raíz.

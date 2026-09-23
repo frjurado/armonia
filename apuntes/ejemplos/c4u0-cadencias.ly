@@ -49,7 +49,7 @@ bajo = {
 }
 
 \score {
-  \new ChoirStaff <<
+  \new GrandStaff <<
     \new Staff << \key c \major \time 4/4 \omit Staff.TimeSignature
                   \new Voice \soprano \new Voice \contralto >>
     \new Staff << \clef bass \key c \major \time 4/4 \omit Staff.TimeSignature

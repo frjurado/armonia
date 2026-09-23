@@ -108,7 +108,7 @@ def main():
         for radio, cadena, fuente, cuerpo, color in (
             (R + 26, mayor, negrita, 19, TINTA),
             (R - 24, alteraciones, redonda, 16, SUAVE),
-            (R - 84, menor, redonda, 16, TINTA),
+            (R - 84, menor, negrita, 16, TINTA),
         ):
             partes.append(texto(fuente, cadena,
                                 cx + radio * math.cos(angulo),

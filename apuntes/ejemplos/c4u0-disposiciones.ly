@@ -20,7 +20,7 @@ bajo = {
 }
 
 \score {
-  \new ChoirStaff <<
+  \new GrandStaff <<
     \new Staff <<
       \key c \major
       \omit Staff.TimeSignature

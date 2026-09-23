@@ -22,7 +22,7 @@ instalado. Las dependencias que necesitamos son pocas y una de ellas
 —qué ejemplos usa cada unidad— se calcula mejor leyendo el Markdown que
 declarándola a mano.
 
-Antes de llamar a Pandoc, de cada `.md` se hacen tres cosas:
+Antes de llamar a Pandoc, de cada `.md` se hacen cuatro cosas:
 
 1. **Se quita el bloque de guion**, entre `<!-- guion:inicio -->` y
    `<!-- guion:fin -->`: el esquema de trabajo sirve para escribir, no
@@ -30,7 +30,11 @@ Antes de llamar a Pandoc, de cada `.md` se hacen tres cosas:
 2. **Se quitan los párrafos «Fuentes:»**, por lo mismo: la cita de
    bibliografía es para quien escribe la unidad, no para quien la
    estudia.
-3. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
+3. **Se traducen los `<!-- salto -->`** a un salto de página de Typst.
+   Es un bloque en bruto que solo entiende el PDF, así que el mismo
+   texto sirve para las dos salidas: en el HTML no hay páginas y el
+   salto sobra.
+4. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
    `build/imagenes/x.svg`, que es lo que resuelve la vista previa del
    editor; Pandoc corre dentro de `build/`, donde sobra ese prefijo.
    Ahí, y solo ahí, cuadran las rutas para las dos salidas a la vez: el
@@ -66,6 +70,13 @@ YO = pathlib.Path(__file__)
 GUION_INICIO = "<!-- guion:inicio -->"
 GUION_FIN = "<!-- guion:fin -->"
 RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
+
+# Salto de página, solo en el PDF: se escribe `<!-- salto -->` en el .md
+# y se cambia por un bloque typst en bruto, que Pandoc solo entiende al
+# generar el PDF y descarta al generar el HTML. Un mismo texto vale
+# entonces para las dos salidas, sin ramificar `preparar()`.
+SALTO = "<!-- salto -->"
+SALTO_TYPST = "```{=typst}\n#pagebreak()\n```"
 
 forzar = False
 cobertura = None    # cmap de la fuente, cargado una vez (ver revisar_cobertura)
@@ -193,6 +204,7 @@ def sin_fuentes(texto):
 
 def preparar(md):
     texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
+    texto = texto.replace(SALTO, SALTO_TYPST)
     return texto.replace("build/imagenes/", "imagenes/")
 
 

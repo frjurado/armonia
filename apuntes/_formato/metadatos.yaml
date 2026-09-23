@@ -30,12 +30,17 @@ linestretch: 1.15
 page-numbering: "1"
 figure-caption-position: bottom
 
-# El pie de figura, más pequeño y gris, como en el HTML (apuntes.css):
-# explica lo que hay que mirar en el ejemplo, pero no es el texto.
-# Va como bloque typst en bruto porque la plantilla de Pandoc no tiene
-# variable para esto; en el HTML, Pandoc lo descarta solo.
+# Retoques que la plantilla typst de Pandoc no expone como variable. Van
+# como bloque en bruto; en el HTML, Pandoc los descarta solos, y lo que
+# haga falta allí está en apuntes.css.
+#
+#  - El pie de figura, más pequeño y gris: explica lo que hay que mirar
+#    en el ejemplo, pero no es el texto.
+#  - El índice, despegado del título y del cuerpo. Apretado contra los
+#    dos parece parte de ellos, y es una tercera cosa.
 header-includes:
   - |
     ```{=typst}
     #show figure.caption: set text(size: 8.8pt, fill: rgb("#666666"))
+    #show outline: it => block(above: 2.2em, below: 3.2em, it)
     ```

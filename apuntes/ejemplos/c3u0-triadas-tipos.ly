@@ -17,10 +17,10 @@
     \textLengthOn
     \override TextScript.staff-padding = #2
 
-    \rotulo "C°" \grado "disminuida" <c' ef' gf'>1
+    \rotulo "C°" \grado "dism."     <c' ef' gf'>1
     \rotulo "Cm" \grado "menor"      <c' ef' g'>
     \rotulo "C"  \grado "mayor"      <c' e' g'>
-    \rotulo "C+" \grado "aumentada"  <c' e' gs'>
+    \rotulo "C+" \grado "aum."      <c' e' gs'>
     \bar "|."
   }
   \layout { }

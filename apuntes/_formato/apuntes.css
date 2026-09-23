@@ -111,7 +111,7 @@ figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
 
 /* --- índice ------------------------------------------------------- */
 
-nav#TOC { margin: 2rem 0 3rem; font-size: .92rem; }
+nav#TOC { margin: 3.5rem 0 4.5rem; font-size: .92rem; }
 nav#TOC ul { list-style: none; padding-left: 1rem; }
 nav#TOC > ul { padding-left: 0; }
 nav#TOC a { color: var(--tinta); text-decoration: none; }
