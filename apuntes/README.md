@@ -133,21 +133,25 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
    o Pandoc se la traga dentro de la lista anterior y pierde el pie):
 
        ![Pie de figura, que explica lo que hay que mirar.
-       ](build/imagenes/c4u0-disposiciones.svg){#fig-disposiciones width=55%}
+       ](build/imagenes/c4u0-disposiciones.svg){#fig-disposiciones width=auto}
 
    La ruta se escribe con el prefijo `build/imagenes/` **para que la vista
    previa del editor encuentre el SVG**; al construir se quita, porque Pandoc
    corre dentro de `build/`.
 
-   El `width` no se pone a ojo: se calcula, para que el pentagrama salga igual
-   de grande en todas las figuras, sean anchas o estrechas. La caja de texto
-   mide 425 pt (A4 con márgenes de 3 cm) y el SVG trae su ancho en la primera
-   línea, así que
+   **El `width` se escribe `auto`**, y lo calcula `construir.py` leyendo el
+   ancho del propio SVG, para que el pentagrama salga igual de grande en todas
+   las figuras, sean anchas o estrechas: una fila de cuatro cadencias necesita
+   la caja entera para medir lo mismo que un ejemplo de dos acordes.
 
-       width ≈ 1,3 × (ancho del SVG en pt) / 425
+   Un porcentaje a mano se pudre a la primera: al rehacer un ejemplo cambia el
+   ancho del SVG, el número se queda apuntando al viejo, y la figura sale
+   diminuta o enorme sin que nada avise. Ya pasó.
 
-   Un ejemplo de 300 pt se pone al 92 %; uno de 100 pt, al 31 %. El 1,3 es el
-   aumento sobre el tamaño grabado: subirlo agranda todos los ejemplos a la vez.
+   El aumento sobre el tamaño con que graba LilyPond es `ESCALA` en
+   `construir.py` (1,3); subirlo agranda todos los ejemplos a la vez. Los SVG
+   dibujados a mano no tienen tamaño natural, así que esos —y solo esos— sí
+   llevan su `width=N%` puesto a ojo.
 
 6. **Varios casos del mismo asunto, un solo `.ly`.** Los tres 6/4 o las cuatro
    cadencias van en un fichero y **sin `\break`**, para que salgan en fila y no

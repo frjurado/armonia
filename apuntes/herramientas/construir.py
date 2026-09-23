@@ -78,6 +78,16 @@ RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
 SALTO = "<!-- salto -->"
 SALTO_TYPST = "```{=typst}\n#pagebreak()\n```"
 
+# `width=auto` en el .md: el ancho lo calcula `anchos_automaticos()` a
+# partir del propio SVG, para que el pentagrama salga igual de grande en
+# todas las figuras. ESCALA es el aumento sobre el tamaño con que lo
+# graba LilyPond, y CAJA_PT el ancho de la caja de texto (A4 con
+# márgenes de 3 cm). Subir ESCALA agranda todos los ejemplos a la vez.
+ESCALA = 1.3
+CAJA_PT = 425
+RE_AUTO = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)\)(\{[^}]*?)width=auto")
+RE_ANCHO_SVG = re.compile(r'\bwidth="([0-9.]+)pt"')
+
 forzar = False
 cobertura = None    # cmap de la fuente, cargado una vez (ver revisar_cobertura)
 
@@ -202,9 +212,39 @@ def sin_fuentes(texto):
     return "".join(fuera)
 
 
+def anchos_automaticos(texto, md):
+    """Sustituye cada `width=auto` por el porcentaje que le toca.
+
+    El pentagrama tiene que salir igual de grande en todas las figuras,
+    y eso no depende del hueco que ocupe la figura sino del tamaño con
+    que LilyPond la grabó: una fila de cuatro cadencias necesita el
+    ancho entero de la caja para que sus pentagramas midan lo mismo que
+    los de un ejemplo de dos acordes.
+
+    Se calculaba a mano y se pudría a la primera: al rehacer un ejemplo
+    cambia el ancho del SVG, el porcentaje se queda apuntando al viejo y
+    la figura sale a destiempo —diminuta o enorme— sin que nada avise.
+    Ahora se lee del SVG en cada compilación.
+
+    Un SVG sin ancho en puntos (los dibujados a mano, que no son
+    partituras y no tienen «tamaño natural») no entra aquí: esos llevan
+    su `width` puesto a ojo en el .md, que es lo único que cabe hacer.
+    """
+    def ancho(m):
+        svg = IMAGENES / m.group(1)
+        hallazgo = RE_ANCHO_SVG.search(svg.read_text(encoding="utf-8")[:400])
+        if not hallazgo:
+            sys.exit(f"{md.name}: {svg.name} no dice su ancho en pt, así que "
+                     f"`width=auto` no vale; ponle un `width=N%` a ojo")
+        por_ciento = min(ESCALA * float(hallazgo.group(1)) / CAJA_PT, 1.0)
+        return f"{m.group(0)[:-len('width=auto')]}width={round(por_ciento * 100)}%"
+    return RE_AUTO.sub(ancho, texto)
+
+
 def preparar(md):
     texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
     texto = texto.replace(SALTO, SALTO_TYPST)
+    texto = anchos_automaticos(texto, md)
     return texto.replace("build/imagenes/", "imagenes/")
 
 
