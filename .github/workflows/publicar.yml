@@ -31,19 +31,28 @@ jobs:
         with: { ref: master, path: master }
 
       # --- apuntes -----------------------------------------------------
-      # Requisitos de apuntes/herramientas/construir.py. Ubuntu 24.04 trae
-      # LilyPond 2.24 y Pandoc 3.1, que valen; Typst no está en apt y
-      # **hace falta el binario**: `pip install typst` instala solo el
-      # módulo de Python, y Pandoc llama al ejecutable.
+      # Requisitos de apuntes/herramientas/construir.py. De apt solo salen
+      # LilyPond y poppler; los otros dos van fijados a una versión:
+      #
+      #  - PANDOC no vale el de Ubuntu (3.1.3). Su escritor de typst es de
+      #    2023 y produce código que typst 0.14 ya no acepta («error:
+      #    expected colon» al componer c4u0). Los dos tienen que ir a la
+      #    par, así que se fijan los dos juntos y se suben juntos.
+      #  - TYPST no está en apt, y hace falta el BINARIO: `pip install
+      #    typst` instala solo el módulo de Python, y Pandoc llama al
+      #    ejecutable.
       - name: Instalar LilyPond, Pandoc y Typst
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends lilypond pandoc poppler-utils
+          sudo apt-get install -y --no-install-recommends lilypond poppler-utils
           python3 -m pip install --quiet fonttools   # solo para el aviso de cobertura
+          curl -sSLfo /tmp/pandoc.deb "https://github.com/jgm/pandoc/releases/download/${PANDOC}/pandoc-${PANDOC}-1-amd64.deb"
+          sudo dpkg -i /tmp/pandoc.deb
           curl -sSLf "https://github.com/typst/typst/releases/download/v${TYPST}/typst-x86_64-unknown-linux-musl.tar.xz" \
             | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
           lilypond --version | head -1; pandoc --version | head -1; typst --version
         env:
+          PANDOC: "3.10"
           TYPST: 0.14.2
 
       # Cada rama construye los suyos. Se comprueba que el script exista

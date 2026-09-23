@@ -37,7 +37,12 @@ están cuadradas en las dos carpetas.
 
 ## Requisitos
 
-- **LilyPond** ≥ 2.24 y **Pandoc** ≥ 3.0. Obligatorios.
+- **LilyPond** ≥ 2.24. Obligatorio.
+- **Pandoc** ≥ 3.6, y **a la par con la versión de Typst**. El escritor de
+  typst de Pandoc y el propio Typst han ido cambiando juntos: el Pandoc 3.1.3
+  que trae Ubuntu 24.04 produce código que Typst 0.14 rechaza («error:
+  expected colon»). Probada la pareja **Pandoc 3.10 + Typst 0.14.2**, que es
+  la que fija el flujo de publicación.
 - **Typst** para el PDF: el **binario**, y en el PATH, porque es a quien llama
   Pandoc. `pip install typst` NO vale: instala el módulo de Python y no deja
   ningún ejecutable. Se descarga de <https://github.com/typst/typst/releases>.
