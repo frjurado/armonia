@@ -83,6 +83,13 @@ Es el mismo mecanismo que `publico:true` en `app/public/curriculum-data.js`:
 exista. Así se puede escribir y revisar una unidad, compilándola y mirándola
 en `build/`, sin que se le aparezca a nadie.
 
+El HTML de cada unidad abre además con la misma banda verde que el resto del
+sitio, y dentro van la vuelta al índice y la descarga del PDF. La pone
+`construir.py` con `--include-before-body` / `--include-after-body`, que es lo
+que además envuelve el documento en un `<div class="hoja">`: sin esa hoja, la
+columna de lectura sería el `<body>` y la banda no podría ir a sangre. El PDF
+no la lleva, que ya es el fichero que se descargaría.
+
 Hay por eso dos índices, los dos generados a partir de `_formato/indice.html`:
 
 - `build/sitio/index.html` — el que ven los alumnos; solo lista lo publicado,

@@ -341,23 +341,42 @@ def pandoc(texto, salida, extra):
     print(f"  {salida.relative_to(RAIZ)} ({salida.stat().st_size // 1024} kB)")
 
 
-def barra(md):
-    """La tira de navegación que abre el HTML de una unidad.
+def envoltorio(md):
+    """Lo que rodea al documento en el HTML: cabecera entintada y hoja.
+
+    Dos cosas a la vez, y por eso va en un solo sitio:
+
+    - La **cabecera verde**, con la vuelta al índice y la descarga del
+      PDF dentro. Es la misma banda que llevan la portada, el menú de
+      ejercicios y cada ejercicio; sin ella, la unidad era la única
+      página del sitio que aparecía sin tintar.
+    - La **hoja**, un `<div>` que envuelve todo el documento. Hace falta
+      para lo anterior: la columna de texto no puede seguir siendo el
+      `<body>`, porque entonces la banda no puede ir a sangre. Con la
+      hoja, el ancho de lectura es suyo y la banda ocupa el ancho entero.
+
+    Va por `--include-before-body` / `--include-after-body` porque la
+    plantilla de Pandoc los pone por fuera del título y del índice del
+    documento; un bloque en bruto dentro del texto caería detrás.
 
     Solo en el HTML: el PDF ya es el fichero que se descargaría, y no
-    tiene índice de apuntes al que volver. Va por `--include-before-body`
-    porque la plantilla de Pandoc lo pone antes del título y del índice
-    del documento, que es donde tiene sentido; un bloque en bruto dentro
-    del texto caería detrás del índice.
+    tiene índice de apuntes al que volver.
     """
     TMP.mkdir(exist_ok=True)
-    fichero = TMP / f"barra-{md.stem}.html"
-    fichero.write_text(
-        '<nav class="barra">'
-        '<a class="volver" href="index.html">← Apuntes</a>'
-        f'<a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>'
-        '</nav>\n', encoding="utf-8")
-    return f"--include-before-body=../{fichero.relative_to(RAIZ).as_posix()}"
+    trozos = {
+        "before": ('<header class="masthead">\n'
+                   '  <a class="back" href="index.html">← Apuntes</a>\n'
+                   f'  <a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>\n'
+                   '</header>\n'
+                   '<div class="hoja">\n'),
+        "after": "</div>\n",
+    }
+    opciones = []
+    for donde, contenido in trozos.items():
+        fichero = TMP / f"{donde}-{md.stem}.html"
+        fichero.write_text(contenido, encoding="utf-8")
+        opciones.append(f"--include-{donde}-body=../{fichero.relative_to(RAIZ).as_posix()}")
+    return opciones
 
 
 def documentar(md):
@@ -374,7 +393,7 @@ def documentar(md):
     if caduco(html, [*comunes, CSS]):
         shutil.copy2(CSS, BUILD / CSS.name)
         copiar_fuentes()
-        pandoc(texto, html, [f"--css={CSS.name}", barra(md)])
+        pandoc(texto, html, [f"--css={CSS.name}", *envoltorio(md)])
         hechos += 1
 
     pdf = BUILD / f"{md.stem}.pdf"

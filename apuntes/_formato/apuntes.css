@@ -52,22 +52,36 @@
   --regla: #ddd;
   --fondo-nota: #f6f6f4;
   --acento: #7a1f1f;
+  --ink: #2f4f42;      /* el verde del sitio; ver sitio/index.html */
+  /* La columna de lectura. De estas dos medidas salen tanto la hoja
+     como el sangrado de la cabecera, para que el texto de las dos
+     empiece en la misma vertical. */
+  --hoja: 40rem;
+  --hoja-pad: 1.5rem;
 }
 
 html { -webkit-text-size-adjust: 100%; }
 
 body {
-  max-width: 40rem;
-  margin: 3rem auto;
-  padding: 0 1.5rem;
+  margin: 0;
   font: 1rem/1.6 var(--serif);
   color: var(--tinta);
   background: #fff;
 }
 
+/* La columna de lectura. Antes era el propio <body>, pero entonces la
+   cabecera entintada no podía ir a sangre; ahora el ancho de lectura es
+   de la hoja y la banda ocupa el ancho entero. La abre y la cierra
+   construir.py con --include-before/after-body. */
+.hoja {
+  max-width: var(--hoja);
+  margin: 3rem auto;
+  padding: 0 var(--hoja-pad);
+}
+
 /* --- titulares ---------------------------------------------------- */
 
-h1.title { font-size: 1.6rem; margin-bottom: .2rem; }
+h1.title { font-size: 1.6rem; margin-bottom: .2rem; margin-top: 0; }
 p.subtitle { margin-top: 0; color: var(--suave); font-style: italic; }
 
 h1, h2, h3 { line-height: 1.25; font-weight: 600; }
@@ -109,19 +123,39 @@ figure img { max-width: 100%; height: auto; }
 figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
              text-align: center; }
 
-/* --- tira de navegación --------------------------------------------
-   Solo en el HTML: abre la unidad con la vuelta al índice de apuntes y
-   la descarga del PDF. El PDF no la lleva —ya es el fichero que se
-   descargaría, y no tiene índice al que volver—. */
+/* --- cabecera entintada --------------------------------------------
+   La misma banda verde que la portada, el menú de ejercicios y cada
+   ejercicio: una unidad es una página del sitio como las demás. Dentro
+   van la vuelta al índice y la descarga del PDF. La píldora de volver
+   es la misma que el «← Menú» de los ejercicios (ejercicios/comun.css),
+   para que el control de volver esté siempre en la misma esquina.
 
-.barra { display: flex; align-items: baseline; gap: 1rem;
-         margin-bottom: 2.5rem; font-size: .9rem; }
-.barra a { text-decoration: none; }
-.barra .volver { color: var(--acento); font-weight: 600; }
-.barra .pdf { margin-left: auto; color: var(--suave); }
-.barra a:hover { text-decoration: underline; }
+   Solo en el HTML: el PDF ya es el fichero que se descargaría, y no
+   tiene índice de apuntes al que volver. */
 
-@media print { .barra { display: none; } }
+.masthead {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--ink); color: #fff;
+  /* alineado con el texto de la hoja: la mitad de lo que sobra a los
+     lados de la hoja entera (ancho + sus dos paddings), más el padding.
+     Ojo, la hoja no es border-box: su ancho total lleva el padding fuera
+     del max-width, y por eso se resta dos veces. */
+  padding: 14px max(var(--hoja-pad),
+                    calc((100% - var(--hoja) - 2 * var(--hoja-pad)) / 2
+                         + var(--hoja-pad)));
+}
+.masthead a { text-decoration: none; }
+.masthead a.back {
+  display: inline-flex; align-items: center; height: 44px; padding: 0 18px;
+  border-radius: 12px; background: rgba(255,255,255,.14);
+  color: #fff; font-size: .95rem; font-weight: 600;
+  transition: background .15s ease;
+}
+.masthead a.back:hover, .masthead a.back:active { background: rgba(255,255,255,.22); }
+.masthead a.pdf { margin-left: auto; color: rgba(255,255,255,.75); font-size: .9rem; }
+.masthead a.pdf:hover { color: #fff; text-decoration: underline; }
+
+@media print { .masthead { display: none; } .hoja { margin-top: 0; } }
 
 /* --- índice ------------------------------------------------------- */
 
