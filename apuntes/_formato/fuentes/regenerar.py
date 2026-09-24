@@ -1,5 +1,5 @@
 # Regenera «Armonia Serif», la fuente de texto de los apuntes.
-# Requiere `pip install fonttools brotli`.
+# Requiere `pip install fonttools brotli` y, la primera vez, red.
 #
 #     python _formato/fuentes/regenerar.py
 #
@@ -9,29 +9,52 @@
 # fichero por estilo: el PDF y el HTML componen con exactamente lo mismo,
 # y el HTML deja de depender de lo que haya instalado quien lo lea.
 #
-# QUÉ ES: DejaVu Serif recortada y con dos parches.
+# QUÉ ES: Source Serif 4 recortada y con tres parches.
+#
+# POR QUÉ SOURCE SERIF 4 (septiembre de 2026). Es la serifa de los títulos
+# de la portada del sitio, así que los apuntes y la web hablan con la
+# misma letra. Se eligió frente a DejaVu Serif (la anterior: correcta pero
+# ancha y tosca), Libertinus Serif (la más de libro, pero de ojo pequeño:
+# pedía cuerpo 12 y en pantalla quedaba clara), Noto Serif (muy parecida
+# a DejaVu) y Charis SIL (la única que compone los grados sin parche, pero
+# más utilitaria), después de componer la unidad entera con cada una. Las
+# pruebas quedaron en apuntes/tmp/prueba-fuentes/ y build/prueba-fuente-*,
+# que no se versionan.
+#
+# La negrita es la SEMINEGRITA de Source (Semibold, 600): la Bold pesa
+# demasiado al lado de la redonda, y 600 es el peso de los títulos del
+# sitio. Va declarada como el estilo «Bold» (700) de la familia, para que
+# Typst y el navegador la elijan sin más cuando piden negrita.
+#
+# DE DÓNDE SALE. De la publicación oficial de Adobe (DESCARGA, abajo), que
+# se baja una vez a apuntes/tmp/, fuera del repo. Se usan los TTF
+# (contornos cuadráticos, tabla glyf): los parches dibujan con
+# TTGlyphPen, que no sabe escribir CFF.
 #
 # 1. EL CIRCUNFLEJO DE LOS GRADOS (U+0302)
 #
-#    Los grados (1̂, 5̂, ♯7̂) son dígito + circunflejo combinante. DejaVu
-#    dibuja la marca donde le toca a una minúscula, y sobre una cifra se
-#    le mete dentro y queda descentrada. Medido (2048 upem):
+#    Los grados (1̂, 5̂, ♯7̂) son dígito + circunflejo combinante. Casi
+#    ninguna fuente de texto ancla marcas a las cifras, y Source tampoco:
+#    su U+0302 está centrado en el origen, a la altura de una minúscula,
+#    así que sobre una cifra cae a la derecha y metido dentro de ella.
 #
-#        «6»       avance 1303, llega a 1520 de alto
-#        U+0302    avance 0, caja x -831..-193, y 1262..1638
+#    Se dibuja un glifo NUEVO (`circunflejo.cifra`) y se le apunta el
+#    carácter U+0302; el original se queda como estaba. No vale mover el
+#    original: en Source, las letras precompuestas («ê», «Â») son
+#    compuestos que lo reutilizan, y moverlo las rompe. Probado. El glifo
+#    nuevo, además, no está en ninguna regla de posicionamiento de la
+#    fuente, así que nadie lo mueve después.
 #
-#    O sea: la marca arranca 258 unidades POR DEBAJO de lo alto de la
-#    cifra, y su centro cae en x -512 cuando el de la cifra está en -651
-#    (139 de desvío a la derecha). La referencia de cómo tendría que
-#    verse la da la propia DejaVu en su «Â» precompuesta: la A llega a
-#    1493 y el acento ocupa 1523..1899, o sea 30 unidades de aire y el
-#    techo en el ascendente. Trasladado a una cifra sale ALTURA = 1560.
-#
-#    Se agranda un punto (ESCALA, porque sobre una cifra la marca de
-#    DejaVu se queda corta) y se recoloca. Se toca el contorno, no una
-#    tabla de anclajes: DejaVu no ancla marcas a las cifras —de ahí que
-#    el defecto se vea—, así que mover el dibujo basta y vale igual en
-#    Typst y en el navegador.
+#    La posición no se pone a mano, se mide en la propia fuente:
+#      - centrado sobre el «6» (ancho de cifra, igual en todas),
+#        visto desde el cursor, que ya está detrás de la cifra;
+#      - apoyado a la altura de la cifra más el aire que la propia
+#        fuente deja entre la «A» y el acento de su «Â», con un mínimo
+#        (AIRE_MINIMO);
+#      - un punto mayor (ESCALA): sobre una cifra la marca de
+#        minúscula se queda corta.
+#    Medido así sale igual de bien en los cuatro estilos, cursivas
+#    incluidas, sin una constante por estilo.
 #
 #    Por qué se parchea DENTRO de la fuente de texto y no con una fuente
 #    aparte antepuesta: Typst y los navegadores eligen fuente por
@@ -41,51 +64,70 @@
 #
 # 2. LAS ALTERACIONES (♭ U+266D · ♮ U+266E · ♯ U+266F · 𝄪 U+1D12A · 𝄫 U+1D12B)
 #
-#    Las de DejaVu son toscas. Se sustituyen por las de Leland (la misma
-#    familia que Verovio usa en las partituras de la app), tomadas del
-#    subconjunto que ya vive en app/public/vendor/fuentes/ —OFL 1.1, ahí
-#    está el porqué de sus proporciones— y reescaladas de sus 1000 upem
-#    a los 2048 de DejaVu. Así una alteración en el texto de los apuntes
-#    y otra en un ejercicio de la app son el mismo dibujo.
-#    Estas sí son clúster propio y habrían valido como fuente aparte;
-#    van aquí por no tener dos mecanismos para lo mismo.
+#    Source no las trae. Se añaden las de Leland (la misma familia que
+#    Verovio usa en las partituras de la app), tomadas del subconjunto que
+#    ya vive en app/public/vendor/fuentes/ —OFL 1.1, ahí está el porqué de
+#    sus proporciones— y reescaladas a las unidades de Source. Así una
+#    alteración en el texto de los apuntes y otra en un ejercicio de la
+#    app son el mismo dibujo. Si una fuente de partida ya tuviera alguna,
+#    se sustituye igual.
 #
-# NOMBRE: no puede llamarse «DejaVu» (su licencia lo prohíbe para las
-# versiones modificadas). Licencias en LICENCIAS.txt.
+# 3. LA DOBLE FLECHA (↔ U+2194)
+#
+#    Source trae «→» pero no «↔», y los apuntes la usan (2.ª↔7.ª). Se
+#    compone con la propia «→» y su reflejo, superpuestas: el astil es
+#    el mismo, y las dos puntas quedan a los extremos. Al reflejar, el
+#    contorno cambia de sentido y se le da la vuelta (ReverseContourPen);
+#    si no, en la parte común los dos se anularían y el astil saldría
+#    hueco.
+#
+# NOMBRE: Source Serif lleva «Source» como nombre reservado (Reserved
+# Font Name de su OFL): una versión modificada no puede llamarse así. De
+# ahí «Armonia Serif». Licencias en LICENCIAS.txt.
 #
 # RECORTE: solo los rangos de RANGOS, que es de lo que se compone un
 # apunte. construir.py comprueba en cada compilación que ningún .md use
 # un carácter que se haya quedado fuera, y avisa si ocurre.
+#
+# Tras regenerar, hay que volver a lanzar ejemplos/svg/circulo.py: el
+# círculo de 5.as dibuja su texto con los contornos de esta fuente.
+import io
 import sys
 import pathlib
+import urllib.request
+import zipfile
 from fontTools.ttLib import TTFont
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from fontTools.pens.transformPen import TransformPen
+from fontTools.pens.reverseContourPen import ReverseContourPen
 from fontTools import subset
 
 sys.stdout.reconfigure(encoding="utf-8")
 AQUI = pathlib.Path(__file__).resolve().parent
 LELAND = AQUI / "../../../app/public/vendor/fuentes/leland-alteraciones.woff2"
 
+DESCARGA = ("https://github.com/adobe-fonts/source-serif/releases/download/"
+            "4.005R/source-serif-4.005_Desktop.zip")
+ORIGEN = AQUI / "../../tmp/source-serif-4"     # fuera del repo
+EN_ZIP = "source-serif-4.005_Desktop/"
+
 FAMILIA = "Armonia Serif"
 ESTILOS = {
-    # estilo: (fichero de DejaVu, peso, cursiva, sufijo de los nuestros)
-    "Regular": ("DejaVuSerif.ttf", 400, False, ""),
-    "Bold": ("DejaVuSerif-Bold.ttf", 700, False, "-negrita"),
-    "Italic": ("DejaVuSerif-Italic.ttf", 400, True, "-cursiva"),
-    "Bold Italic": ("DejaVuSerif-BoldItalic.ttf", 700, True, "-negrita-cursiva"),
+    # estilo: (fichero de Source Serif 4, peso, cursiva, sufijo de los nuestros)
+    "Regular": ("SourceSerif4-Regular.ttf", 400, False, ""),
+    "Bold": ("SourceSerif4-Semibold.ttf", 700, False, "-negrita"),
+    "Italic": ("SourceSerif4-It.ttf", 400, True, "-cursiva"),
+    "Bold Italic": ("SourceSerif4-SemiboldIt.ttf", 700, True, "-negrita-cursiva"),
 }
-DEJAVU = pathlib.Path("C:/Windows/Fonts")
 
 CIRCUNFLEJO = 0x0302
+GLIFO_CIRCUNFLEJO = "circunflejo.cifra"
 ALTERACIONES = [0x266D, 0x266E, 0x266F, 0x1D12A, 0x1D12B]
-
-ESCALA = 1.15   # la marca de DejaVu, sobre una cifra, se queda corta
-ALTURA = 1560   # base de la marca (las cifras llegan a 1520)
-CENTRO = -664   # centro de la cifra visto desde el cursor: «6» redonda -651,
-                # negrita -712; se toma la media y el desvío no se aprecia
+FLECHA, DOBLE_FLECHA = 0x2192, 0x2194
+ESCALA = 1.1    # la marca de minúscula, sobre una cifra, se queda corta
+AIRE_MINIMO = 0.02   # entre cifra y marca, en fracción del cuadratín
 
 # De qué se compone un apunte: latín con sus acentos, marcas combinantes,
 # puntuación y rayas, flechas, ≤ ≥ y demás operadores, y los símbolos
@@ -95,14 +137,26 @@ RANGOS = ("U+0000-00FF,U+0100-017F,U+0180-024F,U+02B0-02FF,U+0300-036F,"
           "U+2200-22FF,U+2300-23FF,U+25A0-25FF,U+2600-26FF,U+1D100-1D1FF")
 
 
+def origen():
+    """Los TTF de Adobe, bajados una vez a tmp/ con su licencia."""
+    faltan = [f for f, *_ in ESTILOS.values() if not (ORIGEN / f).exists()]
+    if faltan or not (ORIGEN / "LICENSE.md").exists():
+        print(f"Descargando Source Serif 4 de {DESCARGA}")
+        with urllib.request.urlopen(DESCARGA) as r:
+            z = zipfile.ZipFile(io.BytesIO(r.read()))
+        ORIGEN.mkdir(parents=True, exist_ok=True)
+        for f in [*(f for f, *_ in ESTILOS.values())]:
+            (ORIGEN / f).write_bytes(z.read(f"{EN_ZIP}TTF/{f}"))
+        (ORIGEN / "LICENSE.md").write_bytes(z.read(f"{EN_ZIP}LICENSE.md"))
+    return ORIGEN.resolve()
+
+
 def renombrar(f, estilo):
     """Nombres nuevos, avisos legales intactos.
 
-    Renombrar es obligado: la licencia de DejaVu no deja llamar «DejaVu»
-    a una versión modificada. Pero el copyright (0), el texto de la
-    licencia (13) y su URL (14) se conservan tal cual vienen —la de
-    Bitstream Vera exige que el aviso viaje con la fuente— y de ahí sale
-    también LICENCIAS.txt.
+    Renombrar es obligado: «Source» es nombre reservado en su licencia.
+    El copyright (0), el texto de la licencia (13) y su URL (14) se
+    conservan tal cual vienen.
     """
     conservado = {r.nameID: r.toUnicode() for r in f["name"].names
                   if r.nameID in (0, 13, 14)}
@@ -116,61 +170,109 @@ def renombrar(f, estilo):
     for nid, valor in sorted(nombres.items()):
         f["name"].setName(valor, nid, 3, 1, 0x409)
         f["name"].setName(valor, nid, 1, 0, 0)
+    # Los ejes y nombres de instancia de Source dirían «Semibold» donde
+    # la familia dice «Bold»: fuera, que aquí no hay variaciones.
+    if "STAT" in f:
+        del f["STAT"]
 
 
-def dibujar_en(destino_font, glifo, origen_gs, origen_glifo, transformacion):
-    """Copia un contorno de una fuente a otra, con su transformación.
+def caja(gs, glifo):
+    pluma = BoundsPen(gs)
+    gs[glifo].draw(pluma)
+    return pluma.bounds
 
-    Cu2QuPen porque Leland es CFF (curvas cúbicas) y DejaVu es glyf
+
+def dibujo(destino_font, origen_gs, origen_glifo, transformacion):
+    """Un contorno de una fuente, transformado, listo para otra.
+
+    Cu2QuPen porque Leland es CFF (curvas cúbicas) y el destino es glyf
     (cuadráticas): sin convertirlas, TTGlyphPen no las admite.
     """
     pluma = TTGlyphPen(destino_font.getGlyphSet())
     origen_gs[origen_glifo].draw(
         TransformPen(Cu2QuPen(pluma, 0.5), transformacion))
-    destino_font["glyf"][glifo] = pluma.glyph()
+    return pluma.glyph()
+
+
+def poner(f, nombre, glifo, metrica, unicode=None):
+    """Da de alta (o sustituye) un glifo y, si se pide, su carácter."""
+    orden = f.getGlyphOrder()
+    if nombre not in orden:
+        f.setGlyphOrder(orden + [nombre])
+    f["glyf"][nombre] = glifo
+    f["hmtx"][nombre] = metrica
+    if unicode is not None:
+        for t in f["cmap"].tables:
+            if t.isUnicode() and (unicode <= 0xFFFF or t.format in (10, 12, 13)):
+                t.cmap[unicode] = nombre
+    f["maxp"].numGlyphs = len(f.getGlyphOrder())
 
 
 def parchear_circunflejo(f):
-    gs = f.getGlyphSet()
-    glifo = f.getBestCmap()[CIRCUNFLEJO]
-    caja = BoundsPen(gs)
-    gs[glifo].draw(caja)
-    x0, y0, x1, y1 = caja.bounds
-    dx = CENTRO - (x0 + x1) / 2 * ESCALA
-    dy = ALTURA - y0 * ESCALA
-    dibujar_en(f, glifo, gs, glifo, (ESCALA, 0, 0, ESCALA, dx, dy))
-    f["hmtx"][glifo] = (0, round(x0 * ESCALA + dx))   # avance 0: es una marca
+    gs, cm = f.getGlyphSet(), f.getBestCmap()
+    seis = cm[ord("6")]
+    x0, _, x1, techo = caja(gs, seis)
+    avance = f["hmtx"][seis][0]
+    _, _, _, alto_a = caja(gs, cm[ord("A")])
+    _, _, _, alto_acento = caja(gs, cm[0x00C2])
+    marca = cm[CIRCUNFLEJO]
+    m0, n0, m1, n1 = caja(gs, marca)
+    # «Â»: de la A a su acento. En Source ese acento es el de mayúscula,
+    # más alto que U+0302, y la resta sale negativa; de ahí el mínimo.
+    aire = max((alto_acento - (n1 - n0)) - alto_a, AIRE_MINIMO * f["head"].unitsPerEm)
+    dx = ((x0 + x1) / 2 - avance) - (m0 + m1) / 2 * ESCALA
+    dy = techo + aire - n0 * ESCALA
+    poner(f, GLIFO_CIRCUNFLEJO,
+          dibujo(f, gs, marca, (ESCALA, 0, 0, ESCALA, dx, dy)),
+          (0, round(m0 * ESCALA + dx)),             # avance 0: es una marca
+          CIRCUNFLEJO)
+    if "GDEF" in f and f["GDEF"].table.GlyphClassDef:
+        f["GDEF"].table.GlyphClassDef.classDefs[GLIFO_CIRCUNFLEJO] = 3   # marca
 
 
 def parchear_alteraciones(f, leland):
     escala = f["head"].unitsPerEm / leland["head"].unitsPerEm
-    lgs = leland.getGlyphSet()
-    lcm = leland.getBestCmap()
-    cm = f.getBestCmap()
-    gs = f.getGlyphSet()
+    lgs, lcm = leland.getGlyphSet(), leland.getBestCmap()
     for u in ALTERACIONES:
-        if u not in cm:      # 𝄪 y 𝄫 pueden no estar en DejaVu
+        if u not in lcm:
             continue
-        glifo = cm[u]
-        dibujar_en(f, glifo, lgs, lcm[u], (escala, 0, 0, escala, 0, 0))
-        f["hmtx"][glifo] = (round(leland["hmtx"][lcm[u]][0] * escala),
-                            round(leland["hmtx"][lcm[u]][1] * escala))
+        nombre = f.getBestCmap().get(u, f"uni{u:04X}" if u <= 0xFFFF else f"u{u:05X}")
+        avance, izquierda = leland["hmtx"][lcm[u]]
+        poner(f, nombre, dibujo(f, lgs, lcm[u], (escala, 0, 0, escala, 0, 0)),
+              (round(avance * escala), round(izquierda * escala)), u)
 
 
-def construir(estilo):
+def doble_flecha(f):
+    cm = f.getBestCmap()
+    if DOBLE_FLECHA in cm:
+        return
+    gs = f.getGlyphSet()
+    flecha = cm[FLECHA]
+    avance, izquierda = f["hmtx"][flecha]
+    x0, _, x1, _ = caja(gs, flecha)
+    pluma = TTGlyphPen(gs)
+    gs[flecha].draw(pluma)
+    gs[flecha].draw(ReverseContourPen(
+        TransformPen(pluma, (-1, 0, 0, 1, x0 + x1, 0))))   # reflejo en su caja
+    poner(f, "uni2194", pluma.glyph(), (avance, izquierda), DOBLE_FLECHA)
+
+
+def construir(estilo, carpeta):
     fichero, peso, cursiva, sufijo = ESTILOS[estilo]
-    f = TTFont(DEJAVU / fichero)
+    f = TTFont(carpeta / fichero)
 
     opciones = subset.Options()
     opciones.layout_features = ["*"]     # kerning y demás, intactos
     opciones.name_IDs = ["*"]            # si no, se lleva por delante copyright y licencia
     opciones.notdef_outline = True
+    opciones.glyph_names = True
     recorte = subset.Subsetter(opciones)
     recorte.populate(unicodes=subset.parse_unicodes(RANGOS))
     recorte.subset(f)
 
     parchear_circunflejo(f)
     parchear_alteraciones(f, TTFont(LELAND.resolve()))
+    doble_flecha(f)
 
     # fsSelection: cursiva (0x01), negrita (0x20), redonda normal (0x40).
     # Sin esto, Typst y el navegador no saben cuál de los cuatro ficheros
@@ -191,27 +293,23 @@ def construir(estilo):
 
 def comprobar():
     """Reabre lo guardado y enseña las cajas, que es lo único que importa."""
-    print("Comprobación (2048 upem; las cifras llegan a 1520, la «A» a 1493):")
+    print("Comprobación (el circunflejo tiene que quedar encima del «6»):")
     for estilo in ESTILOS:
         sufijo = ESTILOS[estilo][3]
         f = TTFont(AQUI / f"armonia-serif{sufijo}.ttf")
         gs, cm = f.getGlyphSet(), f.getBestCmap()
-        partes = []
-        for nombre, u in (("^", CIRCUNFLEJO), ("♯", 0x266F)):
-            caja = BoundsPen(gs)
-            gs[cm[u]].draw(caja)
-            x0, y0, x1, y1 = caja.bounds
-            partes.append(f"{nombre} x {x0:.0f}..{x1:.0f} y {y0:.0f}..{y1:.0f}")
-        print(f"  {estilo:12} " + " | ".join(partes))
+        x0, _, x1, techo = caja(gs, cm[ord("6")])
+        avance = f["hmtx"][cm[ord("6")]][0]
+        m0, n0, m1, _ = caja(gs, cm[CIRCUNFLEJO])
+        print(f"  {estilo:12} «6» x {x0 - avance:.0f}..{x1 - avance:.0f} hasta {techo:.0f}"
+              f" | ^ x {m0:.0f}..{m1:.0f} desde {n0:.0f}"
+              f" | ♯ {'sí' if 0x266F in cm else 'NO'}"
+              f" | ↔ {'sí' if DOBLE_FLECHA in cm else 'NO'}")
 
 
-def licencias():
-    """Junta los dos avisos legales en un fichero, al lado de las fuentes.
-
-    El de DejaVu se saca del propio binario (nameID 13), que es la copia
-    autorizada; el de Leland se copia del que ya hay en la app.
-    """
-    dejavu = TTFont(DEJAVU / ESTILOS["Regular"][0])["name"].getDebugName(13)
+def licencias(carpeta):
+    """Junta los dos avisos legales en un fichero, al lado de las fuentes."""
+    source = (carpeta / "LICENSE.md").read_text(encoding="utf-8")
     ofl = (LELAND.parent / "OFL-Leland.txt").resolve().read_text(encoding="utf-8")
     destino = AQUI / "LICENCIAS.txt"
     destino.write_text(
@@ -219,14 +317,14 @@ def licencias():
         "Lo generado aquí es obra derivada de las dos cosas: se distribuye\n"
         "con los dos avisos y renombrado, como exigen ambas.\n"
         "\n"
-        "El cuerpo de la fuente es DejaVu Serif (recortada y con el\n"
-        "circunflejo combinante recolocado). Las cinco alteraciones\n"
+        "El cuerpo de la fuente es Source Serif 4 (recortada y con un\n"
+        "circunflejo combinante propio para las cifras). Las alteraciones\n"
         "(♭ ♮ ♯ 𝄪 𝄫) son contornos de Leland Text, reescalados.\n"
         "\n"
         "=========================================================\n"
-        "1. DejaVu Serif — cuerpo de la fuente\n"
+        "1. Source Serif 4 — cuerpo de la fuente\n"
         "=========================================================\n"
-        f"\n{dejavu}\n"
+        f"\n{source}\n"
         "\n"
         "=========================================================\n"
         "2. Leland Text — solo los glifos de las alteraciones\n"
@@ -237,9 +335,10 @@ def licencias():
 
 
 if __name__ == "__main__":
+    carpeta = origen()
     for estilo in ESTILOS:
         print(f"{FAMILIA} {estilo}:")
-        construir(estilo)
+        construir(estilo, carpeta)
     print("Licencias:")
-    licencias()
+    licencias(carpeta)
     comprobar()

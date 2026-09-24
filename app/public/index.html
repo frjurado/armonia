@@ -113,6 +113,8 @@
   footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px;display:flex;align-items:baseline}
   footer a{color:var(--ink);text-decoration:none;margin-left:auto}
   footer a:hover{text-decoration:underline}
+  footer.autoria a{color:inherit;margin-left:0}
+  footer:has(+ footer.autoria){padding-bottom:8px}
   .tab,.btn-modo,.ud-row.abrible,.masthead a.back{touch-action:manipulation}
 
   /* modo dev: franja arriba y marca en lo que los alumnos no ven */
@@ -190,6 +192,9 @@
   <span>Los botones con borde discontinuo aún no están disponibles.</span>
   <a href="curriculum.html">Currículum (dev) →</a>
 </footer>
+<!-- Autoría: el mismo texto que el pie de los apuntes, que sale de
+     apuntes/_formato/metadatos.yaml. Si cambia allí, cambiarlo aquí. -->
+<footer class="autoria">© 2026 Francisco Jurado · Conservatorio Costa del Sol · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" rel="license">CC BY-NC-SA 4.0</a></footer>
 
 <script>
 /* ---------- iconos (inline SVG, stroke) ---------- */

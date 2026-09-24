@@ -18,8 +18,11 @@ el día que cambie el formato del texto no hay que tocarlos.
     ejemplos/c4u0-*.ly     un fichero por ejemplo, con el prefijo de su unidad
     ejemplos/svg/          los ejemplos que NO son partitura (ver más abajo)
 
-    _formato/metadatos.yaml  papel, márgenes, tipografía (PDF)
+    _formato/metadatos.yaml  papel, márgenes, tipografía (PDF), y la autoría
+                             y licencia de todo (PDF y pie del HTML)
+    _formato/pdf.typ         portada, cabeceras y pies del PDF (Typst)
     _formato/apuntes.css     lo mismo para el HTML
+    _formato/tablas.lua      filtro del HTML: tablas desplazables en el móvil
     _formato/fuentes/        la fuente del texto, y el script que la hace
     _formato/indice.html     plantilla de la página de índice de unidades
 
@@ -125,21 +128,32 @@ si se cambia de fuente de texto o de alteraciones:
 
     pip install fonttools brotli
     python _formato/fuentes/regenerar.py
+    python ejemplos/svg/circulo.py      el círculo dibuja su texto con ella
 
-Es **DejaVu Serif recortada y con dos arreglos**: el circunflejo combinante
-recolocado sobre la cifra (los grados `1̂`, `5̂`, `♯7̂`) y las alteraciones
-sustituidas por las de Leland, la misma familia que Verovio usa en las
-partituras de la app. Los dos arreglos van *dentro* de la fuente y no en otra
-antepuesta, porque Typst y los navegadores eligen fuente por **clúster**: la
-cifra y su marca combinante son uno solo, así que el circunflejo no puede
-venir de otra fuente que la cifra.
+La primera vez descarga la fuente original de Adobe a `tmp/`.
+
+Es **Source Serif 4 recortada y con tres arreglos**: un circunflejo combinante
+propio, colocado sobre la cifra (los grados `1̂`, `5̂`, `♯7̂`), y las
+alteraciones de Leland, la misma familia que Verovio usa en las partituras de
+la app, y una «↔», que Source no trae. Source Serif 4 porque es la serifa de la portada del sitio; se eligió
+en septiembre de 2026 tras componer c4u0 entera con cinco candidatas (DejaVu
+Serif, la anterior; Source; Libertinus; Charis SIL; Noto Serif). El porqué de
+cada descarte está en `regenerar.py`, y las pruebas, sin versionar, en
+`tmp/prueba-fuentes/` y `build/prueba-fuente-*.html`. La negrita es la
+seminegrita de Source (600), el peso de los títulos del sitio. (Ojo:
+`construir.py --limpiar` borra `tmp/` y `build/`, pruebas incluidas.)
+
+Los arreglos van *dentro* de la fuente y no en otra antepuesta, porque
+Typst y los navegadores eligen fuente por **clúster**: la cifra y su marca
+combinante son uno solo, así que el circunflejo no puede venir de otra fuente
+que la cifra.
 
 El `.ttf` lo lee Typst para el PDF y el `.woff2` lo sirve el HTML, así que las
 dos salidas componen con exactamente lo mismo y ninguna depende de lo que haya
 instalado quien las lea. Al ir recortada, `construir.py` avisa si un `.md` usa
 un carácter que se haya quedado fuera; entonces hay que ampliar `RANGOS` en
-`regenerar.py` y volver a lanzarlo. Las licencias (DejaVu y Leland, las dos
-permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
+`regenerar.py` y volver a lanzarlo. Las licencias (Source Serif y Leland, las
+dos OFL) están en `_formato/fuentes/LICENCIAS.txt`.
 
 ## Escribir una unidad
 
@@ -160,10 +174,15 @@ permisivas) están en `_formato/fuentes/LICENCIAS.txt`.
    conducción`), `###` para el segundo, `####` para el tercero. El índice llega
    hasta el segundo (`1.1`).
 
-   La unidad abre con un `## Qué repasa esta unidad` sin numerar, y detrás va
+   La unidad abre con un `## Qué repasa esta unidad {.unnumbered .unlisted}`:
+   sin número (no es un apartado del temario, es su presentación) y fuera del
+   índice (va justo debajo de él). Detrás va
    un `<!-- salto -->`: en el PDF, la introducción se queda sola en su página
-   con el índice, y el temario empieza en la siguiente. En el HTML no hay
-   páginas y la marca se ignora sola.
+   con el índice, y el temario empieza en la siguiente. En el HTML, que no
+   tiene páginas, sale en su lugar una raya horizontal.
+
+   **Ninguna otra raya**: nada de `---` entre apartados. Los epígrafes ya
+   separan, y así la del salto es la única del documento.
 
 4. **Huecos de ejemplo.** Mientras no exista el ejemplo, una línea que empiece
    por `- Ej.:` describiendo lo que hará falta. Se publican tal cual: son
@@ -249,11 +268,8 @@ El flujo está completo y las tres salidas se generan.
 
 - **`c3u0.md`** — redactada, con sus siete ejemplos hechos (el círculo de 5.as,
   las parejas de inversión, los compuestos, las dos claves, los cuatro tipos de
-  tríada, las inversiones cifradas y el bajo cifrado realizado). **Es la única
-  con `publico: true`**, y por tanto la única que sale al sitio.
-- **`c4u0.md`** — redactada, con tres ejemplos hechos —disposiciones, los tres
-  6/4 y las cuatro cadencias—; los demás siguen marcados con `- Ej.:`. Sin
-  publicar: le falta una revisión.
+  tríada, las inversiones cifradas y el bajo cifrado realizado). Publicada.
+- **`c4u0.md`** — redactada y revisada, con sus diez ejemplos. Publicada.
 - **`c3u1.md` y `c3u2.md`** — todavía guiones, sin redactar. Sus dos `.ly`
   (`c3u1-5as-paralelas`, `c3u1-triada-im`) están hechos pero aún no enlazados
   desde ningún texto.

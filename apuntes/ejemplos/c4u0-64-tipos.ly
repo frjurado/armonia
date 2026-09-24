@@ -24,14 +24,14 @@ contralto = {
   \voiceTwo
   g'2 a'  | g' g'  | g'1
   g'2 a'  | g'1
-  c''2 b' | g'1
+  g'2 g'  | g'1
 }
 
 tenor = {
   \voiceOne
   e'2 f'  | e' d'  | e'1
   e'2 f'  | e'1
-  g'2 g'  | e'1
+  c'2 b   | c'1
 }
 
 bajo = {
@@ -39,7 +39,7 @@ bajo = {
   \textLengthOn
   \override TextScript.staff-padding = #2.5
   \grado "I" c2 \grado "IV" f
-    | \cifra "I" "6" "4" g \grado "V" g
+    | \cifra "I" "6" "4" g \grado "V" g,
     | \grado "I" c1
   \grado "I" c2 \cifra "IV" "6" "4" c
     | \grado "I" c1

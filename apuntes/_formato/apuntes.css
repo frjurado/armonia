@@ -5,15 +5,16 @@
    La fuente es la misma en los dos, y se sirve desde aquí. */
 
 /* --- la fuente ----------------------------------------------------
-   «Armonia Serif» es DejaVu Serif recortada y con dos arreglos: el
-   circunflejo de los grados (1̂, 5̂, ♯7̂) recolocado sobre la cifra, y las
-   alteraciones sustituidas por las de Leland, que es la familia de las
-   partituras de la app. El porqué, con medidas, en fuentes/regenerar.py.
+   «Armonia Serif» es Source Serif 4 —la serifa de la portada del
+   sitio— recortada y con dos arreglos: un circunflejo propio para los
+   grados (1̂, 5̂, ♯7̂), colocado sobre la cifra, y las alteraciones de
+   Leland, que es la familia de las partituras de la app. Por qué esta
+   fuente, y cómo se hace cada arreglo, en fuentes/regenerar.py.
 
    Se sirve desde el propio sitio (nunca un CDN: esto va en una subruta
    de GitHub Pages) y los ficheros los copia construir.py a
-   build/fuentes/. Antes se confiaba en que quien leyera tuviera DejaVu
-   Serif instalada, y sin ella los grados salían con el acento suelto.
+   build/fuentes/. Confiar en lo que tenga instalado quien lea no vale:
+   sin el arreglo, los grados salen con el acento suelto.
 
    No lleva `unicode-range`: es la fuente del texto entero, no un
    parche. Y no vale como parche: los navegadores —y Typst— eligen
@@ -30,7 +31,9 @@
 @font-face {
   font-family: "Armonia Serif";
   src: url("fuentes/armonia-serif-negrita.woff2") format("woff2");
-  font-weight: 700; font-style: normal; font-display: swap;
+  /* es la seminegrita de Source: sirve el 600 de títulos y <strong>
+     igual que el 700 */
+  font-weight: 600 700; font-style: normal; font-display: swap;
 }
 
 @font-face {
@@ -42,17 +45,17 @@
 @font-face {
   font-family: "Armonia Serif";
   src: url("fuentes/armonia-serif-negrita-cursiva.woff2") format("woff2");
-  font-weight: 700; font-style: italic; font-display: swap;
+  font-weight: 600 700; font-style: italic; font-display: swap;
 }
 
 :root {
-  --serif: "Armonia Serif", "DejaVu Serif", Georgia, "Times New Roman", serif;
+  --serif: "Armonia Serif", "Source Serif 4", Georgia, "Times New Roman", serif;
   --tinta: #1a1a1a;
   --suave: #666;
   --regla: #ddd;
   --fondo-nota: #f6f6f4;
-  --acento: #7a1f1f;
   --ink: #2f4f42;      /* el verde del sitio; ver sitio/index.html */
+  --ink-suave: #587a6b;
   /* La columna de lectura. De estas dos medidas salen tanto la hoja
      como el sangrado de la cabecera, para que el texto de las dos
      empiece en la misma vertical. */
@@ -60,11 +63,14 @@
   --hoja-pad: 1.5rem;
 }
 
+/* En el móvil, algo menos de margen: cada píxel de columna cuenta. */
+@media (max-width: 40rem) { :root { --hoja-pad: 1rem; } }
+
 html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
-  font: 1rem/1.6 var(--serif);
+  font: 1.0625rem/1.6 var(--serif);   /* Source, a 16 px, se queda corta */
   color: var(--tinta);
   background: #fff;
 }
@@ -84,11 +90,15 @@ body {
 h1.title { font-size: 1.6rem; margin-bottom: .2rem; margin-top: 0; }
 p.subtitle { margin-top: 0; color: var(--suave); font-style: italic; }
 
-h1, h2, h3 { line-height: 1.25; font-weight: 600; }
-h2 { font-size: 1.25rem; margin-top: 2.4rem; padding-bottom: .2rem;
-     border-bottom: 1px solid var(--regla); }
+/* Los titulares, en el verde del sitio (el de la banda y el de los
+   títulos de la portada), y el cuarto nivel en un verde más apagado:
+   es el que más se repite, y a plena tinta competiría con el texto.
+   Sin raya bajo los apartados: la única raya del documento es la del
+   salto (ver abajo). En el PDF, todo en negro, que se imprime. */
+h1, h2, h3, h4 { line-height: 1.25; font-weight: 600; color: var(--ink); }
+h2 { font-size: 1.25rem; margin-top: 2.4rem; }
 h3 { font-size: 1.05rem; margin-top: 1.8rem; }
-h4 { font-size: 1rem; margin-top: 1.4rem; color: var(--acento); }
+h4 { font-size: 1rem; margin-top: 1.4rem; color: var(--ink-suave); }
 
 /* --- cuerpo ------------------------------------------------------- */
 
@@ -106,11 +116,17 @@ blockquote {
 }
 blockquote p { text-align: left; }
 
-table { border-collapse: collapse; margin: 1.5rem 0; font-size: .94rem; width: 100%; }
+/* Cada tabla va dentro de un <div class="tabla"> (lo pone el filtro
+   _formato/tablas.lua): si no cabe a lo ancho —en el móvil—, se desplaza
+   ella sola, y no la página entera. */
+.tabla { margin: 1.5rem 0; overflow-x: auto; }
+table { border-collapse: collapse; margin: 0; font-size: .94rem; width: 100%; }
 th, td { padding: .35rem .6rem; text-align: left; vertical-align: top; }
 thead th { border-bottom: 1.5px solid var(--tinta); }
 tbody tr + tr td { border-top: 1px solid var(--regla); }
 
+/* El salto de página del PDF (<!-- salto --> en el .md), que en el HTML
+   es esta raya: separa la presentación y el índice del temario. */
 hr { border: 0; border-top: 1px solid var(--regla); margin: 2.5rem 0; }
 
 /* --- ejemplos musicales -------------------------------------------
@@ -118,10 +134,22 @@ hr { border: 0; border-top: 1px solid var(--regla); margin: 2.5rem 0; }
    glifo se numeran desde cero en cada fichero y al incrustarlos el
    segundo ejemplo dibuja los glifos del primero (ver CLAUDE.md). */
 
-figure { margin: 2rem 0; text-align: center; }
-figure img { max-width: 100%; height: auto; }
+/* El ancho de cada figura es un porcentaje de la columna, calculado
+   para que el pentagrama mida lo mismo en todas (construir.py). En el
+   móvil, ese porcentaje de una columna estrecha lo deja diminuto: ahí
+   manda un mínimo en píxeles (--ancho-movil, también de construir.py),
+   y la figura que no cabe se desplaza dentro de sí misma. La imagen va
+   en bloque y centrada con márgenes: con text-align, al desbordar, se
+   saldría por los dos lados y la parte izquierda quedaría inalcanzable. */
+figure { margin: 2rem 0; overflow-x: auto; }
+figure img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
+@media (max-width: 40rem) {
+  figure img { min-width: var(--ancho-movil, 0); }
+}
 figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
              text-align: center; }
+/* Si la figura se desplaza (móvil), el pie se queda quieto debajo. */
+figcaption { position: sticky; left: 0; }
 
 /* --- cabecera entintada --------------------------------------------
    La misma banda verde que la portada, el menú de ejercicios y cada
@@ -156,6 +184,16 @@ figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
 .masthead a.pdf:hover { color: #fff; text-decoration: underline; }
 
 @media print { .masthead { display: none; } .hoja { margin-top: 0; } }
+
+/* --- pie ----------------------------------------------------------
+   Autoría y licencia, el mismo texto que en la portada, el índice de
+   apuntes y el menú de la app (lo pone construir.py a partir de
+   metadatos.yaml). Alineado con la columna de texto, como la banda. */
+.pie {
+  max-width: var(--hoja); margin: 0 auto; padding: 0 var(--hoja-pad) 2.5rem;
+  color: var(--suave); font-size: .8rem;
+}
+.pie a { color: inherit; }
 
 /* --- índice ------------------------------------------------------- */
 

@@ -30,10 +30,9 @@ Antes de llamar a Pandoc, de cada `.md` se hacen cuatro cosas:
 2. **Se quitan los párrafos «Fuentes:»**, por lo mismo: la cita de
    bibliografía es para quien escribe la unidad, no para quien la
    estudia.
-3. **Se traducen los `<!-- salto -->`** a un salto de página de Typst.
-   Es un bloque en bruto que solo entiende el PDF, así que el mismo
-   texto sirve para las dos salidas: en el HTML no hay páginas y el
-   salto sobra.
+3. **Se traducen los `<!-- salto -->`**: salto de página en el PDF y
+   raya horizontal en el HTML, que no tiene páginas. Son dos bloques en
+   bruto, y cada salida se queda con el suyo.
 4. **Se corrige la ruta de los ejemplos.** En el `.md` se escriben como
    `build/imagenes/x.svg`, que es lo que resuelve la vista previa del
    editor; Pandoc corre dentro de `build/`, donde sobra ese prefijo.
@@ -46,6 +45,7 @@ El formato (papel, márgenes, tipografía) está en
 YAML tiene prioridad sobre ese fichero.
 """
 
+import datetime
 import pathlib
 import re
 import shutil
@@ -67,12 +67,16 @@ PLAN = RAIZ.parent / "curriculum" / "Plan-Armonia.md"
 INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily"]
 METADATOS = FORMATO / "metadatos.yaml"
 CSS = FORMATO / "apuntes.css"
+TABLAS = FORMATO / "tablas.lua"   # filtro del HTML: tablas desplazables
+PDF_TYP = FORMATO / "pdf.typ"     # cabeceras, pies y retoques del PDF
+QR = RAIZ.parent / "sitio" / "qr-armonia.svg"   # al pie de la portada del PDF
 PLANTILLA = FORMATO / "indice.html"
 YO = pathlib.Path(__file__)
 
 # El índice: sus filas salen de las tablas de unidades del plan, y una
 # unidad se publica cuando su cabecera YAML lleva `publico: true`.
 MARCA_UNIDADES = "<!-- unidades -->"
+MARCA_PIE = "<!-- pie -->"
 RE_FILA_PLAN = re.compile(
     r"^\|[^|]*\|\s*\*\*UD (\d)\*\*\s*\|\s*([^|]+?)\s*\|\s*([^|]*?)\s*\|", re.M)
 RE_PUBLICO = re.compile(r"^publico:\s*true\b", re.M)
@@ -85,12 +89,15 @@ GUION_INICIO = "<!-- guion:inicio -->"
 GUION_FIN = "<!-- guion:fin -->"
 RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
 
-# Salto de página, solo en el PDF: se escribe `<!-- salto -->` en el .md
-# y se cambia por un bloque typst en bruto, que Pandoc solo entiende al
-# generar el PDF y descarta al generar el HTML. Un mismo texto vale
-# entonces para las dos salidas, sin ramificar `preparar()`.
+# Salto: se escribe `<!-- salto -->` en el .md y se cambia por dos
+# bloques en bruto, uno por salida; Pandoc usa el de la suya y descarta
+# el otro. En el PDF es un salto de página; en el HTML, que no tiene
+# páginas, una raya que hace sus veces —la única del documento: entre
+# apartados no se pone ninguna—. Un mismo texto vale entonces para las
+# dos salidas, sin ramificar `preparar()`.
 SALTO = "<!-- salto -->"
-SALTO_TYPST = "```{=typst}\n#pagebreak()\n```"
+SALTO_BRUTO = ("```{=typst}\n#pagebreak()\n```\n\n"
+               "```{=html}\n<hr class=\"salto\">\n```")
 
 # `width=auto` en el .md: el ancho lo calcula `anchos_automaticos()` a
 # partir del propio SVG, para que el pentagrama salga igual de grande en
@@ -99,6 +106,14 @@ SALTO_TYPST = "```{=typst}\n#pagebreak()\n```"
 # márgenes de 3 cm). Subir ESCALA agranda todos los ejemplos a la vez.
 ESCALA = 1.3
 CAJA_PT = 425
+# En el móvil, el porcentaje deja los pentagramas diminutos: es un
+# porcentaje de una columna que mide la mitad. Por eso cada figura lleva
+# además, solo para el HTML, un ancho mínimo en píxeles a partir de su
+# tamaño natural (--ancho-movil, que aplica apuntes.css en pantallas
+# estrechas): PX_MOVIL píxeles por punto del SVG, unas tres cuartas
+# partes del tamaño en escritorio. La que no cabe se desplaza dentro de
+# su figura, no la página entera. Typst ignora el `style`.
+PX_MOVIL = 1.6
 RE_AUTO = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)\)(\{[^}]*?)width=auto")
 # El ancho del SVG se busca primero en el atributo `width` y, si no está o
 # viene en porcentaje, en el tercer número del `viewBox`. Las dos cosas
@@ -284,13 +299,14 @@ def anchos_automaticos(texto, md):
                      f"`width=auto` no vale; ponle un `width=N%` a ojo.\n"
                      f"  su cabecera es: {cabecera_svg(svg)}")
         por_ciento = min(ESCALA * puntos / CAJA_PT, 1.0)
-        return f"{m.group(0)[:-len('width=auto')]}width={round(por_ciento * 100)}%"
+        return (f"{m.group(0)[:-len('width=auto')]}width={round(por_ciento * 100)}% "
+                f'style="--ancho-movil:{round(PX_MOVIL * puntos)}px"')
     return RE_AUTO.sub(ancho, texto)
 
 
 def preparar(md):
     texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
-    texto = texto.replace(SALTO, SALTO_TYPST)
+    texto = texto.replace(SALTO, SALTO_BRUTO)
     texto = anchos_automaticos(texto, md)
     return texto.replace("build/imagenes/", "imagenes/")
 
@@ -369,7 +385,7 @@ def envoltorio(md):
                    f'  <a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>\n'
                    '</header>\n'
                    '<div class="hoja">\n'),
-        "after": "</div>\n",
+        "after": f'</div>\n<footer class="pie">{pie_html()}</footer>\n',
     }
     opciones = []
     for donde, contenido in trozos.items():
@@ -390,19 +406,21 @@ def documentar(md):
     revisar_cobertura(texto, md)
 
     html = BUILD / f"{md.stem}.html"
-    if caduco(html, [*comunes, CSS]):
+    if caduco(html, [*comunes, CSS, TABLAS]):
         shutil.copy2(CSS, BUILD / CSS.name)
         copiar_fuentes()
-        pandoc(texto, html, [f"--css={CSS.name}", *envoltorio(md)])
+        pandoc(texto, html, [f"--css={CSS.name}", *envoltorio(md),
+                             f"--lua-filter=../{TABLAS.relative_to(RAIZ).as_posix()}"])
         hechos += 1
 
     pdf = BUILD / f"{md.stem}.pdf"
-    if caduco(pdf, comunes):
+    if caduco(pdf, [*comunes, PDF_TYP, QR]):
         # --font-path: «Armonia Serif» no está instalada en el sistema,
         # vive en el repo y solo la ve quien compila esto.
         pandoc(texto, pdf,
                ["--pdf-engine=typst",
-                f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}"])
+                f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}",
+                *portada_pdf(md)])
         hechos += 1
     return hechos
 
@@ -433,6 +451,83 @@ def unidades_del_plan():
             sys.exit(f"{PLAN.name}: no leo ninguna unidad de {curso}.º")
         cursos.append((curso, etiqueta, filas))
     return cursos
+
+
+# --- autoría y contexto ------------------------------------------------
+
+def dato(clave, fichero=METADATOS, defecto=None):
+    """Un `clave: "valor"` de una cabecera YAML, sin cargar YAML.
+
+    Vale para metadatos.yaml (autoría, licencia…) y para la cabecera de
+    una unidad (title, subtitle). Solo valores de una línea y entre
+    comillas, que es como están escritos: si alguno deja de estarlo, se
+    para aquí en vez de salir un PDF sin autor.
+    """
+    m = re.search(rf'^{re.escape(clave)}:\s*"(.*)"\s*$',
+                  fichero.read_text(encoding="utf-8"), re.M)
+    if not m and defecto is not None:
+        return defecto
+    if not m:
+        sys.exit(f'{fichero.name}: falta «{clave}: "…"»')
+    return m.group(1)
+
+
+def curso_academico(hoy=None):
+    """«2026–27»: de septiembre en adelante, el curso que empieza."""
+    hoy = hoy or datetime.date.today()
+    inicio = hoy.year if hoy.month >= 9 else hoy.year - 1
+    return f"{inicio}–{(inicio + 1) % 100:02d}"
+
+
+def portada_pdf(md):
+    """Opciones de Pandoc para la portada y las cabeceras del PDF.
+
+    Escribe dos ficheros typst en tmp/: la cabecera —`datos` con la
+    autoría y los títulos, y detrás _formato/pdf.typ, que los usa— y el
+    principio del cuerpo, que pone la línea de autoría bajo el título.
+    El QR se copia junto a las imágenes, que es donde lo busca Typst.
+
+    Va por -H y no por `header-includes` en metadatos.yaml porque Pandoc
+    no suma los dos: con -H, el del YAML desaparece sin avisar.
+    """
+    def cadena(texto):
+        return '"' + texto.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    datos = {
+        "contexto": dato("contexto"),
+        "autoria": dato("autoria"),
+        "derechos": dato("derechos"),
+        "licencia": dato("licencia"),
+        "licencia-url": dato("licencia-url"),
+        "web": dato("web"),
+        "curso": curso_academico(),
+        # Las unidades que aún son guion no tienen cabecera YAML.
+        "corto": f"Armonía · {dato('title', md, defecto=md.stem)}",
+        "subtitulo": dato("subtitle", md, defecto=""),
+    }
+    TMP.mkdir(exist_ok=True)
+    IMAGENES.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(QR, IMAGENES / QR.name)
+    cabecera = TMP / f"cabecera-{md.stem}.typ"
+    cabecera.write_text(
+        "#let datos = (\n"
+        + "".join(f"  {k}: {cadena(v)},\n" for k, v in datos.items())
+        + ")\n\n" + PDF_TYP.read_text(encoding="utf-8"),
+        encoding="utf-8")
+    antes = TMP / f"antes-{md.stem}.typ"
+    antes.write_text("#autoria()\n", encoding="utf-8")
+    return [f"--include-in-header=../{cabecera.relative_to(RAIZ).as_posix()}",
+            f"--include-before-body=../{antes.relative_to(RAIZ).as_posix()}"]
+
+
+def pie_html():
+    """El pie de las páginas de apuntes (unidades e índice).
+
+    El mismo texto que el de la portada y el menú de la app, que lo
+    llevan escrito a mano (ver metadatos.yaml). En la web la autoría va
+    aquí y no bajo el título: es de todo el sitio, no de cada unidad.
+    """
+    return (f'{dato("derechos")} · {dato("centro")} · '
+            f'<a href="{dato("licencia-url")}" rel="license">{dato("licencia")}</a>')
 
 
 def es_publica(md):
@@ -490,7 +585,10 @@ def indice(destino, solo_publicas):
     plantilla = PLANTILLA.read_text(encoding="utf-8")
     if MARCA_UNIDADES not in plantilla:
         sys.exit(f"{PLANTILLA.name} ya no trae la marca «{MARCA_UNIDADES}»")
-    destino.write_text(plantilla.replace(MARCA_UNIDADES, "\n".join(partes)),
+    if MARCA_PIE not in plantilla:
+        sys.exit(f"{PLANTILLA.name} ya no trae la marca «{MARCA_PIE}»")
+    destino.write_text(plantilla.replace(MARCA_UNIDADES, "\n".join(partes))
+                                .replace(MARCA_PIE, pie_html()),
                        encoding="utf-8")
     print(f"  {destino.relative_to(RAIZ)}")
 
@@ -574,4 +672,8 @@ def main(argv):
 
 
 if __name__ == "__main__":
+    # La consola de Windows no es UTF-8, y los avisos citan caracteres
+    # como «↔»: sin esto, el aviso revienta en vez de avisar.
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
     main(sys.argv[1:])

@@ -16,25 +16,25 @@
 
 soprano = {
   \voiceOne
-  \rotulo "CAP"  c''4 d''  d''2  | c''1 \bar "||"
-  \rotulo "CAI"  c''4 d''  d''2  | e''1 \bar "||"
-  \rotulo "SC"   c''4 d''  d''2  \bar "||"
+  \rotulo "CAP"  e''4 d''  b'2   | c''1 \bar "||"
+  \rotulo "CAI"  g''4 f''  d''2  | e''1 \bar "||"
+  \rotulo "SC"   e''4 d''  b'2  \bar "||"
   \rotulo "CR"   c''4 d''  b'2   | c''1 \bar "|."
 }
 
 contralto = {
   \voiceTwo
-  g'4 a'  b'2  | g'1
-  g'4 a'  b'2  | c''1
-  g'4 a'  b'2
+  c''4 a'   g'2  | g'1
+  c''4 d''  b'2  | c''1
+  c''4 a'   g'2
   g'4 a'  g'2  | e'1
 }
 
 tenor = {
   \voiceOne
-  e'4 d'  d'2  | e'1
-  e'4 d'  g'2  | g'1
-  e'4 d'  d'2
+  g'4 f'  d'2  | e'1
+  g'4 a'  g'2  | g'1
+  g'4 f'  d'2
   e'4 d'  d'2  | c'1
 }
 

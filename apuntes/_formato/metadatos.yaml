@@ -11,36 +11,47 @@ margin:
   y: 2.5cm
 # «Armonia Serif» no está instalada en ningún sitio: vive en el repo,
 # en fuentes/, y Typst la encuentra porque construir.py le pasa
-# --font-path. Es DejaVu Serif recortada y con dos arreglos —el
-# circunflejo de los grados y las alteraciones—, y ahí, en
-# fuentes/regenerar.py, está el porqué de cada uno con sus medidas.
+# --font-path. Es Source Serif 4 —la serifa de la portada del sitio—
+# recortada y con dos arreglos: el circunflejo de los grados y las
+# alteraciones. En fuentes/regenerar.py está por qué esa y no otra (se
+# compuso la unidad entera con cinco candidatas) y cómo se hace cada
+# arreglo.
 #
-# DejaVu de partida, y no Georgia ni Constantia, porque los grados
-# (1̂, 5̂, ♯7̂) son dígito + circunflejo combinante (U+0302) y casi ninguna
-# fuente de texto lo compone siquiera: Georgia deja el acento suelto
-# detrás del número, y Constantia lo compone en redonda pero lo PIERDE
-# en negrita, que es peor porque no se nota. DejaVu lo trae en los dos
-# pesos y numera con cifras de caja alta (Constantia las usa
-# elzevirianas y su cero parece una «o»: «UD 0» se leía «UD o»).
+# Los grados (1̂, 5̂, ♯7̂) son dígito + circunflejo combinante (U+0302), y
+# casi ninguna fuente de texto lo compone: Georgia deja el acento suelto
+# detrás del número, y Constantia lo pierde en negrita, que es peor
+# porque no se nota. De ahí que la fuente vaya parcheada, y la elección
+# dependa más del gusto que de esto: el parche vale para cualquiera.
+# Lo que sí hay que exigirle es cifras de caja alta (con las
+# elzevirianas de Constantia, «UD 0» se leía «UD o»).
 #
 # Antes de tocar esta línea: compilar y mirar «**4̂ → 3̂**» en negrita.
 mainfont: Armonia Serif
-fontsize: 10.5pt   # esta fuente pesa más que una Garamond
+fontsize: 11pt   # Source tiene el ojo algo menor que DejaVu, a 10.5
 linestretch: 1.15
 page-numbering: "1"
 figure-caption-position: bottom
 
-# Retoques que la plantilla typst de Pandoc no expone como variable. Van
-# como bloque en bruto; en el HTML, Pandoc los descarta solos, y lo que
-# haga falta allí está en apuntes.css.
-#
-#  - El pie de figura, más pequeño y gris: explica lo que hay que mirar
-#    en el ejemplo, pero no es el texto.
-#  - El índice, despegado del título y del cuerpo. Apretado contra los
-#    dos parece parte de ellos, y es una tercera cosa.
-header-includes:
-  - |
-    ```{=typst}
-    #show figure.caption: set text(size: 8.8pt, fill: rgb("#666666"))
-    #show outline: it => block(above: 2.2em, below: 3.2em, it)
-    ```
+# Autoría y contexto, comunes a todas las unidades. No son variables de
+# Pandoc: los lee construir.py y los pone él, porque cada salida los
+# quiere en un sitio distinto.
+#  - PDF (_formato/pdf.typ): «contexto» encima del título, autoría y
+#    curso debajo, y al pie de la primera página derechos, licencia, la
+#    dirección del sitio y su QR. En las demás, una cabecera discreta.
+#  - HTML: todo en el pie de página, igual que en la portada y en el
+#    menú de la app (esos dos lo llevan escrito a mano: si cambia algo
+#    aquí, cambiarlo también en sitio/index.html y app/public/index.html).
+# El curso académico no se escribe: lo calcula construir.py de la fecha.
+contexto: "Armonía · Enseñanzas Profesionales · Conservatorio Costa del Sol"
+autoria: "Francisco Jurado"
+centro: "Conservatorio Costa del Sol"
+derechos: "© 2026 Francisco Jurado"
+licencia: "CC BY-NC-SA 4.0"
+licencia-url: "https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es"
+web: "frjurado.github.io/armonia"
+
+# Los retoques de Typst que la plantilla de Pandoc no expone como
+# variable (pie de figura, índice, cabeceras y pies de página) están en
+# _formato/pdf.typ. NO usar aquí header-includes: construir.py pasa ese
+# fichero con --include-in-header, y Pandoc entonces descarta el
+# header-includes del YAML sin avisar.

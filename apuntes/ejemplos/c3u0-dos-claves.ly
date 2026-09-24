@@ -46,9 +46,9 @@
       \override TextScript.self-alignment-X = #LEFT
       \override TextScript.staff-padding = #2.5
 
-      s1  \grado "el mismo" c'  \bar "|"
+      s1 c'  \bar "|"
       \grado "10.ª M" c  \grado "3.ª M" c'  \bar "|"
-      \grado "suena encima" e'
+      e'
       \bar "|."
     }
   >>
