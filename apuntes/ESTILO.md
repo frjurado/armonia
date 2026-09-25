@@ -23,21 +23,38 @@ choca con `curriculum/Plan-Armonia.md`, manda el plan.
 - **Números romanos en mayúscula siempre, sin marca de calidad** (ni °, ni
   minúscula para el menor): II, VII, no ii ni vii°. La calidad la da la
   tonalidad. Es la misma decisión que la app (`app/docs/Generador-ejercicios.md`).
-- Cifras pegadas al romano: I6, I6/4, V7, V6/5, V4/3, V4/2.
-- En partitura, con las macros de `ejemplos/etiquetas.ily`: `\grado`,
-  `\gradoSeis`, `\cifra "V" "6" "4"`. Las cifras de un grado van **voladas**:
-  la de arriba de un 6/4 a la altura del 6 de un I⁶, la de abajo debajo.
-- Bajo cifrado sin grado (`\figuras "6" "4"`): cifras a tamaño de texto.
+- **Cifrado a la francesa**, como Pascual-Diego: el + marca la sensible y la
+  cifra tachada, un intervalo disminuido. V7 con 7 sobre +, V6/5 con 6 sobre
+  5 tachado, V+6, V+4. Ni la V tríada ni el VII6 llevan +.
+- **En las fuentes se escribe el CÓDIGO**, con la inversión a la anglosajona
+  y pegado al romano: I6, I6/4, V7, V6/5, V4/3, V4/2. Qué cifras salen lo
+  dice `curriculum/cifrado.json`, la misma tabla para texto y partituras:
+  cambiar de convención es cambiar esa tabla, no los apuntes.
+- En el texto, el filtro `_formato/cifrado.lua` convierte cada código en el
+  romano con sus cifras apiladas (en HTML y PDF), y apila también las cifras
+  sueltas de bajo cifrado: 6/4, 6/3, 5/3, 6/5, 4/3, 4/2 («el 6/4 cadencial»).
+  Lo que no deba convertirse va como código: `6/4`. «V(7)» se queda como está.
+- En partitura, `\acorde "V6/5"` (ver `ejemplos/etiquetas.ily`), con el mismo
+  código; admite paréntesis pegados: `\acorde "(IV"`, `\acorde "V7)"`.
+  Bajo cifrado sin grado: `\figuras "6/4"`, `\figuras "♯"`: la misma fuente y
+  columna, a tamaño de texto. No se usa el bajo cifrado propio de LilyPond
+  (`\figuremode`): sus cifras negritas desentonan con el resto del cifrado.
 - **Todos los grados de un sistema, en la misma línea base**, y todos los
   rótulos de encima, también: altura fija, no pegados a cada nota (ver
   `etiquetas.ily`).
+- El texto de las partituras va en «Armonia Serif», la fuente de los
+  apuntes: el cifrado es el mismo dibujo en el texto y en el ejemplo.
 - Tipos de 6/4 y de 6/3 se nombran por su cifra: «el 6/4 cadencial», «cada 6/3».
 
 ## Grados de la escala
 
-- Cifra con circunflejo: 1̂, 5̂, 7̂; alterados con la alteración delante: ♯7̂.
-  Se escriben con la marca combinante U+0302; la fuente de los apuntes la
-  coloca sobre la cifra.
+- **Del bajo, en círculo**: ①, ⑤, ⑦ (convención de Gjerdingen, que siguen
+  Caplin y Pascual-Diego). Alterados, con la alteración fuera y delante: ♯⑦.
+- **De otra voz, o sin voz determinada, con circunflejo**: 1̂, 5̂, 7̂; ♯7̂.
+  Marca combinante U+0302; la fuente de los apuntes la coloca sobre la cifra.
+- Ojo: el cambio a ① está decidido pero **sin aplicar** en c3u0 y c4u0, que
+  aún usan el circunflejo para todo. Revisarlo grado a grado (hay que ver de
+  qué voz es cada uno).
 
 ## Notas y tonalidades
 
@@ -86,19 +103,3 @@ choca con `curriculum/Plan-Armonia.md`, manda el plan.
 - Una línea de rótulos que no cabe: `\textLengthOn` con
   `extra-spacing-height` a cero, para que se aparten entre sí sin empujar las
   notas de debajo (ver `c3u0-dos-claves.ly`).
-
-## Pendiente de decidir
-
-- **Fuente de las cifras del bajo cifrado.** LilyPond trae su propia fuente
-  para cifras (la de las cifras de compás y las digitaciones: negrita, con
-  0–9, +, -, paréntesis) y un contexto de bajo cifrado (`\figuremode`) con ♯ ♭
-  ♮, cifras tachadas (5, 6), +6, ♯4 y corchetes, que alinea solo. Probado en
-  septiembre de 2026:
-  - Con romano (V⁶₄), el contexto de bajo cifrado no sirve: centra las cifras
-    bajo la nota, no a la derecha del romano. Lo viable sería poner solo las
-    cifras de `\cifra` en esa fuente. **Descartado por ahora**: el contraste
-    entre el romano (redonda con serifa) y las cifras negritas resta más que
-    suma.
-  - Para bajo cifrado sin romano (c3u0 §3.2), el contexto de LilyPond sí
-    sería la opción natural, con cifras tachadas y alteraciones bien
-    colocadas. Por decidir, junto con lo anterior.

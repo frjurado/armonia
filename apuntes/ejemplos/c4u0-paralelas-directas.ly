@@ -34,9 +34,9 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #4
-  \grado "IV" \mal f2\glissando \grado "V" \mal g
-  \grado "V" \bien g2\glissando \grado "I" \bien c'
-  \grado "I" \mal c2\glissando \grado "V" \mal g
+  \acorde "IV" \mal f2\glissando \acorde "V" \mal g
+  \acorde "V" \bien g2\glissando \acorde "I" \bien c'
+  \acorde "I" \mal c2\glissando \acorde "V" \mal g
 }
 
 \score {

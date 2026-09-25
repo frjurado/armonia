@@ -53,3 +53,16 @@
 // en líneas aparte; esto es una línea. Lo llama el principio del cuerpo.
 #let autoria() = align(center, block(above: 0pt, below: 0pt,
   text(size: 1.05em)[#datos.autoria · Curso #datos.curso]))
+
+// Cifrado de grados apilado: #cifra("V", "6", "5̸") = V con 6 sobre 5
+// tachado, como en una partitura. Lo escribe el filtro cifrado.lua a
+// partir de los códigos del texto (V6/5); la tabla de qué cifras lleva
+// cada código es curriculum/cifrado.json. La cifra de arriba queda a la
+// altura de un volado, y la columna no ocupa sitio en la línea (box de
+// alto fijo, el resto desborda): así el interlineado no se abre.
+#let cifra(romano, ..cifras) = {
+  let fila(x) = text(size: 0.62em, top-edge: "cap-height", bottom-edge: "baseline", x)
+  let columna = stack(dir: ttb, spacing: 0.16em,
+    ..cifras.pos().map(x => align(center, fila(x))))
+  box[#romano#h(0.02em)#box(height: 0.3em, move(dy: -0.42em, columna))]
+}

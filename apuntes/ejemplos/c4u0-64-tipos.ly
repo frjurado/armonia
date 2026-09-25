@@ -38,13 +38,13 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #2.5
-  \grado "I" c2 \grado "IV" f
-    | \cifra "I" "6" "4" g \grado "V" g,
-    | \grado "I" c1
-  \grado "I" c2 \cifra "IV" "6" "4" c
-    | \grado "I" c1
-  \grado "I" c2 \cifra "V" "6" "4" d
-    | \grado \markup { \concat { "I" \super "6" } } e1
+  \acorde "I" c2 \acorde "IV" f
+    | \acorde "I6/4" g \acorde "V" g,
+    | \acorde "I" c1
+  \acorde "I" c2 \acorde "IV6/4" c
+    | \acorde "I" c1
+  \acorde "I" c2 \acorde "V6/4" d
+    | \acorde "I6" e1
 }
 
 \score {

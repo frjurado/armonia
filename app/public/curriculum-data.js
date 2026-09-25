@@ -108,7 +108,7 @@ const CURRICULO = {
           ]},
         { n:2, titulo:'Tónica y dominante', familias:[] },
         { n:3, titulo:'Subdominante. Cadencias', familias:[] },
-        { n:4, titulo:'7.ª dominante y 6/4', familias:[] },
+        { n:4, titulo:'Séptima de dominante y 6/4', familias:[] },
         { n:5, titulo:'Otros grados. Cadencia rota', familias:[] },
         { n:6, titulo:'Secuencias diatónicas', familias:[] }
       ]
@@ -137,7 +137,7 @@ const CURRICULO = {
                 'Añade VI como tónica inicial, IV6 en mayor y la rota sobre IV6; 16 tonalidades.'
               ]}
           ]},
-        { n:1, titulo:'7.ª diatónicas', familias:[] },
+        { n:1, titulo:'Séptimas diatónicas', familias:[] },
         { n:2, titulo:'Modulación y dominante secundaria', familias:[] },
         { n:3, titulo:'Acordes de VII con 7.ª', familias:[] },
         { n:4, titulo:'VII como D.S. Secuencias modulantes', familias:[] },

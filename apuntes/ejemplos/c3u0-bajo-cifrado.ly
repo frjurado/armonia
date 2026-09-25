@@ -37,7 +37,7 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #2.5
-  a,1  \grado "6" c  \grado \markup { \sharp } e  a,
+  a,1  \figuras "6" c  \figuras "♯" e  a,
   \bar "|."
 }
 

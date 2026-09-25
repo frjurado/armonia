@@ -66,6 +66,10 @@ Cada una costó descubrirla:
   trabajo lleva tilde (*Armonía*) y `pdftocairo` —entre otros— no abre
   ficheros cuya ruta absoluta tenga caracteres no ASCII. `construir.py` lanza
   todo desde `apuntes/`; un script nuevo tiene que hacer lo mismo.
+- **LilyPond carga «Armonia Serif» desde una copia en una ruta sin tildes**
+  (`ARMONIA_FUENTES`, que pone `construir.py`). fontconfig no abre la carpeta
+  del repo por la tilde de *Armonía*, y no falla: sustituye la fuente sin
+  avisar y los grados salen en sans.
 - **No incrustar SVG dentro del HTML: referenciarlos con `<img src>`.**
   Los `id` de glifo (`glyph-0-0`…) se numeran desde cero en cada fichero;
   incrustados comparten espacio de nombres y el segundo ejemplo dibuja los

@@ -32,11 +32,11 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #2.5
-  \grado "I" c2 \cifra "V" "6" "5" b,
-    | \grado "I" c \cifra "V" "4" "3" d
-    | \gradoSeis "I" e1
-  \grado "V" g2 \cifra "V" "4" "2" f
-    | \gradoSeis "I" e1
+  \acorde "I" c2 \acorde "V6/5" b,
+    | \acorde "I" c \acorde "V4/3" d
+    | \acorde "I6" e1
+  \acorde "V" g2 \acorde "V4/2" f
+    | \acorde "I6" e1
 }
 
 \score {

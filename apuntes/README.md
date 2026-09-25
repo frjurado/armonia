@@ -16,7 +16,7 @@ el día que cambie el formato del texto no hay que tocarlos.
                            antes de publicar una unidad
 
     ejemplos/comun.ily     preámbulo de grabado: idioma, tamaño, \paper
-    ejemplos/etiquetas.ily rótulos de análisis: \grado, \cifra, \rotulo
+    ejemplos/etiquetas.ily rótulos de análisis: \acorde, \grado, \rotulo
     ejemplos/c4u0-*.ly     un fichero por ejemplo, con el prefijo de su unidad
     ejemplos/svg/          los ejemplos que NO son partitura (ver más abajo)
 
@@ -25,6 +25,8 @@ el día que cambie el formato del texto no hay que tocarlos.
     _formato/pdf.typ         portada, cabeceras y pies del PDF (Typst)
     _formato/apuntes.css     lo mismo para el HTML
     _formato/tablas.lua      filtro del HTML: tablas desplazables en el móvil
+    _formato/cifrado.lua     filtro de HTML y PDF: V6/5 → V con cifras apiladas,
+                             según curriculum/cifrado.json (ver ESTILO.md)
     _formato/fuentes/        la fuente del texto, y el script que la hace
     _formato/indice.html     plantilla de la página de índice de unidades
 

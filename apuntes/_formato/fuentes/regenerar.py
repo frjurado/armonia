@@ -9,7 +9,7 @@
 # fichero por estilo: el PDF y el HTML componen con exactamente lo mismo,
 # y el HTML deja de depender de lo que haya instalado quien lo lea.
 #
-# QUÉ ES: Source Serif 4 recortada y con tres parches.
+# QUÉ ES: Source Serif 4 recortada y con cinco parches.
 #
 # POR QUÉ SOURCE SERIF 4 (septiembre de 2026). Es la serifa de los títulos
 # de la portada del sitio, así que los apuntes y la web hablan con la
@@ -92,6 +92,21 @@
 #    El glifo es más ancho que la «→» (ALARGUE), como en las fuentes que
 #    traen «↔» de serie: con el ancho de la «→» no cabe astil entre puntas.
 #
+# 4. EL TACHADO DE CIFRA (U+0338)
+#
+#    Para el bajo cifrado a la francesa: 5̸ es la 5.ª disminuida (V6/5 se
+#    cifra 6 sobre 5 tachado). Es cifra + marca combinante, el mismo caso
+#    que el circunflejo y resuelto igual: glifo nuevo, avance 0, dibujado
+#    hacia atrás sobre la cifra anterior. Sirve para cualquier cifra (7̸).
+#
+# 5. LOS GRADOS DEL BAJO EN CÍRCULO (① … ⑨, U+2460 …)
+#
+#    Convención de Gjerdingen (y de Caplin, y de Pascual-Diego): el grado
+#    del bajo va en círculo; el circunflejo queda para las demás voces.
+#    Source no los trae. Se dibujan con la cifra de la propia fuente,
+#    reducida, dentro de un anillo trazado aquí; así texto, PDF y
+#    partituras (LilyPond usa esta misma fuente) dicen lo mismo.
+#
 # NOMBRE: Source Serif lleva «Source» como nombre reservado (Reserved
 # Font Name de su OFL): una versión modificada no puede llamarse así. De
 # ahí «Armonia Serif». Licencias en LICENCIAS.txt.
@@ -103,6 +118,7 @@
 # Tras regenerar, hay que volver a lanzar ejemplos/svg/circulo.py: el
 # círculo de 5.as dibuja su texto con los contornos de esta fuente.
 import io
+import math
 import sys
 import pathlib
 import urllib.request
@@ -141,6 +157,18 @@ ALARGUE = 0.6   # desplazamiento de la «→» en la «↔», en fracción de su
                 # deja entre las puntas un astil de más o menos una punta
 ESCALA = 1.1    # la marca de minúscula, sobre una cifra, se queda corta
 AIRE_MINIMO = 0.02   # entre cifra y marca, en fracción del cuadratín
+
+BARRA = 0x0338                 # tachado combinante: 5̸ = 5.ª disminuida
+GLIFO_BARRA = "barra.cifra"
+# grosor de la barra, en fracción del ancho de cifra (la redonda y la
+# seminegrita tienen trazos distintos, y la barra los acompaña)
+GROSOR_BARRA = {400: 0.12, 700: 0.16}
+
+CIRCULOS = range(1, 10)        # ① … ⑨ (U+2460 …): grados del bajo
+DIAMETRO = 1.18                # del círculo, en alturas de cifra
+GROSOR_CIRCULO = {400: 0.055, 700: 0.075}   # en fracción del diámetro
+ESCALA_CIFRA = 0.64            # la cifra dentro del círculo
+MARGEN_CIRCULO = 40            # a cada lado, en unidades de la fuente
 
 # De qué se compone un apunte: latín con sus acentos, marcas combinantes,
 # puntuación y rayas, flechas, ≤ ≥ y demás operadores, y los símbolos
@@ -283,6 +311,89 @@ def doble_flecha(f):
     poner(f, "uni2194", pluma.glyph(), (avance + dx, izquierda), DOBLE_FLECHA)
 
 
+def barra(f, peso, inclinacion):
+    """U+0338 como tachado de cifra, colocado sobre la anterior.
+
+    Igual que el circunflejo: glifo nuevo de avance 0, dibujado hacia
+    atrás desde el cursor, medido sobre el «5» (las cifras de Source son
+    tabulares: todas del mismo ancho). Una raya en diagonal, de abajo a
+    la izquierda a arriba a la derecha, que sobresale un poco de la cifra
+    por los dos extremos; en cursiva, inclinada con ella.
+    """
+    gs, cm = f.getGlyphSet(), f.getBestCmap()
+    cinco = cm[ord("5")]
+    x0, _, x1, techo = caja(gs, cinco)
+    avance = f["hmtx"][cinco][0]
+    ancho = x1 - x0
+    medio = GROSOR_BARRA[peso] * ancho / 2
+    sale = 0.08 * ancho
+    pie, cabeza = 0.10 * techo, 0.90 * techo
+    tangente = math.tan(math.radians(-inclinacion))
+    def punto(x, y):
+        return (round(x + y * tangente - avance), round(y))
+    a, b = (x0 - sale, pie), (x1 + sale, cabeza)
+    pluma = TTGlyphPen(gs)
+    pluma.moveTo(punto(a[0] - medio, a[1]))           # sentido horario
+    pluma.lineTo(punto(b[0] - medio, b[1]))
+    pluma.lineTo(punto(b[0] + medio, b[1]))
+    pluma.lineTo(punto(a[0] + medio, a[1]))
+    pluma.closePath()
+    glifo = pluma.glyph()
+    glifo.recalcBounds(f["glyf"])
+    poner(f, GLIFO_BARRA, glifo, (0, glifo.xMin), BARRA)
+    if "GDEF" in f and f["GDEF"].table.GlyphClassDef:
+        f["GDEF"].table.GlyphClassDef.classDefs[GLIFO_BARRA] = 3   # marca
+
+
+def circulos(f, peso):
+    """①–⑨: la cifra de la propia fuente, reducida, dentro de un anillo.
+
+    El anillo va centrado en la altura de cifra (no en la de la línea):
+    así el ① se alinea con las cifras de alrededor y sobresale lo mismo
+    por arriba que por abajo. Siempre recto, también en cursiva: es un
+    signo, no una letra. La alteración, si la hay, va fuera y delante
+    (♯⑦), como en ♯7̂: no hacen falta más glifos.
+    """
+    gs, cm = f.getGlyphSet(), f.getBestCmap()
+    _, _, _, alto = caja(gs, cm[ord("6")])
+    radio = DIAMETRO * alto / 2
+    grueso = GROSOR_CIRCULO[peso] * 2 * radio
+    cx, cy = MARGEN_CIRCULO + radio, alto / 2
+    k = 0.5523   # control de la curva cúbica que aproxima un cuarto de círculo
+
+    def anillo(pluma, r, horario):
+        # cuatro cuartos en sentido horario desde arriba: (control, control, fin)
+        q = k * r
+        tramos = [((cx + q, cy + r), (cx + r, cy + q), (cx + r, cy)),
+                  ((cx + r, cy - q), (cx + q, cy - r), (cx, cy - r)),
+                  ((cx - q, cy - r), (cx - r, cy - q), (cx - r, cy)),
+                  ((cx - r, cy + q), (cx - q, cy + r), (cx, cy + r))]
+        if not horario:   # el mismo camino al revés
+            inicio = (cx, cy + r)
+            previos = [inicio] + [t[2] for t in tramos[:-1]]
+            tramos = [(c2, c1, fin) for (c1, c2, _), fin in
+                      zip(reversed(tramos), reversed(previos))]
+        pluma.moveTo((cx, cy + r))
+        for c1, c2, fin in tramos:
+            pluma.curveTo(c1, c2, fin)
+        pluma.closePath()
+
+    for n in CIRCULOS:
+        cifra = cm[ord(str(n))]
+        c0, d0, c1, d1 = caja(gs, cifra)
+        pluma = TTGlyphPen(gs)
+        cubica = Cu2QuPen(pluma, 1.0)
+        anillo(cubica, radio, True)                  # contorno exterior: horario
+        anillo(cubica, radio - grueso, False)        # hueco: antihorario
+        dx = cx - (c0 + c1) / 2 * ESCALA_CIFRA
+        dy = cy - (d0 + d1) / 2 * ESCALA_CIFRA
+        gs[cifra].draw(TransformPen(pluma, (ESCALA_CIFRA, 0, 0, ESCALA_CIFRA, dx, dy)))
+        glifo = pluma.glyph()
+        glifo.recalcBounds(f["glyf"])
+        poner(f, f"circulo.{n}", glifo,
+              (round(2 * (MARGEN_CIRCULO + radio)), glifo.xMin), 0x2460 + n - 1)
+
+
 def construir(estilo, carpeta):
     fichero, peso, cursiva, sufijo = ESTILOS[estilo]
     f = TTFont(carpeta / fichero)
@@ -299,6 +410,8 @@ def construir(estilo, carpeta):
     parchear_circunflejo(f)
     parchear_alteraciones(f, TTFont(LELAND.resolve()))
     doble_flecha(f)
+    barra(f, peso, f["post"].italicAngle)
+    circulos(f, peso)
 
     # fsSelection: cursiva (0x01), negrita (0x20), redonda normal (0x40).
     # Sin esto, Typst y el navegador no saben cuál de los cuatro ficheros
@@ -330,7 +443,9 @@ def comprobar():
         print(f"  {estilo:12} «6» x {x0 - avance:.0f}..{x1 - avance:.0f} hasta {techo:.0f}"
               f" | ^ x {m0:.0f}..{m1:.0f} desde {n0:.0f}"
               f" | ♯ {'sí' if 0x266F in cm else 'NO'}"
-              f" | ↔ {'sí' if DOBLE_FLECHA in cm else 'NO'}")
+              f" | ↔ {'sí' if DOBLE_FLECHA in cm else 'NO'}"
+              f" | 5̸ {'sí' if BARRA in cm and cm[BARRA] == GLIFO_BARRA else 'NO'}"
+              f" | ①–⑨ {'sí' if all(0x2460 + n - 1 in cm for n in CIRCULOS) else 'NO'}")
 
 
 def licencias(carpeta):

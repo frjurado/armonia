@@ -8,8 +8,6 @@
 \include "comun.ily"
 \include "etiquetas.ily"
 
-siete = \markup { \concat { "V" \super "7" } }
-
 soprano = {
   \voiceOne
   \rotulo "a)" b'2 c''  \bar "||"
@@ -35,9 +33,9 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #5
-  \grado \siete g2 \grado "I" c
-  \grado \siete g,2 \grado "I" c
-  \grado \siete g2 \grado "VI" a
+  \acorde "V7" g2 \acorde "I" c
+  \acorde "V7" g,2 \acorde "I" c
+  \acorde "V7" g2 \acorde "VI" a
 }
 
 \score {

@@ -36,9 +36,9 @@ alturaGrados = #-4.5
       \textLengthOn
       \override TextScript.staff-padding = #2.5
 
-      \figuras "(5)" "(3)" c1
-      \figuras "6" "(3)"   e
-      \figuras "6" "4"     g
+      \figuras "(5)/(3)" c1
+      \figuras "6/(3)"     e
+      \figuras "6/4"       g
       \bar "|."
     }
   >>

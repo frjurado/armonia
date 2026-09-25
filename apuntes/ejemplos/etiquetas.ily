@@ -3,10 +3,9 @@
 %% no del grabado: al cambiar la notación de los apuntes se toca esto.
 %%
 %%   \rotulo "a) cadencial"       rótulo sobre el sistema (soprano)
-%%   \grado "I"                   grado bajo el bajo (admite \markup)
-%%   \gradoSeis "I"               grado en 1.ª inversión (I con 6 volado)
-%%   \cifra "V" "6" "4"           grado con cifra apilada, volada como el 6
-%%   \figuras "6" "4"             bajo cifrado sin grado: cifras apiladas
+%%   \acorde "V6/5"               grado con su cifrado, por CÓDIGO (ver abajo)
+%%   \grado "cerrada"             cualquier otra etiqueta bajo el bajo
+%%   \figuras "6/4"               bajo cifrado sin grado: cifras apiladas
 %%   \rotuloBien, \bien, \mal...  bien y mal (ver al final)
 %%
 %% Rótulos y grados van pegados a un silencio de duración cero, así que se
@@ -41,25 +40,62 @@ grado =
            -\tweak Y-offset #alturaGrados
            _\markup { #texto } #})
 
-%% Las cifras de un grado van voladas (\super), como el 6 de \gradoSeis:
-%% la de arriba, a la altura del 6 suelto, y la de abajo debajo de ella.
-cifra =
-#(define-music-function (romano arriba abajo) (markup? markup? markup?)
-   #{ \grado \markup {
-        \concat { #romano
-                  \super \override #'(baseline-skip . 1.3)
-                  \center-column { #arriba #abajo } } } #})
+%% GRADOS CON CIFRADO. Se escribe el código, con la inversión a la
+%% anglosajona, igual que en el texto de los apuntes: \acorde "I6/4",
+%% \acorde "V7", \acorde "V6/5". Admite paréntesis pegados, para lo que
+%% prolonga: \acorde "(IV", \acorde "V7)", \acorde "(VII6)".
+%% Qué cifras salen lo dice curriculum/cifrado.json (convención francesa:
+%% V7 con + debajo, V6/5 con el 5 tachado, V+6, V+4), que construir.py
+%% traduce a tmp/cifrado.ily. La misma tabla la usa el texto (cifrado.lua):
+%% cambiar de convención es cambiarla ahí, no aquí.
+%% Las cifras van voladas y apiladas: la de arriba a la altura de un
+%% volado, la de abajo debajo.
+\include "cifrado.ily"
 
-gradoSeis =
-#(define-music-function (texto) (markup?)
-   #{ \grado \markup { \concat { #texto \super "6" } } #})
+#(use-modules (ice-9 regex))
 
-%% Bajo cifrado propiamente dicho, sin romano: a tamaño de texto, y la
-%% cifra de arriba sobre la misma línea base que un \grado "6" suelto.
+%% La columna de cifras, voladas: igual con romano (\acorde) que sin él
+%% (\figuras), y igual que en el texto (#cifra en pdf.typ, .cifras en el CSS).
+#(define (columna-cifras cifras)
+   (make-super-markup
+    (make-override-markup '(baseline-skip . 1.3)
+     (make-center-column-markup cifras))))
+
+#(define (acorde->markup codigo)
+   (let ((m (string-match
+             "^([(]?)(VII|VI|V|IV|III|II|I)(6/4|6/5|4/3|4/2|6|7)?([)]?)$"
+             codigo)))
+     (if (not m)
+         (ly:error "acorde: no entiendo el código «~a»" codigo))
+     (let* ((romano (match:substring m 2))
+            (inversion (or (match:substring m 3) ""))
+            (tabla (if (member inversion '("7" "6/5" "4/3" "4/2"))
+                       (if (member romano (assoc-ref tablaCifrado "dominante"))
+                           "séptima de dominante"
+                           "séptima")
+                       "tríada"))
+            (cifras (assoc-ref (assoc-ref tablaCifrado tabla) inversion)))
+       (make-concat-markup
+        (list (match:substring m 1)
+              romano
+              (if (null? cifras) "" (columna-cifras cifras))
+              (match:substring m 4))))))
+
+acorde =
+#(define-music-function (codigo) (string?)
+   #{ \grado #(acorde->markup codigo) #})
+
+%% Bajo cifrado sin romano: las cifras de arriba abajo, separadas por
+%% «/», como en el texto: \figuras "6/4", \figuras "6/(3)", \figuras "♯".
+%% Misma fuente y misma columna que las cifras de \acorde, para que todo el
+%% cifrado de los apuntes se vea igual (por eso no se usa el \figuremode de
+%% LilyPond, con sus cifras negritas: ver ESTILO.md). Pero a tamaño de
+%% texto: sin romano al lado, a tamaño de volado no se leen. Estas no pasan
+%% por la tabla de cifrado: son las cifras tal cual.
 figuras =
-#(define-music-function (arriba abajo) (markup? markup?)
-   #{ \grado \markup { \override #'(baseline-skip . 2)
-                       \center-column { #arriba #abajo } } #})
+#(define-music-function (cifras) (string?)
+   #{ \grado #(make-override-markup '(baseline-skip . 2)
+                   (make-center-column-markup (string-split cifras #\/))) #})
 
 %% Bien y mal. Para los ejemplos que enseñan un error junto a su
 %% arreglo:

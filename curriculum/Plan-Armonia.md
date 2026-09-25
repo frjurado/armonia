@@ -22,6 +22,8 @@
   Recorrido asimétrico por el círculo de 5.ª: se empieza por **Do, Sol, La m y Re m**.
   Tabla completa por trimestre en §2.
 - **Cifrado americano:** se adopta como notación morfológica de referencia, complementaria a los grados y bajo cifrado.
+- **Cifrado de grados:** romanos siempre en mayúscula, con las cifras **a la francesa**, como Pascual-Diego (V7 con +, V6/5 con el 5 tachado, V+6, V+4). La tabla está en `cifrado.json`, y la usan los apuntes; la app aún cifra a la anglosajona.
+- **Grados de la escala:** en el bajo, en círculo (①, ♯⑦); en otra voz, con circunflejo (1̂, ♯7̂).
 - **Mínimos de conducción de voces:** conjunto de reglas no negociables (normas) y de
   preferencias que hacen idiomática la escritura. Lista en `Minimos-conduccion.md`, con
   identificadores estables que usan la app y los apuntes, y su vigencia por unidad.
@@ -45,7 +47,7 @@ cuando haga falta distinguir, se indica el curso (p. ej. «UD 2 de 4.º»).
 | 1.º | **UD 1** | Morfología. Conducción de voces | Tipos de acordes por grados, consonancia y disonancia, principios de conducción. |
 | 1.º | **UD 2** | Tónica y dominante | Estado fundamental, I, V y VII en 1.ª inversión. |
 | 2.º | **UD 3** | Subdominante. Cadencias | Cadencia auténtica y semicadencia. |
-| 2.º | **UD 4** | 7.ª dominante y 6/4 | CAP y CAI, inversiones de V7, 6/4 cadencial y de paso. |
+| 2.º | **UD 4** | Séptima de dominante y 6/4 | CAP y CAI, inversiones de V7, 6/4 cadencial y de paso. |
 | 3.º | **UD 5** | Otros grados. Cadencia rota | VI, IV y II, RO, 6/4 de bordadura. |
 | 3.º | **UD 6** | Secuencias diatónicas | Concepto general, secuencias por C5. |
 
@@ -54,7 +56,7 @@ cuando haga falta distinguir, se indica el curso (p. ej. «UD 2 de 4.º»).
 | Trim. | UD | Contenido | Notas |
 |-------|----|-----------|-------|
 | 1.º | **UD 0** | Repaso | Cadencia, prolongación y secuencia. |
-| 1.º | **UD 1** | 7.ª diatónicas | Usos comunes y secuenciales. |
+| 1.º | **UD 1** | Séptimas diatónicas | Usos comunes y secuenciales. |
 | 1.º | **UD 2** | Modulación y dominante secundaria | Mod. diatónica y cromática. |
 | 2.º | **UD 3** | Acordes de VII con 7.ª | Tangencialmente, acordes de 9.ª. |
 | 2.º | **UD 4** | VII como D.S. Secuencias modulantes | Secuencias por 2.ª ascendente y descendente. |

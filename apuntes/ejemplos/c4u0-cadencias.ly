@@ -42,10 +42,10 @@ bajo = {
   \voiceTwo
   \textLengthOn
   \override TextScript.staff-padding = #2.5
-  \gradoSeis "I" e4 \gradoSeis "II" f \grado "V" g2 | \grado "I" c1
-  \gradoSeis "I" e4 \gradoSeis "II" f \grado "V" g2 | \grado "I" c1
-  \gradoSeis "I" e4 \gradoSeis "II" f \grado "V" g2
-  \gradoSeis "I" e4 \gradoSeis "II" f \grado "V" g2 | \grado "VI" a1
+  \acorde "I6" e4 \acorde "II6" f \acorde "V" g2 | \acorde "I" c1
+  \acorde "I6" e4 \acorde "II6" f \acorde "V" g2 | \acorde "I" c1
+  \acorde "I6" e4 \acorde "II6" f \acorde "V" g2
+  \acorde "I6" e4 \acorde "II6" f \acorde "V" g2 | \acorde "VI" a1
 }
 
 \score {

@@ -1,0 +1,31 @@
+{
+  "_léeme": [
+    "Cómo se dibuja el cifrado de grados en los apuntes (texto, PDF y partituras).",
+    "En las fuentes (.md, .ly) se escribe un CÓDIGO: romano + inversión a la",
+    "anglosajona (I6, I6/4, V7, V6/5, V4/3, V4/2). Esta tabla dice qué cifras",
+    "salen para cada código; cambiar de convención es cambiar esta tabla.",
+    "Convención vigente: francesa, como Pascual-Diego. El + marca la sensible y",
+    "la cifra tachada (U+0338) un intervalo disminuido. Ni la V tríada ni el",
+    "VII6 llevan +.",
+    "Las cifras se apilan de arriba abajo. «dominante» son los romanos cuya",
+    "séptima se cifra con la tabla «séptima de dominante»."
+  ],
+  "dominante": ["V"],
+  "tríada": {
+    "": [],
+    "6": ["6"],
+    "6/4": ["6", "4"]
+  },
+  "séptima": {
+    "7": ["7"],
+    "6/5": ["6", "5"],
+    "4/3": ["4", "3"],
+    "4/2": ["4", "2"]
+  },
+  "séptima de dominante": {
+    "7": ["7", "+"],
+    "6/5": ["6", "5̸"],
+    "4/3": ["+6"],
+    "4/2": ["+4"]
+  }
+}

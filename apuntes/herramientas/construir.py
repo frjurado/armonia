@@ -46,11 +46,14 @@ YAML tiene prioridad sobre ese fichero.
 """
 
 import datetime
+import json
+import os
 import pathlib
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 BUILD = RAIZ / "build"
@@ -64,7 +67,17 @@ FUENTES = FORMATO / "fuentes"
 SITIO = BUILD / "sitio"
 PLAN = RAIZ.parent / "curriculum" / "Plan-Armonia.md"
 
-INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily"]
+# Cifrado de grados: la tabla (qué cifras lleva cada código, V6/5…) es de
+# la asignatura, no de los apuntes; la usan el filtro del texto y, vía
+# tmp/cifrado.ily, los ejemplos.
+CIFRADO = RAIZ.parent / "curriculum" / "cifrado.json"
+CIFRADO_LUA = FORMATO / "cifrado.lua"
+CIFRADO_ILY = TMP / "cifrado.ily"
+
+# Todo lo que, si cambia, obliga a regrabar los ejemplos: los .ily, la
+# tabla de cifrado y la fuente (el texto de las partituras va en ella).
+INCLUIDOS = [EJEMPLOS / "comun.ily", EJEMPLOS / "etiquetas.ily", CIFRADO,
+             *sorted(FUENTES.glob("*.ttf"))]
 METADATOS = FORMATO / "metadatos.yaml"
 CSS = FORMATO / "apuntes.css"
 TABLAS = FORMATO / "tablas.lua"   # filtro del HTML: tablas desplazables
@@ -171,14 +184,68 @@ def grabar(ly):
         return False
     IMAGENES.mkdir(parents=True, exist_ok=True)
     TMP.mkdir(exist_ok=True)
-    ejecutar(["lilypond", "-dcrop", "--pdf", "-I", "ejemplos",
+    cifrado_ily()
+    # -I tmp: ahí está cifrado.ily, que se genera y no se versiona
+    ejecutar(["lilypond", "-dcrop", "--pdf", "-I", "ejemplos", "-I", "tmp",
               "-o", f"tmp/{ly.stem}", f"ejemplos/{ly.name}"],
-             stdout=subprocess.DEVNULL)
+             stdout=subprocess.DEVNULL,
+             env={**os.environ, "ARMONIA_FUENTES": fuentes_para_lilypond()})
     ejecutar([*conversor_svg(), f"tmp/{ly.stem}.cropped.pdf",
               f"build/imagenes/{svg.name}"],
              stdout=subprocess.DEVNULL)
     print(f"  {svg.relative_to(RAIZ)}")
     return True
+
+
+def cifrado_ily():
+    """curriculum/cifrado.json -> tmp/cifrado.ily, la misma tabla en Scheme.
+
+    LilyPond no lee JSON. Se traduce aquí a una lista de asociación
+    (`tablaCifrado`), que usa \\acorde en etiquetas.ily; así los ejemplos
+    y el texto salen de la misma tabla. Las claves que empiezan por «_»
+    son comentario y no pasan. Solo se escribe si cambia, para no
+    regrabar por nada.
+    """
+    def scheme(valor):
+        if isinstance(valor, str):
+            return '"' + valor.replace("\\", "\\\\").replace('"', '\\"') + '"'
+        if isinstance(valor, list):
+            return "(" + " ".join(scheme(v) for v in valor) + ")"
+        return "(" + " ".join(f"({scheme(k)} . {scheme(v)})"
+                              for k, v in valor.items() if not k.startswith("_")) + ")"
+    tabla = json.loads(CIFRADO.read_text(encoding="utf-8"))
+    texto = ("%% GENERADO por construir.py desde curriculum/cifrado.json.\n"
+             "%% No editar: se sobrescribe en cada compilación.\n"
+             f"#(define tablaCifrado '{scheme(tabla)})\n")
+    TMP.mkdir(exist_ok=True)
+    if not CIFRADO_ILY.exists() or CIFRADO_ILY.read_text(encoding="utf-8") != texto:
+        CIFRADO_ILY.write_text(texto, encoding="utf-8")
+
+
+fuentes_lilypond = None
+
+
+def fuentes_para_lilypond():
+    """Copia los .ttf a una carpeta temporal SIN TILDES y la devuelve.
+
+    LilyPond carga «Armonia Serif» con fontconfig, y fontconfig no abre
+    una carpeta cuya ruta absoluta lleve «Armonía»: no da error, sustituye
+    la fuente por otra y el ejemplo sale en sans. Pasa igual que con
+    pdftocairo (ver ejecutar()). comun.ily lee la carpeta de
+    ARMONIA_FUENTES.
+    """
+    global fuentes_lilypond
+    if fuentes_lilypond is None:
+        destino = pathlib.Path(tempfile.gettempdir()) / "armonia-fuentes-lilypond"
+        if not str(destino).isascii():
+            print(f"  AVISO: {destino} lleva caracteres no ASCII; "
+                  "LilyPond puede no encontrar la fuente")
+        destino.mkdir(parents=True, exist_ok=True)
+        for f in sorted(FUENTES.glob("*.ttf")):
+            if caduco(destino / f.name, [f]):
+                shutil.copy2(f, destino / f.name)
+        fuentes_lilypond = str(destino)
+    return fuentes_lilypond
 
 
 def copiar_svg(svg):
@@ -406,20 +473,22 @@ def documentar(md):
     revisar_cobertura(texto, md)
 
     html = BUILD / f"{md.stem}.html"
-    if caduco(html, [*comunes, CSS, TABLAS]):
+    if caduco(html, [*comunes, CSS, TABLAS, CIFRADO, CIFRADO_LUA]):
         shutil.copy2(CSS, BUILD / CSS.name)
         copiar_fuentes()
         pandoc(texto, html, [f"--css={CSS.name}", *envoltorio(md),
-                             f"--lua-filter=../{TABLAS.relative_to(RAIZ).as_posix()}"])
+                             f"--lua-filter=../{TABLAS.relative_to(RAIZ).as_posix()}",
+                             f"--lua-filter=../{CIFRADO_LUA.relative_to(RAIZ).as_posix()}"])
         hechos += 1
 
     pdf = BUILD / f"{md.stem}.pdf"
-    if caduco(pdf, [*comunes, PDF_TYP, QR]):
+    if caduco(pdf, [*comunes, PDF_TYP, QR, CIFRADO, CIFRADO_LUA]):
         # --font-path: «Armonia Serif» no está instalada en el sistema,
         # vive en el repo y solo la ve quien compila esto.
         pandoc(texto, pdf,
                ["--pdf-engine=typst",
                 f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}",
+                f"--lua-filter=../{CIFRADO_LUA.relative_to(RAIZ).as_posix()}",
                 *portada_pdf(md)])
         hechos += 1
     return hechos

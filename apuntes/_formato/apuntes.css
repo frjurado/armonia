@@ -211,3 +211,19 @@ nav#TOC a:hover { text-decoration: underline; }
   figure { page-break-inside: avoid; }
   nav#TOC { display: none; }
 }
+
+/* --- cifrado de grados ---------------------------------------------
+   V con 6 sobre 5 tachado, apilado como en la partitura. Lo escribe el
+   filtro _formato/cifrado.lua a partir de los códigos del texto (V6/5),
+   con la tabla de curriculum/cifrado.json; en el PDF, lo mismo lo hace
+   #cifra en pdf.typ. La columna sube hasta que su primera cifra queda a
+   la altura de un volado (el alineado vertical de un inline-flex es el
+   de su primer hijo) y tiene alto fijo de una línea: la de abajo
+   desborda sin abrir el interlineado. */
+.cifra { white-space: nowrap; }
+.cifras {
+  display: inline-flex; flex-direction: column; align-items: center;
+  height: 1em; margin-left: .03em;
+  font-size: .62em; line-height: 1.05;
+  vertical-align: .68em;   /* .42em del texto, en las unidades de la cifra */
+}
