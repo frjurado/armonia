@@ -75,11 +75,22 @@
 # 3. LA DOBLE FLECHA (↔ U+2194)
 #
 #    Source trae «→» pero no «↔», y los apuntes la usan (2.ª↔7.ª). Se
-#    compone con la propia «→» y su reflejo, superpuestas: el astil es
-#    el mismo, y las dos puntas quedan a los extremos. Al reflejar, el
-#    contorno cambia de sentido y se le da la vuelta (ReverseContourPen);
-#    si no, en la parte común los dos se anularían y el astil saldría
-#    hueco.
+#    dibuja como UN contorno con los puntos de la propia «→»: su punta y
+#    su cuello a la derecha, los mismos reflejados a la izquierda, y entre
+#    los dos «hombros» (donde el astil de Source deja de estrecharse) un
+#    astil recto de su grosor. La «→» de Source es siempre de 12 puntos:
+#    cola (0-1), hombro (2), cuello (3), punta (4-9), cuello (10), hombro
+#    (11); si otra versión cambiara eso, se para aquí.
+#
+#    Dos intentos anteriores, descartados:
+#      - la «→» y su reflejo en la misma caja: la punta ocupa más de la
+#        mitad de la flecha, las dos se montaban en el centro y salía un
+#        rombo cruzado por una diagonal;
+#      - «←» y «→» desplazada, superpuestas: el astil de Source se
+#        estrecha hacia la punta, y de cerca se veía el escalón donde un
+#        astil se montaba en el otro.
+#    El glifo es más ancho que la «→» (ALARGUE), como en las fuentes que
+#    traen «↔» de serie: con el ancho de la «→» no cabe astil entre puntas.
 #
 # NOMBRE: Source Serif lleva «Source» como nombre reservado (Reserved
 # Font Name de su OFL): una versión modificada no puede llamarse así. De
@@ -101,7 +112,7 @@ from fontTools.pens.boundsPen import BoundsPen
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from fontTools.pens.cu2quPen import Cu2QuPen
 from fontTools.pens.transformPen import TransformPen
-from fontTools.pens.reverseContourPen import ReverseContourPen
+from fontTools.pens.recordingPen import RecordingPen
 from fontTools import subset
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -126,6 +137,8 @@ CIRCUNFLEJO = 0x0302
 GLIFO_CIRCUNFLEJO = "circunflejo.cifra"
 ALTERACIONES = [0x266D, 0x266E, 0x266F, 0x1D12A, 0x1D12B]
 FLECHA, DOBLE_FLECHA = 0x2192, 0x2194
+ALARGUE = 0.6   # desplazamiento de la «→» en la «↔», en fracción de su ancho:
+                # deja entre las puntas un astil de más o menos una punta
 ESCALA = 1.1    # la marca de minúscula, sobre una cifra, se queda corta
 AIRE_MINIMO = 0.02   # entre cifra y marca, en fracción del cuadratín
 
@@ -248,13 +261,26 @@ def doble_flecha(f):
         return
     gs = f.getGlyphSet()
     flecha = cm[FLECHA]
+    grabado = RecordingPen()
+    gs[flecha].draw(grabado)
+    puntos = [args[0] for op, args in grabado.value if op != "closePath"]
+    if (len(puntos) != 12 or [op for op, _ in grabado.value].count("moveTo") != 1
+            or any(op not in ("moveTo", "lineTo", "closePath") for op, _ in grabado.value)):
+        sys.exit("La «→» ya no es el contorno de 12 puntos que espera doble_flecha()")
     avance, izquierda = f["hmtx"][flecha]
     x0, _, x1, _ = caja(gs, flecha)
+    dx = round((x1 - x0) * ALARGUE)
+    derecha = [(x + dx, y) for x, y in puntos[2:12]]      # hombro … hombro
+    eje = x0 + x1 + dx                                     # reflejo: x → eje - x
+    izquierda_ = [(eje - x, y) for x, y in reversed(derecha)]
+    if derecha[0][0] < izquierda_[-1][0]:
+        sys.exit("ALARGUE se queda corto: los hombros de la «↔» se cruzan")
     pluma = TTGlyphPen(gs)
-    gs[flecha].draw(pluma)
-    gs[flecha].draw(ReverseContourPen(
-        TransformPen(pluma, (-1, 0, 0, 1, x0 + x1, 0))))   # reflejo en su caja
-    poner(f, "uni2194", pluma.glyph(), (avance, izquierda), DOBLE_FLECHA)
+    pluma.moveTo(derecha[0])
+    for punto in derecha[1:] + izquierda_:
+        pluma.lineTo(punto)
+    pluma.closePath()
+    poner(f, "uni2194", pluma.glyph(), (avance + dx, izquierda), DOBLE_FLECHA)
 
 
 def construir(estilo, carpeta):

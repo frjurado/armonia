@@ -71,6 +71,10 @@ Cada una costó descubrirla:
   incrustados comparten espacio de nombres y el segundo ejemplo dibuja los
   glifos del primero. Con `<img>` cada SVG tiene su propio ámbito.
 
+Al escribir o revisar una unidad, **las convenciones de notación están en
+`apuntes/ESTILO.md`** (intervalos, romanos, rayas…). No deducirlas de una
+sola unidad: hay incoherencias pendientes que el fichero señala.
+
 ## Rutas en lo publicado
 
 El sitio se sirve en GitHub Pages bajo una subruta

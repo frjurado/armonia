@@ -5,32 +5,61 @@
 %%   \rotulo "a) cadencial"       rótulo sobre el sistema (soprano)
 %%   \grado "I"                   grado bajo el bajo (admite \markup)
 %%   \gradoSeis "I"               grado en 1.ª inversión (I con 6 volado)
-%%   \cifra "V" "6" "4"           grado con cifra apilada a su derecha
+%%   \cifra "V" "6" "4"           grado con cifra apilada, volada como el 6
+%%   \figuras "6" "4"             bajo cifrado sin grado: cifras apiladas
 %%   \rotuloBien, \bien, \mal...  bien y mal (ver al final)
 %%
 %% Rótulos y grados van pegados a un silencio de duración cero, así que se
 %% escriben DELANTE de la nota a la que acompañan.
+%%
+%% ALTURA FIJA. Grados y rótulos no se apartan cada uno de su nota (lo que
+%% LilyPond hace por defecto, plicas incluidas, y deja una fila de grados
+%% en escalera): van todos a la misma distancia del pentagrama, sobre la
+%% misma línea base. Las distancias, en espacios de pentagrama desde la
+%% línea central, son estas dos variables; un ejemplo con notas más
+%% extremas las redefine antes de usar las etiquetas:
+%%
+%%   alturaGrados = #-8
+%%
+%% Como ya no esquivan nada, si una nota se sale de lo previsto la
+%% etiqueta se le monta encima: mirar el ejemplo al cambiarlo.
 
 \version "2.24.0"
 
+alturaRotulos = #6.5
+alturaGrados = #-7
+
 rotulo =
 #(define-music-function (texto) (markup?)
-   #{ s1*0^\markup { \bold \fontsize #-1 #texto } #})
+   #{ s1*0 -\tweak outside-staff-priority ##f
+           -\tweak Y-offset #alturaRotulos
+           ^\markup { \bold \fontsize #-1 #texto } #})
 
 grado =
 #(define-music-function (texto) (markup?)
-   #{ s1*0_\markup { #texto } #})
+   #{ s1*0 -\tweak outside-staff-priority ##f
+           -\tweak Y-offset #alturaGrados
+           _\markup { #texto } #})
 
+%% Las cifras de un grado van voladas (\super), como el 6 de \gradoSeis:
+%% la de arriba, a la altura del 6 suelto, y la de abajo debajo de ella.
 cifra =
-#(define-music-function (grado arriba abajo) (markup? markup? markup?)
-   #{ s1*0_\markup {
-        \concat { #grado \hspace #0.3
-                 \small \override #'(baseline-skip . 1.7)
-                 \center-column { #arriba #abajo } } } #})
+#(define-music-function (romano arriba abajo) (markup? markup? markup?)
+   #{ \grado \markup {
+        \concat { #romano
+                  \super \override #'(baseline-skip . 1.3)
+                  \center-column { #arriba #abajo } } } #})
 
 gradoSeis =
 #(define-music-function (texto) (markup?)
-   #{ s1*0_\markup { \concat { #texto \super "6" } } #})
+   #{ \grado \markup { \concat { #texto \super "6" } } #})
+
+%% Bajo cifrado propiamente dicho, sin romano: a tamaño de texto, y la
+%% cifra de arriba sobre la misma línea base que un \grado "6" suelto.
+figuras =
+#(define-music-function (arriba abajo) (markup? markup?)
+   #{ \grado \markup { \override #'(baseline-skip . 2)
+                       \center-column { #arriba #abajo } } #})
 
 %% Bien y mal. Para los ejemplos que enseñan un error junto a su
 %% arreglo:
@@ -63,11 +92,11 @@ colorMal = #(rgb-color 0.62 0.08 0.08)
 
 rotuloBien =
 #(define-music-function (texto) (markup?)
-   #{ s1*0^\markup { \bold \fontsize #-1 #texto \hspace #0.4 \marcaBien } #})
+   #{ \rotulo \markup { #texto \hspace #0.4 \marcaBien } #})
 
 rotuloMal =
 #(define-music-function (texto) (markup?)
-   #{ s1*0^\markup { \bold \fontsize #-1 #texto \hspace #0.4 \marcaMal } #})
+   #{ \rotulo \markup { #texto \hspace #0.4 \marcaMal } #})
 
 bien = {
   \once \override NoteHead.color = #colorBien

@@ -1,9 +1,9 @@
 \version "2.24.0"
 
-%% 3.º UD 0 §3.2 — Un bajo cifrado breve y su realización, en la menor.
+%% 3.º UD 0 §3.2 — Un bajo cifrado breve y su realización, en La menor.
 %% Progresión: i - i6 - V - i.
 %%
-%% Lo que se quiere ver es el tercer acorde. La armadura de la menor no
+%% Lo que se quiere ver es el tercer acorde. La armadura de La menor no
 %% lleva sostenidos, así que la sensible hay que pedirla: el ♯ SUELTO
 %% bajo el mi no significa «mi sostenido», sino «sube la 3.ª sobre este
 %% bajo», es decir sol♯. Y por eso mismo la cifra no dice de qué tipo es
@@ -13,6 +13,10 @@
 
 \include "comun.ily"
 \include "etiquetas.ily"
+
+%% Solo redondas y nada por debajo del pentagrama de Fa: los grados
+%% pueden subir (ver «altura fija» en etiquetas.ily).
+alturaGrados = #-4.5
 
 soprano = {
   \voiceOne

@@ -20,9 +20,9 @@
     \textLengthOn
     \override TextScript.staff-padding = #2
 
-    \grado "3.ª M" <c' e'>1     \grado "6.ª m" <e' c''>     \bar "|"
-    \grado "5.ª d" <b' f''>     \grado "4.ª A" <f'' b''>    \bar "|"
-    \grado "4.ª J" <c' f'>      \grado "5.ª J" <f' c''>     \bar "|."
+    \grado "3ªM" <c' e'>1     \grado "6ªm" <e' c''>     \bar "|"
+    \grado "5ªD" <b' f''>     \grado "4ªA" <f'' b''>    \bar "|"
+    \grado "4ªJ" <c' f'>      \grado "5ªJ" <f' c''>     \bar "|."
   }
   \layout { }
 }

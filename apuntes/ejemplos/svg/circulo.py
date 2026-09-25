@@ -35,18 +35,18 @@ MARGEN = 46
 # Hasta 6 alteraciones y nunca 7: abajo se cruzan las dos escrituras,
 # y ahí es donde el círculo se cierra (§1.1).
 CASILLAS = [
-    ("Do", "la", ""),
-    ("Sol", "mi", "1♯"),
-    ("Re", "si", "2♯"),
-    ("La", "fa♯", "3♯"),
-    ("Mi", "do♯", "4♯"),
-    ("Si", "sol♯", "5♯"),
-    ("Fa♯/Sol♭", "re♯/mi♭", "6♯/6♭"),
-    ("Re♭", "si♭", "5♭"),
-    ("La♭", "fa", "4♭"),
-    ("Mi♭", "do", "3♭"),
-    ("Si♭", "sol", "2♭"),
-    ("Fa", "re", "1♭"),
+    ("Do", "La m", ""),
+    ("Sol", "Mi m", "1♯"),
+    ("Re", "Si m", "2♯"),
+    ("La", "Fa♯ m", "3♯"),
+    ("Mi", "Do♯ m", "4♯"),
+    ("Si", "Sol♯ m", "5♯"),
+    ("Fa♯/Sol♭", "Re♯/Mi♭ m", "6♯/6♭"),
+    ("Re♭", "Si♭ m", "5♭"),
+    ("La♭", "Fa m", "4♭"),
+    ("Mi♭", "Do m", "3♭"),
+    ("Si♭", "Sol m", "2♭"),
+    ("Fa", "Re m", "1♭"),
 ]
 
 TINTA = "#1a1a1a"

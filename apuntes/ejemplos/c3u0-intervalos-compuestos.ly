@@ -17,14 +17,19 @@
 \include "comun.ily"
 \include "etiquetas.ily"
 
+%% Solo redondas y nada por debajo del pentagrama de Fa: los grados
+%% pueden subir (ver «altura fija» en etiquetas.ily).
+alturaGrados = #-4.5
+
 \score {
   \new GrandStaff <<
     \new Staff {
       \clef treble
       \omit Staff.TimeSignature
       \cadenzaOn
-      <c' e'>1  <c' e''>  <c' e'''>  \bar "|"
-      g'1  g'
+      \textLengthOn
+      \rotulo "a)" <c' e'>1  <c' e''>  <c' e'''>  \bar "|"
+      \rotulo "b)" g'1  g'
       \bar "|."
     }
     \new Staff {
@@ -34,8 +39,8 @@
       \textLengthOn
       \override TextScript.staff-padding = #2
 
-      \grado "3.ª M" s1  \grado "10.ª M" s  \grado "17.ª M" s  \bar "|"
-      \grado "12.ª J" c1  \grado "5.ª J" c'
+      \grado "3ªM" s1  \grado "10ªM" s  \grado "17ªM" s  \bar "|"
+      \grado "12ªJ" c1  \grado "5ªJ" c'
       \bar "|."
     }
   >>

@@ -12,6 +12,8 @@ el día que cambie el formato del texto no hay que tocarlos.
 
     c3u0.md, c4u0.md       una unidad: c<curso>u<unidad>, como en la app
     c3u1.md, c3u2.md       (todavía guiones, sin redactar)
+    ESTILO.md              convenciones de escritura y notación: repasar
+                           antes de publicar una unidad
 
     ejemplos/comun.ily     preámbulo de grabado: idioma, tamaño, \paper
     ejemplos/etiquetas.ily rótulos de análisis: \grado, \cifra, \rotulo

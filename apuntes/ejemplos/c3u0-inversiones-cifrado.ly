@@ -11,6 +11,10 @@
 \include "comun.ily"
 \include "etiquetas.ily"
 
+%% Solo redondas y nada por debajo del pentagrama de Fa: los grados
+%% pueden subir (ver «altura fija» en etiquetas.ily).
+alturaGrados = #-4.5
+
 \score {
   \new GrandStaff <<
     \new Staff {
@@ -32,9 +36,9 @@
       \textLengthOn
       \override TextScript.staff-padding = #2.5
 
-      \cifra "" "(5)" "(3)" c1
-      \cifra "" "6" "(3)"   e
-      \cifra "" "6" "4"     g
+      \figuras "(5)" "(3)" c1
+      \figuras "6" "(3)"   e
+      \figuras "6" "4"     g
       \bar "|."
     }
   >>

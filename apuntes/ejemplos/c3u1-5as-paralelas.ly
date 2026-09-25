@@ -17,7 +17,7 @@ inf = {
   \override NoteHead.color = #red
   \textLengthOn                       % reserva sitio para las etiquetas
   \override TextScript.staff-padding = #1.5
-  g'2_\markup { \bold "5.ª J" } a'2_\markup { \bold "5.ª J" }
+  g'2_\markup { \bold "5ªJ" } a'2_\markup { \bold "5ªJ" }
 }
 
 \score {
