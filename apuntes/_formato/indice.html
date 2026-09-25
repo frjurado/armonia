@@ -37,10 +37,10 @@
   body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5}
 
   /* ---------- cabecera entintada (como el menú de ejercicios) ---------- */
-  .masthead{background:var(--ink);color:#fff;padding:20px var(--pad-x) 30px}
-  .masthead a.back{display:inline-flex;align-items:center;height:52px;
-        margin-bottom:12px;padding:0 20px;border-radius:12px;
-        background:rgba(255,255,255,.14);color:#fff;font-size:16px;
+  .masthead{background:var(--ink);color:#fff;padding:14px var(--pad-x) 30px}
+  .masthead a.back{display:inline-flex;align-items:center;height:40px;
+        margin-bottom:8px;padding:0 16px;border-radius:10px;
+        background:rgba(255,255,255,.14);color:#fff;font-size:15px;
         font-weight:600;text-decoration:none;transition:background .15s ease}
   @media(hover:hover){.masthead a.back:hover{background:rgba(255,255,255,.22)}}
   .masthead a.back:active{background:rgba(255,255,255,.22)}
@@ -58,8 +58,6 @@
   .curso{margin-top:34px}
   .curso > h2{font-family:var(--serif);font-size:30px;font-weight:600;
         margin:0 0 4px;color:var(--ink)}
-  .curso > h2 .tag{font-family:var(--sans);font-size:15px;font-weight:400;color:var(--muted)}
-  .curso > h2 .tag::before{content:'— '}
 
   .ud-row{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;
         padding:22px 0;border-bottom:1px solid var(--line)}
@@ -90,6 +88,7 @@
   .ud-row.lista .estado .pdf::before{content:'· '}
 
   footer{padding:0 var(--pad-x) 40px;color:var(--soft);font-size:13px}
+  footer a{color:inherit}
 
   /* marca de lo que no ve el alumnado; solo sale en el índice de trabajo */
   .marca-dev{display:inline-block;vertical-align:middle;margin-left:10px;padding:2px 7px;
@@ -105,7 +104,7 @@
   }
   @media(max-width:719.98px){
     .masthead{padding:14px 20px 22px}
-    .masthead a.back{height:44px;margin-bottom:10px;padding:0 14px;font-size:15px}
+    .masthead a.back{height:40px;margin-bottom:8px;padding:0 14px;font-size:15px}
     .mast-top{display:block}
     .mast-title h1{font-size:32px}
     .mast-title .sub{font-size:14px}

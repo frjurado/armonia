@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Armonía · Ejercicios breves</title>
+<title>Armonía · Ejercicios</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -30,14 +30,14 @@
   .serif{font-family:var(--serif)}
 
   /* ---------- cabecera entintada ---------- */
-  .masthead{background:var(--ink);color:#fff;padding:20px var(--pad-x) 0}
+  .masthead{background:var(--ink);color:#fff;padding:14px var(--pad-x) 0}
   /* Vuelta a la portada: la MISMA píldora que el «← Menú» de las páginas de
      ejercicio (ejercicios/comun.css), en su propia fila y a la izquierda.
      Así el control de volver está en la misma esquina en los tres niveles
      —portada, menú, ejercicio— y no cruza la pizarra de un lado a otro. */
-  .masthead a.back{display:inline-flex;align-items:center;height:52px;
-        margin-bottom:12px;padding:0 20px;border-radius:12px;
-        background:rgba(255,255,255,.14);color:#fff;font-size:16px;
+  .masthead a.back{display:inline-flex;align-items:center;height:40px;
+        margin-bottom:8px;padding:0 16px;border-radius:10px;
+        background:rgba(255,255,255,.14);color:#fff;font-size:15px;
         font-weight:600;text-decoration:none;transition:background .15s ease}
   @media(hover:hover){.masthead a.back:hover{background:rgba(255,255,255,.22)}}
   .masthead a.back:active{background:rgba(255,255,255,.22)}
@@ -51,15 +51,12 @@
           rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 10px)}
 
   /* pestañas de curso */
-  .tabs{display:flex;gap:12px;margin-top:30px}
-  .tab{font-family:var(--serif);font-size:23px;padding:14px 26px 16px;
+  .tabs{display:flex;gap:10px;margin-top:20px}
+  .tab{font-family:var(--serif);font-size:22px;padding:10px 24px 12px;
         border-radius:12px 12px 0 0;cursor:pointer;border:none;background:rgba(255,255,255,.1);
         color:rgba(255,255,255,.75);font-weight:400;transition:background .15s ease}
   @media(hover:hover){.tab:hover{background:rgba(255,255,255,.18)}}
-  .tab .tag{font-family:var(--sans);font-size:15px;font-weight:400;color:rgba(255,255,255,.5)}
-  .tab .tag::before{content:'— '}
   .tab.active{background:var(--bg);color:var(--fg);font-weight:600}
-  .tab.active .tag{color:var(--muted)}
 
   /* ---------- listado de unidades ---------- */
   .unidades{padding:8px var(--pad-x) 48px}
@@ -142,17 +139,15 @@
      unidades cerradas reducidas a numeral + título + candado. */
   @media(max-width:719.98px){
     .masthead{padding:14px 20px 0}
-    .masthead a.back{height:44px;margin-bottom:10px;padding:0 14px;font-size:15px}
+    .masthead a.back{height:40px;margin-bottom:8px;padding:0 14px;font-size:15px}
     .mast-top{display:block}
     .mast-title h1{font-size:32px}
     .mast-title .sub{font-size:14px}
     .pentagrama{display:block;height:22px;margin:16px 0 0;
           background:repeating-linear-gradient(to bottom,
             rgba(255,255,255,.28) 0,rgba(255,255,255,.28) 1px,transparent 1px,transparent 5px)}
-    .tabs{gap:8px;margin-top:16px}
-    .tab{flex:1;padding:12px 14px;font-size:19px;line-height:1.1;text-align:left}
-    .tab .tag{display:block;font-size:12px;margin-top:3px}
-    .tab .tag::before{content:none}
+    .tabs{gap:8px;margin-top:14px}
+    .tab{flex:1;padding:10px 14px;font-size:19px;line-height:1.1;text-align:left}
     .unidades{padding:0 20px 32px}
     /* numeral y título en la misma fila; las familias debajo, a todo el
        ancho: el div envoltorio se disuelve (display:contents) */
@@ -321,7 +316,7 @@ function unidadCerrada(ud){
 function render(){
   document.getElementById('tabs').innerHTML = CURRICULO.cursos.map((c,i) => `
     <button class="tab${i===cursoActivo ? ' active' : ''}" data-curso="${i}">
-      ${c.nombre} <span class="tag">${c.tag}</span>
+      ${c.nombre}
     </button>`).join('');
 
   const curso = CURRICULO.cursos[cursoActivo];

@@ -440,7 +440,7 @@ def unidades_del_plan():
         sys.exit(f"No encuentro {PLAN}; el índice sale de sus tablas")
     texto = PLAN.read_text(encoding="utf-8")
     cursos = []
-    for curso, etiqueta in (("3", "Armonía diatónica"), ("4", "Armonía cromática")):
+    for curso in ("3", "4"):
         marca = f"### Curso {curso}.º"
         if marca not in texto:
             sys.exit(f"{PLAN.name} no trae «{marca}»")
@@ -449,7 +449,7 @@ def unidades_del_plan():
         filas = RE_FILA_PLAN.findall(texto[i:j if j > 0 else len(texto)])
         if not filas:
             sys.exit(f"{PLAN.name}: no leo ninguna unidad de {curso}.º")
-        cursos.append((curso, etiqueta, filas))
+        cursos.append((curso, filas))
     return cursos
 
 
@@ -552,9 +552,9 @@ def indice(destino, solo_publicas):
     """
     hechas = {p.stem: p for p in unidades() if (BUILD / f"{p.stem}.html").exists()}
     partes = []
-    for curso, etiqueta, filas in unidades_del_plan():
+    for curso, filas in unidades_del_plan():
         partes.append(f'<section class="curso">\n'
-                      f'  <h2>Curso {curso}.º <span class="tag">{etiqueta}</span></h2>')
+                      f'  <h2>Curso {curso}.º</h2>')
         for numero, titulo, nota in filas:
             md = hechas.get(f"c{curso}u{numero}")
             publica = md is not None and es_publica(md)
