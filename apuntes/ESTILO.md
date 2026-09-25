@@ -52,9 +52,9 @@ choca con `curriculum/Plan-Armonia.md`, manda el plan.
   Caplin y Pascual-Diego). Alterados, con la alteración fuera y delante: ♯⑦.
 - **De otra voz, o sin voz determinada, con circunflejo**: 1̂, 5̂, 7̂; ♯7̂.
   Marca combinante U+0302; la fuente de los apuntes la coloca sobre la cifra.
-- Ojo: el cambio a ① está decidido pero **sin aplicar** en c3u0 y c4u0, que
-  aún usan el circunflejo para todo. Revisarlo grado a grado (hay que ver de
-  qué voz es cada uno).
+- Criterio: ① cuando el texto dice o da por hecho que es el bajo («bajo ⑤»,
+  «el bajo ⑤–⑥», la columna «Bajo» de la regla de la 8.ª); circunflejo para
+  soprano, melodía, notas de tendencia (7̂ → 1̂) y la escala en general.
 
 ## Notas y tonalidades
 
