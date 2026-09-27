@@ -3,6 +3,8 @@
 
     python herramientas/construir.py              todo lo que esté desactualizado
     python herramientas/construir.py c4u0         solo esa unidad
+    python herramientas/construir.py c3u1-f1      solo esa ficha
+    python herramientas/construir.py fichas       solo las fichas
     python herramientas/construir.py ejemplos     solo los SVG
     python herramientas/construir.py --forzar     sin mirar fechas
     python herramientas/construir.py --limpiar    borra build/ y tmp/
@@ -43,6 +45,16 @@ Antes de llamar a Pandoc, de cada `.md` se hacen cuatro cosas:
 El formato (papel, márgenes, tipografía) está en
 `_formato/metadatos.yaml`; lo que declare cada unidad en su cabecera
 YAML tiene prioridad sobre ese fichero.
+
+Además de su HTML y su PDF, una unidad puede dar dos cosas más:
+
+- **Ejemplos para clase** (`build/c3u1-ejemplos.pdf`): las figuras
+  marcadas `.aula`, en su versión sin análisis, con el mismo número de
+  ejemplo que en los apuntes y sitio debajo para anotar. Se enlaza desde
+  la unidad y desde el índice.
+- **Fichas de ejercicios** (`fichas/c3u1-f1.md` → `build/c3u1-f1.pdf` y
+  `build/c3u1-f1-soluciones.pdf`), que no se enlazan desde ningún sitio.
+  Ver `documentar_ficha()`.
 """
 
 import datetime
@@ -66,6 +78,14 @@ SVG_FIJOS = EJEMPLOS / "svg"
 FUENTES = FORMATO / "fuentes"
 SITIO = BUILD / "sitio"
 PLAN = RAIZ.parent / "curriculum" / "Plan-Armonia.md"
+
+# Fichas de ejercicios: el material en fichas/, la plantilla LilyPond de
+# cada tipo en fichas/plantillas/<tipo>.ly, y los tipos —con su
+# consigna— en el catálogo de la asignatura, no aquí.
+FICHAS = RAIZ / "fichas"
+PLANTILLAS = FICHAS / "plantillas"
+CATALOGO = RAIZ.parent / "curriculum" / "Ejercicios-papel.md"
+FORMATO_FICHAS = RAIZ / "_formato" / "fichas.yaml"   # márgenes propios
 
 # Cifrado de grados: la tabla (qué cifras lleva cada código, V6/5…) es de
 # la asignatura, no de los apuntes; la usan el filtro del texto y, vía
@@ -101,6 +121,32 @@ MARCA_DEV = '<span class="marca-dev" title="No sale al sitio publicado">DEV</spa
 GUION_INICIO = "<!-- guion:inicio -->"
 GUION_FIN = "<!-- guion:fin -->"
 RE_IMAGEN = re.compile(r"\]\(build/imagenes/([^)\s]+\.svg)")
+
+# Una figura entera: pie, SVG y atributos. Se numeran en el orden del
+# texto («Ejemplo 3.») y ese número lo escribe numerar() en el pie, igual
+# en el HTML, en el PDF y en los ejemplos para clase: en clase se dice «el
+# ejemplo 3» y tiene que ser el mismo en las tres. Por eso la numeración
+# automática de Typst está apagada (pdf.typ).
+RE_FIGURA = re.compile(
+    r"^!\[(?P<pie>.*?)\]\(build/imagenes/(?P<svg>[^)\s]+\.svg)\)\{(?P<attr>[^}]*)\}",
+    re.M | re.S)
+RE_AULA = re.compile(r"(?:^|\s)\.aula(?:\s|$)")
+RE_EPIGRAFE = re.compile(r"^#{2,3} +(.+?)(?:\s*\{[^}]*\})?[ \t]*$", re.M)
+# Sitio en blanco bajo cada ejemplo para clase, para anotarlo a mano, y
+# escala mayor que en los apuntes: es para escribir encima.
+ESPACIO_AULA = "3cm"
+ESCALA_AULA = 1.55   # provisional: pendiente de una prueba de impresión
+
+# Fichas: un ejercicio es un bloque `::: {.ejercicio tipo="…"}` con su
+# material en un bloque de código `lilypond` dentro.
+RE_EJERCICIO = re.compile(
+    r"^:::+[ \t]*\{\.ejercicio\b(?P<attr>[^}]*)\}[ \t]*\n(?P<cuerpo>.*?)^:::+[ \t]*$",
+    re.M | re.S)
+RE_ATRIBUTO = re.compile(r'([\w-]+)="([^"]*)"')
+RE_LILYPOND = re.compile(r"^```[ \t]*lilypond[ \t]*\n(?P<codigo>.*?)^```[ \t]*$", re.M | re.S)
+RE_TIPO = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|\s*([^|]+?)\s*\|", re.M)
+RE_ESPACIO = re.compile(r"^%%\s*espacio:\s*(\S+)", re.M)
+NOTAS_LY = {"do": "c", "re": "d", "mi": "e", "fa": "f", "sol": "g", "la": "a", "si": "b"}
 
 # Salto: se escribe `<!-- salto -->` en el .md y se cambia por dos
 # bloques en bruto, uno por salida; Pandoc usa el de la suya y descarta
@@ -171,26 +217,38 @@ def conversor_svg():
 
 # --- ejemplos musicales ----------------------------------------------
 
-def grabar(ly):
-    """Un .ly -> un SVG recortado.
+def grabar(ly, nombre=None, sin_analisis=False):
+    """Un .ly -> un SVG recortado, `build/imagenes/<nombre>.svg`.
 
     -dcrop, porque sin él cada ejemplo sale como un A4 entero con dos
     compases en una esquina. Y se pasa por PDF (--pdf) en lugar de usar
     el backend SVG de LilyPond, que no incrusta las fuentes de texto y
     deja los \\markup con tipografía de sustitución.
+
+    Con `sin_analisis`, sale la versión sin las etiquetas de análisis
+    (ver «Con y sin análisis» en etiquetas.ily): la de los ejemplos para
+    clase y la de los ejercicios sin resolver.
     """
-    svg = IMAGENES / f"{ly.stem}.svg"
+    nombre = nombre or ly.stem
+    svg = IMAGENES / f"{nombre}.svg"
     if not caduco(svg, [ly, *INCLUIDOS]):
         return False
     IMAGENES.mkdir(parents=True, exist_ok=True)
     TMP.mkdir(exist_ok=True)
     cifrado_ily()
-    # -I tmp: ahí está cifrado.ily, que se genera y no se versiona
-    ejecutar(["lilypond", "-dcrop", "--pdf", "-I", "ejemplos", "-I", "tmp",
-              "-o", f"tmp/{ly.stem}", f"ejemplos/{ly.name}"],
-             stdout=subprocess.DEVNULL,
-             env={**os.environ, "ARMONIA_FUENTES": fuentes_para_lilypond()})
-    ejecutar([*conversor_svg(), f"tmp/{ly.stem}.cropped.pdf",
+    entorno = {**os.environ, "ARMONIA_FUENTES": fuentes_para_lilypond()}
+    entorno.pop("ARMONIA_SIN_ANALISIS", None)
+    if sin_analisis:
+        entorno["ARMONIA_SIN_ANALISIS"] = "1"
+    # -I tmp: ahí está cifrado.ily, que se genera y no se versiona.
+    # -I ../ejemplos: LilyPond se muda a la carpeta de salida (tmp/) antes
+    # de buscar los \include, y desde ahí «ejemplos» no existe. A los
+    # ejemplos no les afecta (comun.ily está a su lado), pero a los .ly de
+    # las fichas, generados en tmp/fichas/, sí.
+    ejecutar(["lilypond", "-dcrop", "--pdf", "-I", "ejemplos", "-I", "../ejemplos", "-I", "tmp",
+              "-o", f"tmp/{nombre}", ly.relative_to(RAIZ).as_posix()],
+             stdout=subprocess.DEVNULL, env=entorno)
+    ejecutar([*conversor_svg(), f"tmp/{nombre}.cropped.pdf",
               f"build/imagenes/{svg.name}"],
              stdout=subprocess.DEVNULL)
     print(f"  {svg.relative_to(RAIZ)}")
@@ -266,10 +324,14 @@ def copiar_svg(svg):
 
 def grabar_todos(unidad=None):
     usados = ejemplos_de(unidad) if unidad else None
+    mds = [RAIZ / f"{unidad}.md"] if unidad else unidades()
+    aula = {f["svg"] for md in mds for f in figuras_aula(md)}
     hechos = 0
     for ly in sorted(EJEMPLOS.glob("*.ly")):
         if usados is None or f"{ly.stem}.svg" in usados:
             hechos += grabar(ly)
+        if f"{ly.stem}.svg" in aula:
+            hechos += grabar(ly, f"{ly.stem}-aula", sin_analisis=True)
     for svg in sorted(SVG_FIJOS.glob("*.svg")):
         if usados is None or svg.name in usados:
             hechos += copiar_svg(svg)
@@ -280,6 +342,47 @@ def grabar_todos(unidad=None):
 
 def ejemplos_de(unidad):
     return set(RE_IMAGEN.findall((RAIZ / f"{unidad}.md").read_text(encoding="utf-8")))
+
+
+def figuras(texto):
+    """Las figuras del texto, en orden y con el número que les toca.
+
+    Cada una con su número, su SVG, sus atributos y el epígrafe (## o
+    ###) bajo el que cae, que es lo que la sitúa en los ejemplos para
+    clase. El texto tiene que llegar ya sin guion: en el guion puede
+    haber imágenes que no cuentan.
+    """
+    lista = []
+    for n, m in enumerate(RE_FIGURA.finditer(texto), 1):
+        previos = RE_EPIGRAFE.findall(texto, 0, m.start())
+        lista.append({"n": n, "svg": m.group("svg"), "attr": m.group("attr"),
+                      "epigrafe": previos[-1] if previos else ""})
+    return lista
+
+
+def figuras_aula(md):
+    """Las figuras de una unidad marcadas `.aula`, para los ejemplos para clase."""
+    texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
+    return [f for f in figuras(texto) if RE_AULA.search(f["attr"])]
+
+
+def svg_aula(svg):
+    """La versión sin análisis de un ejemplo; si no sale de un .ly
+    (un diagrama de ejemplos/svg/), no la hay y vale el mismo."""
+    stem = svg[:-len(".svg")]
+    return f"{stem}-aula.svg" if (EJEMPLOS / f"{stem}.ly").exists() else svg
+
+
+def numerar(texto):
+    """«Ejemplo N.» al principio de cada pie de figura (ver RE_FIGURA)."""
+    n = 0
+
+    def uno(m):
+        nonlocal n
+        n += 1
+        return (f"![**Ejemplo {n}.** {m.group('pie')}]"
+                f"(build/imagenes/{m.group('svg')}){{{m.group('attr')}}}")
+    return RE_FIGURA.sub(uno, texto)
 
 
 def sin_guion(texto):
@@ -360,19 +463,36 @@ def anchos_automaticos(texto, md):
     """
     def ancho(m):
         svg = IMAGENES / m.group(1)
-        puntos = ancho_svg(svg)
-        if puntos is None:
-            sys.exit(f"{md.name}: no leo el ancho de {svg.name}, así que "
-                     f"`width=auto` no vale; ponle un `width=N%` a ojo.\n"
-                     f"  su cabecera es: {cabecera_svg(svg)}")
-        por_ciento = min(ESCALA * puntos / CAJA_PT, 1.0)
-        return (f"{m.group(0)[:-len('width=auto')]}width={round(por_ciento * 100)}% "
+        puntos = puntos_svg(svg, md)
+        return (f"{m.group(0)[:-len('width=auto')]}width={porcentaje(puntos)}% "
                 f'style="--ancho-movil:{round(PX_MOVIL * puntos)}px"')
     return RE_AUTO.sub(ancho, texto)
 
 
+def puntos_svg(svg, md):
+    puntos = ancho_svg(svg)
+    if puntos is None:
+        sys.exit(f"{md.name}: no leo el ancho de {svg.name}, así que "
+                 f"`width=auto` no vale; ponle un `width=N%` a ojo.\n"
+                 f"  su cabecera es: {cabecera_svg(svg)}")
+    return puntos
+
+
+def porcentaje(puntos, escala=ESCALA):
+    """El ancho de una figura en % de la caja, a escala común (ESCALA)."""
+    return round(min(escala * puntos / CAJA_PT, 1.0) * 100)
+
+
+def imagen_typst(svg, md, escala=ESCALA):
+    """Una imagen centrada, en typst en bruto, para lo que solo es PDF
+    (ejemplos para clase y fichas)."""
+    return (f'```{{=typst}}\n#align(center, image("imagenes/{svg}", '
+            f"width: {porcentaje(puntos_svg(IMAGENES / svg, md), escala)}%))\n```\n")
+
+
 def preparar(md):
     texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
+    texto = numerar(texto)
     texto = texto.replace(SALTO, SALTO_BRUTO)
     texto = anchos_automaticos(texto, md)
     return texto.replace("build/imagenes/", "imagenes/")
@@ -412,12 +532,12 @@ def revisar_cobertura(texto, md):
         print("         añádelos a RANGOS en _formato/fuentes/regenerar.py")
 
 
-def pandoc(texto, salida, extra):
+def pandoc(texto, salida, extra, indice=True):
     BUILD.mkdir(exist_ok=True)
     # toc-depth=3 llega hasta los «1.1»: en una unidad larga, un índice
     # de cuatro entradas no sirve para orientarse.
     ejecutar(["pandoc", "--from=markdown", "--standalone",
-              "--toc", "--toc-depth=3",
+              *(["--toc", "--toc-depth=3"] if indice else []),
               f"--metadata-file=../_formato/{METADATOS.name}",
               "--output", salida.name, *extra],
              input=texto.encode("utf-8"), cwd=BUILD)
@@ -446,10 +566,14 @@ def envoltorio(md):
     tiene índice de apuntes al que volver.
     """
     TMP.mkdir(exist_ok=True)
+    # Los ejemplos para clase, si la unidad marca alguno (ver documentar_aula).
+    ejemplos = (f'  <a class="pdf" href="{md.stem}-ejemplos.pdf">Ejemplos para clase</a>\n'
+                if figuras_aula(md) else "")
     trozos = {
         "before": ('<header class="masthead">\n'
                    '  <a class="back" href="index.html">← Apuntes</a>\n'
                    f'  <a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>\n'
+                   f'{ejemplos}'
                    '</header>\n'
                    '<div class="hoja">\n'),
         "after": f'</div>\n<footer class="pie">{pie_html()}</footer>\n',
@@ -483,15 +607,59 @@ def documentar(md):
 
     pdf = BUILD / f"{md.stem}.pdf"
     if caduco(pdf, [*comunes, PDF_TYP, QR, CIFRADO, CIFRADO_LUA]):
-        # --font-path: «Armonia Serif» no está instalada en el sistema,
-        # vive en el repo y solo la ve quien compila esto.
-        pandoc(texto, pdf,
-               ["--pdf-engine=typst",
-                f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}",
-                f"--lua-filter=../{CIFRADO_LUA.relative_to(RAIZ).as_posix()}",
-                *portada_pdf(md)])
+        pandoc(texto, pdf, [*opciones_typst(), *portada_pdf(md)])
         hechos += 1
-    return hechos
+    return hechos + documentar_aula(md)
+
+
+def opciones_typst():
+    # --font-path: «Armonia Serif» no está instalada en el sistema,
+    # vive en el repo y solo la ve quien compila esto.
+    return ["--pdf-engine=typst",
+            f"--pdf-engine-opt=--font-path=../{FUENTES.relative_to(RAIZ).as_posix()}",
+            f"--lua-filter=../{CIFRADO_LUA.relative_to(RAIZ).as_posix()}"]
+
+
+def cabecera_yaml(title, subtitle):
+    def cadena(texto):
+        return '"' + texto.replace("\\", "\\\\").replace('"', '\\"') + '"'
+    return f"---\ntitle: {cadena(title)}\nsubtitle: {cadena(subtitle)}\n---\n\n"
+
+
+def documentar_aula(md):
+    """Los ejemplos para clase de una unidad -> build/<unidad>-ejemplos.pdf.
+
+    Son las figuras marcadas `.aula`, para que el alumno las traiga
+    impresas sin imprimir los apuntes enteros: cada una en su versión sin
+    análisis (el análisis es lo que se hace en clase), con el mismo número
+    de ejemplo que en los apuntes, el epígrafe del que sale y sitio debajo
+    para anotar. Sin pie: el pie explica lo que hay que ver, y eso es
+    justo lo que se busca en clase.
+
+    Solo PDF: es para imprimir. Si la unidad ya no marca ninguna figura,
+    se borra el que hubiera, para no dejar un enlace a algo caducado.
+    """
+    pdf = BUILD / f"{md.stem}-ejemplos.pdf"
+    marcadas = figuras_aula(md)
+    if not marcadas:
+        if pdf.exists():
+            pdf.unlink()
+        return 0
+    svgs = [IMAGENES / svg_aula(f["svg"]) for f in marcadas]
+    if not caduco(pdf, [md, METADATOS, YO, PDF_TYP, QR, CIFRADO_LUA, *svgs,
+                        *sorted(FUENTES.glob("*"))]):
+        return 0
+    subtitulo = "Ejemplos para clase"
+    partes = [cabecera_yaml(dato("title", md, defecto=md.stem), subtitulo)]
+    for f in marcadas:
+        partes.append(f"## Ejemplo {f['n']} · {f['epigrafe']} {{.unnumbered .unlisted}}\n\n"
+                      f"{imagen_typst(svg_aula(f['svg']), md, ESCALA_AULA)}\n"
+                      f"```{{=typst}}\n#v({ESPACIO_AULA})\n```\n")
+    pandoc("\n".join(partes), pdf,
+           [*opciones_typst(),
+            *portada_pdf(md, nombre=pdf.stem, subtitulo=subtitulo)],
+           indice=False)
+    return 1
 
 
 # --- el índice y la carpeta publicable --------------------------------
@@ -548,7 +716,7 @@ def curso_academico(hoy=None):
     return f"{inicio}–{(inicio + 1) % 100:02d}"
 
 
-def portada_pdf(md):
+def portada_pdf(md, nombre=None, subtitulo=None, despues="", autoria=True):
     """Opciones de Pandoc para la portada y las cabeceras del PDF.
 
     Escribe dos ficheros typst en tmp/: la cabecera —`datos` con la
@@ -558,7 +726,14 @@ def portada_pdf(md):
 
     Va por -H y no por `header-includes` en metadatos.yaml porque Pandoc
     no suma los dos: con -H, el del YAML desaparece sin avisar.
+
+    `nombre` y `subtitulo` son para los PDF que no son la unidad misma
+    (ejemplos para clase, fichas); `despues`, typst que va tras la
+    autoría (la línea de nombre y fecha de una ficha). Sin `autoria`, no
+    va la línea de autoría bajo el título: una ficha tiene que caber en
+    una hoja, y la autoría ya está al pie.
     """
+    nombre = nombre or md.stem
     def cadena(texto):
         return '"' + texto.replace("\\", "\\\\").replace('"', '\\"') + '"'
     datos = {
@@ -571,19 +746,19 @@ def portada_pdf(md):
         "curso": curso_academico(),
         # Las unidades que aún son guion no tienen cabecera YAML.
         "corto": f"Armonía · {dato('title', md, defecto=md.stem)}",
-        "subtitulo": dato("subtitle", md, defecto=""),
+        "subtitulo": subtitulo if subtitulo is not None else dato("subtitle", md, defecto=""),
     }
     TMP.mkdir(exist_ok=True)
     IMAGENES.mkdir(parents=True, exist_ok=True)
     shutil.copy2(QR, IMAGENES / QR.name)
-    cabecera = TMP / f"cabecera-{md.stem}.typ"
+    cabecera = TMP / f"cabecera-{nombre}.typ"
     cabecera.write_text(
         "#let datos = (\n"
         + "".join(f"  {k}: {cadena(v)},\n" for k, v in datos.items())
         + ")\n\n" + PDF_TYP.read_text(encoding="utf-8"),
         encoding="utf-8")
-    antes = TMP / f"antes-{md.stem}.typ"
-    antes.write_text("#autoria()\n", encoding="utf-8")
+    antes = TMP / f"antes-{nombre}.typ"
+    antes.write_text(("#autoria()\n" if autoria else "") + despues, encoding="utf-8")
     return [f"--include-in-header=../{cabecera.relative_to(RAIZ).as_posix()}",
             f"--include-before-body=../{antes.relative_to(RAIZ).as_posix()}"]
 
@@ -637,6 +812,10 @@ def indice(destino, solo_publicas):
                 # tira a tocar es el título.
                 estado = (f'<a href="c{curso}u{numero}.html">Leer</a>'
                           f'<a class="pdf" href="c{curso}u{numero}.pdf">PDF</a>')
+                if (BUILD / f"c{curso}u{numero}-ejemplos.pdf").exists():
+                    estado += (f'<a class="pdf" href="c{curso}u{numero}-ejemplos.pdf"'
+                               ' title="Los ejemplos que se analizan en clase, para imprimir">'
+                               'Ejemplos</a>')
                 titulo_html = f'<a href="c{curso}u{numero}.html">{titulo}</a>'
                 clase = " lista"
             # DEV marca lo compilado que aún no sale; lo que no existe
@@ -682,6 +861,12 @@ def montar_sitio():
         for ext in ("html", "pdf"):
             shutil.copy2(BUILD / f"{md.stem}.{ext}", SITIO / f"{md.stem}.{ext}")
         print(f"  {(SITIO / md.stem).relative_to(RAIZ)}.html + .pdf")
+        ejemplos = BUILD / f"{md.stem}-ejemplos.pdf"
+        if ejemplos.exists():
+            shutil.copy2(ejemplos, SITIO / ejemplos.name)
+            print(f"  {(SITIO / ejemplos.name).relative_to(RAIZ)}")
+        elif (SITIO / ejemplos.name).exists():
+            (SITIO / ejemplos.name).unlink()
 
     (SITIO / "imagenes").mkdir(exist_ok=True)
     for nombre in sorted(usados):
@@ -694,6 +879,154 @@ def montar_sitio():
     indice(SITIO / "index.html", solo_publicas=True)
     indice(BUILD / "index.html", solo_publicas=False)
     return 1
+
+
+# --- fichas de ejercicios ---------------------------------------------
+
+def tipos_de_ejercicio():
+    """{id: consigna}, de la tabla de curriculum/Ejercicios-papel.md.
+
+    Los tipos son de la asignatura, no de los apuntes (sobrevivirían a
+    ellos), así que se leen de allí, como las unidades del plan: una
+    ficha no puede usar un tipo que el catálogo no defina.
+    """
+    if not CATALOGO.exists():
+        sys.exit(f"No encuentro {CATALOGO}; los tipos de ejercicio salen de ahí")
+    tipos = dict(RE_TIPO.findall(CATALOGO.read_text(encoding="utf-8")))
+    if not tipos:
+        sys.exit(f"{CATALOGO.name}: no leo ningún tipo de ejercicio")
+    return tipos
+
+
+def tonalidad_ly(tono, ficha):
+    """«Sol mayor» -> «\\key g \\major»; sin tono, nada."""
+    if not tono:
+        return ""
+    m = re.fullmatch(r"(do|re|mi|fa|sol|la|si)\s*([♯♭]?)\s+(mayor|menor)", tono.strip().lower())
+    if not m:
+        sys.exit(f'{ficha.name}: no entiendo la tonalidad «{tono}» (p. ej. "Fa♯ menor")')
+    nota = NOTAS_LY[m.group(1)] + {"♯": "s", "♭": "f", "": ""}[m.group(2)]
+    return f"\\key {nota} \\{'major' if m.group(3) == 'mayor' else 'minor'}"
+
+
+def escribir_si_cambia(fichero, texto):
+    """Así la fecha del fichero solo cambia si cambia él, y no se regraba por nada."""
+    fichero.parent.mkdir(parents=True, exist_ok=True)
+    if not fichero.exists() or fichero.read_text(encoding="utf-8") != texto:
+        fichero.write_text(texto, encoding="utf-8")
+
+
+def documentar_ficha(ficha):
+    """Una ficha -> build/<ficha>.pdf y build/<ficha>-soluciones.pdf.
+
+    La ficha es Markdown con su cabecera YAML, y cada ejercicio un bloque
+
+        ::: {.ejercicio tipo="grados-bajo-cifrado" tono="Sol mayor"}
+        ```lilypond
+        arriba = { … }
+        abajo = { … }
+        ```
+        Texto opcional, que sigue a la consigna.
+        :::
+
+    El tipo tiene que estar en el catálogo (curriculum/Ejercicios-papel.md),
+    que da la consigna —con {tono} y cualquier otro atributo sustituidos—,
+    y en fichas/plantillas/<tipo>.ly, que es la partitura con dos huecos:
+    %%TONALIDAD%% y %%MATERIAL%%. El material lleva la solución dentro,
+    como análisis (\\acorde, \\gradoBajo, \\encima, \\analitico): de un
+    mismo .ly salen el ejercicio, grabado sin análisis (con rayas donde
+    va la respuesta), y la solución, con él. Una sola fuente, y la
+    solución no puede desencajarse del ejercicio.
+
+    Solo PDF, y sin enlazar desde la web: las fichas se reparten en
+    clase. Un `obra="…"` en el bloque pone la referencia de un fragmento.
+    """
+    catalogo = tipos_de_ejercicio()
+    texto = sin_fuentes(sin_guion(ficha.read_text(encoding="utf-8")))
+    hechos = 0
+    trozos = []
+    svgs = []
+    dependencias = [ficha, CATALOGO, METADATOS, FORMATO_FICHAS, YO, PDF_TYP, QR, CIFRADO_LUA,
+                    *sorted(FUENTES.glob("*"))]
+    pos = 0
+    for k, m in enumerate(RE_EJERCICIO.finditer(texto), 1):
+        trozos.append(texto[pos:m.start()])
+        pos = m.end()
+        atributos = dict(RE_ATRIBUTO.findall(m.group("attr")))
+        tipo = atributos.get("tipo")
+        if tipo not in catalogo:
+            sys.exit(f"{ficha.name}, ejercicio {k}: el tipo «{tipo}» no está en "
+                     f"{CATALOGO.name} ({', '.join(catalogo)})")
+        plantilla = PLANTILLAS / f"{tipo}.ly"
+        if not plantilla.exists():
+            sys.exit(f"{ficha.name}, ejercicio {k}: falta la plantilla {plantilla.relative_to(RAIZ)}")
+        codigo = RE_LILYPOND.search(m.group("cuerpo"))
+        if not codigo:
+            sys.exit(f"{ficha.name}, ejercicio {k}: falta el bloque ```lilypond con el material")
+        nota = RE_LILYPOND.sub("", m.group("cuerpo")).strip()
+        consigna = re.sub(r"\{(\w+)\}", lambda x: atributos.get(x.group(1), x.group(0)),
+                          catalogo[tipo])
+
+        modelo = plantilla.read_text(encoding="utf-8")
+        espacio = RE_ESPACIO.search(modelo)
+        ly = TMP / "fichas" / f"{ficha.stem}-{k}.ly"
+        escribir_si_cambia(ly, modelo
+                           .replace("%%TONALIDAD%%", tonalidad_ly(atributos.get("tono"), ficha))
+                           .replace("%%MATERIAL%%", codigo.group("codigo")))
+        nombre = f"{ficha.stem}-{k}"
+        hechos += grabar(ly, nombre, sin_analisis=True)
+        hechos += grabar(ly, f"{nombre}-sol")
+        svgs += [IMAGENES / f"{nombre}.svg", IMAGENES / f"{nombre}-sol.svg"]
+        dependencias.append(plantilla)
+        trozos.append({"k": k, "consigna": consigna, "nota": nota,
+                       "obra": atributos.get("obra"), "nombre": nombre,
+                       "espacio": espacio.group(1) if espacio else "1cm"})
+    trozos.append(texto[pos:])
+    if not svgs:
+        print(f"  AVISO: {ficha.name} no tiene ningún bloque .ejercicio")
+
+    titulo = dato("title", ficha, defecto=ficha.stem)
+    subtitulo = dato("subtitle", ficha, defecto="")
+    # Nombre y fecha, solo en la que se reparte.
+    linea = ("#v(0.4em)\n#grid(columns: (auto, 1fr, auto, 3.5cm), column-gutter: 0.5em,\n"
+             "  align: bottom, [Nombre], line(length: 100%, stroke: 0.4pt),\n"
+             "  [Fecha], line(length: 100%, stroke: 0.4pt))\n#v(0.2em)\n")
+    for sufijo, solucion in (("", False), ("-soluciones", True)):
+        pdf = BUILD / f"{ficha.stem}{sufijo}.pdf"
+        if not caduco(pdf, [*dependencias, *svgs]):
+            continue
+        partes = []
+        for trozo in trozos:
+            if isinstance(trozo, str):
+                partes.append(trozo)
+                continue
+            svg = f"{trozo['nombre']}{'-sol' if solucion else ''}.svg"
+            obra = f"*{trozo['obra']}*\n\n" if trozo["obra"] else ""
+            # Todo el ejercicio en un bloque que no se parte: la consigna
+            # en una página y la partitura en la siguiente no sirven. El
+            # espacio para escribir va fuera del bloque: al pie de una
+            # página Typst lo descarta, y no empuja el ejercicio a la otra.
+            partes.append(f"```{{=typst}}\n#block(breakable: false)[\n```\n\n"
+                          f"## Ejercicio {trozo['k']} {{.unnumbered .unlisted}}\n\n"
+                          f"{obra}{trozo['consigna']} {trozo['nota']}\n\n"
+                          f"{imagen_typst(svg, ficha)}\n"
+                          f"```{{=typst}}\n]\n#v({trozo['espacio']})\n```\n\n")
+        md = "".join(partes)
+        revisar_cobertura(md, ficha)
+        sub = f"{subtitulo} · Soluciones" if solucion else subtitulo
+        pandoc(md, pdf,
+               [*opciones_typst(), f"--metadata=subtitle:{sub}",
+                # después de metadatos.yaml, así que lo que declara gana
+                f"--metadata-file=../_formato/{FORMATO_FICHAS.name}",
+                *portada_pdf(ficha, nombre=pdf.stem, subtitulo=sub,
+                             despues="" if solucion else linea, autoria=False)],
+               indice=False)
+        hechos += 1
+    return hechos
+
+
+def fichas():
+    return sorted(FICHAS.glob("c[34]u*.md"))
 
 
 # --- principal --------------------------------------------------------
@@ -719,6 +1052,12 @@ def main(argv):
     if objetivo == "ejemplos":
         print("Ejemplos:")
         hechos = grabar_todos()
+    elif objetivo == "fichas" or (FICHAS / f"{objetivo}.md").exists():
+        for ficha in (fichas() if objetivo == "fichas" else [FICHAS / f"{objetivo}.md"]):
+            print(f"fichas/{ficha.name}:")
+            hechos += documentar_ficha(ficha)
+        print("Nada que hacer." if not hechos else f"Listo ({hechos}).")
+        return
     elif objetivo:
         md = RAIZ / f"{objetivo}.md"
         if not md.exists():
@@ -732,6 +1071,9 @@ def main(argv):
         for md in unidades():
             print(f"{md.name}:")
             hechos += documentar(md)
+        for ficha in fichas():
+            print(f"fichas/{ficha.name}:")
+            hechos += documentar_ficha(ficha)
 
     if objetivo != "ejemplos":
         print("Sitio:")

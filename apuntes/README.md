@@ -20,6 +20,9 @@ el día que cambie el formato del texto no hay que tocarlos.
     ejemplos/c4u0-*.ly     un fichero por ejemplo, con el prefijo de su unidad
     ejemplos/svg/          los ejemplos que NO son partitura (ver más abajo)
 
+    fichas/c3u1-f1.md      una ficha de ejercicios: c<curso>u<unidad>-f<n>
+    fichas/plantillas/     la partitura de cada tipo de ejercicio (<tipo>.ly)
+
     _formato/metadatos.yaml  papel, márgenes, tipografía (PDF), y la autoría
                              y licencia de todo (PDF y pie del HTML)
     _formato/pdf.typ         portada, cabeceras y pies del PDF (Typst)
@@ -64,6 +67,8 @@ No hace falta `make` (no viene con Windows) ni Quarto.
 
     python herramientas/construir.py            todo lo que esté desactualizado
     python herramientas/construir.py c4u0       solo esa unidad
+    python herramientas/construir.py c3u1-f1    solo esa ficha
+    python herramientas/construir.py fichas     solo las fichas
     python herramientas/construir.py ejemplos   solo los SVG
     python herramientas/construir.py --forzar   sin mirar fechas
     python herramientas/construir.py --limpiar  borra build/ y tmp/
@@ -76,6 +81,9 @@ El camino completo:
     _formato/fuentes/*.woff2  --se copian-->  build/fuentes/
     c4u0.md           --Pandoc-->            build/c4u0.html
                       --Pandoc + Typst-->    build/c4u0.pdf
+                      (figuras .aula) -->    build/c4u0-ejemplos.pdf
+    fichas/c3u1-f1.md --Pandoc + Typst-->    build/c3u1-f1.pdf
+                                             build/c3u1-f1-soluciones.pdf
 
 ## Publicar una unidad
 
@@ -108,6 +116,83 @@ Las filas de los dos —las catorce unidades, con su título y su descripción�
 salen de las tablas de `curriculum/Plan-Armonia.md`, no se copian aquí: el
 plan manda sobre los apuntes, y así una unidad no puede acabar con un nombre
 distinto del que tiene en el plan.
+
+## Ejemplos para clase
+
+Para que el alumno traiga impresos los ejemplos que se van a analizar en clase
+sin imprimir la unidad entera, una figura se marca con la clase `.aula`:
+
+    ![Pie…](build/imagenes/c3u1-cifrado-grados.svg){#fig-cifrado-grados .aula width=auto}
+
+y `construir.py` hace `build/c3u1-ejemplos.pdf` con todas las marcadas de la
+unidad: cada una con su número y el epígrafe del que sale, más grande que en
+los apuntes (`ESCALA_AULA`, aún por ajustar con una prueba de impresión),
+**sin pie** y **sin análisis**, y con sitio debajo para anotar. Lo enlazan la banda verde de la unidad («Ejemplos para
+clase») y su fila del índice («Ejemplos»), y en el HTML el pie de cada figura
+marcada lo dice. Sale al sitio con la unidad, si es pública.
+
+**Numeración.** Todas las figuras llevan «Ejemplo N.» al principio del pie, en
+el HTML y en el PDF, y el mismo número en los ejemplos para clase: en clase se
+dice «el ejemplo 3», y tiene que ser el 3 en las tres salidas. Lo escribe
+`construir.py`; la numeración propia de Typst está apagada (`pdf.typ`).
+
+**Con y sin análisis.** La versión sin análisis no es otro `.ly`: es el mismo,
+grabado otra vez con `ARMONIA_SIN_ANALISIS` (queda en
+`build/imagenes/<ejemplo>-aula.svg`). Qué es análisis lo decide la etiqueta que
+se use en el ejemplo (ver `ejemplos/etiquetas.ily`):
+
+| Desaparece sin análisis | Se queda siempre |
+|---|---|
+| `\acorde`, `\grado`, `\gradoBajo`, `\encima`, `\analitico {…}` | `\rotulo` («a)», «CAP»), `\figuras` (un bajo cifrado es el dato) |
+
+Así que, al escribir un ejemplo que pueda ir a clase, los grados melódicos
+sobre la soprano van con `\encima` y no con `\rotulo`. Un diagrama de
+`ejemplos/svg/` no tiene versión sin análisis: va tal cual.
+
+## Fichas de ejercicios
+
+Los ejercicios en papel (los «medianos» y «extensos» del plan, §4) se reparten
+en fichas, varias por unidad. Se separan dos cosas:
+
+- **Los tipos** de ejercicio —qué se da, qué se pide, la consigna— son de la
+  asignatura: están en `curriculum/Ejercicios-papel.md`, y `construir.py` lee
+  de su tabla la consigna de cada uno. Cada tipo tiene además su partitura
+  en `fichas/plantillas/<tipo>.ly`: la plantilla, con dos marcas que se
+  sustituyen, la de la tonalidad y la del material.
+- **El material** de cada serie va en la ficha, `fichas/c3u1-f1.md`: Markdown
+  con su cabecera YAML (`title`, `subtitle`), y un bloque por ejercicio:
+
+      ::: {.ejercicio tipo="grados-bajo-cifrado" tono="Sol mayor"}
+      ```lilypond
+      arriba = { \encima "G" \analitico <g' b' d''>1 … }
+      abajo = { \gradoBajo "①" \acorde "I" g,1 … }
+      ```
+      Texto opcional, que se añade a la consigna.
+      :::
+
+  `tono` da la armadura y sustituye el `{tono}` de la consigna; `obra="…"`
+  pone la referencia de un fragmento. Qué variables define el material lo dice
+  el comentario de la plantilla de su tipo.
+
+**La solución va dentro del material**, escrita como análisis: de un mismo
+`.ly` salen el ejercicio (sin análisis, con una raya donde va cada respuesta
+si la plantilla pone `huecos = ##t`) y la solución (con él). Una ficha da
+entonces dos PDF, `build/c3u1-f1.pdf` —con línea de nombre y fecha— y
+`build/c3u1-f1-soluciones.pdf`, y la solución no puede desencajarse del
+ejercicio.
+
+**El primer acorde, resuelto.** Para que se entienda qué se pide, lo que va
+entre `\modelo` y `\finModelo` sale con su análisis también en el ejercicio:
+
+    \modelo \gradoBajo "①" \acorde "I" \finModelo g,1
+
+Una ficha tiene que caber en una hoja: por eso no lleva la línea de autoría
+bajo el título (ya está al pie) y tiene márgenes verticales propios, en
+`_formato/fichas.yaml`.
+
+Las fichas son **solo PDF** y **no se enlazan desde la web** ni salen a
+`build/sitio/`: se reparten en clase. El espacio en blanco tras cada ejercicio
+lo da la plantilla, en su línea `%% espacio: 1.8cm`.
 
 ## Los ejemplos que no son partitura
 
@@ -274,9 +359,11 @@ El flujo está completo y las tres salidas se generan.
   las parejas de inversión, los compuestos, las dos claves, los cuatro tipos de
   tríada, las inversiones cifradas y el bajo cifrado realizado). Publicada.
 - **`c4u0.md`** — redactada y revisada, con sus diez ejemplos. Publicada.
-- **`c3u1.md` y `c3u2.md`** — todavía guiones, sin redactar. Sus dos `.ly`
-  (`c3u1-5as-paralelas`, `c3u1-triada-im`) están hechos pero aún no enlazados
-  desde ningún texto.
+- **`c3u1.md`** — redactada, con sus diez ejemplos; en revisión, sin publicar.
+  El de §1.2 va en los ejemplos para clase. `c3u1-triada-im.ly` (la prueba de
+  que una cadena de la app se pega aquí sin retocar) no lo usa ningún texto.
+  Tiene una ficha de prueba, `fichas/c3u1-f1.md`.
+- **`c3u2.md`** — todavía guion, sin redactar.
 
 Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
 unidad y al revés). `_site/` ya lo permite con rutas relativas.

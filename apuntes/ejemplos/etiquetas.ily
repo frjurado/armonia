@@ -5,8 +5,23 @@
 %%   \rotulo "a) cadencial"       rótulo sobre el sistema (soprano)
 %%   \acorde "V6/5"               grado con su cifrado, por CÓDIGO (ver abajo)
 %%   \grado "cerrada"             cualquier otra etiqueta bajo el bajo
+%%   \gradoBajo "①"              grado del bajo, en su propia fila
+%%   \encima "3̂"                  análisis sobre el sistema (grados, C/E…)
 %%   \figuras "6/4"               bajo cifrado sin grado: cifras apiladas
+%%   \analitico <c' e' g'>1       notas que solo salen con el análisis
+%%   \modelo … \finModelo         tramo que sale resuelto siempre (ver abajo)
 %%   \rotuloBien, \bien, \mal...  bien y mal (ver al final)
+%%
+%% CON Y SIN ANÁLISIS. Las etiquetas que SON el análisis —\acorde,
+%% \grado, \gradoBajo, \encima, \analitico— se pueden quitar sin tocar el
+%% ejemplo: construir.py graba una segunda versión con la variable de
+%% entorno ARMONIA_SIN_ANALISIS, y entonces desaparecen. Es la versión
+%% que va a los «ejemplos para clase» (lo que el alumno trae para
+%% analizar) y a los ejercicios de las fichas (sin las soluciones).
+%% Lo que es MATERIAL y no análisis se queda siempre: \rotulo («a)»,
+%% «CAP»…) y \figuras (un bajo cifrado es el dato, no la respuesta).
+%% Con `huecos = ##t` (lo ponen las plantillas de las fichas), lo que
+%% desaparece deja una raya en su lugar, para escribir la respuesta.
 %%
 %% Rótulos y grados van pegados a un silencio de duración cero, así que se
 %% escriben DELANTE de la nota a la que acompañan.
@@ -25,20 +40,72 @@
 
 \version "2.24.0"
 
+%% Las filas que valen ##f toman la altura de otra: \encima la de los
+%% rótulos, y \gradoBajo y \figuras la de los grados. Un ejemplo que
+%% use dos filas a la vez (① y romano, o cifras y romano) las separa.
 alturaRotulos = #6.5
 alturaGrados = #-7
+alturaEncima = ##f
+alturaGradosBajo = ##f
+alturaFiguras = ##f
+
+#(define analisis-por-defecto (not (getenv "ARMONIA_SIN_ANALISIS")))
+conAnalisis = #analisis-por-defecto
+huecos = ##f
+
+%% MODELO. Lo que va entre \modelo y \finModelo sale siempre con su
+%% análisis, también en la versión sin él: es el primer acorde resuelto
+%% de un ejercicio, para que se entienda qué se pide. Como las etiquetas
+%% se deciden al leerse, basta con cambiar el interruptor por el camino:
+%%   \modelo \gradoBajo "①" \acorde "I" \finModelo g,1
+#(define (poner-analisis! valor) (set! conAnalisis valor))
+modelo = #(define-void-function () () (poner-analisis! #t))
+finModelo = #(define-void-function () () (poner-analisis! analisis-por-defecto))
+
+etiquetaArriba =
+#(define-music-function (altura texto) (number? markup?)
+   #{ s1*0 -\tweak outside-staff-priority ##f
+           -\tweak Y-offset #altura
+           ^\markup { #texto } #})
+
+etiquetaAbajo =
+#(define-music-function (altura texto) (number? markup?)
+   #{ s1*0 -\tweak outside-staff-priority ##f
+           -\tweak Y-offset #altura
+           _\markup { #texto } #})
+
+%% Una etiqueta de análisis: `poner` es la función que la coloca en su
+%% fila. Sin análisis no queda nada, o una raya si se piden huecos.
+#(define (analitica poner texto)
+   (cond (conAnalisis (poner texto))
+         (huecos (poner (markup #:with-color (rgb-color 0.55 0.55 0.55)
+                                #:draw-line '(3.5 . 0))))
+         (else (make-music 'SequentialMusic 'elements '()))))
 
 rotulo =
 #(define-music-function (texto) (markup?)
-   #{ s1*0 -\tweak outside-staff-priority ##f
-           -\tweak Y-offset #alturaRotulos
-           ^\markup { \bold \fontsize #-1 #texto } #})
+   #{ \etiquetaArriba #alturaRotulos \markup { \bold \fontsize #-1 #texto } #})
+
+encima =
+#(define-music-function (texto) (markup?)
+   (analitica (lambda (m) #{ \etiquetaArriba #(or alturaEncima alturaRotulos) #m #})
+              texto))
 
 grado =
 #(define-music-function (texto) (markup?)
-   #{ s1*0 -\tweak outside-staff-priority ##f
-           -\tweak Y-offset #alturaGrados
-           _\markup { #texto } #})
+   (analitica (lambda (m) #{ \etiquetaAbajo #alturaGrados #m #}) texto))
+
+gradoBajo =
+#(define-music-function (texto) (markup?)
+   (analitica (lambda (m) #{ \etiquetaAbajo #(or alturaGradosBajo alturaGrados) #m #})
+              texto))
+
+%% Notas que son la respuesta (el acorde escrito, en una ficha): sin
+%% análisis se cambian por un silencio invisible de la misma duración,
+%% para que el pentagrama conserve su medida.
+analitico =
+#(define-music-function (musica) (ly:music?)
+   (if conAnalisis musica (skip-of-length musica)))
 
 %% GRADOS CON CIFRADO. Se escribe el código, con la inversión a la
 %% anglosajona, igual que en el texto de los apuntes: \acorde "I6/4",
@@ -83,7 +150,8 @@ grado =
 
 acorde =
 #(define-music-function (codigo) (string?)
-   #{ \grado #(acorde->markup codigo) #})
+   (analitica (lambda (m) #{ \etiquetaAbajo #alturaGrados #m #})
+              (acorde->markup codigo)))
 
 %% Bajo cifrado sin romano: las cifras de arriba abajo, separadas por
 %% «/», como en el texto: \figuras "6/4", \figuras "6/(3)", \figuras "♯".
@@ -92,10 +160,12 @@ acorde =
 %% LilyPond, con sus cifras negritas: ver ESTILO.md). Pero a tamaño de
 %% texto: sin romano al lado, a tamaño de volado no se leen. Estas no pasan
 %% por la tabla de cifrado: son las cifras tal cual.
+%% No es análisis: sale también en la versión sin él.
 figuras =
 #(define-music-function (cifras) (string?)
-   #{ \grado #(make-override-markup '(baseline-skip . 2)
-                   (make-center-column-markup (string-split cifras #\/))) #})
+   #{ \etiquetaAbajo #(or alturaFiguras alturaGrados)
+        #(make-override-markup '(baseline-skip . 2)
+           (make-center-column-markup (string-split cifras #\/))) #})
 
 %% Bien y mal. Para los ejemplos que enseñan un error junto a su
 %% arreglo:

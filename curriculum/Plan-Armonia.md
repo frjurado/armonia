@@ -201,4 +201,5 @@ Cada unidad o trimestre incluye un *hard gate*, a la manera de "The Big 18": hay
 - [ ] Marcar ejercicios con versión offline (§5).
 - [ ] Inventario de materiales interactivos (§6).
 - [ ] Definir "The Big 18" y sus fases, así como otros *hard gates* (§7).
-- [ ] Desarrollar ejercicios pausados y extensos (§5 ampliado).
+- [ ] Desarrollar ejercicios pausados y extensos (§5 ampliado). → En marcha: catálogo de
+      tipos en `Ejercicios-papel.md`; fichas en `apuntes/fichas/`.

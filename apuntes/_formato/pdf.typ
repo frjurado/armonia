@@ -9,6 +9,11 @@
 // el ejemplo, pero no es el texto.
 #show figure.caption: set text(size: 8.8pt, fill: gris)
 
+// Sin «Figura 1:»: el «Ejemplo 1.» lo escribe construir.py en el pie,
+// para que el número sea el mismo en el HTML, en el PDF y en los
+// ejemplos para clase.
+#set figure(numbering: none)
+
 // El índice, despegado del título y del cuerpo. Apretado contra los dos
 // parece parte de ellos, y es una tercera cosa.
 #show outline: it => block(above: 2.2em, below: 3.2em, it)

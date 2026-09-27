@@ -98,6 +98,11 @@ choca con `curriculum/Plan-Armonia.md`, manda el plan.
 ## Ejemplos musicales
 
 - Apartados de un ejemplo: «a)», «b)», «c)» con `\rotulo`, en negrita.
+- **Lo que es análisis, con las etiquetas de análisis**: romanos con `\acorde`,
+  grados del bajo con `\gradoBajo` (①), grados melódicos y cifrado americano
+  sobre el sistema con `\encima`, no con `\rotulo`. Son las que desaparecen en
+  los ejemplos para clase y en los ejercicios (ver README, «Ejemplos para
+  clase»); `\rotulo` y `\figuras` se quedan siempre.
 - Bien y mal: `\rotuloBien`/`\rotuloMal` y `\bien`/`\mal` (ver
   `etiquetas.ily`). Tienen que leerse también impresos en blanco y negro.
 - Una línea de rótulos que no cabe: `\textLengthOn` con

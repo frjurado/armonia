@@ -150,6 +150,11 @@ figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
              text-align: center; }
 /* Si la figura se desplaza (móvil), el pie se queda quieto debajo. */
 figcaption { position: sticky; left: 0; }
+/* Los ejemplos que van en «Ejemplos para clase» (.aula en el .md) lo
+   dicen al final del pie: son los que hay que traer impresos. */
+figure:has(img.aula) figcaption::after {
+  content: " (En los ejemplos para clase)"; color: var(--tinta);
+}
 
 /* --- cabecera entintada --------------------------------------------
    La misma banda verde que la portada, el menú de ejercicios y cada
@@ -182,6 +187,8 @@ figcaption { position: sticky; left: 0; }
 .masthead a.back:hover, .masthead a.back:active { background: rgba(255,255,255,.22); }
 .masthead a.pdf { margin-left: auto; color: rgba(255,255,255,.75); font-size: .9rem; }
 .masthead a.pdf:hover { color: #fff; text-decoration: underline; }
+/* «Ejemplos para clase», detrás del PDF: solo el primero se va a la derecha. */
+.masthead a.pdf + a.pdf { margin-left: 0; }
 
 @media print { .masthead { display: none; } .hoja { margin-top: 0; } }
 
