@@ -38,8 +38,12 @@ bajo = {
 \score {
   \new GrandStaff <<
     \new Staff << \key a \minor \time 4/4 \omit Staff.TimeSignature
+                  %% Los corchetes son análisis: sin él (ejemplos para
+                  %% clase), invisibles.
                   \new Voice \with { \consists Horizontal_bracket_engraver
-                                     \override HorizontalBracket.direction = #UP }
+                                     \override HorizontalBracket.direction = #UP
+                                     \override HorizontalBracket.transparent = #(not conAnalisis)
+                                     \override HorizontalBracketText.transparent = #(not conAnalisis) }
                     \soprano
                   \new Voice \contralto >>
     \new Staff << \clef bass \key a \minor \time 4/4 \omit Staff.TimeSignature

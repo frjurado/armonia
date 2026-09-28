@@ -16,10 +16,12 @@
 
 soprano = {
   \voiceOne
-  \rotulo "CAP"  e''4 d''  b'2   | c''1 \bar "||"
-  \rotulo "CAI"  g''4 f''  d''2  | e''1 \bar "||"
-  \rotulo "SC"   e''4 d''  b'2  \bar "||"
-  \rotulo "CR"   c''4 d''  b'2   | c''1 \bar "|."
+  %% El tipo de cadencia es la respuesta: sin análisis (ejemplos para
+  %% clase), solo la letra.
+  \rotuloAnalisis "a)" "CAP"  e''4 d''  b'2   | c''1 \bar "||"
+  \rotuloAnalisis "b)" "CAI"  g''4 f''  d''2  | e''1 \bar "||"
+  \rotuloAnalisis "c)" "SC"   e''4 d''  b'2  \bar "||"
+  \rotuloAnalisis "d)" "CR"   c''4 d''  b'2   | c''1 \bar "|."
 }
 
 contralto = {

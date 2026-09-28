@@ -366,7 +366,8 @@ El flujo está completo y las tres salidas se generan.
   las parejas de inversión, los compuestos, las dos claves, los cuatro tipos de
   tríada, las inversiones cifradas y el bajo cifrado realizado). Publicada.
 - **`c4u0.md`** — redactada y revisada, con sus diez ejemplos. Publicada.
-- **`c3u1.md`** — redactada, con sus diez ejemplos; en revisión, sin publicar.
+- **`c3u1.md`** — redactada, con sus once ejemplos (el último, el Chopin del
+  cierre). Publicada.
   El de §1.2 va en los ejemplos para clase. `c3u1-triada-im.ly` (la prueba de
   que una cadena de la app se pega aquí sin retocar) no lo usa ningún texto.
   Tiene una ficha de prueba, `fichas/c3u1-f1.md`.

@@ -3,6 +3,7 @@
 %% no del grabado: al cambiar la notación de los apuntes se toca esto.
 %%
 %%   \rotulo "a) cadencial"       rótulo sobre el sistema (soprano)
+%%   \rotuloAnalisis "a)" "CAP"   rótulo que es análisis: sin él, «a)»
 %%   \acorde "V6/5"               grado con su cifrado, por CÓDIGO (ver abajo)
 %%   \grado "cerrada"             cualquier otra etiqueta bajo el bajo
 %%   \gradoBajo "①"              grado del bajo, en su propia fila
@@ -99,6 +100,13 @@ rotulo =
                -\tweak extra-spacing-width #'(+inf.0 . -inf.0)
                ^\markup { \bold \fontsize #-1 #texto } #}
        #{ \etiquetaArriba #alturaRotulos \markup { \bold \fontsize #-1 #texto } #}))
+
+%% Un rótulo que ES análisis («CAP», «a) pedal»): con análisis dice lo
+%% segundo, y sin él lo primero, que solo sirve para señalar el caso en
+%% clase: \rotuloAnalisis "a)" "a) pedal", \rotuloAnalisis "a)" "CAP".
+rotuloAnalisis =
+#(define-music-function (sin con) (markup? markup?)
+   (if conAnalisis #{ \rotulo #con #} #{ \rotulo #sin #}))
 
 encima =
 #(define-music-function (texto) (markup?)

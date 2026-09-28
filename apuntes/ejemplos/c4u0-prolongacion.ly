@@ -13,9 +13,10 @@
 
 soprano = {
   \voiceOne
-  \rotulo "a) pedal"      e''2 f'' | f'' e''  \bar "||"
-  \rotulo "b) bordadura"  e''2 f'' | e''1  \bar "||"
-  \rotulo "c) paso"       e''2 d'' | c''1  \bar "|."
+  %% El tipo de prolongación es la respuesta: sin análisis, solo la letra.
+  \rotuloAnalisis "a)" "a) pedal"      e''2 f'' | f'' e''  \bar "||"
+  \rotuloAnalisis "b)" "b) bordadura"  e''2 f'' | e''1  \bar "||"
+  \rotuloAnalisis "c)" "c) paso"       e''2 d'' | c''1  \bar "|."
 }
 
 contralto = {
