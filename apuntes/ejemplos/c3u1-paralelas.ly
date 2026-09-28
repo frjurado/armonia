@@ -5,8 +5,9 @@
 %%   a) mal: 5.as paralelas, las dos voces en el Sol
 %%      (inferior sol4 → la4, superior re5 → mi5).
 %%   b) mal: 8.as paralelas (bajo do3 → re3, superior do4 → re4).
-%%   c) mal: 5.as por movimiento contrario (bajo do3 → fa2, superior
-%%      sol4 → do5): 12.ª → 19.ª, que son dos 5.as compuestas.
+%%   c) mal: 5.as por movimiento contrario (inferior do4 → fa3, superior
+%%      sol4 → do5): 5.ª → 12.ª, la segunda compuesta. (El guion ponía el
+%%      bajo una 8.ª más abajo, 12.ª → 19.ª: igual de mal, peor de leer.)
 %%   d) bien: 5.ª justa → 5.ª disminuida (inferior do4 → si3, superior
 %%      sol4 → fa4): la segunda ya no es consonancia perfecta.
 %% Tintadas y unidas por una raya, las dos voces de cada paralela, como
@@ -37,7 +38,7 @@ inferior = {
   \textLengthOn
   s1
   \grado "8ªJ"  \mal c2\glissando  \grado "8ªJ"  \mal d
-  \grado "12ªJ" \mal c2\glissando  \grado "19ªJ" \mal f,
+  \grado "5ªJ"  \mal c'2\glissando \grado "12ªJ" \mal f
   \grado "5ªJ"  c'2                \grado "5ªD"  b
 }
 

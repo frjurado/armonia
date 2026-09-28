@@ -82,9 +82,23 @@ etiquetaAbajo =
                                 #:draw-line '(3.5 . 0))))
          (else (make-music 'SequentialMusic 'elements '()))))
 
+%% RÓTULOS QUE NO EMPUJAN. Con \textLengthOn, un rótulo largo («a)
+%% contrario», «Imperfectas») ensancha su columna y aparta la nota
+%% siguiente. Con `rotulosLibres = ##t`, los rótulos no cuentan para el
+%% espaciado: las notas quedan donde las pone la música, y el rótulo
+%% vuela por encima. Lo único que no se evita solo es que dos rótulos
+%% seguidos se toquen: si pasa, hay que dar aire al bloque (mirar el
+%% ejemplo al cambiarlo). Por defecto no, para no mover los publicados.
+rotulosLibres = ##f
+
 rotulo =
 #(define-music-function (texto) (markup?)
-   #{ \etiquetaArriba #alturaRotulos \markup { \bold \fontsize #-1 #texto } #})
+   (if rotulosLibres
+       #{ s1*0 -\tweak outside-staff-priority ##f
+               -\tweak Y-offset #alturaRotulos
+               -\tweak extra-spacing-width #'(+inf.0 . -inf.0)
+               ^\markup { \bold \fontsize #-1 #texto } #}
+       #{ \etiquetaArriba #alturaRotulos \markup { \bold \fontsize #-1 #texto } #}))
 
 encima =
 #(define-music-function (texto) (markup?)
@@ -128,10 +142,13 @@ analitico =
     (make-override-markup '(baseline-skip . 1.3)
      (make-center-column-markup cifras))))
 
+%% El ♯ se cambia por # antes de buscar: las expresiones regulares de
+%% Guile cuentan bytes, y un carácter de varios bytes descuadra los
+%% índices de match:substring.
 #(define (acorde->markup codigo)
    (let ((m (string-match
-             "^([(]?)(VII|VI|V|IV|III|II|I)(6/4|6/5|4/3|4/2|6|7)?([)]?)$"
-             codigo)))
+             "^([(]?)(VII|VI|V|IV|III|II|I)(6/4|6/5|4/3|4/2|6|7|#)?([)]?)$"
+             (ly:string-substitute "♯" "#" codigo))))
      (if (not m)
          (ly:error "acorde: no entiendo el código «~a»" codigo))
      (let* ((romano (match:substring m 2))
@@ -141,7 +158,12 @@ analitico =
                            "séptima de dominante"
                            "séptima")
                        "tríada"))
-            (cifras (assoc-ref (assoc-ref tablaCifrado tabla) inversion)))
+            ;; «V♯»: la sensible explícita, voladita como una cifra. No es
+            ;; la norma (la V tríada no lleva +), sino para subrayarla
+            ;; donde hace falta: al lado de un V sin sensible, p. ej.
+            (cifras (if (string=? inversion "#")
+                        '("♯")
+                        (assoc-ref (assoc-ref tablaCifrado tabla) inversion))))
        (make-concat-markup
         (list (match:substring m 1)
               romano

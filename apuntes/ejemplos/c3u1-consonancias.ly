@@ -10,6 +10,7 @@
 \include "etiquetas.ily"
 
 alturaGrados = #-7.5
+rotulosLibres = ##t   % «Perfectas»… no apartan las notas de su bloque
 
 \score {
   \new Staff {

@@ -9,7 +9,8 @@
 %%   e) mal: La menor, fa4–sol♯4, 2.ª aumentada.
 %%   f) bien: la corrección, fa♯4–sol♯4–la4 (la melódica ascendente).
 %% El guion agrupaba c–d y e–f como «mal frente a bien»; separados, cada
-%% uno lleva su ✓ o ✗. Debajo de cada nota, el intervalo con la anterior.
+%% uno lleva su ✓ o ✗. Solo se rotulan los intervalos aumentados y
+%% disminuidos, bajo la nota a la que se llega: los demás se leen solos.
 
 \include "comun.ily"
 \include "etiquetas.ily"
@@ -21,14 +22,14 @@ alturaGrados = #-6
     \omit Staff.TimeSignature
     \cadenzaOn
     \textLengthOn
-    \rotuloBien "a)" c'4 \grado "5ªJ" g' \grado "2ªM" f'          \bar "||"
-    \rotuloMal "b)"  c'4 \grado "5ªJ" g' \grado "3ªM" \mal b'     \bar "||"
-    \rotuloMal "c)"  f'4 \grado "4ªA" \mal b'                    \bar "||"
-    \rotuloBien "d)" b'4 \grado "5ªD" f'' \grado "2ªm" e''        \bar "||"
-    \rotuloMal "e)"  f'4 \grado "2ªA" \mal gs' \grado "2ªm" a'    \bar "||"
+    \rotuloBien "a)" c'4 g' f'                          \bar "||"
+    \rotuloMal "b)"  c'4 g' \mal b'                     \bar "||"
+    \rotuloMal "c)"  f'4 \grado "4ªA" \mal b'           \bar "||"
+    \rotuloBien "d)" b'4 \grado "5ªD" f'' e''           \bar "||"
+    \rotuloMal "e)"  f'4 \grado "2ªA" \mal gs' a'       \bar "||"
     %% gs'!: en \cadenzaOn las alteraciones no caducan en cada \bar, y
     %% sin forzarlo el sostenido de e) haría callar a este.
-    \rotuloBien "f)" fs'4 \grado "2ªM" gs'! \grado "2ªm" a'       \bar "|."
+    \rotuloBien "f)" fs'4 gs'! a'                       \bar "|."
   }
   \layout { }
 }

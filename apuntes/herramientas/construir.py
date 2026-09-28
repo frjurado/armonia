@@ -133,9 +133,13 @@ RE_FIGURA = re.compile(
 RE_AULA = re.compile(r"(?:^|\s)\.aula(?:\s|$)")
 RE_EPIGRAFE = re.compile(r"^#{2,3} +(.+?)(?:\s*\{[^}]*\})?[ \t]*$", re.M)
 # Sitio en blanco bajo cada ejemplo para clase, para anotarlo a mano, y
-# escala mayor que en los apuntes: es para escribir encima.
+# escala algo mayor que en los apuntes: es para escribir encima. La caja
+# es más ancha (márgenes de 1,5 cm, _formato/ejemplos.yaml), para que un
+# ejemplo ancho no tenga que reducirse.
 ESPACIO_AULA = "3cm"
-ESCALA_AULA = 1.55   # provisional: pendiente de una prueba de impresión
+ESCALA_AULA = 1.4    # provisional: pendiente de una prueba de impresión
+CAJA_AULA_PT = 510   # A4 (595 pt) menos 2 × 1,5 cm
+FORMATO_AULA = RAIZ / "_formato" / "ejemplos.yaml"
 
 # Fichas: un ejercicio es un bloque `::: {.ejercicio tipo="…"}` con su
 # material en un bloque de código `lilypond` dentro.
@@ -157,6 +161,16 @@ NOTAS_LY = {"do": "c", "re": "d", "mi": "e", "fa": "f", "sol": "g", "la": "a", "
 SALTO = "<!-- salto -->"
 SALTO_BRUTO = ("```{=typst}\n#pagebreak()\n```\n\n"
                "```{=html}\n<hr class=\"salto\">\n```")
+
+# Separador: `<!-- separador -->`, tres asteriscos centrados, para lo que
+# va al final de una unidad sin ser parte del último epígrafe (un
+# fragmento comentado, p. ej.). No es una raya —la única es la del
+# salto— ni un epígrafe: no entra en el índice.
+SEPARADOR = "<!-- separador -->"
+SEPARADOR_BRUTO = ("```{=typst}\n#align(center, block(above: 2em, below: 2em,\n"
+                   "  text(fill: rgb(\"#666666\"))[\\* #h(1.2em) \\* #h(1.2em) \\*]))\n```\n\n"
+                   "```{=html}\n<p class=\"separador\" aria-hidden=\"true\">"
+                   "*&emsp;*&emsp;*</p>\n```")
 
 # `width=auto` en el .md: el ancho lo calcula `anchos_automaticos()` a
 # partir del propio SVG, para que el pentagrama salga igual de grande en
@@ -354,9 +368,13 @@ def figuras(texto):
     """
     lista = []
     for n, m in enumerate(RE_FIGURA.finditer(texto), 1):
-        previos = RE_EPIGRAFE.findall(texto, 0, m.start())
+        previos = list(RE_EPIGRAFE.finditer(texto, 0, m.start()))
+        epigrafe = previos[-1].group(1) if previos else ""
+        # Tras un separador, la figura ya no es de ese epígrafe (ver SEPARADOR).
+        if previos and SEPARADOR in texto[previos[-1].end():m.start()]:
+            epigrafe = ""
         lista.append({"n": n, "svg": m.group("svg"), "attr": m.group("attr"),
-                      "epigrafe": previos[-1] if previos else ""})
+                      "epigrafe": epigrafe})
     return lista
 
 
@@ -478,22 +496,22 @@ def puntos_svg(svg, md):
     return puntos
 
 
-def porcentaje(puntos, escala=ESCALA):
+def porcentaje(puntos, escala=ESCALA, caja=CAJA_PT):
     """El ancho de una figura en % de la caja, a escala común (ESCALA)."""
-    return round(min(escala * puntos / CAJA_PT, 1.0) * 100)
+    return round(min(escala * puntos / caja, 1.0) * 100)
 
 
-def imagen_typst(svg, md, escala=ESCALA):
+def imagen_typst(svg, md, escala=ESCALA, caja=CAJA_PT):
     """Una imagen centrada, en typst en bruto, para lo que solo es PDF
     (ejemplos para clase y fichas)."""
     return (f'```{{=typst}}\n#align(center, image("imagenes/{svg}", '
-            f"width: {porcentaje(puntos_svg(IMAGENES / svg, md), escala)}%))\n```\n")
+            f"width: {porcentaje(puntos_svg(IMAGENES / svg, md), escala, caja)}%))\n```\n")
 
 
 def preparar(md):
     texto = sin_fuentes(sin_guion(md.read_text(encoding="utf-8")))
     texto = numerar(texto)
-    texto = texto.replace(SALTO, SALTO_BRUTO)
+    texto = texto.replace(SALTO, SALTO_BRUTO).replace(SEPARADOR, SEPARADOR_BRUTO)
     texto = anchos_automaticos(texto, md)
     return texto.replace("build/imagenes/", "imagenes/")
 
@@ -646,17 +664,20 @@ def documentar_aula(md):
             pdf.unlink()
         return 0
     svgs = [IMAGENES / svg_aula(f["svg"]) for f in marcadas]
-    if not caduco(pdf, [md, METADATOS, YO, PDF_TYP, QR, CIFRADO_LUA, *svgs,
+    if not caduco(pdf, [md, METADATOS, FORMATO_AULA, YO, PDF_TYP, QR, CIFRADO_LUA, *svgs,
                         *sorted(FUENTES.glob("*"))]):
         return 0
     subtitulo = "Ejemplos para clase"
     partes = [cabecera_yaml(dato("title", md, defecto=md.stem), subtitulo)]
     for f in marcadas:
-        partes.append(f"## Ejemplo {f['n']} · {f['epigrafe']} {{.unnumbered .unlisted}}\n\n"
-                      f"{imagen_typst(svg_aula(f['svg']), md, ESCALA_AULA)}\n"
+        epigrafe = f" · {f['epigrafe']}" if f["epigrafe"] else ""
+        partes.append(f"## Ejemplo {f['n']}{epigrafe} {{.unnumbered .unlisted}}\n\n"
+                      f"{imagen_typst(svg_aula(f['svg']), md, ESCALA_AULA, CAJA_AULA_PT)}\n"
                       f"```{{=typst}}\n#v({ESPACIO_AULA})\n```\n")
     pandoc("\n".join(partes), pdf,
            [*opciones_typst(),
+            # después de metadatos.yaml, así que sus márgenes ganan
+            f"--metadata-file=../_formato/{FORMATO_AULA.name}",
             *portada_pdf(md, nombre=pdf.stem, subtitulo=subtitulo)],
            indice=False)
     return 1

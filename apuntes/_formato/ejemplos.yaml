@@ -1,0 +1,8 @@
+# Formato de los ejemplos para clase (build/cXuY-ejemplos.pdf), sobre
+# metadatos.yaml. Son hojas para escribir encima: menos margen lateral
+# que los apuntes, para que un ejemplo ancho (un fragmento de repertorio)
+# no salga reducido. Si cambia `x`, cambiar también CAJA_AULA_PT en
+# construir.py: las partituras se escalan contra el ancho de la caja.
+margin:
+  x: 1.5cm
+  y: 2.5cm

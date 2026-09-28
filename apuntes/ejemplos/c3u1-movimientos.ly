@@ -13,24 +13,27 @@
 \include "etiquetas.ily"
 
 alturaGrados = #-8.5
+rotulosLibres = ##t   % «a) contrario»… no apartan la segunda sonoridad
 
 superior = {
   \voiceOne
   \cadenzaOn
   \textLengthOn
-  \rotulo "a) contrario" g'2\glissando a'  \bar "||"
-  \rotulo "b) oblicuo"   g'2\glissando a'  \bar "||"
-  \rotulo "c) directo"   e'2\glissando b'  \bar "||"
-  \rotulo "d) paralelo"  e'2\glissando f'  \bar "|."
+  %% En redondas: con rotulosLibres los rótulos no abren sitio, y con
+  %% blancas los bloques quedaban más estrechos que «a) contrario».
+  \rotulo "a) contrario" g'1\glissando a'  \bar "||"
+  \rotulo "b) oblicuo"   g'1\glissando a'  \bar "||"
+  \rotulo "c) directo"   e'1\glissando b'  \bar "||"
+  \rotulo "d) paralelo"  e'1\glissando f'  \bar "|."
 }
 
 inferior = {
   \voiceTwo
   \textLengthOn
-  \grado "3ª"  e'2\glissando \grado "5ª" d'
-  \grado "5ª"  c'2\glissando \grado "6ª" c'
-  \grado "3ª"  c'2\glissando \grado "6ª" d'
-  \grado "3ªM" c'2\glissando \grado "3ªm" d'
+  \grado "3ª"  e'1\glissando \grado "5ª" d'
+  \grado "5ª"  c'1\glissando \grado "6ª" c'
+  \grado "3ª"  c'1\glissando \grado "6ª" d'
+  \grado "3ªM" c'1\glissando \grado "3ªm" d'
 }
 
 \score {

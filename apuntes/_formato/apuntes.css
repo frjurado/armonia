@@ -148,6 +148,11 @@ figure img { display: block; margin: 0 auto; max-width: 100%; height: auto; }
 }
 figcaption { font-size: .85rem; color: var(--suave); margin-top: .6rem;
              text-align: center; }
+/* Separador (<!-- separador --> en el .md): tres asteriscos, para un
+   cierre que no pertenece al último epígrafe. Discreto a propósito: la
+   raya es solo del salto. */
+.separador { text-align: center; color: var(--suave); margin: 2.5rem 0; }
+
 /* Si la figura se desplaza (móvil), el pie se queda quieto debajo. */
 figcaption { position: sticky; left: 0; }
 /* Los ejemplos que van en «Ejemplos para clase» (.aula en el .md) lo

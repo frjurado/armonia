@@ -17,7 +17,7 @@ soprano = {
   \textLengthOn
   \rotulo "a) cerrada"  c''1  \bar "||"
   \rotulo "b) abierta"  c''   \bar "||"
-  \rotulo "c) mixta"    g'    \bar "||"
+  \rotulo "c) mixta"    e''    \bar "||"
   \rotuloMal "d)"       \mal e''  \bar "||"
   \rotuloMal "e)"       e''   \bar "|."
 }
@@ -26,7 +26,7 @@ contralto = {
   \voiceTwo
   g'1
   e'
-  e'
+  g'
   \mal c'
   \mal c''
 }
@@ -35,7 +35,7 @@ tenor = {
   \voiceOne
   e'1
   g
-  g
+  e'
   g
   \mal g
 }

@@ -57,7 +57,8 @@ bajo = {
   \gradoBajo "①" \acorde "I"   a4
   \gradoBajo "⑦" \acorde "V6"  g
   \gradoBajo "⑥" \acorde "IV6" f |
-  \gradoBajo "⑤" \acorde "V"   e2.
+  %% V♯: la sensible explícita en el cifrado, contra el V6 sin ella.
+  \gradoBajo "⑤" \acorde "V♯"  e2.
 }
 
 \score {

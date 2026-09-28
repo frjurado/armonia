@@ -273,6 +273,13 @@ dos OFL) están en `_formato/fuentes/LICENCIAS.txt`.
    **Ninguna otra raya**: nada de `---` entre apartados. Los epígrafes ya
    separan, y así la del salto es la única del documento.
 
+   Para lo que cierra la unidad sin ser parte del último epígrafe (un
+   fragmento de repertorio comentado, como el Chopin de c3u1), un
+   `<!-- separador -->`: tres asteriscos centrados, en el HTML y en el PDF.
+   No es una raya ni un epígrafe, así que no entra en el índice; y una
+   figura que venga detrás ya no se atribuye al epígrafe anterior en los
+   ejemplos para clase.
+
 4. **Huecos de ejemplo.** Mientras no exista el ejemplo, una línea que empiece
    por `- Ej.:` describiendo lo que hará falta. Se publican tal cual: son
    visibles a propósito, para que se vea lo que falta.

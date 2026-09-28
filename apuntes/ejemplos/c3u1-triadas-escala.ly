@@ -22,13 +22,13 @@ mayor = {
   \omit Staff.TimeSignature
   \cadenzaOn
   \textLengthOn
-  \encima "C"  \acorde "I"   <c' e' g'>1
-  \encima "Dm" \acorde "II"  <d' f' a'>
-  \encima "Em" \acorde "III" <e' g' b'>
-  \encima "F"  \acorde "IV"  <f' a' c''>
-  \encima "G"  \acorde "V"   <g' b' d''>
-  \encima "Am" \acorde "VI"  <a' c'' e''>
-  \encima "B°" \acorde "VII" <b' d'' f''>
+  \encima "C"   <c' e' g'>1
+  \encima "Dm"  <d' f' a'>
+  \encima "Em"  <e' g' b'>
+  \encima "F"   <f' a' c''>
+  \encima "G"   <g' b' d''>
+  \encima "Am"  <a' c'' e''>
+  \encima "B°"  <b' d'' f''>
   \bar "|."
 }
 
@@ -43,7 +43,9 @@ menor = {
   \encima "Dm"  \acorde "IV"  <d' f' a'>
   \encima "E"   \acorde "V"   <e' \tweak color #colorSensible \tweak Accidental.color #colorSensible gs' b'>
   \encima "F"   \acorde "VI"  <f' a' c''>
-  \encima "G♯°" \acorde "VII" <\tweak color #colorSensible \tweak Accidental.color #colorSensible gs' b' d''>
+  %% gs'!: en \cadenzaOn no hay compás que caduque el ♯ del V, y sin
+  %% forzarlo el del VII no se escribiría.
+  \encima "G♯°" \acorde "VII" <\tweak color #colorSensible \tweak Accidental.color #colorSensible gs'! b' d''>
   \bar "|."
 }
 
@@ -53,8 +55,11 @@ menor = {
   <<
     \new Staff \with {
       instrumentName = "Do mayor"
+      %% Distancia fija entre los dos pentagramas: las etiquetas van a
+      %% altura fija y el espaciado no las ve, así que hay que dejarles
+      %% sitio a mano (los cifrados de La menor, bajo el do4 de arriba).
       \override VerticalAxisGroup.staff-staff-spacing =
-        #'((basic-distance . 16) (padding . 4))
+        #'((basic-distance . 12) (minimum-distance . 12) (padding . 1))
     } \mayor
     \new Staff \with { instrumentName = "La menor" } \menor
   >>

@@ -9,6 +9,7 @@
 \include "etiquetas.ily"
 
 alturaRotulos = #8
+rotulosLibres = ##t   % el nombre de la voz no aparta su segunda nota
 
 arriba = {
   \omit Staff.TimeSignature
