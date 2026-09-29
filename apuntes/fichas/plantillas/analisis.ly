@@ -20,6 +20,20 @@
 huecos = ##f
 alturaGrados = #-7.5
 
+%% Un fragmento de más de un sistema: los grados van a altura fija y el
+%% espaciado no los ve, así que los del primer sistema caerían encima del
+%% segundo. `\hueco`, pegado a la primera nota (o silencio) de la mano
+%% izquierda en cada sistema, deja debajo un texto invisible que sí
+%% cuenta: r4\hueco. Mejor con los saltos de sistema fijados (\break).
+hueco = _\markup \transparent \column { "I" "I" "I" "I" }
+
+%% Ancho de línea: la caja de texto (CAJA_PT en construir.py) entre la
+%% escala de las figuras (ESCALA, 1,3). Un fragmento que ocupa la línea
+%% entera sale entonces al mismo tamaño de pentagrama que el resto; con
+%% el ancho por defecto (todo el A4), había que reducirlo para que
+%% cupiera. Uno más corto no cambia: las líneas no se estiran.
+\paper { line-width = 327\pt }
+
 %%MATERIAL%%
 
 \score {
@@ -27,5 +41,7 @@ alturaGrados = #-7.5
     \new Staff { %%TONALIDAD%% \arriba }
     \new Staff { \clef bass %%TONALIDAD%% \abajo }
   >>
-  \layout { }
+  %% Saltos de sistema, solo los del material (\break): LilyPond no corta
+  %% por su cuenta, y así cada sistema lleva su \hueco.
+  \layout { \context { \Score \override NonMusicalPaperColumn.line-break-permission = ##f } }
 }

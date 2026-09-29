@@ -43,8 +43,8 @@
         columns: (1fr, auto),
         column-gutter: 1em,
         align: (left + horizon, right + horizon),
-        [#datos.derechos · Licencia #link(datos.licencia-url)[#datos.licencia] \
-         Versión en línea, con los ejercicios: #link("https://" + datos.web)[#datos.web]],
+        [#datos.derechos · #link(datos.licencia-url)[#datos.licencia] \
+         Versión en línea: #link("https://" + datos.web)[#datos.web]],
         image("imagenes/qr-armonia.svg", width: 1.3cm),
       )
     } else {
@@ -57,7 +57,7 @@
 // Pandoc tiene su propio bloque de autores, pero con afiliación y correo
 // en líneas aparte; esto es una línea. Lo llama el principio del cuerpo.
 #let autoria() = align(center, block(above: 0pt, below: 0pt,
-  text(size: 1.05em)[#datos.autoria · Curso #datos.curso]))
+  text(size: 1.05em)[#datos.autoria · #datos.curso]))
 
 // Cifrado de grados apilado: #cifra("V", "6", "5̸") = V con 6 sobre 5
 // tachado, como en una partitura. Lo escribe el filtro cifrado.lua a

@@ -10,15 +10,14 @@
 %%   abajo    el bajo cifrado: la nota con \figuras (el dato), y
 %%            \gradoBajo y \acorde (la respuesta)
 %%
-%% Todo lo que es respuesta sale solo en las soluciones; en el ejercicio,
-%% una raya donde va (huecos = ##t).
+%% Todo lo que es respuesta sale solo en las soluciones. En el ejercicio
+%% no hay rayas: el primer acorde, resuelto (\modelo), ya enseña qué va
+%% en cada fila y dónde, y conserva el alto de todas ellas.
 %%
 %% espacio: 0.3cm
 
 \include "comun.ily"
 \include "etiquetas.ily"
-
-huecos = ##t
 
 %% Tres filas debajo del bajo (cifras, ①, romano) y una encima del Sol.
 alturaFiguras = #-5
@@ -49,8 +48,7 @@ alturaEncima = #5.5
     }
   >>
   \layout {
-    %% Aire entre acordes, para escribir: la raya de cada respuesta
-    %% ya empuja, pero sin esto las notas quedan pegadas a ella.
+    %% Aire entre acordes, para escribir debajo y encima de cada uno.
     \context { \Score \override SpacingSpanner.base-shortest-duration =
                #(ly:make-moment 1/32) }
   }

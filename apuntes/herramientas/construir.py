@@ -150,6 +150,9 @@ RE_ATRIBUTO = re.compile(r'([\w-]+)="([^"]*)"')
 RE_LILYPOND = re.compile(r"^```[ \t]*lilypond[ \t]*\n(?P<codigo>.*?)^```[ \t]*$", re.M | re.S)
 RE_TIPO = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|\s*([^|]+?)\s*\|", re.M)
 RE_ESPACIO = re.compile(r"^%%\s*espacio:\s*(\S+)", re.M)
+# Fragmento opcional de una consigna: `[cadencias: , así como las cadencias]`.
+# Sale solo si la ficha lo pide (pide="cadencias"); si no, desaparece.
+RE_FRAGMENTO = re.compile(r"\[([\w-]+):([^\]]*)\]")
 NOTAS_LY = {"do": "c", "re": "d", "mi": "e", "fa": "f", "sol": "g", "la": "a", "si": "b"}
 
 # Salto: se escribe `<!-- salto -->` en el .md y se cambia por dos
@@ -930,6 +933,38 @@ def tonalidad_ly(tono, ficha):
     return f"\\key {nota} \\{'major' if m.group(3) == 'mayor' else 'minor'}"
 
 
+def consigna_de(modelo, atributos, donde):
+    """La consigna de un ejercicio, a partir de la de su tipo en el catálogo.
+
+    Tres cosas, en este orden:
+
+    - `consigna="…"` en el bloque de la ficha la sustituye entera: para
+      el caso raro que no encaja en el catálogo.
+    - Los fragmentos opcionales, `[nombre: texto]`, salen si la ficha los
+      pide (`pide="cadencias grados-bajo"`) y si no desaparecen. Así un
+      mismo tipo vale para unidades que piden más o menos cosas (señalar
+      las cadencias, cuando ya se han visto) sin duplicar filas en el
+      catálogo. El texto va tal cual, salvo un espacio tras los dos puntos.
+    - `{atributo}` se cambia por el del bloque: `{tono}`.
+
+    Pedir un fragmento que el tipo no tiene es casi seguro una errata, y
+    se para aquí.
+    """
+    if "consigna" in atributos:
+        return atributos["consigna"]
+    pedidos = set(atributos.get("pide", "").split())
+    existentes = {nombre for nombre, _ in RE_FRAGMENTO.findall(modelo)}
+    if pedidos - existentes:
+        sys.exit(f"{donde}: pide {', '.join(sorted(pedidos - existentes))}, "
+                 f"que la consigna del tipo no tiene (tiene: {', '.join(sorted(existentes)) or 'nada'})")
+
+    def fragmento(m):
+        texto = m.group(2)[1:] if m.group(2).startswith(" ") else m.group(2)
+        return texto if m.group(1) in pedidos else ""
+    consigna = RE_FRAGMENTO.sub(fragmento, modelo)
+    return re.sub(r"\{(\w+)\}", lambda x: atributos.get(x.group(1), x.group(0)), consigna)
+
+
 def escribir_si_cambia(fichero, texto):
     """Así la fecha del fichero solo cambia si cambia él, y no se regraba por nada."""
     fichero.parent.mkdir(parents=True, exist_ok=True)
@@ -985,8 +1020,7 @@ def documentar_ficha(ficha):
         if not codigo:
             sys.exit(f"{ficha.name}, ejercicio {k}: falta el bloque ```lilypond con el material")
         nota = RE_LILYPOND.sub("", m.group("cuerpo")).strip()
-        consigna = re.sub(r"\{(\w+)\}", lambda x: atributos.get(x.group(1), x.group(0)),
-                          catalogo[tipo])
+        consigna = consigna_de(catalogo[tipo], atributos, f"{ficha.name}, ejercicio {k}")
 
         modelo = plantilla.read_text(encoding="utf-8")
         espacio = RE_ESPACIO.search(modelo)

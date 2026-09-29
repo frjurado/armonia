@@ -171,12 +171,15 @@ en fichas, varias por unidad. Se separan dos cosas:
       :::
 
   `tono` da la armadura y sustituye el `{tono}` de la consigna; `obra="…"`
-  pone la referencia de un fragmento. Qué variables define el material lo dice
-  el comentario de la plantilla de su tipo.
+  pone la referencia de un fragmento; `pide="cadencias"` activa los
+  fragmentos opcionales de la consigna (`[cadencias: …]` en el catálogo), y
+  `consigna="…"` la sustituye entera. Qué variables define el material lo
+  dice el comentario de la plantilla de su tipo.
 
 **La solución va dentro del material**, escrita como análisis: de un mismo
-`.ly` salen el ejercicio (sin análisis, con una raya donde va cada respuesta
-si la plantilla pone `huecos = ##t`) y la solución (con él). Una ficha da
+`.ly` salen el ejercicio (sin análisis) y la solución (con él). Las rayas
+donde va cada respuesta (`huecos = ##t`) existen, pero ninguna plantilla las
+usa: el primer acorde resuelto ya enseña qué va en cada sitio. Una ficha da
 entonces dos PDF, `build/c3u1-f1.pdf` —con línea de nombre y fecha— y
 `build/c3u1-f1-soluciones.pdf`, y la solución no puede desencajarse del
 ejercicio.

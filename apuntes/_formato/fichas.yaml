@@ -1,8 +1,11 @@
 # Formato de las fichas de ejercicios, sobre metadatos.yaml (que va antes
 # y del que esto solo cambia lo que declara). Una ficha es una hoja que se
-# reparte: cuanto menos margen vertical, más sitio para escribir y más
-# probable que quepa en una página. El ancho de la caja no se toca: las
-# partituras se escalan contra él (CAJA_PT en construir.py).
+# reparte: cuanto menos margen, más sitio para escribir y más probable que
+# quepa en una página. Solo se recorta el de arriba: en el de abajo va el
+# pie de la primera página (derechos y QR), y con menos de 2,5 cm se sale
+# del papel. El ancho de la caja no se toca: las partituras se escalan
+# contra él (CAJA_PT en construir.py).
 margin:
   x: 3cm
-  y: 1.6cm
+  top: 1.6cm
+  bottom: 2.5cm

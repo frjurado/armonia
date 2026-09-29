@@ -20,14 +20,26 @@ eso la plantilla LilyPond de cada tipo vive con los apuntes
 
 `construir.py` lee esta tabla: la primera columna es el identificador (entre
 comillas invertidas, estable: las fichas lo citan) y la segunda la consigna,
-que se imprime tal cual en la ficha. En la consigna, `{tono}` (o cualquier
-otro `{atributo}`) se sustituye por el que lleve el ejercicio en la ficha.
-Las demás columnas son para quien escribe fichas.
+que se imprime en la ficha. Las demás columnas son para quien escribe fichas.
+
+En la consigna:
+
+- `{tono}` (o cualquier otro `{atributo}`) se sustituye por el que lleve el
+  ejercicio en la ficha.
+- `[nombre: texto]` es un **fragmento opcional**: sale solo si el ejercicio
+  lo pide (`pide="cadencias"`; varios, separados por espacios), y si no,
+  desaparece. Así un mismo tipo vale para unidades que piden más o menos
+  cosas —señalar las cadencias, cuando ya se han estudiado— sin duplicar
+  filas. El texto va tal cual (con su coma o su punto delante, si los
+  necesita).
+- Para el caso raro que no encaje, `consigna="…"` en el ejercicio sustituye
+  la consigna entera.
 
 | Tipo | Consigna | Se da | Se pide | Desde |
 |------|----------|-------|---------|-------|
 | `grados-bajo-cifrado` | En {tono}. Debajo de cada nota del bajo, escribe su grado (①, ②…) y el grado del acorde (I, V…). En el pentagrama de Sol, escribe el acorde, y encima, su cifrado americano (C, Dm/F…). | Tonalidad y un bajo cifrado, nota a nota. | Grado del bajo, grado del acorde, el acorde escrito (sin enlazar) y su cifrado americano, que dice el tipo de tríada. | 3.º UD 1 |
-| `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
+| `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
+| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices]. | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
 
 ## Notas sobre cada tipo
 
@@ -53,3 +65,15 @@ se vean las notas extrañas.
 Material: fragmentos de repertorio de dominio público. Si la fuente es una
 edición moderna con licencia (Mutopia, p. ej.), se cita en un comentario del
 material.
+
+### `realizar-bajo`
+
+El ejercicio central de la escritura: sin cifras, el alumno decide la
+armonía a partir del bajo (qué es cadencia, qué prolonga, qué es secuencia)
+y la realiza a cuatro voces. El primer acorde va resuelto como modelo, con
+su disposición y su cifrado.
+
+Material: un bajo de 8 compases con su ritmo, y la solución completa, que
+tiene que cumplir los mínimos de conducción (`Minimos-conduccion.md`) de la
+unidad a la que va. Es **una** solución: en la corrección valen otras
+igual de correctas, y conviene decirlo en clase.
