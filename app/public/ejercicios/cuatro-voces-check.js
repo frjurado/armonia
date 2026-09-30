@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    `comprobar(key, acordes, voces)` revisa una realización SATB
    cualquiera y devuelve la lista de infracciones de las NORMAS
-   de `curriculum/Minimos-conduccion.md` (N1–N13, más la
+   de `curriculum/Minimos-conduccion.md` (N1–N14, más la
    pertenencia de cada nota al acorde y las duplicaciones
    prohibidas). Cada infracción: {regla, evento, voces, texto}.
 
@@ -91,7 +91,7 @@
       if(presentes.size < ch.tones.length){
         const falta = ch.tones.map(t=>t.rol).filter(x=>!presentes.has(x));
         let ok=false;
-        if(ch.septima && falta.length===1 && falta[0]==='5' && cuenta.F===2) ok=true;   // V7 sin 5.ª, fundamental doblada
+        if(ch.septima && ch.inv===0 && falta.length===1 && falta[0]==='5' && cuenta.F===2) ok=true;   // V7 (fundamental) sin 5.ª, fundamental doblada
         if(!ch.septima && ch.grado===1 && ch.inv===0 && k===n-1 && k>0 && acordes[k-1].septima
            && falta.length===1 && falta[0]==='5' && cuenta.F===3){
           const prevRoles=new Set(roles[k-1].filter(Boolean).map(t=>t.rol));
@@ -154,11 +154,15 @@
         const baja = interna && dest && dest.deg===5 && d[v].abs===a[v].abs-2 && ch.grado===1 && r[v-1] && r[v-1].deg===1;
         if(!baja) f('N7',k,[v],NOMBRE_VOZ[v]+': la sensible no resuelve');
       }
-      // N8 resolución de la 7.ª
+      // N8 resolución de la 7.ª (excepción: V4/3 → I6 con el bajo ②–③, la 7.ª
+      // de una voz superior puede subir por grado a 5̂)
+      const excepcionV43 = chA.grado===5 && chA.septima && chA.inv===2 && ch.grado===1 && ch.inv===1
+                         && d[3].abs-a[3].abs===1;
       for(let v=0;v<4;v++){
         const t=ra[v]; if(!t || t.rol!=='7') continue;
         const baja = d[v].abs===a[v].abs-1, queda = d[v].abs===a[v].abs;
-        if(!baja && !queda) f('N8',k,[v],NOMBRE_VOZ[v]+': la 7.ª no resuelve descendiendo');
+        const sube = excepcionV43 && v<3 && d[v].abs===a[v].abs+1 && r[v] && r[v].deg===5;
+        if(!baja && !queda && !sube) f('N8',k,[v],NOMBRE_VOZ[v]+': la 7.ª no resuelve descendiendo');
         if(baja) for(let u=0;u<4;u++){
           if(u===v || !ra[u] || ra[u].rol!=='F' || !r[u]) continue;
           if(r[u].deg===r[v].deg && d[u].abs!==a[u].abs) f('N8',k,[u],NOMBRE_VOZ[u]+': la fundamental dobla la resolución de la 7.ª');
@@ -173,7 +177,23 @@
           if((t.rol==='F'||t.rol==='3') && d[v].abs!==a[v].abs-1) f('N9',k,[v],NOMBRE_VOZ[v]+': la '+(t.rol==='F'?'6.ª':'4.ª')+' del 6/4 no baja por grado');
         }
       }
+      // N14 6/4 de paso o de bordadura: se mira el 6/4 entero (entrada y
+      // salida) cuando se llega a él; necesita un acorde antes y otro después.
+      if(ch.sub64){
+        if(k+1>=n){ f('N14',k,[],'6/4 de '+ch.sub64+' sin acorde que lo siga'); }
+        else{
+          const b=V(k+1);
+          for(let v=0;v<3;v++){
+            if(Math.abs(d[v].abs-a[v].abs)>1) f('N14',k,[v],NOMBRE_VOZ[v]+': entra en el 6/4 de '+ch.sub64+' por salto');
+            if(Math.abs(b[v].abs-d[v].abs)>1) f('N14',k+1,[v],NOMBRE_VOZ[v]+': sale del 6/4 de '+ch.sub64+' por salto');
+          }
+          const e1=d[3].abs-a[3].abs, e2=b[3].abs-d[3].abs;
+          if(ch.sub64==='bordadura' && (e1!==0 || e2!==0)) f('N14',k,[3],'el bajo del 6/4 de bordadura no se mantiene');
+          if(ch.sub64==='paso' && !(Math.abs(e1)===1 && e2===e1)) f('N14',k,[3],'el bajo del 6/4 de paso no va por grado en una dirección');
+        }
+      }
     }
+    if(n>0 && acordes[0].sub64) f('N14',0,[],'6/4 de '+acordes[0].sub64+' sin acorde que lo preceda');
     return faltas;
   }
 

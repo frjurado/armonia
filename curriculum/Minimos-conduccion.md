@@ -26,8 +26,9 @@
 - Las notas de la escala se nombran por grados con circunflejo (1̂ … 7̂). En **menor**, 7̂ es
   la sensible cuando pertenece a V o VII y 6̂ el sexto grado natural. Que la colección sea
   **estrictamente la escala armónica** no es una norma general de escritura, sino una
-  **limitación buscada** en los ejercicios de cadencias de 4.º UD 0; otros contextos
-  admitirán 6̂ y 7̂ ascendentes (melódica) cuando se enseñen.
+  **limitación buscada** en los ejercicios de cadencias de 4.º UD 0. La familia
+  *Prolongación* de 4.º UD 0 admite ya **♯6̂ ascendente** (melódica) en el bajo ⑤–♯⑥–♯⑦
+  (V–IV6–V6, con el IV mayor); la escala natural descendente (♮7̂–♮6̂) sigue fuera.
 - La vigencia de cada regla por curso y unidad va en §6.
 
 ## 1. Registro y disposición
@@ -59,10 +60,11 @@
 | Id | Regla |
 |----|-------|
 | **N7** | **Sensible (7̂).** Nunca duplicada. En voz **extrema**, sube a 1̂. En voz **interna**, en V(7) → I puede bajar a 5̂ para completar la tónica, **solo si el 1̂ de su resolución lo da la voz inmediatamente superior**. En V(7) → VI (cadencia rota) sube **siempre**. Si el acorde siguiente también contiene la sensible (V → V7), no se exige resolución. |
-| **N8** | **7.ª del acorde de dominante.** Nunca duplicada. **Resuelve descendiendo por grado** (4̂ → 3̂) en el acorde siguiente, en la misma voz; o se **mantiene** como nota común si el acorde siguiente la contiene (V7 → IV6). Complemento: si la 7.ª baja 4̂ → 3̂, **ninguna otra voz baja 5̂ → 3̂** (la fundamental no dobla la resolución). |
-| **N9** | **6/4 cadencial** (I6/4 → V). El bajo (5̂) va **duplicado** y en la V **se mantiene o salta de 8.ª**; la 6.ª y la 4.ª (1̂ y 3̂) **bajan por grado** a 7̂ y 2̂ en las **mismas voces**; cae en parte métrica **más fuerte** que la V que la sigue. |
+| **N8** | **7.ª del acorde de dominante.** Nunca duplicada. **Resuelve descendiendo por grado** (4̂ → 3̂) en el acorde siguiente, en la misma voz; o se **mantiene** como nota común si el acorde siguiente la contiene (V7 → IV6). Complemento: si la 7.ª baja 4̂ → 3̂, **ninguna otra voz baja 5̂ → 3̂** (la fundamental no dobla la resolución). Excepción: en **V4/3 → I6**, con el bajo subiendo ②–③, la 7.ª puede **subir por grado** a 5̂ (10.as paralelas con el bajo). |
+| **N9** | **6/4 cadencial** (I6/4 → V). El bajo (5̂) va **duplicado** y en la V **se mantiene o salta de 8.ª**; la 6.ª y la 4.ª (1̂ y 3̂) **bajan por grado** a 7̂ y 2̂ en las **mismas voces**; cae en parte métrica **más fuerte** que la V que la sigue; en compás **ternario** se admite también el 6/4 en el **2.º tiempo** y la V en el 3.º. |
 | **N10** | **Tríadas disminuidas** (II en menor, VII) **solo en 1.ª inversión**. |
-| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: V7 puede omitir la 5.ª (fundamental duplicada); el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada). |
+| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: V7 **en estado fundamental** puede omitir la 5.ª (fundamental duplicada) —sus inversiones van **siempre completas**—; el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada). |
+| **N14** | **6/4 de paso y de bordadura.** El bajo va **duplicado**. **De paso**: el bajo llega y sale **por grado conjunto en la misma dirección** (I–V6/4–I6). **De bordadura**: el bajo **se mantiene** antes, durante y después (I–IV6/4–I, V–I6/4–V). En los dos, las voces superiores entran y salen del 6/4 **por grado conjunto o nota común**, y el 6/4 cae en **parte débil** (lo garantiza el ritmo de cada familia, como en N9). |
 | **P6** | La 7.ª de V7 se toma por **nota común o grado conjunto**. |
 
 ## 4. Duplicaciones
@@ -80,7 +82,11 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | VI en fundamental | fundamental | 3.ª | — |
 | VI tras V(7) (cadencia rota) | **3.ª (obligatoria)** | — | fundamental |
 | I6/4 cadencial | **el bajo (obligatoria)** | — | — |
+| 6/4 de paso o de bordadura (N14) | **el bajo (obligatoria)** | — | — |
+| V6 | fundamental | 5.ª | el bajo (sensible) |
+| VII6 | el bajo (3.ª del acorde, 2̂) | 5.ª | fundamental (sensible) |
 | V7 | completo, sin duplicar | fundamental (omitiendo la 5.ª) | 3.ª, 7.ª |
+| V6/5, V4/3, V4/2 | **completos** (N11) | — | cualquiera |
 | I final tras V7 completo | fundamental (triple, sin 5.ª) | completo (sensible interna baja a 5̂) | — |
 
 ## 5. Conducción melódica de cada voz
@@ -103,9 +109,12 @@ siempre. La app aplica, en cada familia, las vigentes en su unidad.
 | 3.º UD 1 (dos voces) | N3, N4, N5, N12, N13 | P3, P7, P9 |
 | 3.º UD 2 (cuatro voces: I, V, VII6) | + N1, N2, N7, N10, N11 | + P1, P2, P4, P5, P8, P10, P11 |
 | 3.º UD 3 (IV, cadencias) | + N6 | — |
-| 3.º UD 4 (V7, 6/4 cadencial) | + N8, N9 | + P6, P12 |
+| 3.º UD 4 (V7, 6/4 cadencial, 6/4 de paso) | + N8, N9, N14 | + P6, P12 |
 | 3.º UD 5 (VI, II, rota) | (duplicaciones §4 completas) | — |
 | 4.º UD 0 (repaso) | todas | todas |
+
+⟶ PROVISIONAL (2026-09-30): N14 entra en 3.º UD 4, con el 6/4 de paso; el plan pone el de
+bordadura en UD 5. Revisar cuando se llegue a esas unidades.
 
 ⟶ ABIERTO: los ejemplos a dos voces de 3.º UD 1 (familia *Movimiento armónico*) cumplen
 las normas pero no usan aún las preferencias; incorporar P3/P7/P9 como puntuación en

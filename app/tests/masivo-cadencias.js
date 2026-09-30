@@ -150,7 +150,7 @@ if(conVerovio){
       const mei=C.toMEI(inst,{cifrados:true, alternativas:inst.alternativas});
       const ok=tk.loadData(mei);
       const svg=ok ? tk.renderToSVG(1) : '';
-      const notas=(svg.match(/class="note"/g)||[]).length, harms=(svg.match(/class="harm"/g)||[]).length, medidas=(svg.match(/class="measure"/g)||[]).length;
+      const notas=(svg.match(/class="note"/g)||[]).length, harms=(svg.match(/class="harm( americano)?"/g)||[]).length, medidas=(svg.match(/class="measure"/g)||[]).length;
       const esp = inst.ids.length*4;
       if(!ok || notas!==esp || harms!==inst.ids.length*2 || medidas!==inst.ritmo.nCompases){
         mal++; if(mal<5) console.log('VEROVIO', fk, inst.ritmo.plantilla, {ok, notas, esp, harms, medidas});

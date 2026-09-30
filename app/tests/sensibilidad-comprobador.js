@@ -9,7 +9,8 @@ const L={c:0,d:1,e:2,f:3,g:4,a:5,b:6};
 function tok(s){ const m=/^([a-g])(s*|f*)('*|,*)$/.exec(s); const alter=m[2].startsWith('s')?m[2].length:-m[2].length; const oct=3+(m[3].startsWith("'")?m[3].length:-m[3].length); return {abs:oct*7+L[m[1]], alter}; }
 const voces=str=>str.split('|').map(v=>v.trim().split(/\s+/).map(tok));
 const C={tonic:'C',sig:0,mode:'major'}, Am={tonic:'A',sig:0,mode:'minor'};
-const ac=(k,ids)=>ids.map(id=>CV.acorde(k,{I:{grado:1},IV:{grado:4},V:{grado:5},V7:{grado:5,septima:true},V65:{grado:5,inv:1,septima:true},I64:{grado:1,inv:2,cadencial64:true},VI:{grado:6},II6:{grado:2,inv:1}}[id]));
+const ac=(k,ids)=>ids.map(id=>CV.acorde(k,{I:{grado:1},IV:{grado:4},V:{grado:5},V7:{grado:5,septima:true},V65:{grado:5,inv:1,septima:true},I64:{grado:1,inv:2,cadencial64:true},VI:{grado:6},II6:{grado:2,inv:1},
+  I6:{grado:1,inv:1},V43:{grado:5,inv:2,septima:true},V64p:{grado:5,inv:2,sub64:'paso'},IV64b:{grado:4,inv:2,sub64:'bordadura'}}[id]));
 const casos=[
  ['limpio',            C, ['I','IV','V7','I'], "e' f' d' c'|c' c' b g|g a f e|c f, g, c", []],
  ['N4 8.as S–B',       C, ['I','IV'],          "c'' f''|e' a'|g c'|c f", ['N4']],
@@ -32,6 +33,15 @@ const casos=[
  ['DUP 6/4 sin doblar bajo', C, ['I64','V'],   "e'' d''|c'' b'|e' d'|g g", ['DUP']],
  ['acorde ajena',      C, ['I','V'],           "c'' a'|e' d'|g g|c g,", ['acorde']],
  ['N6 dim→justa',      C, ['V65','I'],         "d'' c''|f' g'|g g|b, c", ['N6']],
+ // N8, excepción: V4/3 → I6 con el bajo ②–③, la 7.ª puede subir a 5̂
+ ['limpio V4/3→I6, 7.ª sube', C, ['I','V43','I6'], "e' f' g'|c' b c'|g g g|c d e", []],
+ ['N8 7.ª sube sin bajo ②–③', C, ['V43','I'],  "f' g'|b c'|g g|d c", ['N8']],
+ ['N11 V6/5 incompleto', C, ['V65','I'],       "g' g'|f' e'|g c'|b, c", ['N11']],
+ // N14: 6/4 de paso y de bordadura
+ ['limpio 6/4 de paso',  C, ['I','V64p','I6'], "e' d' c'|c' b c'|g g g|c d e", []],
+ ['limpio 6/4 de bordadura', C, ['I','IV64b','I'], "g' a' g'|e' f' e'|c' c' c'|c c c", []],
+ ['N14 salto hacia el 6/4', C, ['I','V64p','I6'], "c'' g' g'|e' d' e'|g b c'|c d e", ['N14']],
+ ['N14 bajo del paso vuelve', C, ['I','V64p','I'], "e' d' e'|c' b c'|g g g|c d c", ['N14']],
 ];
 let ok=0;
 casos.forEach(([nombre,key,ids,v,esperado])=>{

@@ -125,10 +125,55 @@
         const prev=rends[i-1].querySelector('tspan.text'), cur=rends[i].querySelector('tspan.text');
         if(!prev || !cur) continue;
         const dyP=parseFloat(prev.getAttribute('dy')||'0'), dyC=parseFloat(cur.getAttribute('dy')||'0');
-        if(dyP<0 && dyC>0){
+        // Solo una cifra sub (mismo cuerpo que la sup) se apila; un texto que
+        // vuelve a la línea base tras la sup —el «)» de un acorde subordinado,
+        // en Prolongación— tiene el cuerpo normal y sigue a continuación.
+        const cuerpo = t => { const s=t.querySelector('tspan[font-size]'); return s ? parseFloat(s.getAttribute('font-size')) : NaN; };
+        const cP=cuerpo(prev), cC=cuerpo(cur);
+        const mismoCuerpo = !(cP>0 && cC>0) || Math.abs(cC-cP) < 0.15*cP;   // sin dato, como antes
+        if(dyP<0 && dyC>0 && mismoCuerpo){
           try{ cur.setAttribute('dx', -prev.getComputedTextLength()); }catch(e){}
         }
       }
+    });
+  }
+
+  /* ---------- corchete de tramo («Prol. I ────┐») ---------- */
+  // corchetesTramo(root, [{etiqueta:'tramo0', hasta:'s5', abierto?}, …]): tras
+  // insertar el SVG, prolonga cada etiqueta (id de un <reh>) con una línea
+  // continua hasta el final de la nota `hasta`, acabada en un gancho hacia
+  // abajo. Si la etiqueta siguiente está en el mismo sistema y más cerca, la
+  // línea se para antes de ella. `abierto`: sin gancho, para el tramo que
+  // SOLAPA con el siguiente (su último acorde es el primero del otro: la
+  // bisagra entre prolongación y cadencia); la línea sigue así en la etiqueta
+  // siguiente, sin cerrarse. Se mide en pantalla y se dibuja en las coordenadas de la
+  // etiqueta, así que escala con el SVG. El color lo pone el CSS (path.corchete).
+  function corchetesTramo(root, tramos){
+    if(!root || !root.querySelector) return;
+    const cajas = tramos.map(t=>{
+      const et=root.querySelector('#'+t.etiqueta), nota=root.querySelector('#'+t.hasta);
+      return (et && nota) ? {et, nota, r:et.getBoundingClientRect(), rn:nota.getBoundingClientRect()} : null;
+    });
+    cajas.forEach((c,i)=>{
+      if(!c || !c.r.width) return;
+      const ctm=c.et.getScreenCTM(); if(!ctm) return;
+      const inv=ctm.inverse();
+      const svg=c.et.ownerSVGElement;
+      const local=(x,y)=>{ const p=svg.createSVGPoint(); p.x=x; p.y=y; return p.matrixTransform(inv); };
+      const alto=c.r.height, hueco=alto*0.35;
+      let x1=c.rn.right;
+      const sig=cajas[i+1];
+      if(sig && Math.abs(sig.r.top-c.r.top) < alto && sig.r.left-hueco < x1) x1=sig.r.left-hueco;
+      const x0=c.r.right+hueco, y=c.r.top+alto*0.55;
+      if(x1-x0 < alto) return;                        // no cabe una línea que se entienda
+      const a=local(x0,y), b=local(x1,y), g=local(x1,y+alto*0.6);
+      const d = tramos[i].abierto ? `M${a.x} ${a.y} L${b.x} ${b.y}` : `M${a.x} ${a.y} L${b.x} ${b.y} L${g.x} ${g.y}`;
+      const unidad=Math.abs(local(0,alto).y-local(0,0).y);  // alto de la etiqueta, en unidades locales
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+      path.setAttribute('class','corchete');
+      path.setAttribute('d', d);
+      path.setAttribute('stroke-width', unidad*0.06);
+      c.et.appendChild(path);
     });
   }
 
@@ -150,13 +195,30 @@
   // usuario), no encola nada y vuelve en silencio: si se encolaran, al
   // primer toque sonarían de golpe todas las acumuladas. La página no
   // distingue este caso del normal; el usuario pulsa «Escuchar» y suena.
+  // Cada llamada es una reproducción completa: antes de empezar se corta la
+  // anterior (note off general), para que no se superpongan el bajo y la
+  // solución, ni un ejercicio y el siguiente.
+  let sonando=[];            // notas de la reproducción en curso (sonando o programadas)
   async function tocar(notas){
+    detener();
     const p=await getPiano();
     if(p.context.state!=='running') return;
+    detener();               // por si otra llamada se coló mientras cargaba el piano
     const now=p.context.currentTime;
-    notas.forEach(n=>p.play(n.midi, now+(n.at||0), {duration:(n.dur!=null?n.dur:1.6)}));
+    sonando = notas.map(n=>p.play(n.midi, now+(n.at||0), {duration:(n.dur!=null?n.dur:1.6)})).filter(Boolean);
   }
-  function detener(){ if(piano) try{ piano.stop(); }catch(e){} }
+  // Para las notas de la reproducción en curso, una a una: piano.stop() recorre
+  // TODAS las de la sesión (también las acabadas) y un error en una dejaría
+  // sonando las demás.
+  function detener(){
+    sonando.forEach(nodo=>{ try{ nodo.stop(); }catch(e){} });
+    sonando=[];
+  }
+  // Respuesta, Similar y Más difícil cortan siempre el audio, toque o no la
+  // página algo después (fase de captura: antes que el manejador de la página).
+  document.addEventListener('click', e=>{
+    if(e.target.closest && e.target.closest('#btnReveal, #btnSimilar, #btnHarder')) detener();
+  }, true);
 
   function audioNoDisponible(btn){ btn.textContent='(sin audio)'; btn.disabled=true; }
 
@@ -177,5 +239,5 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, tocar, detener, audioNoDisponible };
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, corchetesTramo, tocar, detener, audioNoDisponible };
 })(window);

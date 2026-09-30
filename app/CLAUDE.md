@@ -67,7 +67,10 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 - Las alturas se manejan como **letra + alteración + octava**, no MIDI, para
   preservar la enarmonía. MIDI solo para el audio.
 - **Audio:** samples de piano vía soundfont-player
-  (`ArmoniaEj.tocar([{midi, at, dur}])`, en `comun.js`).
+  (`ArmoniaEj.tocar([{midi, at, dur}])`, en `comun.js`). **Cada llamada a `tocar()` es una
+  reproducción completa y corta la anterior** (note off general), y los botones
+  Respuesta/Similar/Más difícil (`#btnReveal`, `#btnSimilar`, `#btnHarder`) cortan siempre
+  el audio. No encadenar varias llamadas para una sola reproducción: una lista con `at`.
 - **Terceros en `public/vendor/`** (Verovio 6.3.0, soundfont-player, la
   fuente de alteraciones), no por CDN: copias literales, versión y origen
   en `vendor/README.md`.
@@ -85,7 +88,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   Para publicar un ejercicio se pone su URL en el modo (`id`/`au`/`ct`) de su
   familia; `null` = no disponible. **Qué ven los alumnos lo decide
   `publico:true` por unidad**: sin él, en la versión pública la unidad sale
-  como «próximamente» aunque tenga ejercicios. `modo.js` (`'dev'` en el repo;
+  como «próximamente» aunque tenga ejercicios. Ojo: **no hay marca por
+  familia** (está en el índice de `docs/`): una familia nueva en una unidad ya
+  pública sale a los alumnos en la siguiente publicación. `modo.js` (`'dev'` en el repo;
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
   mantener diferencias de contenido entre `master` y `publico` (se fusionan
@@ -136,6 +141,16 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     `@type` de MEI llega al SVG como **clase**, así que se puede estilar
     desde CSS— y se separa un poco con `vo` (negativo = hacia abajo en
     `place="below"`).
+  - `c4u0-prolongacion-core.js` (`Prolongacion`) — familia Prolongación de 4.º
+    UD 0: bajos sin cifrar con prolongaciones (células encadenadas) y
+    cadencias; reutiliza casillas, vetos, cláusulas y plantillas de
+    `Cadencias`. Las alternativas salen de **analizar el bajo con la misma
+    gramática** que lo generó. Excepción al patrón de una página con su UI:
+    los tres tipos comparten `c4u0-prolongacion-ui.js`, y cada página solo
+    fija `window.PROL_TIPO` y su ayuda. Las etiquetas de tramo van como `<reh>`
+    (lo único que Verovio sube por encima del americano) y su corchete (abierto, sin gancho, en la bisagra) lo
+    dibuja la página tras el render (`ArmoniaEj.corchetesTramo`, `comun.js`). `tests/masivo-prolongacion.js [nivel]
+    [tipo] [n]` es su validación masiva.
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).

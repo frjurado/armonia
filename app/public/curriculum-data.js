@@ -135,6 +135,24 @@ const CURRICULO = {
                 'CAP, CAI y SC; tónica inicial I o I6, predominante IV o II6, V o V7; 12 tonalidades; sin anacrusa.',
                 'Añade la cadencia rota (sobre VI), la semicadencia frigia, el 6/4 cadencial, II en fundamental (mayor), IV6 (menor) y la anacrusa.',
                 'Añade VI como tónica inicial, IV6 en mayor y la rota sobre IV6; 16 tonalidades.'
+              ]},
+            { nombre:'Prolongación',
+              desc:'Bajos sin cifrar con progresiones de prolongación de I o de V (bordadura y paso, con la regla de la 8.ª) y, según el tipo, cadencias (CA y SC). Se piden los acordes y la segmentación; al revelar, una realización a cuatro voces con los acordes subordinados entre paréntesis, sus alternativas y la etiqueta de cada tramo.',
+              tipos:[
+                {key:'prol', label:'PROL.', title:'Prolongación', icono:'prolongacion',
+                 url:'ejercicios/c4u0-prolongacion-prol.html',
+                 desc:'Dos o tres compases: una prolongación que empieza y acaba en la misma armonía. Se da la tonalidad; se piden los acordes, la armonía prolongada y la técnica.'},
+                {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
+                 url:'ejercicios/c4u0-prolongacion-frase.html',
+                 desc:'Cuatro compases: prolongación (de I, o de V si la frase empieza en la dominante) y cadencia, CA o SC. Se piden tonalidad, acordes y tramos.'},
+                {key:'periodo', label:'PERIODO', title:'Periodo', icono:'cc8',
+                 url:'ejercicios/c4u0-prolongacion-periodo.html',
+                 desc:'Ocho compases: prolongación + SC ‖ prolongación (de I, o de V tras la SC) + CA. Se piden tonalidad, acordes y tramos.'}
+              ],
+              niveles:[
+                'Solo tríadas: V6, VII6 e IV como acordes de bordadura o de paso; cadencias con IV o II6 y V; tonalidades mayores.',
+                'Añade las inversiones de V7 (V6/5, V4/3, V4/2), V7 y el 6/4 cadencial en la cadencia, y el modo menor (con ♯6̂ al subir de 5̂ a 7̂).',
+                'Añade los 6/4 de paso (V6/4) y de bordadura (IV6/4 sobre I, I6/4 sobre V); 16 tonalidades.'
               ]}
           ]},
         { n:1, titulo:'Séptimas diatónicas', familias:[] },

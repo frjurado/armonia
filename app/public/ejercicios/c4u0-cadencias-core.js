@@ -213,8 +213,17 @@
     const partial = anacrusa ? durToken(compases[0].reduce((s,d)=>s+ML.durTokenValue(d),0)) : null;
     return {compases:out, durs, partial, anacrusa, fuerza, nCompases: out.length};
   }
+  // N9 en compás ternario: el 6/4 cadencial puede ir en el 2.º tiempo con la V
+  // en el 3.º (tres negras), aunque los dos tiempos pesen lo mismo.
+  // `pat` = duraciones del compás, `i` = posición del 6/4 dentro de él.
+  // Es una posibilidad, no la norma: pesa menos que las demás plantillas.
+  const W_N9_TERNARIO = 0.3;
+  function n9Ternario(time, pat, i){
+    return time==='3/4' && pat.length===3 && i===1 && pat.every(d=>d==='4');
+  }
   // Elige compás y plantilla para n acordes; respeta N9 (6/4 cadencial en el
-  // mismo compás que su V y en parte más fuerte) y el nivel (sin anacrusa en 1).
+  // mismo compás que su V y en parte más fuerte, o la excepción ternaria) y
+  // el nivel (sin anacrusa en 1).
   function ritmo(nivel, ids){
     const n=ids.length, i64=ids.indexOf('I64');
     const tabla = (i64===n-2) ? PLANTILLAS_SC64 : PLANTILLAS;
@@ -222,14 +231,18 @@
     COMPASES.forEach(time=>(tabla[time][n]||[]).forEach(p=>{
       if(nivel<2 && p.startsWith('↑')) return;
       const r=leerPlantilla(p, time);
+      let w=1;
       if(i64>=0){
         const c = r.compases.findIndex(m=>m.some(x=>x.k===i64));
         const enMismo = r.compases[c].some(x=>x.k===i64+1);
-        if(!enMismo || !(r.fuerza[i64] > r.fuerza[i64+1])) return;
+        const pat = r.compases[c].map(x=>x.dur), i = r.compases[c].findIndex(x=>x.k===i64);
+        const tern = n9Ternario(time, pat, i);
+        if(!enMismo || !(r.fuerza[i64] > r.fuerza[i64+1] || tern)) return;
+        if(tern && !(r.fuerza[i64] > r.fuerza[i64+1])) w=W_N9_TERNARIO;
       }
-      opciones.push(Object.assign({time, plantilla:p}, r));
+      opciones.push({x:Object.assign({time, plantilla:p}, r), w});
     }));
-    return opciones.length ? elige(opciones) : null;
+    return opciones.length ? pesado(opciones) : null;
   }
 
   /* ---------- generación ---------- */
@@ -502,9 +515,12 @@
       if(opts.cifrados) m.forEach(x=>{
         const a=inst.acordes[x.k];
         // el americano se ancla a la soprano salvo que esté oculta
+        // americano en segundo plano (type="americano", más pequeño): aquí es
+        // información añadida, no lo que se pregunta
+        const am=`type="americano"><rend fontsize="80%">${esc(a.americano)}</rend>`;
         const arriba = ocultas.includes(0)
-          ? `<harm place="above" staff="2" startid="#b${x.k}">${esc(a.americano)}</harm>`
-          : `<harm place="above" staff="1" startid="#s${x.k}">${esc(a.americano)}</harm>`;
+          ? `<harm place="above" staff="2" startid="#b${x.k}" ${am}</harm>`
+          : `<harm place="above" staff="1" startid="#s${x.k}" ${am}</harm>`;
         harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1">${romanoXml(a)}</harm>`;
         // Filas de alternativas: `n` las apila, `type="alt"` llega al SVG como
         // clase (las pinta en gris comun.css) y `vo` las separa un poco más de
@@ -559,7 +575,7 @@
     leeEnRelativa, bajoDe, bajoTxt, tipoDesdeBajo, etiquetaChocante,
     // gramática (para pruebas y para las variantes Bajo dado / Canto dado)
     formula, acordesDe, ganchos, casilla, tiposDisponibles, tonalidades, ritmo, leerPlantilla,
-    FORMULAS_VETADAS, vetada, PLANTILLAS, PLANTILLAS_SC64, FINAL, CLAUSULA, penClausula, tipoPorSoprano
+    FORMULAS_VETADAS, vetada, n9Ternario, PLANTILLAS, PLANTILLAS_SC64, FINAL, CLAUSULA, penClausula, tipoPorSoprano
   };
   if (esNode) module.exports = api;
   else global.Cadencias = api;

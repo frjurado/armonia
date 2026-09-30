@@ -88,6 +88,16 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
 /* Cifrados alternativos (segunda fila de <harm>, marcada type="alt" en el MEI:
    Verovio lo vuelca a la clase del SVG). Gris, como las alternativas del texto. */
 #notation g.harm.alt, #notation g.harm.alt text{fill:var(--soft)}
+/* Etiqueta de cada tramo (Prolongación: «Prol. I», «SC», «CA»; <reh
+   type="tramo">, ver toMEI en c4u0-prolongacion-core.js) y su corchete hasta
+   el final del tramo (ArmoniaEj.corchetesTramo). Es respuesta: color de
+   acierto y serif, como el titular de la respuesta. */
+#notation .reh.tramo text{fill:var(--ok);font-family:var(--serif);font-weight:600}
+#notation .reh.tramo path.corchete{fill:none;stroke:var(--ok)}
+/* Cifrado americano en segundo plano (<harm type="americano">, más pequeño
+   desde el MEI): en Cadencias y Prolongación es información añadida, no lo
+   que se pregunta. Donde el americano ES la respuesta (3.º UD 0), no se marca. */
+#notation g.harm.americano, #notation g.harm.americano text{fill:var(--muted)}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);

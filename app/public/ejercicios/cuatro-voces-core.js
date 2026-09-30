@@ -104,6 +104,9 @@
     const nunca = tones.filter(t=>t.deg===7).map(t=>t.rol);   // la sensible, nunca (N7)
     if(spec.septima){
       const n7 = ['3','7'].concat(nunca.filter(r=>r!=='3'&&r!=='7'));
+      // N11: solo el V7 en estado fundamental puede omitir la 5.ª; las
+      // inversiones, siempre completas (ni duplicación ni omisión).
+      if(spec.inv>0) return {pref:[], adm:[], nunca:['F','3','5','7'], oblig:null, omitir:null};
       return {pref:[], adm:['F'], nunca:n7, oblig:null, omitir:'5'};
     }
     if(spec.inv===0){
@@ -114,14 +117,20 @@
       if(spec.grado===1) return {pref:[], adm:['F','3','5'], nunca, oblig:null, omitir:null};
       if(spec.grado===2) return {pref:['3'], adm:['F'], nunca, oblig:null, omitir:null};
       if(spec.grado===4) return {pref:['F'], adm:['5'], nunca, oblig:null, omitir:null};
+      if(spec.grado===7) return {pref:['3'], adm:['5'], nunca, oblig:null, omitir:null};   // VII6: el bajo (2̂)
       if(calidad.triada==='dim') return {pref:['3'], adm:['F'], nunca, oblig:null, omitir:null};
       return {pref:['F'], adm:['3','5'], nunca, oblig:null, omitir:null};
     }
-    // 2.ª inversión: el bajo (5.ª) duplicado, obligatorio
+    // 2.ª inversión (cadencial, de paso o de bordadura): el bajo (5.ª)
+    // duplicado, obligatorio (N9, N14)
     return {pref:['5'], adm:[], nunca, oblig:'5', omitir:null};
   }
 
-  // acorde(key, {grado:1–7, inv:0–3, septima:bool, id?, dup?, cadencial64?})
+  // acorde(key, {grado:1–7, inv:0–3, septima:bool, id?, dup?, cadencial64?,
+  //              sub64?, eleva?})
+  //   sub64: 'paso' | 'bordadura' — 6/4 no cadencial (N14);
+  //   eleva: grados de la escala que suben un semitono en ESTE acorde
+  //     (p. ej. [6] en menor: IV mayor de la melódica ascendente).
   function acorde(key, spec){
     spec = Object.assign({}, spec, {inv: spec.inv||0, septima: !!spec.septima});
     const esc = escala(key);
@@ -131,7 +140,8 @@
     for(let i=0;i<n;i++){
       const deg = mod(spec.grado-1 + 2*i, 7) + 1;
       const e = esc[deg-1];
-      tones.push({deg, letter:e.letter, alter:e.alter, rol:ROLES[i]});
+      const alter = e.alter + ((spec.eleva||[]).includes(deg) ? 1 : 0);
+      tones.push({deg, letter:e.letter, alter, rol:ROLES[i]});
     }
     const calidad = calidadDe(tones);
     const dup = spec.dup ? Object.assign(dupPorDefecto(spec,tones,calidad), spec.dup)
@@ -148,7 +158,7 @@
     if(inv>0) americano += '/' + bassT.letter + SYM(bassT.alter);
     return {
       id: spec.id || romano, grado: spec.grado, inv, septima: !!spec.septima,
-      tones, bass: inv, calidad, dup, cadencial64: !!spec.cadencial64,
+      tones, bass: inv, calidad, dup, cadencial64: !!spec.cadencial64, sub64: spec.sub64||null,
       romano, cifras, americano,
       nombreBajo: ES[bassT.letter]+SYM(bassT.alter)
     };
@@ -313,10 +323,14 @@
       }
     }
     // N8: 7.ª del acorde de dominante (tono con rol '7')
+    // Excepción: V4/3 → I6 con el bajo ②–③, la 7.ª puede subir a 5̂.
+    const v43aI6 = chPrev.grado===5 && chPrev.septima && chPrev.inv===2 && chCand.grado===1
+                && chCand.inv===1 && C[3].abs===P[3].abs+1;
     for(let v=0;v<4;v++) if(P[v].rol==='7'){
       const baja = C[v].abs===P[v].abs-1;
       const queda = C[v].abs===P[v].abs && C[v].deg===P[v].deg;
-      if(!baja && !queda) return 'N8';
+      const sube = v43aI6 && v<3 && C[v].abs===P[v].abs+1;
+      if(!baja && !queda && !sube) return 'N8';
       if(baja){
         for(let u=0;u<4;u++) if(u!==v && P[u].rol==='F' && C[u].deg===C[v].deg && P[u].abs!==C[u].abs) return 'N8';
       }
@@ -328,6 +342,23 @@
       for(let v=0;v<3;v++){
         if(P[v].rol==='F' && !(C[v].abs===P[v].abs-1)) return 'N9';
         if(P[v].rol==='3' && !(C[v].abs===P[v].abs-1)) return 'N9';
+      }
+    }
+    // N14: 6/4 de paso o de bordadura. Voces superiores por grado o nota
+    // común al entrar y al salir; el bajo, por grado en la misma dirección
+    // (paso) o quieto (bordadura).
+    if(chCand.sub64){
+      for(let v=0;v<3;v++) if(Math.abs(C[v].abs-P[v].abs)>1) return 'N14';
+      const dB=C[3].abs-P[3].abs;
+      if(chCand.sub64==='bordadura' ? dB!==0 : Math.abs(dB)!==1) return 'N14';
+    }
+    if(chPrev.sub64){
+      for(let v=0;v<3;v++) if(Math.abs(C[v].abs-P[v].abs)>1) return 'N14';
+      const dB=C[3].abs-P[3].abs;
+      if(chPrev.sub64==='bordadura'){ if(dB!==0) return 'N14'; }
+      else{
+        const antes = path.length>=2 ? P[3].abs-path[path.length-2].v[3].abs : null;
+        if(Math.abs(dB)!==1 || (antes!==null && sgn(antes)!==sgn(dB))) return 'N14';
       }
     }
     return null;
