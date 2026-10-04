@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · 3.º · Unidad 1 — Bajo cifrado</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="cuatro-voces-core.js"></script>
+<script src="c3u1-morfologia-core.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* Respuesta: titular con los acordes; en el detalle, los grados del bajo
+     y el uso de cada 6/4. Todo ello sale también en la partitura. */
+  .answer .q{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .answer .q .sep-q{color:var(--soft);font-weight:400}
+  .answer .q .fb{display:inline-flex;flex-direction:column;vertical-align:.55em;
+       font-size:.55em;line-height:.95;margin-left:1px}
+  .answer .grados{letter-spacing:.06em}
+</style>
+</head>
+<body>
+<header>
+  <h1>Bajo cifrado</h1>
+  <span class="sub">Morfología · Unidad 1 · 3.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level">Nivel <b id="lvl">1</b></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under">
+        <p class="pregunta">¿Qué <b>grado</b> es cada nota del bajo? ¿Qué <b>acorde</b> indica el cifrado?</p>
+      </div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
+      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Se dan la tonalidad y un bajo con su <b>cifrado</b>: sin cifra, estado fundamental; <b>6</b>, primera inversión; <b>6/4</b>, segunda. Escribe encima de cada nota su <b>grado</b> en la escala, en círculo (①, ⑤), y debajo, delante del cifrado, el <b>acorde</b> en número romano: el bajo y el cifrado dicen cuál es la fundamental. En menor, la alteración de la sensible va en el cifrado (♯ sola es la 3.ª; ♯6, la 6.ª).
+     Al revelar se dibuja además cada acorde en clave de Sol, en estado fundamental y posición cerrada, con su cifrado americano encima.
+     <span id="lvlNote"></span></p>
+  </details>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  const M = window.Morfologia;
+  const $ = ArmoniaEj.$;
+  let tk=null, level=1, current=null, revelado=false;
+
+  function renderSVG(){
+    if(!tk || !current) return;
+    tk.loadData(M.toMEI(current, {revelado}));
+    $('notation').innerHTML = tk.renderToSVG(1);
+    ArmoniaEj.apilarCifras($('notation'));
+    if(revelado) ArmoniaEj.circularGrados($('notation'));
+  }
+
+  function newExercise(){
+    current = M.generar(level);
+    revelado=false;
+    $('lvl').textContent = level;
+    $('lvlNote').textContent = M.NIVELES[level-1] || '';
+    $('answer').className='answer';
+    $('btnReveal').disabled=false;
+    $('btnSimilar').style.display='none';
+    $('btnHarder').style.display='none';
+    renderSVG();
+    play();
+  }
+
+  // Romano con sus cifras apiladas, para el titular.
+  const romanoHTML = a => a.romano + (a.cifrasRomano
+    ? `<span class="fb">${a.cifrasRomano.split('/').map(f=>`<span>${f}</span>`).join('')}</span>` : '');
+
+  function reveal(){
+    if(!current) return;
+    revelado=true;
+    const ans=current.json.answer, sep='<span class="sep-q">–</span>';
+    $('ansQ').innerHTML = current.acordes.map(romanoHTML).join(sep);
+    const usos = ans.seisCuatro.map(u=>`6/4 ${u.uso} en el c. ${u.compas}`);
+    $('ansDet').innerHTML = `${ans.tonalidad} · bajo <span class="grados">${ans.gradosBajo.join('–')}</span>`
+      + (usos.length ? ' · '+usos.join(' · ') : '');
+    $('answer').className='answer show';
+    $('btnReveal').disabled=true;
+    $('btnSimilar').style.display='';
+    $('btnHarder').style.display = level<M.MAX_NIVEL ? '' : 'none';
+    renderSVG();
+    play();
+  }
+
+  async function play(){
+    if(!current) return;
+    try{ await ArmoniaEj.tocar(M.midis(current, {revelado})); }
+    catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
+  }
+
+  $('btnReveal').onclick = reveal;
+  $('btnSimilar').onclick = ()=>newExercise();
+  $('btnHarder').onclick = ()=>{ level=Math.min(level+1,M.MAX_NIVEL); newExercise(); };
+  $('btnListen').onclick = play;
+
+  // Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
+  newExercise();
+
+  ArmoniaEj.initVerovio({scale:60, pageWidth:1000},
+    t=>{ tk=t; renderSVG(); },
+    msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
+  );
+})();
+</script>
+</body>
+</html>

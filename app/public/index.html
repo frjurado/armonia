@@ -121,6 +121,7 @@
   .marca-dev{display:inline-block;vertical-align:middle;margin-left:10px;padding:2px 7px;
         border-radius:6px;background:#f7efe8;color:#8f4a22;border:1px solid #e0c9b4;
         font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1.4}
+  .marca-dev.ej{margin-left:auto}
 
   @media(max-width:960px){
     .masthead{padding:26px 24px 0}
@@ -201,7 +202,7 @@ const ICONS = {
 const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
-/* Iconos de las variantes de la Unidad 0 (claves del campo `icono` en
+/* Iconos de las variantes (`tipos`; claves del campo `icono` en
    curriculum-data.js; 'apilado' se dibuja con el campo `texto`). */
 const TIPO_ICONS = {
   reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="4.8" x2="12" y2="7"/><line x1="19.2" y1="12" x2="17" y2="12"/><line x1="12" y1="19.2" x2="12" y2="17"/><line x1="4.8" y1="12" x2="7" y2="12"/></svg>`,
@@ -210,6 +211,8 @@ const TIPO_ICONS = {
   dosvoces: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="8" rx="2.7" ry="2.1"/><line x1="14.7" y1="8" x2="14.7" y2="2"/><ellipse cx="12" cy="16" rx="2.7" ry="2.1"/><line x1="9.3" y1="16" x2="9.3" y2="22"/></svg>`,
   triada: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="11" cy="15.5" rx="2.7" ry="2.1"/><ellipse cx="11" cy="11" rx="2.7" ry="2.1"/><ellipse cx="11" cy="6.5" rx="2.7" ry="2.1"/><line x1="13.7" y1="15.5" x2="13.7" y2="2"/></svg>`,
   flechas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="19.5" y2="18"/><polyline points="19.5 13.5 19.5 18 15 18"/><line x1="3" y1="18" x2="19.5" y2="6"/><polyline points="19.5 10.5 19.5 6 15 6"/></svg>`,
+  // bajo cifrado (3.º UD 1, Morfología): romano con su cifra
+  cifrado: `<svg viewBox="0 0 24 24" fill="none"><text x="10" y="18" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="15" fill="currentColor">I</text><text x="16.5" y="11" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="9.5" fill="currentColor">6</text></svg>`,
   // grado de la fundamental de un acorde: número romano, como se nombra en Acordes
   romano: `<svg viewBox="0 0 24 24" fill="none"><text x="12" y="17" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="13.5" fill="currentColor">IV</text></svg>`,
   // cadencias (4.º UD 0): sigla del tipo; clave de Fa (bajo dado); clave de Sol (canto dado)
@@ -227,12 +230,24 @@ const TIPO_ICONS = {
 // 'publico' (lo que ven los alumnos) o 'dev' (todo, con marcas). Lo fija
 // modo.js; si no ha cargado, público, que es el lado seguro.
 const DEV = window.ARMONIA_MODO === 'dev';
-// Una unidad se puede abrir si tiene familias y, en público, está marcada
-// publico:true en curriculum-data.js. En dev, la marca DEV señala las que
-// los alumnos no ven.
-const abrible = ud => ud.familias.length > 0 && (DEV || ud.publico === true);
-const soloDev = ud => DEV && ud.familias.length > 0 && ud.publico !== true;
+// Visibilidad en la versión pública, en cascada (curriculum-data.js): la
+// unidad necesita publico:true; dentro de ella, una familia o un ejercicio
+// (modo o tipo) con publico:false quedan ocultos. Sin marca, heredan.
+const pubFam = (ud, fam) => ud.publico === true && fam.publico !== false;
+const pubEj  = (ud, fam, ej) => pubFam(ud, fam) && !!ej && ej.publico !== false;
+// En público, la familia oculta no sale y el ejercicio oculto sale como
+// «próximamente». En dev sale todo, y la marca DEV señala lo que los alumnos
+// no ven: en la unidad si está entera oculta; si no, en la familia o el botón.
+const famVisible = (ud, fam) => DEV || pubFam(ud, fam);
+// Una unidad se puede abrir si tiene familias visibles.
+const abrible = ud => ud.familias.some(fam => famVisible(ud, fam));
+const soloDev = ud => DEV && ud.familias.length > 0 && !ud.familias.some(fam => pubFam(ud, fam));
 const MARCA_DEV = `<span class="marca-dev" title="No visible en la versión pública">DEV</span>`;
+const marcaFam = (ud, fam) => DEV && !soloDev(ud) && !pubFam(ud, fam) ? MARCA_DEV : '';
+const marcaEj  = (ud, fam, ej) => DEV && pubFam(ud, fam) && !pubEj(ud, fam, ej)
+  ? `<span class="marca-dev ej" title="No visible en la versión pública">DEV</span>` : '';
+// En público, un ejercicio oculto se pinta como si no tuviera URL.
+const urlEj = (ud, fam, ej) => ej && ej.url && (DEV || pubEj(ud, fam, ej)) ? ej.url : null;
 
 /* ---------- estado ---------- */
 let cursoActivo = 0;
@@ -264,23 +279,25 @@ const expandida = CURRICULO.cursos.map(c => {
 })();
 
 /* ---------- render (los datos viven en curriculum-data.js) ---------- */
-function modoHTML(fam, m){
+function modoHTML(ud, fam, m){
   const modo = fam.modos[m.key];
-  const inner = `${ICONS[m.key]}<span>${m.title}</span>`;
-  return (modo && modo.url)
-    ? `<a class="btn-modo" href="${modo.url}" title="${m.title}: ${fam.nombre}">${inner}</a>`
+  const url = urlEj(ud, fam, modo);
+  const inner = `${ICONS[m.key]}<span>${m.title}</span>${modo && url ? marcaEj(ud, fam, modo) : ''}`;
+  return url
+    ? `<a class="btn-modo" href="${url}" title="${m.title}: ${fam.nombre}">${inner}</a>`
     : `<span class="btn-modo locked" title="${m.title}: próximamente">${inner}</span>`;
 }
 
-/* Variantes de la Unidad 0: mismo aspecto que los modos, con icono propio. */
+/* Variantes (`tipos`): mismo aspecto que los modos, con icono propio. */
 function tipoIcono(t){
   if(t.icono==='apilado') return `<span class="ic"><span class="ic-fb">${t.texto.split('/').map(x=>`<span>${x}</span>`).join('')}</span></span>`;
   return `<span class="ic">${TIPO_ICONS[t.icono] || ''}</span>`;
 }
-function tipoHTML(fam, t){
-  const inner = `${tipoIcono(t)}<span>${t.title}</span>`;
-  return t.url
-    ? `<a class="btn-modo" href="${t.url}" title="${t.title}: ${fam.nombre}">${inner}</a>`
+function tipoHTML(ud, fam, t){
+  const url = urlEj(ud, fam, t);
+  const inner = `${tipoIcono(t)}<span>${t.title}</span>${url ? marcaEj(ud, fam, t) : ''}`;
+  return url
+    ? `<a class="btn-modo" href="${url}" title="${t.title}: ${fam.nombre}">${inner}</a>`
     : `<span class="btn-modo locked" title="${t.title}: próximamente">${inner}</span>`;
 }
 
@@ -291,12 +308,12 @@ function unidadAbierta(ud){
     <div>
       <div class="titulo">${ud.titulo}${soloDev(ud) ? MARCA_DEV : ''}</div>
       <div class="familias">
-        ${ud.familias.map(fam => `
+        ${ud.familias.filter(fam => famVisible(ud, fam)).map(fam => `
           <div class="familia">
-            <div class="fam-nombre">${fam.nombre}</div>
+            <div class="fam-nombre">${fam.nombre}${marcaFam(ud, fam)}</div>
             <div class="botones">${fam.tipos
-              ? fam.tipos.map(t => tipoHTML(fam, t)).join('')
-              : CURRICULO.modos.map(m => modoHTML(fam, m)).join('')}</div>
+              ? fam.tipos.map(t => tipoHTML(ud, fam, t)).join('')
+              : CURRICULO.modos.map(m => modoHTML(ud, fam, m)).join('')}</div>
           </div>`).join('')}
       </div>
     </div>

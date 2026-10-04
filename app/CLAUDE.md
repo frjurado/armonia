@@ -88,15 +88,19 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   Para publicar un ejercicio se pone su URL en el modo (`id`/`au`/`ct`) de su
   familia; `null` = no disponible. **Qué ven los alumnos lo decide
   `publico:true` por unidad**: sin él, en la versión pública la unidad sale
-  como «próximamente» aunque tenga ejercicios. Ojo: **no hay marca por
-  familia** (está en el índice de `docs/`): una familia nueva en una unidad ya
-  pública sale a los alumnos en la siguiente publicación. `modo.js` (`'dev'` en el repo;
+  como «próximamente» aunque tenga ejercicios. Dentro de una unidad pública,
+  `publico:false` **en una familia** la oculta y **en un ejercicio** (modo o
+  tipo) lo deja como «próximamente»; sin marca, heredan. Ojo: lo que no lleva
+  marca **sale**: una familia nueva en una unidad ya pública llega a los
+  alumnos en la siguiente publicación salvo que se le ponga `publico:false`.
+  `modo.js` (`'dev'` en el repo;
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
   mantener diferencias de contenido entre `master` y `publico` (se fusionan
   enteras con `sitio/publicar.sh`). Excepción: las familias de las **unidades
-  de repaso (UD 0 de ambos cursos)** no tienen modos sino un array `tipos`
-  (variantes de identificación, cada una con su icono).
+  de repaso (UD 0 de ambos cursos)**, y las que solo tienen identificación
+  (Morfología, 3.º UD 1), no tienen modos sino un array `tipos` (variantes,
+  cada una con su icono).
 - `ejercicios/`, un patrón por familia:
   - `<familia>-core.js` — IIFE que expone un global (`Familia2`, `Familia3`,
     `U0Armaduras`, `U0Intervalos`, `U0Acordes`, `Contrapunto`) con TODA la
@@ -151,6 +155,13 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     (lo único que Verovio sube por encima del americano) y su corchete (abierto, sin gancho, en la bisagra) lo
     dibuja la página tras el render (`ArmoniaEj.corchetesTramo`, `comun.js`). `tests/masivo-prolongacion.js [nivel]
     [tipo] [n]` es su validación masiva.
+  - `c3u1-morfologia-core.js` (`Morfologia`) — familia Morfología de 3.º UD 1
+    (§4 cinco): bajos cifrados generados con una gramática de sucesiones y
+    las normas melódicas del bajo; usa el modelo de acorde de `CuatroVoces`
+    pero no el realizador. El grado del bajo en círculo es un `<harm
+    type="gradobajo">` con la cifra sola: el círculo lo dibuja
+    `ArmoniaEj.circularGrados` tras el render (ninguna de las fuentes trae
+    ①…⑦). `tests/masivo-morfologia.js [nivel] [n]` es su validación masiva.
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).

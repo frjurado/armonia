@@ -117,8 +117,20 @@
   // «I⁶₄» sale en diagonal; esta función, tras insertar el SVG en el DOM,
   // retrocede cada cifra sub la anchura medida de la sup anterior para que
   // queden apiladas. Medir (y no estimar) hace que valga con cualquier fuente.
+  // Las alteraciones (♯6, 5/♯) Verovio las cambia por un glifo de su fuente
+  // musical, en un <tspan font-family> con otro cuerpo: no cuentan para
+  // comparar cuerpos, y se apila centrando la parte NUMÉRICA de las dos
+  // cifras (el ♯ de «♯6» cuelga a la izquierda; un «♯» solo se centra bajo
+  // la cifra de arriba). Ese glifo puede cargarse después de medir: si las
+  // fuentes aún no están, se repite al cargar (fija `dx`, no lo acumula).
   function apilarCifras(root){
     if(!root || !root.querySelectorAll) return;
+    const largo = t => { try{ return t.getComputedTextLength(); }catch(e){ return 0; } };
+    // [anchura de las alteraciones, anchura del resto] de una cifra
+    const partes = t => {
+      const alt=Array.from(t.querySelectorAll('tspan[font-family]')).reduce((s,x)=>s+largo(x),0);
+      return [alt, Math.max(0, largo(t)-alt)];
+    };
     root.querySelectorAll('g.harm text').forEach(text=>{
       const rends=Array.from(text.children).filter(c=>c.classList && c.classList.contains('rend'));
       for(let i=1;i<rends.length;i++){
@@ -128,13 +140,63 @@
         // Solo una cifra sub (mismo cuerpo que la sup) se apila; un texto que
         // vuelve a la línea base tras la sup —el «)» de un acorde subordinado,
         // en Prolongación— tiene el cuerpo normal y sigue a continuación.
-        const cuerpo = t => { const s=t.querySelector('tspan[font-size]'); return s ? parseFloat(s.getAttribute('font-size')) : NaN; };
+        const cuerpo = t => { const s=t.querySelector('tspan[font-size]:not([font-family])'); return s ? parseFloat(s.getAttribute('font-size')) : NaN; };
         const cP=cuerpo(prev), cC=cuerpo(cur);
         const mismoCuerpo = !(cP>0 && cC>0) || Math.abs(cC-cP) < 0.15*cP;   // sin dato, como antes
         if(dyP<0 && dyC>0 && mismoCuerpo){
-          try{ cur.setAttribute('dx', -prev.getComputedTextLength()); }catch(e){}
+          const [, numP]=partes(prev);
+          let [altC, numC]=partes(cur);
+          if(!numC){ numC=altC; altC=0; }                  // un «♯» solo: se centra entero
+          // la cifra sub empieza donde acaba la sup: se retrocede hasta que
+          // los centros de las partes numéricas coincidan (con cifras sin
+          // alteración y de igual anchura, lo mismo que retroceder la sup entera)
+          cur.setAttribute('dx', -numP/2 - altC - numC/2);
         }
       }
+    });
+    if(document.fonts && document.fonts.status!=='loaded' && !root.__apilarPendiente){
+      root.__apilarPendiente=true;
+      document.fonts.ready.then(()=>{ root.__apilarPendiente=false; apilarCifras(root); });
+    }
+  }
+
+  /* ---------- grado del bajo en círculo («①», «♯⑦») ---------- */
+  // circularGrados(root): tras insertar el SVG, rodea con un círculo la cifra
+  // de cada <harm type="gradobajo">, y si el @type trae una alteración
+  // (clase alt-sostenido | alt-bemol | alt-becuadro) la escribe delante,
+  // fuera del círculo, como en los apuntes (♯⑦), anclada por la derecha para
+  // que su anchura no mueva nada. Se dibuja en vez de usar los caracteres
+  // ①…⑦ porque ni Source Serif ni Leland los traen y la fuente de
+  // sustitución cambia de un dispositivo a otro.
+  const ALTERACION = {'alt-sostenido':'♯', 'alt-bemol':'♭', 'alt-becuadro':'♮'};
+  function circularGrados(root){
+    if(!root || !root.querySelectorAll) return;
+    const NS='http://www.w3.org/2000/svg';
+    root.querySelectorAll('g.harm.gradobajo').forEach(g=>{
+      try{
+        const text=g.querySelector('text'); if(!text) return;
+        const n=text.getNumberOfChars(); if(!n) return;
+        const r=text.getExtentOfChar(n-1);
+        const radio=Math.max(r.width, r.height*0.7)*0.78;
+        const cx=r.x + r.width/2, cy=r.y + r.height*0.55;
+        const c=document.createElementNS(NS,'circle');
+        c.setAttribute('class','circulo');
+        c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', radio);
+        c.setAttribute('stroke-width', r.height*0.07);
+        g.appendChild(c);
+        const alt=Object.keys(ALTERACION).find(k=>g.classList.contains(k));
+        if(alt){
+          const t=document.createElementNS(NS,'text');
+          const cuerpo=text.querySelector('tspan[font-size]');
+          t.setAttribute('class','alteracion');
+          t.setAttribute('x', cx - radio*1.15);
+          t.setAttribute('y', text.getAttribute('y'));
+          t.setAttribute('text-anchor','end');
+          t.setAttribute('font-size', cuerpo ? cuerpo.getAttribute('font-size') : r.height);
+          t.textContent=ALTERACION[alt];
+          g.appendChild(t);
+        }
+      }catch(e){}
     });
   }
 
@@ -239,5 +301,5 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, corchetesTramo, tocar, detener, audioNoDisponible };
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, tocar, detener, audioNoDisponible };
 })(window);

@@ -94,6 +94,10 @@
 <script>
 const app = document.getElementById('app');
 
+// Marca «solo dev» de una familia o un ejercicio con publico:false propio
+// (la de la unidad entera va en su cabecera; ver index.html).
+const OCULTO = `<span class="ud-pub no">solo dev</span>`;
+const oculto = x => x && x.publico === false ? ' '+OCULTO : '';
 function modosHTML(fam){
   return CURRICULO.modos.map(m=>{
     const modo = fam.modos[m.key];
@@ -101,18 +105,18 @@ function modosHTML(fam){
       ? `<a class="chip" href="${modo.url}">${m.label}</a>`
       : `<span class="chip off">${m.label}</span>`;
     const txt = (modo && modo.desc)
-      ? `<span class="txt"><b>${m.title}.</b> ${modo.desc}</span>`
+      ? `<span class="txt"><b>${m.title}.</b> ${modo.desc}${oculto(modo)}</span>`
       : `<span class="txt">${m.title}: no disponible todavía.</span>`;
     return `<li>${chip}${txt}</li>`;
   }).join('');
 }
-// Familias de la Unidad 0: variantes (`tipos`) en lugar de modos id/au/ct.
+// Familias con variantes (`tipos`) en lugar de modos id/au/ct.
 function tiposHTML(fam){
   return fam.tipos.map(t=>{
     const chip = t.url
       ? `<a class="chip" href="${t.url}">${t.label}</a>`
       : `<span class="chip off">${t.label}</span>`;
-    return `<li>${chip}<span class="txt"><b>${t.title}.</b> ${t.desc||''}</span></li>`;
+    return `<li>${chip}<span class="txt"><b>${t.title}.</b> ${t.desc||''}${oculto(t)}</span></li>`;
   }).join('');
 }
 function nivelesHTML(fam){
@@ -136,7 +140,7 @@ app.innerHTML += CURRICULO.cursos.map(curso => `
       ${ud.familias.length
         ? ud.familias.map(fam => `
             <div class="familia">
-              <h3>${fam.nombre}</h3>
+              <h3>${fam.nombre}${oculto(fam)}</h3>
               <div class="desc">${fam.desc||''}</div>
               <div class="bloque">${fam.tipos ? 'Tipos' : 'Modos'}</div>
               <ul>${fam.tipos ? tiposHTML(fam) : modosHTML(fam)}</ul>

@@ -98,6 +98,10 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
    desde el MEI): en Cadencias y Prolongación es información añadida, no lo
    que se pregunta. Donde el americano ES la respuesta (3.º UD 0), no se marca. */
 #notation g.harm.americano, #notation g.harm.americano text{fill:var(--muted)}
+/* Grado del bajo (<harm type="gradobajo">): el círculo y la alteración los
+   dibuja ArmoniaEj.circularGrados tras el render. */
+#notation g.harm.gradobajo circle.circulo{fill:none;stroke:currentColor}
+#notation g.harm.gradobajo text.alteracion{font-family:var(--serif)}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);

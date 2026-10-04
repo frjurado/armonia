@@ -7,12 +7,15 @@
    Qué ven los alumnos: cada unidad lleva `publico:true` cuando está
    lista para ellos. En modo 'publico' (ver modo.js) el menú trata las
    unidades sin ese flag como «próximamente», aunque tengan ejercicios;
-   en modo 'dev' se ven todas, marcadas. Granularidad: la unidad.
+   en modo 'dev' se ven todas, marcadas. Dentro de una unidad pública,
+   `publico:false` en una familia la oculta, y en un ejercicio (un modo
+   o un tipo) lo deja como «próximamente»; sin marca, heredan.
    La numeración de unidades (`n`) es 0–6 en cada curso (UD 0 = repaso):
    solo identifica dentro de su curso, nunca entre cursos.
-   Excepción (unidades de repaso, UD 0 de ambos cursos): sus familias
-   no tienen modos id/au/ct (todo es identificación) sino VARIANTES,
-   en el array `tipos` [{key, label, title, icono, texto?, url, desc}].
+   Excepción (unidades de repaso, UD 0 de ambos cursos, y familias
+   que solo tienen identificación, como Morfología en 3.º UD 1): sus
+   familias no tienen modos id/au/ct sino VARIANTES, en el array
+   `tipos` [{key, label, title, icono, texto?, url, desc, publico?}].
    `icono` es una clave de TIPO_ICONS (index.html) o 'apilado' para
    el icono tipográfico de cifras (con el campo `texto`).
    Las familias sin `niveles` no tienen niveles de dificultad.
@@ -74,9 +77,20 @@ const CURRICULO = {
                 'Posición abierta en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol.'
               ]}
           ]},
-        { n:1, titulo:'Morfología. Conducción de voces', publico:false,
+        { n:1, titulo:'Morfología. Conducción de voces', publico:true,
           familias:[
-            { nombre:'Intervalos',
+            { nombre:'Morfología',
+              desc:'Tríadas diatónicas en estado fundamental y en sus dos inversiones, dentro de una tonalidad: leer un bajo cifrado (grado del bajo y acorde).',
+              tipos:[
+                {key:'bajo', label:'BAJO', title:'Bajo cifrado', icono:'cifrado',
+                 url:'ejercicios/c3u1-morfologia-bajo.html',
+                 desc:'Un bajo de 5 o 6 notas con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'}
+              ],
+              niveles:[
+                'Modo mayor (Do y Sol mayor).',
+                'Añade el modo menor (La y Re menor), con la alteración de la sensible en el cifrado.'
+              ]},
+            { nombre:'Intervalos', publico:false,
               desc:'Nombrar la amplitud y la calidad del intervalo a dos voces, y clasificarlo como consonancia perfecta / imperfecta o disonancia.',
               modos:{
                 id:{url:'ejercicios/familia2-intervalos-id.html',
@@ -90,7 +104,7 @@ const CURRICULO = {
                 'Añade el modo menor (la sensible genera otros aumentados/disminuidos) y la clave de Fa; amplitudes hasta la 12.ª (compuestos).',
                 'Dos claves a la vez (una nota en Fa y otra en Sol, pentagrama doble); casi todos los intervalos son compuestos; sin cruces.'
               ]},
-            { nombre:'Movimiento armónico',
+            { nombre:'Movimiento armónico', publico:false,
               desc:'Contrapunto 1:1 de 10 notas a dos voces: identificar los intervalos armónicos y el tipo de movimiento de cada transición (oblicuo / contrario / directo / paralelo).',
               modos:{
                 id:{url:'ejercicios/familia3-movimientos-id.html',
