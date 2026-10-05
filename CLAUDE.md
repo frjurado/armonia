@@ -29,6 +29,12 @@ seguiría significando algo?*
 Una especificación se pudre en cuanto se aleja del código: por eso
 `Gramatica-mini-lilypond.md` vive en `app/docs/` y no en un `docs/` central.
 
+**`informes/` es la excepción, y a propósito**: no describe el estado vigente
+sino que registra, con fecha, qué se decidió y por qué (y `HISTORIA.md`, el
+resumen de fondo). Un informe **no se reescribe**: si una decisión cambia, se
+escribe otro y se actualizan los documentos vigentes (`curriculum/`,
+`app/docs/`…), que son los que se reescriben. Índice en `informes/README.md`.
+
 ## README frente a CLAUDE.md
 
 - **README.md** — lo que hace falta para empezar: qué es, cómo se ejecuta,

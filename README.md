@@ -16,6 +16,9 @@ Tres subproyectos que comparten repositorio porque comparten currículo.
 
     sitio/        Portada del sitio publicado y el script que lo monta.
 
+    informes/     Registro fechado de hitos y decisiones de diseño, y la
+                  historia del desarrollo. No se publica.
+
 ## Ejecutar
 
 **App de ejercicios** — no necesita nada instalado:

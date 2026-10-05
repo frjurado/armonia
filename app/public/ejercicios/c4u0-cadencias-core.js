@@ -2,18 +2,18 @@
    4.º · Unidad 0 — Cadencias (núcleo compartido)
    ------------------------------------------------------------
    Lógica común a las tres variantes (tipo, bajo dado, canto dado)
-   de la familia Cadencias. Diseño: docs/Generador-ejercicios.md
-   §4 ter. Reglas de escritura: curriculum/Minimos-conduccion.md.
+   de la familia Cadencias. Diseño: docs/familias/cadencias.md.
+   Reglas de escritura: curriculum/Minimos-conduccion.md.
      · CATÁLOGO: cadencias (CAP, CAI, SC, SC frigia, CR) como
        fórmula por casillas T0 · PD · D64 · D · TF, con los acordes
-       y pesos de §4t.3 por nivel y modo, y una lista de vetos;
+       y pesos de §3 por nivel y modo, y una lista de vetos;
      · REALIZACIÓN a cuatro voces por el motor genérico
        (cuatro-voces-core.js), con la cláusula de la soprano de
-       §4t.4 como filtro (grado final) y puntuación (movimiento);
-     · RITMO por plantillas (§4t.5): compás 2/4, 3/4 o 4/4, con
+       §4 como filtro (grado final) y puntuación (movimiento);
+     · RITMO por plantillas (§5): compás 2/4, 3/4 o 4/4, con
        anacrusa desde el nivel 2; el 6/4 cadencial en parte más
        fuerte que su V y en el mismo compás;
-     · SALIDA: JSON de §5.2 (cuatro cadenas mini-LilyPond, una
+     · SALIDA: JSON de Modelo-ejercicios.md §5 (cuatro cadenas mini-LilyPond, una
        por voz, con bar checks y `partial`), exportador a MEI
        (pentagrama doble, dos capas por pentagrama, cifrado
        americano encima y romanos con cifras debajo) y notas MIDI.
@@ -23,7 +23,7 @@
        catálogo entero (es pequeño) y quedándose con las fórmulas
        realizables: por casilla en Bajo dado, por línea de bajo en
        Canto dado. Canto dado descarta además las instancias que
-       se leerían igual en la tonalidad relativa (§4t.7 bis).
+       se leerían igual en la tonalidad relativa (§7 bis).
    Depende de cuatro-voces-core.js (CuatroVoces), tonalidades.js
    (TONALIDADES) y mini-lilypond-parser.js (MiniLily). Sin DOM.
    ============================================================ */
@@ -43,7 +43,7 @@
     return items[items.length-1].x;
   }
 
-  /* ---------- catálogo (§4t.2, §4t.3) ---------- */
+  /* ---------- catálogo (§2, §3) ---------- */
   const MAX_NIVEL = 3;
   const TIPOS = {
     CAP:{sigla:'CAP', nombre:'Cadencia Auténtica Perfecta', desde:1},
@@ -68,13 +68,13 @@
     D: [ {id:'V', w:{major:2,minor:2}, desde:1}, {id:'V7', w:{major:3,minor:3}, desde:1} ]
   };
   const PRESENCIA = { T0:0.8, PD:0.9, D64:0.6 };
-  // Fórmulas vetadas: PARES de acordes consecutivos (§4t.3). VI–IV6 repite el
+  // Fórmulas vetadas: PARES de acordes consecutivos (§3). VI–IV6 repite el
   // bajo; I6–IV6, bajo 3̂–6̂ sin sentido; I–II, fuera del estilo.
   const FORMULAS_VETADAS = [['VI','IV6'], ['I6','IV6'], ['I','II']];
   const vetada = ids => ids.some((id,k)=>k>0 && FORMULAS_VETADAS.some(v=>v[0]===ids[k-1] && v[1]===id));
   // En MENOR, IV6 justo antes de V es SIEMPRE la frigia: la SC común no puede
   // usar esa combinación, o los mismos acordes saldrían con dos etiquetas
-  // (§4t.7 bis). Con el 6/4 cadencial por medio ya no es la frigia, y vale.
+  // (§7 bis). Con el 6/4 cadencial por medio ya no es la frigia, y vale.
   const etiquetaChocante = (tipo, ids, modo) =>
     modo==='minor' && tipo==='SC' && ids.some((id,k)=>id==='IV6' && ids[k+1]==='V');
 
@@ -113,11 +113,11 @@
     });
   }
 
-  /* ---------- cláusula de la soprano (§4t.4) ---------- */
+  /* ---------- cláusula de la soprano (§4) ---------- */
   // Grado final de la soprano por tipo: NORMA (Caplin): CAP 1̂; CAI 3̂/5̂…
   const FINAL = { CAP:[1], CAI:[3,5], SC:[2,7,5], SCF:[5,7], CR:[1,3] };
   // Líneas de soprano preferidas (peso 1–4), como grados «a>b>c» alineados al
-  // FINAL de la fórmula. ⟶ PROPUESTA en revisión (§4t.4). Las de dos notas
+  // FINAL de la fórmula. ⟶ PROPUESTA en revisión (§4). Las de dos notas
   // son el respaldo cuando ninguna larga casa.
   const CLAUSULA = {
     CAP:{'4>3>2>1':4,'3>2>1':4,'5>4>3>2>1':4,'5>4>2>1':3,'3>2>1>7>1':4,'3>2>7>1':3,'1>7>1':3,'1>1>7>1':2,
@@ -165,7 +165,7 @@
     return tipo;
   }
 
-  /* ---------- ritmo por plantillas (§4t.5) ---------- */
+  /* ---------- ritmo por plantillas (§5) ---------- */
   // '↑' = anacrusa (primer compás incompleto). Duraciones mini-LilyPond.
   const PLANTILLAS = {
     '4/4':{ 2:['1 | 1','↑2 | 1'], 3:['2 2 | 1','↑4 4 | 1'],
@@ -287,7 +287,7 @@
     return null;
   }
 
-  /* ---------- lecturas alternativas (§4t.7, §4t.7 bis) ---------- */
+  /* ---------- lecturas alternativas (§7, §7 bis) ---------- */
   // Grado del bajo de cada acorde del catálogo.
   const BAJO_DE = {I:1, I6:3, VI:6, IV:4, II6:4, II:2, IV6:6, I64:5, V:5, V7:5};
   const bajoDe = ids => ids.map(id=>BAJO_DE[id]);
@@ -295,7 +295,7 @@
   const bajoTxt = ids => bajoDe(ids).map(d=>GRADO_TXT[d]).join('–');
 
   // Etiqueta de respuesta de BAJO DADO: el bajo nunca distingue CAP de CAI
-  // (§4t.7 bis), así que las dos se responden «CA». No es un tipo del catálogo.
+  // (§7 bis), así que las dos se responden «CA». No es un tipo del catálogo.
   const CA = {sigla:'CA', nombre:'Cadencia Auténtica'};
   const tipoDesdeBajo = t => (t==='CAP'||t==='CAI') ? CA : TIPOS[t];
 
@@ -345,7 +345,7 @@
     return enumerarFormulas(nivel, key.mode).filter(f=>
       f.ids.length===ids.length && bajoDe(f.ids).join('-')===objetivo && realizaCon(key, f, null, null));
   }
-  // Por casilla, los OTROS acordes que caben con ese mismo bajo (§4t.7 bis:
+  // Por casilla, los OTROS acordes que caben con ese mismo bajo (§7 bis:
   // nunca más de uno, pero se devuelve lista por si el catálogo crece).
   function alternativasPorCasilla(ids, lecturas){
     return ids.map((id,k)=>[...new Set(lecturas.map(l=>l.ids[k]).filter(x=>x!==id))]);
@@ -353,7 +353,7 @@
 
   // Un grupo de fórmulas con la MISMA línea de bajo, comprimido a «un acorde
   // por casilla + sus alternativas». Nunca se listan las fórmulas enteras: con
-  // tres casillas ambiguas serían ocho (§4t.7 bis), ilegibles.
+  // tres casillas ambiguas serían ocho (§7 bis), ilegibles.
   // `preferida` fija qué acorde va en la primera fila (el de la realización
   // mostrada); si no se da, el primero de la enumeración.
   function comprimeLecturas(key, listaIds, preferida){
@@ -383,7 +383,7 @@
   function relativas(key){
     return TON.TODAS.filter(k=>k.sig===key.sig && k.mode!==key.mode);
   }
-  // GUARDA DE CANTO DADO (§4t.7 bis): ¿la misma soprano escrita admite una
+  // GUARDA DE CANTO DADO (§7 bis): ¿la misma soprano escrita admite una
   // realización con la MISMA sigla en la relativa? Si sí, «se pide tonalidad»
   // no tendría respuesta única y la instancia se descarta. Filtro previo
   // barato: si alguna nota de la soprano no pertenece a la escala de la
@@ -479,7 +479,7 @@
   //   alternativas: por casilla, ids de acorde que también caben con ese bajo;
   //     van en una SEGUNDA fila de cifrado. Verovio apila los <harm> por su
   //     atributo `n` (sin él se superponen): n="1" la realización, n="2" la
-  //     alternativa (§4t.7);
+  //     alternativa (§7);
   //   dato: el DATO DE PARTIDA (tonalidad, tipo de cadencia…) como texto
   //     sobre el primer tiempo. Va en la partitura, no en el enunciado: es
   //     información que se DA, y ahí queda alineada con el comienzo de la

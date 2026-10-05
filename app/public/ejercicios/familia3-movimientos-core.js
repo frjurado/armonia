@@ -4,7 +4,7 @@
    Capa de FAMILIA sobre el motor genérico de contrapunto
    (`contrapunto-core.js`, global Contrapunto): elige tonalidad,
    clave y tesituras según el nivel, pide al motor un contrapunto
-   1:1 de 10 notas por voz (Generador-ejercicios.md §4.3) y le
+   1:1 de 10 notas por voz (docs/familias/movimientos.md) y le
    añade lo específico de esta familia:
      · movimiento uniforme para el modo audición (gancho
        filtroCandidato del motor)

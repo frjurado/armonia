@@ -1,6 +1,6 @@
 // Validación masiva de la familia Prolongación (c4u0-prolongacion-core.js) sobre
 // el motor a cuatro voces, con el comprobador independiente
-// (cuatro-voces-check.js). Puntos de docs/Generador-ejercicios.md §4q.9:
+// (cuatro-voces-check.js). Puntos de docs/familias/prolongacion.md §9:
 //   1. cero infracciones de las normas;
 //   2. ritmo: ningún subordinado en parte fuerte, llegada en compás entero (o
 //      6/4–V en la SC), 6/4 cadencial según N9, número de compases del tipo,

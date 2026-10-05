@@ -1,7 +1,7 @@
 /* ============================================================
    3.º · Unidad 1 — Morfología: núcleo de la familia
    ------------------------------------------------------------
-   Variante «Bajo cifrado» (docs/Generador-ejercicios.md §4 cinco):
+   Variante «Bajo cifrado» (docs/familias/bajo-cifrado.md):
    un bajo breve (5–6 notas) con su cifrado, solo tríadas en estado
    fundamental, 1.ª y 2.ª inversión. Se piden el grado del bajo (en
    círculo, encima) y el acorde (romano, debajo, junto al cifrado).

@@ -7,7 +7,7 @@
    `curriculum/Minimos-conduccion.md`. No sabe nada de cadencias,
    ritmo, niveles, MEI ni UI: eso es de cada familia
    (`c4u0-cadencias-core.js`, …). Diseño en
-   `docs/Generador-ejercicios.md` §5.3.
+   `docs/motor-cuatro-voces.md`.
 
    · Las realizaciones NO están escritas a mano: se BUSCAN.
      Por acorde se enumeran las disposiciones válidas (registro,

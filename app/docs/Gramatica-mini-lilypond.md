@@ -1,7 +1,7 @@
 # mini-LilyPond — Gramática de la representación musical
 
 > **Estado.** Boceto inicial. Define la sintaxis de la **cadena de contenido musical** que vive
-> dentro del campo `music` de cada voz (ver `Generador-ejercicios.md` §5.2). Complementa, no
+> dentro del campo `music` de cada voz (ver `Modelo-ejercicios.md` §5). Complementa, no
 > sustituye, a ese documento: aquí solo se especifica la **notación**; el contexto (clave,
 > tonalidad, compás), los metadatos y las anotaciones viven en el JSON que la envuelve.
 
@@ -32,7 +32,7 @@ silencio invisible (ver más abajo).
 
 **Octava: absoluta.** Octava de referencia **`c'` = Do central (C4)**; `c` (sin marca) = C3;
 cada `'` sube una octava, cada `,` baja una. Coherente con la decisión de notación absoluta
-de §5.2 (autoconsistente, fácil de generar y de anotar).
+de `Modelo-ejercicios.md` §5 (autoconsistente, fácil de generar y de anotar).
 
 **Duraciones y puntillo: sí.** Cifra de duración (`1, 2, 4, 8, 16, 32`) con **puntillo** (`.`)
 y doble puntillo (`..`). Se admite el **arrastre de duración** de LilyPond (si una nota no
@@ -169,7 +169,7 @@ gs'2 gs'4 ~ gs'4 | a'1
 - **Anacrusa:** campo `partial` del `context` (una duración escrita: `"4"`, `"2."`), fuera de
   la cadena, como clave/tonalidad/compás. El parser exige que el primer compás sume exactamente
   esa duración y desplaza el cuadre de los siguientes; el envoltorio de papel lo emite como
-  `\partial`. Lo usan las cadencias de 4.º UD 0 (`Generador-ejercicios.md` §4t.5).
+  `\partial`. Lo usan las cadencias de 4.º UD 0 (`familias/cadencias.md` §5).
 - **Audio:** del modelo de notas se obtienen los MIDI para los samples.
 
 ## 7. Decisiones tomadas y pendientes
@@ -223,4 +223,4 @@ Para poder decir eso, cada nota/voz necesita una **dirección estable**. Dos enf
 
 Propuesta: **direccionamiento posicional** por defecto; los ids explícitos solo si más adelante
 hacen falta. La gramática concreta de las anotaciones (campos `answer`, `highlight`,
-`expected`…) se especifica en el JSON, no aquí — pertenece a `Generador-ejercicios.md` §5.2.
+`expected`…) se especifica en el JSON, no aquí — pertenece a `Modelo-ejercicios.md` §5.

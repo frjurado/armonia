@@ -132,24 +132,25 @@ Desiderata, con vista a medio plazo:
 
 ### 5.1. Modelo de los ejercicios breves
 
-Todo ejercicio breve es de uno de **tres tipos**:
+Un ejercicio breve se describe por **cuatro ejes independientes** (revisado el 2026-10-05,
+tras usarlos en clase; ver `../informes/2026-10-05-revision-tras-clase.md`):
 
-1. **Identificación conceptual** — se muestra un fragmento y se pide nombrar algo (un
-   intervalo, un tipo de movimiento, un grado, una cadencia…).
-2. **Audición** — se escucha un fragmento y se pide identificar algo (consonancia/disonancia,
-   tipo de movimiento…).
-3. **Canto** — se canta un fragmento y, sobre lo cantado, se pide algo (detectar un error,
-   discutir intervalos…).
+1. **Material** — qué se genera: un intervalo, una tríada, un bajo cifrado, una cadencia, un
+   fragmento a dos voces… No depende de la unidad.
+2. **Consigna** — qué se pregunta o se pide sobre ese material. Es lo que **define cada
+   ejercicio** y lo que, en general, **depende de la Unidad**: el mismo material, con
+   consignas distintas, da ejercicios de distintas UD.
+3. **Presentación** — qué se ve o se oye antes de la respuesta: la partitura, o **solo el
+   audio** cuando la misma pregunta tiene sentido de oído (audición). No es un ejercicio
+   aparte sino un modo del mismo, y solo existe donde encaja.
+4. **Nivel** — qué contenido puede salir (acordes, cadencias, modos, tonalidades). Solo
+   donde el contenido crece; la notación (clave, número de pentagramas) no es un nivel.
 
-Sobre cada tipo se generan **variantes** combinando parámetros:
-
-- **Número de voces:** 2 a 4 (se empieza por 2).
-- **Disposición:** un solo pentagrama/clave o dos (Sol/Fa).
-- *(otros parámetros a añadir según haga falta).*
-
-Y lo que **define cada ejercicio concreto es la consigna** —lo que se pregunta o se pide—,
-que en general **depende de la Unidad**. Es decir: el mismo tipo + las mismas variantes,
-con consignas distintas, dan ejercicios de distintas UD.
+La **audición** y el **canto** siguen siendo actividades del curso, pero ya no son casillas
+que cada familia de ejercicios deba llenar: la audición es una presentación (cuando la
+pregunta no cambia) o una consigna propia (cuando sí cambia); el canto, una consigna donde
+tenga sentido. Los parámetros de generación (número de voces, disposición, longitud…) son
+de cada material. El desarrollo, en `app/docs/Modelo-ejercicios.md`.
 
 ### 5.2. Generación y renderizado
 

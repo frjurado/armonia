@@ -2,7 +2,7 @@
 
 > **Estado del documento.** Borrador. Desarrolla el punto «mínimos de conducción de voces»
 > de `Plan-Armonia.md` §1. Es la **fuente de verdad** de las reglas: la app las implementa
-> (generador y comprobador del motor a cuatro voces, `app/docs/Generador-ejercicios.md` §5.3)
+> (generador y comprobador del motor a cuatro voces, `app/docs/motor-cuatro-voces.md`)
 > y los apuntes las explican; ninguno de los dos las redefine. Cada regla tiene un
 > **identificador estable** (`N·` norma, `P·` preferencia) que usa el código y que usarán
 > los ejercicios de detección de faltas. Cambiar el sentido de una regla exige cambiar su
@@ -96,7 +96,7 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | **N12** ② | **Sin intervalos melódicos aumentados** (2.ª aumentada 6̂–7̂ en menor, 4.ª aumentada) **ni disminuidos**, con una excepción: la 5.ª disminuida, solo si a continuación resuelve por grado hacia dentro (por tanto, nunca hacia el último acorde). |
 | **N13** ② | **Saltos.** Voces superiores: máximo **6.ª**. Bajo: hasta la **8.ª**. **Nunca 7.ª** ni mayor que 8.ª. A dos voces (3.º UD 1): máximo 5.ª en ambas. |
 | **P7** ② | Voces superiores preferentemente por **grado conjunto y notas comunes**; en la soprano, a lo sumo **un salto** por fragmento cadencial, y mejor si va en **movimiento contrario al bajo**. |
-| **P8** | **Perfil de la soprano:** un solo punto culminante; no más de dos veces seguidas la misma nota; **cláusula final idiomática** según el tipo de cadencia (tabla en `Generador-ejercicios.md` §4 ter). |
+| **P8** | **Perfil de la soprano:** un solo punto culminante; no más de dos veces seguidas la misma nota; **cláusula final idiomática** según el tipo de cadencia (tabla en `app/docs/familias/cadencias.md` §4). |
 | **P9** ② | Tras un salto de 4.ª o mayor, **cambio de dirección por grado conjunto**; seguir en la misma dirección es lo peor, sobre todo en la soprano. No se aplica al bajo tras un salto de 8.ª (5̂–5̂–1̂). |
 
 ## 6. Vigencia por curso y unidad

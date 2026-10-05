@@ -22,7 +22,7 @@ choca con `curriculum/Plan-Armonia.md`, manda el plan.
 
 - **Números romanos en mayúscula siempre, sin marca de calidad** (ni °, ni
   minúscula para el menor): II, VII, no ii ni vii°. La calidad la da la
-  tonalidad. Es la misma decisión que la app (`app/docs/Generador-ejercicios.md`).
+  tonalidad. Es la misma decisión que la app (`app/docs/motor-cuatro-voces.md`).
 - **Cifrado a la francesa**, como Pascual-Diego: el + marca la sensible y la
   cifra tachada, un intervalo disminuido. V7 con 7 sobre +, V6/5 con 6 sobre
   5 tachado, V+6, V+4. Ni la V tríada ni el VII6 llevan +.

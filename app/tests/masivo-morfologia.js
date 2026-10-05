@@ -1,5 +1,5 @@
 // Validación masiva de la familia Morfología de 3.º UD 1, variante Bajo cifrado
-// (c3u1-morfologia-core.js; docs/Generador-ejercicios.md §4 cinco). Comprueba
+// (c3u1-morfologia-core.js; docs/familias/bajo-cifrado.md). Comprueba
 // sobre las instancias generadas, con reglas escritas aquí aparte del core:
 //   1. forma: 5–6 acordes; empieza en I o I6; acaba en V–I o en V tras
 //      predominante o 6/4 cadencial; tonalidades del nivel;

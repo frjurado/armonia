@@ -3,23 +3,23 @@
    ------------------------------------------------------------
    Bajos sin cifrar con progresiones de prolongación (de I o de V,
    por bordadura o por paso, con la regla de la 8.ª) y, según el
-   tipo, cadencias. Diseño: docs/Generador-ejercicios.md §4 quater.
+   tipo, cadencias. Diseño: docs/familias/prolongacion.md.
    Reglas de escritura: curriculum/Minimos-conduccion.md.
      · TIPOS de extensión: 1 prolongación sola (2–3 cc.), 2 frase
        (prolongación + CA o SC, 4 cc.), 3 periodo (… SC ‖ … CA,
        8 cc.);
-     · CÉLULAS (§4q.2): gestos de bajo de 2–3 notas con sus
+     · CÉLULAS (§2): gestos de bajo de 2–3 notas con sus
        lecturas, encadenados por el acorde de unión; ENLACES de la
        prolongación de V a la tónica y CADENCIAS con las casillas de
-       la familia Cadencias (§4q.3);
-     · RITMO (§4q.5): después de la cadena de acordes, enumerando
+       la familia Cadencias (§3);
+     · RITMO (§5): después de la cadena de acordes, enumerando
        los patrones de compás que cuadran (subordinado en débil);
      · REALIZACIÓN por el motor a cuatro voces, con líneas de
        soprano preferidas por célula y la cláusula de cada cadencia;
-     · LECTURAS (§4q.7): el bajo escrito se ANALIZA con la misma
+     · LECTURAS (§7): el bajo escrito se ANALIZA con la misma
        gramática; de ahí salen las alternativas por nota y la
        guarda de tonalidad única;
-     · SALIDA: JSON de §5.2, MEI (romanos con los subordinados
+     · SALIDA: JSON de Modelo-ejercicios.md §5, MEI (romanos con los subordinados
        entre paréntesis, filas de alternativas, etiqueta por tramo)
        y notas MIDI.
    Depende de cuatro-voces-core.js (CuatroVoces), tonalidades.js
@@ -66,7 +66,7 @@
     VII6:{grado:7,inv:1}
   };
   // Spec del motor. En menor, IV6 solo sale en `paso-V` (⑤–♯⑥–♯⑦): es el IV
-  // MAYOR de la melódica ascendente (la PD de la cadencia no usa IV6, §4q.3).
+  // MAYOR de la melódica ascendente (la PD de la cadencia no usa IV6, §3).
   function spec(id, modo){
     const s=Object.assign({id}, ACORDES[id]);
     if(id==='IV6' && modo==='minor') s.eleva=[6];
@@ -81,7 +81,7 @@
   const bajoDeAc = ch => ch.tones[ch.bass];
   const mismoBajo = (ch, nota) => { const b=bajoDeAc(ch); return b.letter===nota.letter && b.alter===nota.alter; };
 
-  /* ---------- células (§4q.2) ---------- */
+  /* ---------- células (§2) ---------- */
   // pos: una lista de opciones por posición; la primera y la última son los
   // acordes principales (una sola opción), las de en medio, el subordinado.
   // Opción: [id, nivel desde]. La primera opción de cada posición pesa el doble.
@@ -100,7 +100,7 @@
     {id:'bord-V',    prol:'V', tecnica:'bordadura (6/4)', pos:[[['V',1]],[['I64b',3]],[['V',1]]], w:1.5, desde:3},
     {id:'arp-V-asc', prol:'V', tecnica:'arpegio', pos:[[['V',1]],[['V6',1]]], w:1, inversa:'arp-V-desc'},
     {id:'arp-V-desc',prol:'V', tecnica:'arpegio', pos:[[['V6',1]],[['V',1]]], w:1, inversa:'arp-V-asc'},
-    // Enlaces de la prolongación de V con la tónica (§4q.3); la llegada es la bisagra.
+    // Enlaces de la prolongación de V con la tónica (§3); la llegada es la bisagra.
     {id:'enl-V6',    prol:'V→I', tecnica:'V6 → I', pos:[[['V6',1]],[['I',1]]], w:3},
     {id:'enl-V42',   prol:'V→I', tecnica:'V – V4/2 – I6', pos:[[['V',1]],[['V42',2]],[['I6',1]]], w:2, desde:2}
   ];
@@ -114,7 +114,7 @@
   // y de ida y vuelta por arpegio: I–I6–I no prolonga nada)
   const encadena = (prev, c) => !prev || (prev.id!==c.id && prev.inversa!==c.id && finDe(prev)===inicioDe(c));
 
-  // Líneas de soprano preferidas por célula (§4q.6), grados «a>b>c».
+  // Líneas de soprano preferidas por célula (§6), grados «a>b>c».
   const SOPRANO = {
     'bord-inf':{'1>2>1':3,'3>4>3':3,'5>5>5':2,'3>2>1':2,'1>2>3':2},
     'bord-sup':{'1>7>1':3,'3>4>3':3,'5>4>3':2,'3>2>3':1},
@@ -143,7 +143,7 @@
     return completa ? pen : pen/2;
   }
 
-  /* ---------- construcción de la cadena (§4q.2–4q.4) ---------- */
+  /* ---------- construcción de la cadena (§2–4q.4) ---------- */
   // Cadena de nCel células de la armonía `prol`; `empieza` fuerza el acorde
   // inicial (o null). → [célula…] o null.
   function cadena(prol, nivel, modo, nCel, empieza){
@@ -235,7 +235,7 @@
     return cels;
   }
 
-  // Forma de un tipo (§4q.4), elegida ANTES de los reintentos: si no, las
+  // Forma de un tipo (§4), elegida ANTES de los reintentos: si no, las
   // formas con menos combinaciones válidas (la prolongación de V) saldrían
   // mucho menos de lo previsto.
   function elegirForma(tipo){
@@ -278,7 +278,7 @@
     return est;
   }
 
-  /* ---------- ritmo (§4q.5) ---------- */
+  /* ---------- ritmo (§5) ---------- */
   const PATRONES = {
     '4/4':[['1'],['2','2'],['2','4','4']],
     '3/4':[['2.'],['2','4'],['4','2'],['4','4','4']],
@@ -390,7 +390,7 @@
     };
   }
 
-  /* ---------- lecturas: análisis del bajo (§4q.7) ---------- */
+  /* ---------- lecturas: análisis del bajo (§7) ---------- */
   // Todas las cadenas de células de `prol` que empiezan en i sobre el bajo
   // dado. → [{fin, slots:[[ids]…], cels:[id…]}] (slots desde i hasta fin).
   function cadenasEn(key, nivel, bajo, prol, i, prev, primerId){
@@ -471,7 +471,7 @@
     });
     return out;
   }
-  // Veto (§4q.2): dentro de UNA prolongación, ningún par de notas del bajo se
+  // Veto (§2): dentro de UNA prolongación, ningún par de notas del bajo se
   // repite inmediatamente (①–②–①–②–③, ③–⑦–①–⑦–①…). Entre procedimientos
   // distintos (el IV de la prolongación y el de la cadencia) sí se admite.
   const mismaNota = (a,b) => a.letter===b.letter && a.alter===b.alter;
@@ -504,7 +504,7 @@
 
   // Tonalidad relativa (misma armadura, otro modo)
   const relativas = key => TON.TODAS.filter(k=>k.sig===key.sig && k.mode!==key.mode);
-  // Tonalidades por nivel (§4q.8): 1, solo mayores de 3.º; 2, las 12 de 3.º; 3, 16.
+  // Tonalidades por nivel (§8): 1, solo mayores de 3.º; 2, las 12 de 3.º; 3, 16.
   function tonalidades(nivel){
     const t=TON.hastaTrimestre(nivel>=3 ? 4 : 3);
     return nivel===1 ? t.filter(k=>k.mode==='major') : t;

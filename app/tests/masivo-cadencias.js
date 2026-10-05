@@ -1,7 +1,7 @@
 // Validación masiva de la familia Cadencias (c4u0-cadencias-core.js) sobre el
 // motor a cuatro voces, con el comprobador independiente (cuatro-voces-check.js):
 //   1. cero infracciones de las normas;
-//   2. frecuencia de cada fórmula (para vetar/ajustar pesos, §4t.3);
+//   2. frecuencia de cada fórmula (para vetar/ajustar pesos, cadencias.md §3);
 //   3. variedad de realizaciones por fórmula y tonalidad;
 //   5. la etiqueta CAP/CAI coincide con la soprano final;
 //   6. cuadre rítmico: cada voz pasa el bar check del parser (compás + partial);
@@ -11,7 +11,7 @@
 //      más de una alternativa;
 //   9. Canto dado: ninguna instancia superviviente se lee en la relativa con la
 //      misma sigla, y las listas de «otros bajos» no se disparan.
-// (La numeración sigue a docs/Generador-ejercicios.md §4t.9.)
+// (La numeración sigue a docs/familias/cadencias.md §9.)
 // Uso: node tests/masivo-cadencias.js [nivel 1–3] [n instancias] [--sin-verovio]
 const path = require('path');
 const BASE = path.join(__dirname, '..', 'public') + '/';

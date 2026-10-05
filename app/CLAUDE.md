@@ -40,10 +40,13 @@ y conviene que siga así.
 consultarlos; al implementar algo, actualizar su estado (`⟶ PENDIENTE`,
 `⟶ ABIERTO`, `⟶ EN CURSO`, `⟶ HECHO`):
 
-- `docs/Generador-ejercicios.md` — diseño del generador: jerarquía
-  UD → familia → tipo → instancia, dinámica de UI (generar → escuchar →
-  «Respuesta» → «Otro similar» / «Más difícil»), y su índice de decisiones
-  abiertas (§6).
+- `docs/Modelo-ejercicios.md` — lo común: los cuatro ejes (material,
+  consigna, presentación, nivel), la página de ejercicio, el menú, los
+  nombres de fichero y el índice de decisiones abiertas (§8). El modelo
+  cambió el 2026-10-05 y el código aún no lo sigue entero: lo que falta va
+  marcado `⟶ PENDIENTE (fase N)`.
+- `docs/familias/<material>.md` — diseño de cada material y sus consignas.
+- `docs/motor-cuatro-voces.md` — el motor SATB y su comprobador.
 - `docs/Gramatica-mini-lilypond.md` — gramática EBNF del mini-LilyPond.
 - `tests/validacion-lilypond.ly` — prueba de que el subconjunto compila en
   LilyPond real. Verificado con 2.24.3: sin errores ni avisos.
@@ -156,7 +159,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     dibuja la página tras el render (`ArmoniaEj.corchetesTramo`, `comun.js`). `tests/masivo-prolongacion.js [nivel]
     [tipo] [n]` es su validación masiva.
   - `c3u1-morfologia-core.js` (`Morfologia`) — familia Morfología de 3.º UD 1
-    (§4 cinco): bajos cifrados generados con una gramática de sucesiones y
+    (`docs/familias/bajo-cifrado.md`): bajos cifrados generados con una gramática de sucesiones y
     las normas melódicas del bajo; usa el modelo de acorde de `CuatroVoces`
     pero no el realizador. El grado del bajo en círculo es un `<harm
     type="gradobajo">` con la cifra sola: el círculo lo dibuja
@@ -165,10 +168,12 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).
-  - Ficheros **sin prefijo de curso/unidad = compartidos**; las familias
-    nuevas van como `c<curso>u<ud>-<familia>-…` (`docs/Generador-ejercicios.md`
-    §5.4). Los nombres antiguos (`unidad0-`, `familia2-`…) se renombrarán en
-    una pasada aparte.
+  - Nombres: **por material, sin curso ni unidad** (`docs/Modelo-ejercicios.md`
+    §6, decidido el 2026-10-05; la convención `c<curso>u<ud>-` queda para los
+    apuntes). Dónde sale un ejercicio es un dato de `curriculum-data.js`. Los
+    nombres actuales (`unidad0-`, `familia2-`, `c4u0-`…) se renombran en una
+    pasada (fase 3, tabla en ese §6); hasta entonces, un fichero nuevo ya va
+    con el nombre por material.
 
 ## Convenciones de dominio
 
