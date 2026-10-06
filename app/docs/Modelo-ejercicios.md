@@ -190,9 +190,12 @@ y el conmutador pueden recordarse en `localStorage` como comodidad, nunca como d
   ella) y, al final de cada epígrafe citado, una línea «Para practicar → Familia: consigna,
   consigna…».
 - **Dónde se ven.** En el ejercicio, un botón «Apuntes · 1.2 Cifrado de grados» delante de
-  «Ayuda», en la misma fila (no dentro: la ayuda no se abre). En el menú, «Apuntes de la
-  unidad» junto al título de cada unidad. En los apuntes, lo dicho arriba. **El PDF, sin
-  enlaces.** Todo se abre en la misma pestaña.
+  «Ayuda», en la misma fila (no dentro: la ayuda no se abre); en el móvil, «Apuntes · 1.2»,
+  para que la fila quepa. En el menú, «Apuntes →» junto al título de cada unidad. En la
+  cabecera de los apuntes, textos cortos para que quepan en el móvil —«Ejercicios», y las
+  dos descargas con su icono: «PDF», «Ejemplos»— y el nombre largo como `title`; si no
+  caben, bajan a una segunda línea, sin menú desplegable. **El PDF, sin enlaces.** Todo se
+  abre en la misma pestaña.
 - **Una sola declaración**: `apuntes` de cada consigna en `curriculum-data.js`. La relación
   natural es «este ejercicio se explica aquí»; la inversa se deduce. El primer epígrafe de
   la lista es el del botón del ejercicio; todos reciben su «Para practicar».

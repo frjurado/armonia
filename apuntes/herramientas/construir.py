@@ -565,6 +565,11 @@ def pandoc(texto, salida, extra, indice=True):
     print(f"  {salida.relative_to(RAIZ)} ({salida.stat().st_size // 1024} kB)")
 
 
+ICONO_DESCARGA = ('<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" '
+                  'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+                  '<path d="M12 4v11"/><polyline points="7 10 12 15 17 10"/><path d="M5 20h14"/></svg>')
+
+
 def envoltorio(md):
     """Lo que rodea al documento en el HTML: cabecera entintada y hoja.
 
@@ -587,14 +592,19 @@ def envoltorio(md):
     tiene índice de apuntes al que volver.
     """
     TMP.mkdir(exist_ok=True)
+    # Textos cortos (caben en el móvil) y el nombre largo como `title`; las
+    # descargas llevan su icono, para distinguirlas de «Ejercicios», que es
+    # otra página y que pone montar_sitio() al principio de .acciones.
     # Los ejemplos para clase, si la unidad marca alguno (ver documentar_aula).
-    ejemplos = (f'  <a class="pdf" href="{md.stem}-ejemplos.pdf">Ejemplos para clase</a>\n'
-                if figuras_aula(md) else "")
+    ejemplos = (f'    <a class="accion" href="{md.stem}-ejemplos.pdf" title="Ejemplos para clase (PDF)">'
+                f'{ICONO_DESCARGA}Ejemplos</a>\n' if figuras_aula(md) else "")
     trozos = {
         "before": ('<header class="masthead">\n'
                    '  <a class="back" href="index.html">← Apuntes</a>\n'
-                   f'  <a class="pdf" href="{md.stem}.pdf">Descargar en PDF</a>\n'
+                   '  <nav class="acciones">\n'
+                   f'    <a class="accion" href="{md.stem}.pdf" title="Descargar en PDF">{ICONO_DESCARGA}PDF</a>\n'
                    f'{ejemplos}'
+                   '  </nav>\n'
                    '</header>\n'
                    '<div class="hoja">\n'),
         "after": f'</div>\n<footer class="pie">{pie_html()}</footer>\n',
@@ -922,8 +932,9 @@ def enlazar(html, unidad, curr):
     # «Ejercicios» en la cabecera, si la app publica algo de esta unidad
     ud = next((u for c in curr["cursos"] for u in c["unidades"] if u.get("id") == unidad), None)
     if ud and ud.get("publico") is True and any(f.get("publico") is not False for f in ud["familias"]):
-        html = html.replace("</header>",
-                            f'  <a class="pdf" href="../app/index.html#ud={unidad}">Ejercicios</a>\n</header>', 1)
+        html = html.replace('<nav class="acciones">\n',
+                            '<nav class="acciones">\n'
+                            f'    <a class="accion" href="../app/index.html#ud={unidad}">Ejercicios</a>\n', 1)
     # «Para practicar» al final de cada epígrafe citado: antes del siguiente
     # de su nivel o superior, o del final de la hoja
     por_ancla = {}

@@ -304,6 +304,7 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
   .pie-ej{margin:0 0 6px;gap:10px}
   .pie-ej .ayuda{margin:0}
   a.apuntes-enlace{min-height:48px;font-size:15px}
+  a.apuntes-enlace .ap-resto{display:none}
   .prompt{font-size:16px}
 }
 

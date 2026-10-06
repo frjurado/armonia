@@ -394,8 +394,12 @@
       const a=document.createElement('a');
       a.className='apuntes-enlace';
       a.href=`../../apuntes/${unidad}.html#${encodeURIComponent(id)}`;
+      a.title=`Apuntes · ${titulo}`;
+      // «1.2 Cifrado de grados»: en el móvil solo se ve el número (comun.css)
+      const m=/^(\d+(?:\.\d+)*)\s+(.*)$/.exec(titulo);
+      const texto = m ? `<span class="ap-num">${esc(m[1])}</span><span class="ap-resto"> ${esc(m[2])}</span>` : esc(titulo);
       a.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>'
-        + `<span>Apuntes · ${esc(titulo)}</span>`;
+        + `<span>Apuntes · ${texto}</span>`;
       // fila común con «Ayuda»: el enlace delante; la ayuda, al abrirse, baja
       // a su propia línea (comun.css, .pie-ej)
       const fila=document.createElement('div');

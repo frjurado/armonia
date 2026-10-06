@@ -190,10 +190,14 @@ figure:has(img.aula) figcaption::after {
   transition: background .15s ease;
 }
 .masthead a.back:hover, .masthead a.back:active { background: rgba(255,255,255,.22); }
-.masthead a.pdf { margin-left: auto; color: rgba(255,255,255,.75); font-size: .9rem; }
-.masthead a.pdf:hover { color: #fff; text-decoration: underline; }
-/* «Ejemplos para clase», detrás del PDF: solo el primero se va a la derecha. */
-.masthead a.pdf + a.pdf { margin-left: 0; }
+/* Enlaces de la unidad (Ejercicios, PDF, Ejemplos), a la derecha. Textos
+   cortos para que quepan en el móvil; si aun así no caben, bajan a una
+   segunda línea bajo «← Apuntes» (flex-wrap), sin menú desplegable. */
+.masthead { flex-wrap: wrap; row-gap: .5rem; }
+.masthead .acciones { margin-left: auto; display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; }
+.masthead a.accion { display: inline-flex; align-items: center; gap: .3rem;
+  color: rgba(255,255,255,.75); font-size: .9rem; }
+.masthead a.accion:hover { color: #fff; text-decoration: underline; }
 
 @media print { .masthead { display: none; } .hoja { margin-top: 0; } }
 
