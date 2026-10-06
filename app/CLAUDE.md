@@ -87,30 +87,43 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   de este fichero y de `docs/` van relativas a `public/`.**
 - `index.html` — menú principal. `curriculum.html` — vista de desarrollo de
   los mismos datos.
-- `curriculum-data.js` — **fuente única del currículo** para ambas vistas.
-  Para publicar un ejercicio se pone su URL en el modo (`id`/`au`/`ct`) de su
-  familia; `null` = no disponible. **Qué ven los alumnos lo decide
+- `curriculum-data.js` — **fuente única del currículo**: unidades (con su
+  `id`, `c3u1`, el mismo que el del apunte) → familias → **consignas** (un
+  botón del menú cada una: `url`, icono, `apuntes` que la explican). Un solo
+  esquema; ya no hay modos id/au/ct. Lo leen el menú, `curriculum.html`, las
+  páginas (`comun.js`: niveles y enlace a los apuntes) y **la construcción de
+  los apuntes** (`construir.py`, con Node, para sus enlaces a los ejercicios:
+  por eso termina en `module.exports`). Para publicar una consigna se pone su
+  URL; `null` = no disponible. **Qué ven los alumnos lo decide
   `publico:true` por unidad**: sin él, en la versión pública la unidad sale
   como «próximamente» aunque tenga ejercicios. Dentro de una unidad pública,
-  `publico:false` **en una familia** la oculta y **en un ejercicio** (modo o
-  tipo) lo deja como «próximamente»; sin marca, heredan. Ojo: lo que no lleva
+  `publico:false` **en una familia** la oculta y **en una consigna** la deja
+  como «próximamente»; sin marca, heredan. Ojo: lo que no lleva
   marca **sale**: una familia nueva en una unidad ya pública llega a los
   alumnos en la siguiente publicación salvo que se le ponga `publico:false`.
   `modo.js` (`'dev'` en el repo;
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no
   mantener diferencias de contenido entre `master` y `publico` (se fusionan
-  enteras con `sitio/publicar.sh`). Excepción: las familias de las **unidades
-  de repaso (UD 0 de ambos cursos)**, y las que solo tienen identificación
-  (Morfología, 3.º UD 1), no tienen modos sino un array `tipos` (variantes,
-  cada una con su icono).
+  enteras con `sitio/publicar.sh`).
+- **Enlaces con los apuntes** (`docs/Modelo-ejercicios.md` §3): se declaran
+  solo en `curriculum-data.js` (`apuntes:['c3u1#cifrado-de-grados']`, el ancla
+  que Pandoc da al título). La construcción de los apuntes pone en el sitio el
+  «Ejercicios» de cada unidad y los «Para practicar», y genera
+  `apuntes/enlaces.js` (títulos de los epígrafes citados y unidades
+  publicadas), que la app carga para el botón «Apuntes» de cada página y el
+  enlace de cada unidad del menú. **Sin `enlaces.js` (en local, sin montar el
+  sitio) no salen esos enlaces, y es lo esperado**: para verlos,
+  `sh sitio/montar.sh` y servir `_site/`. Si cambia el título de un epígrafe
+  citado, `construir.py` avisa.
 - `ejercicios/`, un patrón por familia:
-  - `<familia>-core.js` — IIFE que expone un global (`Familia2`, `Familia3`,
-    `U0Armaduras`, `U0Intervalos`, `U0Acordes`, `Contrapunto`) con TODA la
+  - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
+    `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
+    `Movimientos`, `Familia2`, `Contrapunto`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
-  - Una página HTML por variante/modo (`-id`, `-au`, `-ct`, o las variantes de
-    la UD 0) que solo contiene UI: carga scripts, pinta, escucha botones.
+  - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
+    contiene UI: carga scripts, pinta, escucha botones.
   - **Página común** (`docs/Modelo-ejercicios.md` §2): las páginas migradas (todo
     lo publicado salvo Armaduras, que son series en tira; las familias ocultas
     de 3.º UD 1, al rediseñarlas) no llevan su
@@ -153,7 +166,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     realizaciones **se buscan, no se escriben**. `cuatro-voces-check.js`
     (`CuatroVocesCheck`) es el comprobador independiente: **no comparte con
     el motor las funciones de transición**, a propósito.
-  - `c4u0-cadencias-core.js` (`Cadencias`) — familia Cadencias de 4.º UD 0
+  - `cadencias-core.js` (`Cadencias`) — familia Cadencias de 4.º UD 0
     sobre el motor: catálogo de fórmulas, cláusulas de soprano, plantillas
     rítmicas (con anacrusa: `partial` en el JSON y en el parser), JSON, MEI
     y MIDI. Tres variantes: `generar()` (Tipo), `generarBajo()` y
@@ -170,32 +183,31 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     `@type` de MEI llega al SVG como **clase**, así que se puede estilar
     desde CSS— y se separa un poco con `vo` (negativo = hacia abajo en
     `place="below"`).
-  - `c4u0-prolongacion-core.js` (`Prolongacion`) — familia Prolongación de 4.º
+  - `prolongacion-core.js` (`Prolongacion`) — familia Prolongación de 4.º
     UD 0: bajos sin cifrar con prolongaciones (células encadenadas) y
     cadencias; reutiliza casillas, vetos, cláusulas y plantillas de
     `Cadencias`. Las alternativas salen de **analizar el bajo con la misma
     gramática** que lo generó. Excepción al patrón de una página con su UI:
-    los tres tipos comparten `c4u0-prolongacion-ui.js`, y cada página solo
+    los tres tipos comparten `prolongacion-ui.js`, y cada página solo
     fija `window.PROL_TIPO` y su ayuda. Las etiquetas de tramo van como `<reh>`
     (lo único que Verovio sube por encima del americano) y su corchete (abierto, sin gancho, en la bisagra) lo
     dibuja la página tras el render (`ArmoniaEj.corchetesTramo`, `comun.js`). `tests/masivo-prolongacion.js [nivel]
     [tipo] [n]` es su validación masiva.
-  - `c3u1-morfologia-core.js` (`Morfologia`) — familia Morfología de 3.º UD 1
+  - `bajo-cifrado-core.js` (`BajoCifrado`) — familia Morfología de 3.º UD 1
     (`docs/familias/bajo-cifrado.md`): bajos cifrados generados con una gramática de sucesiones y
     las normas melódicas del bajo; usa el modelo de acorde de `CuatroVoces`
     pero no el realizador. El grado del bajo en círculo es un `<harm
     type="gradobajo">` con la cifra sola: el círculo lo dibuja
     `ArmoniaEj.circularGrados` tras el render (ninguna de las fuentes trae
-    ①…⑦). `tests/masivo-morfologia.js [nivel] [n]` es su validación masiva.
+    ①…⑦). `tests/masivo-bajo-cifrado.js [nivel] [n]` es su validación masiva.
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
     tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
     aún llevan sus 4 tonalidades dentro (migración pendiente).
   - Nombres: **por material, sin curso ni unidad** (`docs/Modelo-ejercicios.md`
-    §6, decidido el 2026-10-05; la convención `c<curso>u<ud>-` queda para los
-    apuntes). Dónde sale un ejercicio es un dato de `curriculum-data.js`. Los
-    nombres actuales (`unidad0-`, `familia2-`, `c4u0-`…) se renombran en una
-    pasada (fase 3, tabla en ese §6); hasta entonces, un fichero nuevo ya va
-    con el nombre por material.
+    §6; la convención `c<curso>u<ud>-` es solo de los apuntes). Dónde sale un
+    ejercicio es un dato de `curriculum-data.js`, así que mover una familia de
+    unidad no renombra nada ni cambia URL. Queda `familia2-intervalos-*`, que
+    se funde con `intervalos-*` en la fase 4.
 
 ## Convenciones de dominio
 

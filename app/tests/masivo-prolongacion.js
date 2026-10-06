@@ -1,4 +1,4 @@
-// Validación masiva de la familia Prolongación (c4u0-prolongacion-core.js) sobre
+// Validación masiva de la familia Prolongación (prolongacion-core.js) sobre
 // el motor a cuatro voces, con el comprobador independiente
 // (cuatro-voces-check.js). Puntos de docs/familias/prolongacion.md §9:
 //   1. cero infracciones de las normas;
@@ -18,8 +18,8 @@ const path = require('path');
 const BASE = path.join(__dirname, '..', 'public') + '/';
 const CK = require(BASE + 'ejercicios/cuatro-voces-check.js');
 const ML = require(BASE + 'ejercicios/mini-lilypond-parser.js');
-const P  = require(BASE + 'ejercicios/c4u0-prolongacion-core.js');
-const C  = require(BASE + 'ejercicios/c4u0-cadencias-core.js');
+const P  = require(BASE + 'ejercicios/prolongacion-core.js');
+const C  = require(BASE + 'ejercicios/cadencias-core.js');
 
 const nivel = parseInt(process.argv[2] || '1', 10);
 const tipo  = parseInt(process.argv[3] || '2', 10);

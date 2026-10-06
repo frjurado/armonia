@@ -100,7 +100,7 @@ El resto de la paleta (fondo, superficies, textos, bordes, mudos) no cambia.
 
 **Por qué el acierto cambia de color**: con tinta azul el acierto en verde contrasta bien. Con tinta verde ese verde compite con la propia tinta, así que el acierto pasa a un acento terroso. Es el único token de la paleta que depende de la variante además de la tinta.
 
-**Pendiente**: ese terroso (`#8f4a22`) queda cerca del color de la voz inferior en movimiento armónico (`--voz-inf:#b06c3a`, también en `ejercicios/familia3-movimientos-core.js`). En un ejercicio de esa familia con la respuesta revelada conviven dos naranjas tostados; sin decidir.
+**Pendiente**: ese terroso (`#8f4a22`) queda cerca del color de la voz inferior en movimiento armónico (`--voz-inf:#b06c3a`, también en `ejercicios/movimientos-core.js`). En un ejercicio de esa familia con la respuesta revelada conviven dos naranjas tostados; sin decidir.
 
 ## Assets
 - Iconos: SVG inline de trazo (stroke 2, linecap/linejoin round), estilo Feather/Lucide: lupa, auriculares, micrófono, candado, play, flechas. Sin emojis.

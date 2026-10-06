@@ -10,7 +10,8 @@
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
 <script src="contrapunto-core.js"></script>
-<script src="familia3-movimientos-core.js"></script>
+<script src="movimientos-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 </head>
@@ -68,7 +69,7 @@
    UI / RENDER / AUDIO — identificación (encadenado)
    ------------------------------------------------------------
    El contrapunto (10 notas por voz) se genera en contrapunto-
-   core.js (motor genérico) a través de familia3-movimientos-
+   core.js (motor genérico) a través de movimientos-
    core.js, compartido con canto y audición. El fragmento se
    revela pareja a pareja (las notas ocultas se exportan como
    <space>, layout estable), pero la SOLUCIÓN va un paso por
@@ -100,14 +101,14 @@ function lineCount(){ return Math.max(answered ? idx : idx-1, 0); }
 
 function renderSVG(){
   if(!tk || !current) return;
-  tk.loadData(Familia3.toMEI(current,{revealed:idx+1, intervals: showInt?intCount():0}));
+  tk.loadData(Movimientos.toMEI(current,{revealed:idx+1, intervals: showInt?intCount():0}));
   $('notation').innerHTML = tk.renderToSVG(1);
   requestAnimationFrame(drawLines);
 }
 function drawLines(){
   const ov=$('overlay');
   if(!showMov || !tk){ ov.innerHTML=''; return; }
-  Familia3.drawMotionLines(wrap(), ov, lineCount(), {animateLast: justAdvanced});
+  Movimientos.drawMotionLines(wrap(), ov, lineCount(), {animateLast: justAdvanced});
   justAdvanced=false;
 }
 function updateTexts(){
@@ -128,7 +129,7 @@ function updateTexts(){
 }
 
 function newExercise(){
-  current = Familia3.generate(level);
+  current = Movimientos.generate(level);
   idx=0; answered=false; busy=false; justAdvanced=false;
   $('lvl').textContent = level;
   $('lvlNote').textContent = LVL_NOTES[level] || '';

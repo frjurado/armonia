@@ -362,18 +362,51 @@
       msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; });
   }
 
-  // Los `niveles` de la familia de esta página en curriculum-data.js (se busca
-  // por nombre de fichero, como hace el menú con #de=). [] si no está.
-  function nivelesDelCurriculo(){
-    let C; try{ C=CURRICULO; }catch(e){ return []; }      // const global de curriculum-data.js
+  // La familia y la consigna de esta página en curriculum-data.js (se buscan
+  // por nombre de fichero, como hace el menú con #de=). null si no está o si
+  // la página no ha cargado curriculum-data.js.
+  function deEstaPagina(){
+    let C; try{ C=CURRICULO; }catch(e){ return null; }    // const global de curriculum-data.js
     const fichero=location.pathname.split('/').pop();
-    const fin=u=>!!u && u.split('/').pop()===fichero;
-    for(const curso of C.cursos) for(const ud of curso.unidades) for(const fam of ud.familias){
-      const urls=(fam.tipos||[]).map(t=>t.url).concat(Object.values(fam.modos||{}).map(m=>m&&m.url));
-      if(urls.some(fin)) return fam.niveles||[];
-    }
-    return [];
+    for(const curso of C.cursos) for(const ud of curso.unidades) for(const fam of ud.familias)
+      for(const c of fam.consignas)
+        if(c.url && c.url.split('/').pop()===fichero) return {ud, fam, consigna:c};
+    return null;
   }
+  function nivelesDelCurriculo(){ const d=deEstaPagina(); return (d && d.fam.niveles) || []; }
+
+  /* ---------- enlace a los apuntes (Modelo-ejercicios.md §3) ---------- */
+  // El primer epígrafe que cita la consigna (`apuntes` en curriculum-data.js)
+  // se enlaza con un botón junto a «Ayuda»: «Apuntes · 1.2 Cifrado de
+  // grados». El título y si la unidad está publicada los da enlaces.js, que
+  // genera la construcción de los apuntes en el sitio montado; sin él (en
+  // local, o con la unidad sin publicar) no se pinta nada.
+  function enlaceApuntes(){
+    const d=deEstaPagina(), ayuda=document.querySelector('details.ayuda');
+    const ancla=d && d.consigna.apuntes && d.consigna.apuntes[0];
+    if(!ancla || !ayuda) return;
+    const s=document.createElement('script');
+    s.src='../../apuntes/enlaces.js';
+    s.onload=()=>{
+      const A=global.ARMONIA_APUNTES, titulo=A && A.epigrafes && A.epigrafes[ancla];
+      const [unidad, id]=ancla.split('#');
+      if(!titulo || !A.unidades.includes(unidad)) return;
+      const a=document.createElement('a');
+      a.className='apuntes-enlace';
+      a.href=`../../apuntes/${unidad}.html#${encodeURIComponent(id)}`;
+      a.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></svg>'
+        + `<span>Apuntes · ${esc(titulo)}</span>`;
+      // fila común con «Ayuda»: el enlace delante; la ayuda, al abrirse, baja
+      // a su propia línea (comun.css, .pie-ej)
+      const fila=document.createElement('div');
+      fila.className='pie-ej';
+      ayuda.parentNode.insertBefore(fila, ayuda);
+      fila.append(a, ayuda);
+    };
+    document.head.appendChild(s);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enlaceApuntes);
+  else enlaceApuntes();
   const esc=s=>String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   /* ---------- audio ---------- */

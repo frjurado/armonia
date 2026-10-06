@@ -41,6 +41,9 @@ jobs:
       #  - TYPST no está en apt, y hace falta el BINARIO: `pip install
       #    typst` instala solo el módulo de Python, y Pandoc llama al
       #    ejecutable.
+      #  - NODE lo trae ya la imagen de Ubuntu de GitHub: construir.py lo usa
+      #    para leer app/public/curriculum-data.js (enlaces con los ejercicios).
+      #    Si faltara, el sitio saldría sin esos enlaces, con un aviso.
       - name: Instalar LilyPond, Pandoc y Typst
         run: |
           sudo apt-get update
@@ -50,7 +53,7 @@ jobs:
           sudo dpkg -i /tmp/pandoc.deb
           curl -sSLf "https://github.com/typst/typst/releases/download/v${TYPST}/typst-x86_64-unknown-linux-musl.tar.xz" \
             | tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
-          lilypond --version | head -1; pandoc --version | head -1; typst --version
+          lilypond --version | head -1; pandoc --version | head -1; typst --version; node --version
         env:
           PANDOC: "3.10"
           TYPST: 0.14.2

@@ -16,7 +16,7 @@
    · El modelo de acorde (romano, cifras, americano) es el de
      cuatro-voces-core.js (`CuatroVoces.acorde`): mismo dibujo que
      en 4.º. La menor, estrictamente armónica: sin III (sería III+).
-   · Sin DOM: generación, MEI y MIDI. Global `Morfologia`.
+   · Sin DOM: generación, MEI y MIDI. Global `BajoCifrado`.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -284,7 +284,7 @@
     return {
       nivel, key, ids, acordes,
       json:{
-        familia:'c3u1-morfologia', variante:'bajo', nivel,
+        familia:'bajo-cifrado', variante:'lectura', nivel,
         context:{key:key.nombre, clefs:['treble','bass']},
         voices:[{clef:'bass', music:ps.map(p=>CV.token(p)+'1').join(' ')}],
         answer:{
@@ -398,6 +398,6 @@
     pasoValido, cifrasDe, acordeAgudo
   };
   if (esNode) module.exports = api;
-  else global.Morfologia = api;
+  else global.BajoCifrado = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin del módulo */

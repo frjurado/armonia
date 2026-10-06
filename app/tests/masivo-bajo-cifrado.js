@@ -1,5 +1,5 @@
 // Validación masiva de la familia Morfología de 3.º UD 1, variante Bajo cifrado
-// (c3u1-morfologia-core.js; docs/familias/bajo-cifrado.md). Comprueba
+// (bajo-cifrado-core.js; docs/familias/bajo-cifrado.md). Comprueba
 // sobre las instancias generadas, con reglas escritas aquí aparte del core:
 //   1. forma: 5–6 acordes; empieza en I o I6; acaba en V–I o en V tras
 //      predominante o 6/4 cadencial; tonalidades del nivel;
@@ -12,10 +12,10 @@
 //   4. cifrado: coincide con las notas (6 = 1.ª inv., 6/4 = 2.ª), y en menor
 //      la sensible fuera del bajo lleva su alteración;
 //   5. frecuencias de acordes, finales y 6/4; y render en Verovio.
-// Uso: node tests/masivo-morfologia.js [nivel 1–2] [n] [--sin-verovio]
+// Uso: node tests/masivo-bajo-cifrado.js [nivel 1–2] [n] [--sin-verovio]
 const path = require('path');
 const BASE = path.join(__dirname, '..', 'public') + '/';
-const M  = require(BASE + 'ejercicios/c3u1-morfologia-core.js');
+const M  = require(BASE + 'ejercicios/bajo-cifrado-core.js');
 const ML = require(BASE + 'ejercicios/mini-lilypond-parser.js');
 
 const nivel = parseInt(process.argv[2] || '1', 10);

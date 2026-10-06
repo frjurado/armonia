@@ -9,6 +9,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="curriculum-data.js"></script>
 <script src="modo.js"></script>
+<!-- Unidades de apuntes publicadas (apuntes/herramientas/construir.py): da el
+     enlace «Apuntes» de cada unidad. Fuera del sitio montado no existe, y no pasa nada. -->
+<script src="../apuntes/enlaces.js"></script>
 <style>
   /* ♭ ♮ ♯ 𝄪 𝄫 en Leland (ver vendor/fuentes/README.md): solo esos códigos */
   @font-face{font-family:'Leland Alteraciones';src:url('vendor/fuentes/leland-alteraciones.woff2') format('woff2');
@@ -67,10 +70,21 @@
   .ud-open .num{font-family:var(--serif);font-size:64px;font-weight:600;
         color:var(--ink);line-height:.9}
   .ud-open .titulo{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.01em}
-  .familias{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:22px}
-  .familia .fam-nombre{font-size:17px;font-weight:700;padding-bottom:10px;
-        border-bottom:1px solid var(--line-soft)}
-  .familia .botones{display:flex;flex-direction:column;gap:9px;margin-top:12px}
+  /* cabecera de la unidad: título y, si están publicados, sus apuntes */
+  .ud-cab{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+  .ud-apuntes{font-size:15px;font-weight:600;color:var(--ink);text-decoration:none;
+        border-bottom:1.5px solid var(--line);padding-bottom:1px}
+  @media(hover:hover){.ud-apuntes:hover{border-color:var(--ink)}}
+  /* una fila por familia: nombre a la izquierda, sus consignas a la derecha
+     (bajan de línea si no caben). Cualquier número de familias y de
+     consignas, sin columnas cojas (Modelo-ejercicios.md §3). */
+  .familias{display:flex;flex-direction:column;margin-top:18px}
+  .familia{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start;
+        padding:14px 0;border-top:1px solid var(--line-soft)}
+  .familia:first-child{border-top:none}
+  .familia .fam-nombre{font-size:17px;font-weight:700;line-height:1.3;padding-top:17px}
+  .familia .botones{display:flex;flex-wrap:wrap;gap:9px}
+  .familia .botones .btn-modo{flex:0 1 260px;min-width:0}
 
   /* botones de modalidad/variante: neutros en reposo (tarjeta blanca,
      texto tinta); el azul intenso queda para la interacción */
@@ -127,7 +141,8 @@
     .masthead{padding:26px 24px 0}
     .pentagrama{display:none}
     .unidades{padding:8px 24px 40px}
-    .familias{grid-template-columns:1fr}
+    .familia{grid-template-columns:1fr;gap:10px}
+    .familia .fam-nombre{padding-top:0}
     .ud-open{grid-template-columns:72px 1fr;gap:14px}
     .ud-open .num{font-size:44px}
     .ud-row{grid-template-columns:72px 1fr auto;gap:14px}
@@ -156,7 +171,9 @@
     .ud-open > div{display:contents}
     .ud-open .num{font-size:40px;line-height:1}
     .ud-open .titulo{font-size:20px}
-    .familias{grid-column:1/-1;gap:20px;margin-top:18px}
+    .familias{grid-column:1/-1;margin-top:10px}
+    .familia .botones{flex-direction:column}
+    .familia .botones .btn-modo{flex:none}
     .btn-modo{height:52px}
     .ud-row{grid-template-columns:44px 1fr auto;gap:10px;padding:16px 0}
     .ud-row .num{font-size:26px;padding-left:0}
@@ -194,17 +211,16 @@
 
 <script>
 /* ---------- iconos (inline SVG, stroke) ---------- */
-const ICONS = {
-  id: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>`,
-  au: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`,
-  ct: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>`
-};
 const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
 const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>`;
 
-/* Iconos de las variantes (`tipos`; claves del campo `icono` en
-   curriculum-data.js; 'apilado' se dibuja con el campo `texto`). */
+/* Iconos de las consignas (claves del campo `icono` en curriculum-data.js;
+   'apilado' se dibuja con el campo `texto`). */
 const TIPO_ICONS = {
+  // identificación (lupa), audición (auriculares), canto (micrófono)
+  lupa: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>`,
+  oido: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`,
+  canto: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="21" x2="12" y2="17"/></svg>`,
   reloj: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="4.8" x2="12" y2="7"/><line x1="19.2" y1="12" x2="17" y2="12"/><line x1="12" y1="19.2" x2="12" y2="17"/><line x1="4.8" y1="12" x2="7" y2="12"/></svg>`,
   escalones: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 20 8 20 8 15 13 15 13 10 18 10 18 5 21 5"/></svg>`,
   dado: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="9" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><circle cx="9" cy="15" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="15" r="1.1" fill="currentColor" stroke="none"/></svg>`,
@@ -232,7 +248,7 @@ const TIPO_ICONS = {
 const DEV = window.ARMONIA_MODO === 'dev';
 // Visibilidad en la versión pública, en cascada (curriculum-data.js): la
 // unidad necesita publico:true; dentro de ella, una familia o un ejercicio
-// (modo o tipo) con publico:false quedan ocultos. Sin marca, heredan.
+// (consigna) con publico:false quedan ocultos. Sin marca, heredan.
 const pubFam = (ud, fam) => ud.publico === true && fam.publico !== false;
 const pubEj  = (ud, fam, ej) => pubFam(ud, fam) && !!ej && ej.publico !== false;
 // En público, la familia oculta no sale y el ejercicio oculto sale como
@@ -261,34 +277,23 @@ const expandida = CURRICULO.cursos.map(c => {
 // sale (#de=<fichero.html>). Se busca en el currículo —único sitio donde
 // consta a qué curso y unidad pertenece cada ejercicio— y se abre ahí.
 // Si no aparece (o la unidad no es abrible en público), se queda el inicio.
+// Los apuntes enlazan igual a su unidad: #ud=<id de la unidad> (c3u1).
 (function abrirDondeSeSalió(){
-  const m = /^#de=(.+)$/.exec(location.hash);
+  const m = /^#(de|ud)=(.+)$/.exec(location.hash);
   if(!m) return;
-  const fichero = decodeURIComponent(m[1]);
-  const urls = fam => fam.tipos
-    ? fam.tipos.map(t => t.url)
-    : CURRICULO.modos.map(mo => fam.modos[mo.key] && fam.modos[mo.key].url);
+  const valor = decodeURIComponent(m[2]);
+  const es = m[1] === 'ud'
+    ? ud => ud.id === valor
+    : ud => ud.familias.some(fam => fam.consignas.some(c => c.url && c.url.split('/').pop() === valor));
   CURRICULO.cursos.forEach((c,i) => c.unidades.forEach(ud => {
-    if(!abrible(ud)) return;
-    const hay = ud.familias.some(fam =>
-      urls(fam).some(u => u && u.split('/').pop() === fichero));
-    if(hay){ cursoActivo = i; expandida[i] = ud.n; }
+    if(abrible(ud) && es(ud)){ cursoActivo = i; expandida[i] = ud.n; }
   }));
   // El hash ya ha hecho su trabajo: fuera, para que recargar no lo repita.
   history.replaceState(null, '', location.pathname + location.search);
 })();
 
 /* ---------- render (los datos viven en curriculum-data.js) ---------- */
-function modoHTML(ud, fam, m){
-  const modo = fam.modos[m.key];
-  const url = urlEj(ud, fam, modo);
-  const inner = `${ICONS[m.key]}<span>${m.title}</span>${modo && url ? marcaEj(ud, fam, modo) : ''}`;
-  return url
-    ? `<a class="btn-modo" href="${url}" title="${m.title}: ${fam.nombre}">${inner}</a>`
-    : `<span class="btn-modo locked" title="${m.title}: próximamente">${inner}</span>`;
-}
-
-/* Variantes (`tipos`): mismo aspecto que los modos, con icono propio. */
+/* Consignas: un botón por consigna, con su icono. */
 function tipoIcono(t){
   if(t.icono==='apilado') return `<span class="ic"><span class="ic-fb">${t.texto.split('/').map(x=>`<span>${x}</span>`).join('')}</span></span>`;
   return `<span class="ic">${TIPO_ICONS[t.icono] || ''}</span>`;
@@ -301,19 +306,27 @@ function tipoHTML(ud, fam, t){
     : `<span class="btn-modo locked" title="${t.title}: próximamente">${inner}</span>`;
 }
 
+// Enlace a los apuntes de la unidad, si están publicados (enlaces.js, que
+// genera la construcción de los apuntes; sin él, nada).
+function apuntesHTML(ud){
+  const A = window.ARMONIA_APUNTES;
+  return A && A.unidades && A.unidades.includes(ud.id)
+    ? `<a class="ud-apuntes" href="../apuntes/${ud.id}.html">Apuntes de la unidad →</a>` : '';
+}
+
 function unidadAbierta(ud){
   return `
   <section class="ud-open">
     <div class="num">${ud.n}</div>
     <div>
-      <div class="titulo">${ud.titulo}${soloDev(ud) ? MARCA_DEV : ''}</div>
+      <div class="ud-cab">
+        <div class="titulo">${ud.titulo}${soloDev(ud) ? MARCA_DEV : ''}</div>${apuntesHTML(ud)}
+      </div>
       <div class="familias">
         ${ud.familias.filter(fam => famVisible(ud, fam)).map(fam => `
           <div class="familia">
             <div class="fam-nombre">${fam.nombre}${marcaFam(ud, fam)}</div>
-            <div class="botones">${fam.tipos
-              ? fam.tipos.map(t => tipoHTML(ud, fam, t)).join('')
-              : CURRICULO.modos.map(m => modoHTML(ud, fam, m)).join('')}</div>
+            <div class="botones">${fam.consignas.map(c => tipoHTML(ud, fam, c)).join('')}</div>
           </div>`).join('')}
       </div>
     </div>

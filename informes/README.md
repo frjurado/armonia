@@ -19,3 +19,4 @@ no se pierdan entre commits.
 | — | [HISTORIA.md](HISTORIA.md) | Historia del desarrollo, del 4 de septiembre en adelante |
 | 2026-10-05 | [Revisión tras uso en clase](2026-10-05-revision-tras-clase.md) | Modelo de cuatro ejes (material, consigna, presentación, nivel); plan en cinco fases; división de la documentación de la app |
 | 2026-10-06 | [Fase 2: la página común](2026-10-06-fase2-pagina-comun.md) | Página común de ejercicio en todo lo publicado: pregunta arriba, selector de nivel, revelado por máscara sin movimiento; fuera *construir* |
+| 2026-10-06 | [Fase 3: estructura](2026-10-06-fase3-estructura.md) | Nombres por material, esquema único de consignas, menú en filas, enlaces entre apuntes y ejercicios |

@@ -61,6 +61,15 @@ están cuadradas en las dos carpetas.
   - `pip install pymupdf`, y entonces se usa el `pdf2svg.py` incluido — **la vía
     cómoda en Windows**, porque no requiere instalar binarios de sistema.
 
+- **Node**, para los enlaces con los ejercicios: `construir.py` lee con él
+  `app/public/curriculum-data.js`, que dice qué ejercicio explica cada
+  epígrafe, y con eso pone en el sitio el «Ejercicios» de cada unidad, los
+  «Para practicar» al final de los epígrafes y `build/sitio/enlaces.js`, que
+  lee la app (`app/docs/Modelo-ejercicios.md` §3.1). Solo en las copias de
+  `build/sitio/`: `build/` y el PDF quedan sin enlaces. Sin Node, avisa y el
+  sitio sale sin ellos. También avisa si un ejercicio cita un epígrafe que no
+  existe (lo normal: se ha cambiado su título).
+
 No hace falta `make` (no viene con Windows) ni Quarto.
 
 ## Uso

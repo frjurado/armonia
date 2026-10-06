@@ -66,6 +66,18 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
 .ayuda summary::-webkit-details-marker{display:none}
 @media(hover:hover){.ayuda summary:hover{border-color:var(--ink);color:var(--ink)}}
 .ayuda[open] summary{border-color:var(--ink);color:var(--ink)}
+/* Fila del enlace a los apuntes y la ayuda (la arma comun.js cuando hay
+   apunte publicado): el enlace delante; la ayuda, al abrirse, baja a su
+   propia línea a todo el ancho. Mismo aspecto que el botón de ayuda. */
+.pie-ej{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start;margin-top:22px}
+.pie-ej .ayuda{margin-top:0}
+.pie-ej .ayuda[open]{flex-basis:100%}
+a.apuntes-enlace{display:inline-flex;align-items:center;gap:8px;min-height:56px;
+     padding:0 20px 0 16px;border:1.5px solid var(--line);border-radius:12px;
+     background:var(--card);color:var(--muted);font-size:17px;font-weight:600;
+     text-decoration:none;transition:border-color .15s ease,color .15s ease}
+@media(hover:hover){a.apuntes-enlace:hover{border-color:var(--ink);color:var(--ink)}}
+a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
 .prompt{font-size:18px;color:var(--muted);margin:14px 0 0;max-width:860px}
 .prompt b{color:var(--fg)}
 
@@ -79,7 +91,7 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
 #notation svg{max-width:100%;height:auto;display:block}
 #notation .ph{color:var(--soft);font-size:15px;text-align:center}
 /* Dato de partida dentro de la partitura (<reh type="dato">, ver toMEI en
-   c4u0-cadencias-core.js): lo que el ejercicio DA —tonalidad, tipo de
+   cadencias-core.js): lo que el ejercicio DA —tonalidad, tipo de
    cadencia…—, anclado al primer tiempo y por tanto alineado con el comienzo
    de la música. Entintado y en serif para que no se confunda ni con el
    cifrado (negro, dentro de la partitura) ni con la respuesta (terroso). */
@@ -89,7 +101,7 @@ main{max-width:var(--main-w);margin:0 auto;padding:34px 36px 46px}
    Verovio lo vuelca a la clase del SVG). Gris, como las alternativas del texto. */
 #notation g.harm.alt, #notation g.harm.alt text{fill:var(--soft)}
 /* Etiqueta de cada tramo (Prolongación: «Prol. I», «SC», «CA»; <reh
-   type="tramo">, ver toMEI en c4u0-prolongacion-core.js) y su corchete hasta
+   type="tramo">, ver toMEI en prolongacion-core.js) y su corchete hasta
    el final del tramo (ArmoniaEj.corchetesTramo). Es respuesta: color de
    acierto y serif, como el titular de la respuesta. */
 #notation .reh.tramo text{fill:var(--ok);font-family:var(--serif);font-weight:600}
@@ -289,6 +301,9 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
   .pregunta{font-size:15px}
   .ayuda{margin:0 0 6px}
   .ayuda summary{min-height:48px;font-size:15px}
+  .pie-ej{margin:0 0 6px;gap:10px}
+  .pie-ej .ayuda{margin:0}
+  a.apuntes-enlace{min-height:48px;font-size:15px}
   .prompt{font-size:16px}
 }
 

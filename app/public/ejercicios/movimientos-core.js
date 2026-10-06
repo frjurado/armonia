@@ -237,6 +237,6 @@
 
   const api = { generate, toMEI, drawMotionLines, midiOf:C.midiOf, MOTION_TYPES:C.MOTION_TYPES, N, LINE_COLORS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else global.Familia3 = api;
+  else global.Movimientos = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin del módulo */

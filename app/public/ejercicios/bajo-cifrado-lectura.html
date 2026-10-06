@@ -10,7 +10,7 @@
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="../tonalidades.js"></script>
 <script src="cuatro-voces-core.js"></script>
-<script src="c3u1-morfologia-core.js"></script>
+<script src="bajo-cifrado-core.js"></script>
 <script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
@@ -60,11 +60,11 @@
 </main>
 
 <script>
-/* UI — la lógica musical vive en c3u1-morfologia-core.js; lo común de la
+/* UI — la lógica musical vive en bajo-cifrado-core.js; lo común de la
    página (nivel, revelado, audio), en ArmoniaEj.ejercicio (comun.js). */
 (function(){
   'use strict';
-  const M = window.Morfologia;
+  const M = window.BajoCifrado;
   // Romano con sus cifras apiladas, para el titular.
   // Cada acorde va en su <span>: el titular es flex (el gap separa acordes,
   // no el romano de sus cifras, y vertical-align solo vale en línea).

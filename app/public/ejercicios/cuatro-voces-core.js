@@ -6,7 +6,7 @@
    (N1–N13) y optimiza las PREFERENCIAS (P1–P10) de
    `curriculum/Minimos-conduccion.md`. No sabe nada de cadencias,
    ritmo, niveles, MEI ni UI: eso es de cada familia
-   (`c4u0-cadencias-core.js`, …). Diseño en
+   (`cadencias-core.js`, …). Diseño en
    `docs/motor-cuatro-voces.md`.
 
    · Las realizaciones NO están escritas a mano: se BUSCAN.

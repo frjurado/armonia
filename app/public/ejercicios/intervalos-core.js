@@ -237,6 +237,6 @@
 
   const api = { generarNormal, generarInversion, generarGrados, midiOf };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else global.U0Intervalos = api;
+  else global.Intervalos = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin */

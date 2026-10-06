@@ -10,7 +10,8 @@
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
 <script src="contrapunto-core.js"></script>
-<script src="familia3-movimientos-core.js"></script>
+<script src="movimientos-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 </head>
@@ -73,7 +74,7 @@
    El botón funciona como stop durante la interpretación y como
    replay al terminar. Al revelar: partitura completa con cifras
    y líneas (sin animación). El contrapunto se genera en
-   contrapunto-core.js a través de familia3-movimientos-core.js.
+   contrapunto-core.js a través de movimientos-core.js.
    ============================================================ */
 const LVL_NOTES = {
   1: '(clave de Sol, modo mayor)',
@@ -90,16 +91,16 @@ const wrap=()=>document.querySelector('.score-wrap');
 
 function renderSVG(){
   if(!tk || !current || !revealed) return;
-  tk.loadData(Familia3.toMEI(current,{revealed:current.n, intervals:current.n}));
+  tk.loadData(Movimientos.toMEI(current,{revealed:current.n, intervals:current.n}));
   $('notation').innerHTML = tk.renderToSVG(1);
   requestAnimationFrame(()=>{
-    Familia3.drawMotionLines(wrap(), $('overlay'), current.n-1, {animateLast:false});
+    Movimientos.drawMotionLines(wrap(), $('overlay'), current.n-1, {animateLast:false});
   });
 }
 
 function newExercise(){
-  const target = Familia3.MOTION_TYPES[Math.floor(Math.random()*Familia3.MOTION_TYPES.length)];
-  current = Familia3.generate(level, {uniform:target});
+  const target = Movimientos.MOTION_TYPES[Math.floor(Math.random()*Movimientos.MOTION_TYPES.length)];
+  current = Movimientos.generate(level, {uniform:target});
   revealed=false; stopPlayback();
   $('lvl').textContent = level;
   $('lvlNote').textContent = LVL_NOTES[level] || '';

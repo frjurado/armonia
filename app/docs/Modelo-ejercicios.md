@@ -111,8 +111,8 @@ pregunta visible encima. ⟶ PENDIENTE: las familias ocultas de 3.º UD 1, al re
   elegir antes de empezar y bajar; cambiar de nivel genera otro ejercicio. Sustituye a
   «Más difícil», que solo subía, solo tras revelar, y cuyo efecto se explicaba dentro de
   la ayuda. Sin niveles, no aparece. ⟶ HECHO.
-- **Ayuda**: plegada. Convenciones, cómo responder, y un enlace al apartado de los apuntes
-  que lo explica. Que no se abra ya no importa: pregunta y nivel están fuera.
+- **Ayuda**: plegada. Convenciones y cómo responder. Que no se abra ya no importa:
+  pregunta y nivel están fuera, y el enlace a los apuntes va delante de ella (§3.1).
 
 ### 2.3. Botones
 
@@ -164,20 +164,51 @@ y el conmutador pueden recordarse en `localStorage` como comodidad, nunca como d
 
 ## 3. Menú y datos
 
-- **`curriculum-data.js`** es la fuente única del menú: unidades → familias → consignas.
-  ⟶ PENDIENTE (fase 3): **un solo esquema**, el de `tipos` (una entrada por consigna, con
-  su icono), y fuera los `modos` id/au/ct; cada consigna declara si admite «Oír» y la
-  familia, sus `niveles`.
+- **`curriculum-data.js`** es la fuente única: unidades (con `id`, el del apunte) →
+  familias → **consignas**. ⟶ HECHO (2026-10-06): **un solo esquema**, `consignas` (una
+  entrada por botón, con su icono y sus `apuntes`), sin `modos` id/au/ct; la familia lleva
+  sus `niveles`. Cuando exista «Oír» (fase 4), cada consigna declarará si lo admite.
 - **Dónde está un ejercicio es un dato**, no un nombre de fichero: mover una familia a otra
   unidad (la Morfología a la UD 0 de 3.º, el curso que viene) es mover un bloque de
   `curriculum-data.js`, sin renombrar nada y sin cambiar URL.
 - **Visibilidad** en cascada unidad → familia → consigna (`publico`), ⟶ HECHO; detalle en
   `../CLAUDE.md`.
-- **Menú en filas** ⟶ DECIDIDO (2026-10-05), ⟶ PENDIENTE (fase 3): cada familia es una
-  fila —nombre y descripción a la izquierda, sus consignas como botones a la derecha, que
-  bajan de línea si no caben—, en lugar de tres columnas fijas. Admite cualquier número
-  de familias y de consignas sin columnas cojas ni forzar tres por familia. En móvil, como
-  hoy.
+- **Menú en filas** ⟶ HECHO (2026-10-06): cada familia es una fila —su nombre a la
+  izquierda, sus consignas como botones a la derecha, que bajan de línea si no caben—, en
+  lugar de tres columnas fijas. Admite cualquier número de familias y de consignas sin
+  columnas cojas ni forzar tres por familia. En móvil, el nombre encima y los botones
+  apilados, como antes. El menú se abre en una unidad con `#ud=c3u1` (desde los apuntes)
+  o `#de=<fichero>` (al volver de un ejercicio).
+
+### 3.1. Enlaces entre apuntes y ejercicios
+
+⟶ DECIDIDO y HECHO (2026-10-06).
+
+- **Granularidad.** Del ejercicio al apunte, **por consigna**: al subepígrafe que la explica
+  (nivel «1.2»; el epígrafe «2» si no hay subepígrafe), a veces a dos. Del apunte al
+  ejercicio, **en dos niveles**: «Ejercicios» en la cabecera de la unidad (abre el menú en
+  ella) y, al final de cada epígrafe citado, una línea «Para practicar → Familia: consigna,
+  consigna…».
+- **Dónde se ven.** En el ejercicio, un botón «Apuntes · 1.2 Cifrado de grados» delante de
+  «Ayuda», en la misma fila (no dentro: la ayuda no se abre). En el menú, «Apuntes de la
+  unidad» junto al título de cada unidad. En los apuntes, lo dicho arriba. **El PDF, sin
+  enlaces.** Todo se abre en la misma pestaña.
+- **Una sola declaración**: `apuntes` de cada consigna en `curriculum-data.js`. La relación
+  natural es «este ejercicio se explica aquí»; la inversa se deduce. El primer epígrafe de
+  la lista es el del botón del ejercicio; todos reciben su «Para practicar».
+- **Cómo llega a cada lado.** `construir.py` lee `curriculum-data.js` con Node; en las
+  copias publicadas (`build/sitio/`, no en `build/` ni en el PDF) pone «Ejercicios» y los
+  «Para practicar», y escribe `enlaces.js`: las unidades publicadas y el título de cada
+  epígrafe citado. La app lo carga si existe: de ahí saca el texto del botón y sabe si la
+  unidad está publicada. Sin él no pinta enlaces, así que **nunca enlaza a una página que
+  no existe**, y la app sigue funcionando sola.
+- **Publicación.** Un «Para practicar» solo enlaza consignas publicadas (la cascada de
+  `publico`); «Ejercicios», solo si la app publica algo de la unidad; el botón «Apuntes»,
+  solo si la unidad de apuntes está publicada.
+- **Que no se rompa sin avisar.** Las anclas salen del título del epígrafe; si cambia,
+  `construir.py` avisa de cada consigna que cite un ancla inexistente (en cualquier unidad,
+  publicada o no). Al reorganizar los apuntes el curso que viene, el enlace se corrige en
+  un solo sitio.
 
 ---
 
@@ -189,7 +220,7 @@ no hay datos de usuario (§2.6).
 - **Una página por consigna** sobre una capa común (`comun.js`, `comun.css`). No una app de
   una sola página: cada página es pequeña, se enlaza directamente y falla sola. Lo que se
   repite entre consignas de un material va a una UI compartida, como ya hace
-  `prolongacion` (`c4u0-prolongacion-ui.js`, y cada página solo fija su tipo).
+  `prolongacion` (`prolongacion-ui.js`, y cada página solo fija su tipo).
 - **Render**: Verovio (WASM) en el navegador, desde MEI generado (`../CLAUDE.md`, pipeline).
 - **Audio**: samples de piano con soundfont-player. ⟶ PENDIENTE: empaquetar los samples
   (hoy se descargan de la red) y, con ello, el uso **offline** (¿PWA, *service worker*?).
@@ -247,8 +278,10 @@ llevarla: una URL que no cambia cuando se reorganiza el curso.
 - Motores y datos compartidos, como hasta ahora: `contrapunto-core.js`,
   `cuatro-voces-core.js`, `cuatro-voces-check.js`, `tonalidades.js`, `comun.js`.
 
-⟶ PENDIENTE (fase 3), en una pasada, con sus URL en `curriculum-data.js`, `../CLAUDE.md` y
-los documentos:
+⟶ HECHO (2026-10-06), en una pasada, con sus URL en `curriculum-data.js`, `../CLAUDE.md` y
+los documentos (`familia2-intervalos-*` se queda hasta fundirse con `intervalos-*`, fase 4;
+la página de *Bajo cifrado* es `bajo-cifrado-lectura.html`, y su validación,
+`tests/masivo-bajo-cifrado.js`):
 
 | Hoy | Después | Global |
 |-----|---------|--------|
@@ -285,8 +318,9 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 - [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
       que solo toma la pregunta visible (2026-10-06).
 - [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas).
-- [ ] Un solo esquema en `curriculum-data.js`, menú en filas, renombrado (§3, §6). (fase 3)
-- [ ] `?oir` y enlaces cruzados apunte ↔ ejercicio (§2.5; `?nivel` ya está). (fase 3)
+- [x] ~~Un solo esquema, menú en filas, renombrado, enlaces con los apuntes (§3, §6)~~
+      → hechos (2026-10-06).
+- [ ] `?oir`, con «Oír» (§2.5). (fase 4)
 - [ ] Empaquetar los samples; mecanismo offline (§4).
 - [ ] Migrar los cores de 3.º UD 0 a `tonalidades.js` (se hace al fundirlos, fase 4).
 

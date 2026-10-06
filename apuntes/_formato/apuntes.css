@@ -197,6 +197,18 @@ figure:has(img.aula) figcaption::after {
 
 @media print { .masthead { display: none; } .hoja { margin-top: 0; } }
 
+/* «Para practicar» al final de un epígrafe: los ejercicios de la app que
+   lo citan (los pone construir.py, solo en el sitio). Discreto, en la
+   letra de la interfaz, para que no se lea como parte del texto. */
+.practicar {
+  font-family: "Source Sans 3", system-ui, sans-serif; font-size: .9rem;
+  color: var(--suave); margin: 1.2rem 0 1.6rem;
+  padding: .45rem .8rem; border-left: 3px solid var(--ink-suave);
+  background: var(--fondo-nota);
+}
+.practicar a { color: var(--ink); font-weight: 600; }
+@media print { .practicar { display: none; } }
+
 /* --- pie ----------------------------------------------------------
    Autoría y licencia, el mismo texto que en la portada, el índice de
    apuntes y el menú de la app (lo pone construir.py a partir de

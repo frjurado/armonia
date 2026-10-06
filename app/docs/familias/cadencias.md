@@ -12,8 +12,8 @@ dado** y **Canto dado**— que comparten el **motor a cuatro voces** (`../motor-
 **variantes** (`tipos` en `curriculum-data.js`) en lugar de modos id/au/ct, y niveles 1–3.
 Esta sección diseña la primera familia; las otras dos se diseñarán sobre el mismo motor.
 
-Ficheros (convención de `../Modelo-ejercicios.md` §6): `ejercicios/c4u0-cadencias-core.js` (global `Cadencias`)
-y páginas `c4u0-cadencias-tipo.html`, `-bajo.html`, `-canto.html`.
+Ficheros (convención de `../Modelo-ejercicios.md` §6): `ejercicios/cadencias-core.js` (global `Cadencias`)
+y páginas `cadencias-tipo.html`, `-bajo.html`, `-canto.html`.
 
 ## 1. Alcance: esqueleto general, contenido de ahora
 
@@ -226,9 +226,9 @@ en texto: está en la partitura.
   Respuesta: sigla y nombre en grande, el nombre en Title Case («CAP · Cadencia Auténtica
   Perfecta») y nada más: la sucesión de acordes se lee en los cifrados que aparecen al
   revelar. ⟶ HECHO (2026-09-19):
-  `c4u0-cadencias-core.js` (global `Cadencias`) + `c4u0-cadencias-tipo.html`; en el menú,
+  `cadencias-core.js` (global `Cadencias`) + `cadencias-tipo.html`; en el menú,
   4.º UD 0 con `publico:false`.
-- **Bajo dado** (icono: clave de Fa; ⟶ HECHO 2026-09-22, `c4u0-cadencias-bajo.html` +
+- **Bajo dado** (icono: clave de Fa; ⟶ HECHO 2026-09-22, `cadencias-bajo.html` +
   `Cadencias.generarBajo()`): se muestra **solo el bajo** (pentagrama
   superior con `<space>`, como en Intervalos con inversión), armadura y compás, **sin dato
   ninguno**; se piden **tonalidad, tipo y acordes** (grado e inversión).
@@ -249,7 +249,7 @@ en texto: está en la partitura.
     clase del SVG, y `comun.css` la pinta con `--soft`) y **algo más separada** de la
     principal (`vo` negativo en el `<harm>`, que en `place="below"` empuja hacia abajo).
   - La **tonalidad es única**: comprobado por enumeración exhaustiva (§7 bis).
-- **Canto dado** (icono: clave de Sol; ⟶ HECHO 2026-09-22, `c4u0-cadencias-canto.html` +
+- **Canto dado** (icono: clave de Sol; ⟶ HECHO 2026-09-22, `cadencias-canto.html` +
   `Cadencias.generarCanto()`): se muestra **solo la soprano**, con armadura, compás
   y **el tipo** como dato sobre el primer tiempo, con su sigla exacta («CAP»); se piden
   **tonalidad y línea del bajo**.

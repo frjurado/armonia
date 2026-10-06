@@ -865,6 +865,116 @@ def indice(destino, solo_publicas):
     print(f"  {destino.relative_to(RAIZ)}")
 
 
+# --- enlaces apuntes <-> ejercicios -----------------------------------
+#
+# Se declaran una sola vez, en app/public/curriculum-data.js: cada
+# consigna lleva `apuntes: ['c3u1#cifrado-de-grados', …]`, los epígrafes
+# que la explican (app/docs/Modelo-ejercicios.md §3). De ahí sale, en las
+# copias publicadas de build/sitio/:
+#   · un «Ejercicios» en la cabecera de la unidad, si la app la publica;
+#   · al final de cada epígrafe citado, «Para practicar», con las
+#     consignas publicadas que lo citan;
+#   · enlaces.js: el título de cada epígrafe citado de las unidades
+#     publicadas, para el botón «Apuntes» de la app (que, sin él, no lo
+#     pinta: así no enlaza nunca a una unidad sin publicar).
+# Solo en el HTML del sitio: el PDF va sin enlaces, y build/ (la versión
+# de trabajo) queda como sale de Pandoc.
+
+CURRICULO_JS = RAIZ.parent / "app" / "public" / "curriculum-data.js"
+RE_TITULO = re.compile(r'<h([234])\b[^>]*\bid="([^"]+)"[^>]*>(.*?)</h\1>', re.S)
+
+
+def curriculo():
+    """curriculum-data.js como datos de Python (lo carga Node)."""
+    try:
+        salida = subprocess.run(
+            ["node", "-e", "process.stdout.write(JSON.stringify(require(process.argv[1])))",
+             "./" + CURRICULO_JS.name], cwd=CURRICULO_JS.parent,
+            capture_output=True, check=True)
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f"  AVISO: no se pudo leer {CURRICULO_JS.name} con Node ({e}): "
+              "el sitio sale sin enlaces a los ejercicios")
+        return None
+    return json.loads(salida.stdout.decode("utf-8"))
+
+
+def consignas_citadas(curr):
+    """[(ancla, unidad de la app, familia, consigna, ¿publicada?)] de todo el currículo."""
+    for curso in curr["cursos"]:
+        for ud in curso["unidades"]:
+            for fam in ud["familias"]:
+                for c in fam["consignas"]:
+                    publica = (ud.get("publico") is True and fam.get("publico") is not False
+                               and c.get("publico") is not False and bool(c.get("url")))
+                    for ancla in c.get("apuntes", []):
+                        yield ancla, ud, fam, c, publica
+
+
+def titulos(html):
+    """{id: título en texto} de los epígrafes h2–h4 de un HTML de Pandoc."""
+    limpio = lambda s: " ".join(re.sub(r"<[^>]+>", "", s).split())
+    return {m.group(2): limpio(m.group(3)) for m in RE_TITULO.finditer(html)}
+
+
+def enlazar(html, unidad, curr):
+    """Añade «Ejercicios» y los «Para practicar» al HTML de una unidad."""
+    esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;")
+    # «Ejercicios» en la cabecera, si la app publica algo de esta unidad
+    ud = next((u for c in curr["cursos"] for u in c["unidades"] if u.get("id") == unidad), None)
+    if ud and ud.get("publico") is True and any(f.get("publico") is not False for f in ud["familias"]):
+        html = html.replace("</header>",
+                            f'  <a class="pdf" href="../app/index.html#ud={unidad}">Ejercicios</a>\n</header>', 1)
+    # «Para practicar» al final de cada epígrafe citado: antes del siguiente
+    # de su nivel o superior, o del final de la hoja
+    por_ancla = {}
+    for ancla, _, fam, c, publica in consignas_citadas(curr):
+        u, _, id_ = ancla.partition("#")
+        if u == unidad and publica:
+            por_ancla.setdefault(id_, {}).setdefault(fam["nombre"], []).append(c)
+    for id_, familias in por_ancla.items():
+        m = next((m for m in RE_TITULO.finditer(html) if m.group(2) == id_), None)
+        if not m:
+            continue
+        nivel = int(m.group(1))
+        sig = next((n for n in RE_TITULO.finditer(html, m.end()) if int(n.group(1)) <= nivel), None)
+        fin = sig.start() if sig else html.rindex("</div>", 0, html.index('<footer class="pie">'))
+        grupos = " · ".join(
+            f'{esc(f)}: ' + ", ".join(f'<a href="../app/{c["url"]}">{esc(c["title"])}</a>' for c in cs)
+            for f, cs in familias.items())
+        html = html[:fin] + f'<p class="practicar">Para practicar → {grupos}</p>\n' + html[fin:]
+    return html
+
+
+def enlaces_ejercicios(publicas):
+    """Enlaces del sitio y comprobación de anclas (ver arriba)."""
+    curr = curriculo()
+    if curr is None:
+        return
+    # Cada ancla citada tiene que existir, publicada o no la unidad: un
+    # título cambiado rompe el enlace sin que nadie lo note.
+    ids = {p.stem: titulos((BUILD / f"{p.stem}.html").read_text(encoding="utf-8"))
+           for p in unidades() if (BUILD / f"{p.stem}.html").exists()}
+    for ancla, _, _, c, _ in consignas_citadas(curr):
+        u, _, id_ = ancla.partition("#")
+        if u in ids and id_ not in ids[u]:
+            print(f"  AVISO: «{c['title']}» ({c['url']}) cita {ancla}, que no existe en {u}.html")
+    epigrafes = {}
+    for md in publicas:
+        f = SITIO / f"{md.stem}.html"
+        f.write_text(enlazar(f.read_text(encoding="utf-8"), md.stem, curr), encoding="utf-8")
+        for ancla, *_ in consignas_citadas(curr):
+            u, _, id_ = ancla.partition("#")
+            if u == md.stem and id_ in ids.get(u, {}):
+                epigrafes[ancla] = ids[u][id_]
+    datos = {"unidades": [p.stem for p in publicas], "epigrafes": epigrafes}
+    (SITIO / "enlaces.js").write_text(
+        "/* Generado por construir.py: unidades publicadas y títulos de los epígrafes que\n"
+        "   citan los ejercicios (app/public/curriculum-data.js). Lo lee la app. */\n"
+        f"window.ARMONIA_APUNTES = {json.dumps(datos, ensure_ascii=False, indent=1)};\n",
+        encoding="utf-8")
+    print(f"  {(SITIO / 'enlaces.js').relative_to(RAIZ)} ({len(epigrafes)} epígrafes)")
+
+
 def montar_sitio():
     """Reúne en build/sitio/ lo publicable, y solo eso.
 
@@ -899,6 +1009,7 @@ def montar_sitio():
     for f in sorted(FUENTES.glob("*.woff2")):
         shutil.copy2(f, SITIO / "fuentes" / f.name)
     shutil.copy2(CSS, SITIO / CSS.name)
+    enlaces_ejercicios(publicas)
 
     indice(SITIO / "index.html", solo_publicas=True)
     indice(BUILD / "index.html", solo_publicas=False)

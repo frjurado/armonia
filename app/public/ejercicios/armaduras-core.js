@@ -143,6 +143,6 @@
 
   const api = { N:12, nombre, armaduraTxt, sigsForPc, serieQuintas, serieCromatica, serieAleatoria, meiArmadura, meiSerieArmaduras };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else global.U0Armaduras = api;
+  else global.Armaduras = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin */

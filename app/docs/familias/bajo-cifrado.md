@@ -7,11 +7,11 @@ Hoy en el menú: 3.º UD 1, familia *Morfología* (consigna Bajo cifrado; la seg
 Primera familia de la UD 1, **antes** de *Intervalos* y *Movimiento armónico*, que quedan
 detrás y ocultas en la versión pública (`publico:false` por familia, `../Modelo-ejercicios.md` §3). Solo hay
 identificación, así que la familia no usa modos id/au/ct sino `tipos`, como las UD 0.
-Ficheros: `ejercicios/c3u1-morfologia-core.js` (global `Morfologia`, sobre el modelo de
+Ficheros: `ejercicios/bajo-cifrado-core.js` (global `BajoCifrado`, sobre el modelo de
 acorde de `cuatro-voces-core.js`) y una página por variante. ⟶ DECIDIDO (2026-10-04) lo
 que sigue, salvo lo marcado.
 
-## 1. Variante *Bajo cifrado* (`c3u1-morfologia-bajo.html`)
+## 1. Variante *Bajo cifrado* (`bajo-cifrado-lectura.html`)
 
 - **Se da:** la tonalidad (como dato en la partitura, igual que en 4.º) y un bajo de **5 o
   6 notas**, redondas, un acorde por compás (compás invisible), con su cifrado: solo
@@ -62,7 +62,7 @@ alteración delante, separada por un espacio de cuarto: ♯⑦); el círculo lo 
 
 **Niveles.** 1: Do y Sol mayor. 2: añade La y Re menor. (Tonalidades del trimestre 1.)
 
-**Validación.** `tests/masivo-morfologia.js [nivel] [n]`: forma, normas del bajo con
+**Validación.** `tests/masivo-bajo-cifrado.js [nivel] [n]`: forma, normas del bajo con
 reglas escritas aparte del core, usos del 6/4, cifrado frente a las notas, parser y render
 en Verovio. 0 fallos en 3000 instancias por nivel (2026-10-04). Frecuencias: 6/4 cadencial
 en ~24 % de los ejercicios, de paso en ~19 %; III en ~1 %.

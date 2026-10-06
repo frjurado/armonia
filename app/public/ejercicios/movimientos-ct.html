@@ -10,7 +10,8 @@
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
 <script src="contrapunto-core.js"></script>
-<script src="familia3-movimientos-core.js"></script>
+<script src="movimientos-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 </head>
@@ -69,7 +70,7 @@
    (integradas en el MEI) y las líneas de movimiento de ambas
    voces, que aparecen todas de golpe, sin animación.
    El contrapunto se genera en contrapunto-core.js a través
-   de familia3-movimientos-core.js.
+   de movimientos-core.js.
    ============================================================ */
 const LVL_NOTES = {
   1: '(clave de Sol, modo mayor)',
@@ -84,14 +85,14 @@ const wrap=()=>document.querySelector('.score-wrap');
 
 function renderSVG(){
   if(!tk || !current) return;
-  tk.loadData(Familia3.toMEI(current,{revealed:current.n, intervals: showInt?current.n:0}));
+  tk.loadData(Movimientos.toMEI(current,{revealed:current.n, intervals: showInt?current.n:0}));
   $('notation').innerHTML = tk.renderToSVG(1);
   requestAnimationFrame(drawLines);
 }
 function drawLines(){
   const ov=$('overlay');
   if(!showMov || !tk){ ov.innerHTML=''; return; }
-  Familia3.drawMotionLines(wrap(), ov, current.n-1, {animateLast:false});
+  Movimientos.drawMotionLines(wrap(), ov, current.n-1, {animateLast:false});
 }
 function updateTexts(){
   $('legend').className = showMov ? 'legend show' : 'legend';
@@ -103,7 +104,7 @@ function updateTexts(){
 }
 
 function newExercise(){
-  current = Familia3.generate(level);
+  current = Movimientos.generate(level);
   $('lvl').textContent = level;
   $('lvlNote').textContent = LVL_NOTES[level] || '';
   $('btnHarder').style.display = level<MAX_NIVEL ? '' : 'none';

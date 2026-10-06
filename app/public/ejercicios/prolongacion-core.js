@@ -24,7 +24,7 @@
        y notas MIDI.
    Depende de cuatro-voces-core.js (CuatroVoces), tonalidades.js
    (TONALIDADES), mini-lilypond-parser.js (MiniLily) y
-   c4u0-cadencias-core.js (Cadencias). Sin DOM.
+   cadencias-core.js (Cadencias). Sin DOM.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -33,7 +33,7 @@
   const CV  = esNode ? require('./cuatro-voces-core') : global.CuatroVoces;
   const TON = esNode ? require('../tonalidades') : global.TONALIDADES;
   const ML  = esNode ? require('./mini-lilypond-parser') : global.MiniLily;
-  const CAD = esNode ? require('./c4u0-cadencias-core') : global.Cadencias;
+  const CAD = esNode ? require('./cadencias-core') : global.Cadencias;
 
   const rnd = () => Math.random();
   const elige = a => a[Math.floor(rnd()*a.length)];

@@ -33,6 +33,7 @@ septiembre (14 commits) y el 16 (9).
 | 6. Granularidad fina | 5 oct | Visibilidad por familia/ejercicio; 3.º UD 1 en la app con Morfología |
 | 7. Revisión del modelo | 5 oct | Tras el uso en clase: cuatro ejes de ejercicio, plan por fases, documentación dividida, `informes/` |
 | 8. La página común | 6 oct | Pregunta arriba, nivel visible, revelado por máscara sin movimiento, en todo lo publicado |
+| 9. Estructura | 6 oct | Nombres por material, un solo esquema, menú en filas, enlaces apuntes ↔ ejercicios |
 
 ---
 
@@ -221,6 +222,17 @@ Verovio pone las líneas adicionales fuera de la nota, y hubo que ocultar a mano
 las notas ocultas. Los textos de los niveles quedan solo en `curriculum-data.js`, y
 Acordes pierde el sentido *construir*. Se valida en un Chrome sin interfaz manejado
 desde Node, midiendo antes y después de revelar.
+
+## Fase 9 — Estructura (6 de octubre)
+
+Tercera fase del plan ([informe](2026-10-06-fase3-estructura.md)). Los ficheros de la app
+pasan a nombrarse por material (`acordes-tipo.html`, `cadencias-core.js`), porque la
+unidad en que sale un ejercicio es un dato, no un nombre; `curriculum-data.js` queda con
+un solo esquema (consignas) y el menú, en filas. Y por fin los **enlaces entre apuntes y
+ejercicios**: se declaran una vez, en cada consigna del currículo; la construcción de los
+apuntes los lee con Node, pone en el sitio «Ejercicios» y «Para practicar», y publica un
+pequeño `enlaces.js` del que la app saca el botón «Apuntes» de cada ejercicio. Si un
+título cambia y rompe un ancla, la construcción avisa.
 
 ---
 

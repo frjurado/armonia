@@ -1,10 +1,10 @@
 /* ============================================================
    4.º · Unidad 0 — Prolongación: UI común a los tres tipos
    ------------------------------------------------------------
-   Las tres páginas (c4u0-prolongacion-prol/-frase/-periodo.html)
+   Las tres páginas (prolongacion-prol/-frase/-periodo.html)
    son iguales salvo el tipo y la ayuda: cada una fija
    `window.PROL_TIPO` (1, 2 o 3) antes de cargar este fichero.
-   La lógica musical vive en c4u0-prolongacion-core.js; lo común de
+   La lógica musical vive en prolongacion-core.js; lo común de
    la página (nivel, revelado, audio), en ArmoniaEj.ejercicio
    (comun.js). Antes de revelar se ve y suena SOLO el bajo (y, en el
    tipo 1, la tonalidad como dato): las voces superiores, los

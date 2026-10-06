@@ -2,7 +2,7 @@
 
 > Procede de `Generador-ejercicios.md` (dividido el 2026-10-05, ver `../../informes/2026-10-05-revision-tras-clase.md`). El modelo común —material, consigna, presentación, nivel; la página de ejercicio— está en `../Modelo-ejercicios.md`; aquí, solo lo propio de este material.
 
-Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**: `unidad0-intervalos-core.js` (3.º UD 0, tres consignas) y `familia2-intervalos-core.js` (la antigua «familia 2», oculta en 3.º UD 1). ⟶ DECIDIDO (2026-10-05): **se funden** en un generador, y la familia oculta queda reducida a su única consigna propia, **consonancia / disonancia**, que pasa a ser la 2.ª variante de *Morfología* en 3.º UD 1 (`bajo-cifrado.md` §2).
+Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**: `intervalos-core.js` (3.º UD 0, tres consignas) y `familia2-intervalos-core.js` (la antigua «familia 2», oculta en 3.º UD 1). ⟶ DECIDIDO (2026-10-05): **se funden** en un generador, y la familia oculta queda reducida a su única consigna propia, **consonancia / disonancia**, que pasa a ser la 2.ª variante de *Morfología* en 3.º UD 1 (`bajo-cifrado.md` §2).
 
 ⟶ DECIDIDO (2026-10-05), ⟶ PENDIENTE de implementar:
 

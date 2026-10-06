@@ -82,7 +82,7 @@
   // Anclas para SERIES DE ARMADURAS (una por compás): centra el glifo
   // g.keySig de cada compás, dibujado a su inicio. Cada compás emite su
   // propio g.keySig en orden (los cambios deben ir como
-  // scoreDef/staffGrp/staffDef@keysig, ver unidad0-armaduras-core.js),
+  // scoreDef/staffGrp/staffDef@keysig, ver armaduras-core.js),
   // pero el de 0 alteraciones (Do M / La m) es un grupo VACÍO sin caja
   // medible: su ancla se estima con el paso medio entre las demás (los
   // compases vacíos son casi equidistantes), lo que funciona también si

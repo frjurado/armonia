@@ -115,11 +115,10 @@ puede escribir y revisar sin que se le aparezca a nadie. Detalles en
       se reducen por CSS) y que en pizarra no quepan más grandes; escala a
       ejercicios más largos. Decidido frente a «botones abajo» (cambia el
       formato en el mismo dispositivo) y a más ancho de contenido.
-- [ ] Enlaces cruzados apunte ↔ ejercicio (un apunte enlaza al ejercicio de
-      su unidad; un ejercicio, al apunte que lo explica). La disposición de
-      `_site/` ya lo permite con rutas relativas (`../app/...`, `../apuntes/...`);
-      falta decidir dónde se declaran los enlaces (probablemente en el
-      `unidades.yaml` de abajo). Sin prisa.
+- [x] Enlaces cruzados apunte ↔ ejercicio: se declaran en
+      `app/public/curriculum-data.js` (`apuntes` de cada consigna) y la
+      construcción de los apuntes los lleva al sitio
+      (`app/docs/Modelo-ejercicios.md` §3.1).
 - [x] Empaquetar Verovio y soundfont-player en local (`app/public/vendor/`).
 - [ ] Empaquetar también los samples de piano (`acoustic_grand_piano` de
       `gleitz.github.io/midi-js-soundfonts`, ~1 MB en MP3) y pasar a

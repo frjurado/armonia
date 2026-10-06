@@ -9,7 +9,7 @@
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
-<script src="unidad0-acordes-core.js"></script>
+<script src="acordes-core.js"></script>
 <script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
@@ -60,18 +60,18 @@
 <script>
 /* UI — tríadas con grados de la escala. Tonalidades del trimestre 1 (Do M,
    Sol M, La m, Re m). La tonalidad es el dato, en la partitura. La generación
-   vive en unidad0-acordes-core.js; lo común de la página, en
+   vive en acordes-core.js; lo común de la página, en
    ArmoniaEj.ejercicio (comun.js). */
 ArmoniaEj.ejercicio({
-  maxNivel: U0Acordes.MAX_NIVEL,
-  generar: n => U0Acordes.generar(n, 'grados'),
-  mei: inst => U0Acordes.toMEI(inst, {dato:inst.key.nombre}),
+  maxNivel: Acordes.MAX_NIVEL,
+  generar: n => Acordes.generar(n, 'grados'),
+  mei: inst => Acordes.toMEI(inst, {dato:inst.key.nombre}),
   respuesta: inst => ({
     ansQ: `<span class="modo">Modo ${inst.modoTxt}</span><span class="sep-q">·</span>`+
           `<span>${inst.gradoRomano} grado</span><span class="sep-q">·</span>`+
           `<span>Tríada ${inst.type}</span>`,
     ansDet: inst.cifrado+' · '+inst.nombres.join(' – ')}),
-  audio: inst => U0Acordes.midis(inst),
+  audio: inst => Acordes.midis(inst),
   verovio: {scale:60, pageWidth:900}
 });
 </script>

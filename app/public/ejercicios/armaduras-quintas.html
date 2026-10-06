@@ -6,8 +6,9 @@
 <title>Armonía · Unidad 0 — Armaduras por quintas</title>
 <!-- Verovio (render de partitura, WASM), en vendor/. Sin audio en esta familia. -->
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
-<script src="unidad0-armaduras-core.js"></script>
+<script src="armaduras-core.js"></script>
 <script src="tira-partitura.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 </head>
@@ -56,7 +57,7 @@
 /* ============================================================
    UI / RENDER — armaduras por quintas
    ------------------------------------------------------------
-   La generación de la serie vive en unidad0-armaduras-core.js
+   La generación de la serie vive en armaduras-core.js
    (compartida con las variantes cromática y aleatoria). La serie
    entera se renderiza de una vez como tira continua (un compás
    por armadura) y tira-partitura.js la desliza centrando el
@@ -70,7 +71,7 @@ const PAUSA_AVANCE = 1500;   // ms entre revelar la respuesta y deslizar
 
 function construir(){
   if(!(tk && serie)) return;
-  tk.loadData(U0Armaduras.meiSerieArmaduras(serie.items.map(it=>it.sig)));
+  tk.loadData(Armaduras.meiSerieArmaduras(serie.items.map(it=>it.sig)));
   $('notation').innerHTML = tk.renderToSVG(1);
   tira = TiraPartitura.montar({
     viewport:$('tira'), inner:$('notation'),
@@ -86,8 +87,8 @@ function ocultarResp(){
 function reveal(){
   const it=serie.items[i];
   ocultarResp();
-  if(conMayor){ $('respSup').textContent=U0Armaduras.nombre(it.sig,'major'); $('respSup').classList.add('show'); }
-  if(conMenor){ $('respInf').textContent=U0Armaduras.nombre(it.sig,'minor'); $('respInf').classList.add('show'); }
+  if(conMayor){ $('respSup').textContent=Armaduras.nombre(it.sig,'major'); $('respSup').classList.add('show'); }
+  if(conMenor){ $('respInf').textContent=Armaduras.nombre(it.sig,'minor'); $('respInf').classList.add('show'); }
 }
 
 function mostrarPaso(animar){
@@ -98,7 +99,7 @@ function mostrarPaso(animar){
 
 function nuevaSerie(){
   clearTimeout(timer);
-  serie=U0Armaduras.serieQuintas(); i=0; revelado=false;
+  serie=Armaduras.serieQuintas(); i=0; revelado=false;
   $('dirNote').textContent = serie.dir>0
     ? '(esta serie gira en sentido horario: hacia los sostenidos)'
     : '(esta serie gira en sentido antihorario: hacia los bemoles)';
@@ -111,7 +112,7 @@ $('btnMain').onclick = ()=>{
   if(!serie || revelado) return;
   revelado=true;
   reveal();
-  if(i>=U0Armaduras.N-1){                       // fin de la serie
+  if(i>=Armaduras.N-1){                       // fin de la serie
     $('btnMain').disabled=true;
     $('btnOtra').style.display='';
     return;

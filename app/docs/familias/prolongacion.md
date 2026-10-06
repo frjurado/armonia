@@ -16,10 +16,10 @@ por bordadura o por paso. Los `tipos` de la familia **no son variantes de presen
 | 2 | `frase` | 4 cc. | prolongación + cadencia (CA o SC) |
 | 3 | `periodo` | 8 cc. | prolongación + SC ‖ prolongación + CA |
 
-Ficheros: `ejercicios/c4u0-prolongacion-core.js` (global `Prolongacion`; usa de
-`c4u0-cadencias-core.js` las casillas, los vetos, las cláusulas y el lector de plantillas),
-`c4u0-prolongacion-ui.js` (la UI, **común a los tres tipos**: las páginas solo cambian en
-el tipo y el texto de ayuda) y `c4u0-prolongacion-prol.html`, `-frase.html`,
+Ficheros: `ejercicios/prolongacion-core.js` (global `Prolongacion`; usa de
+`cadencias-core.js` las casillas, los vetos, las cláusulas y el lector de plantillas),
+`prolongacion-ui.js` (la UI, **común a los tres tipos**: las páginas solo cambian en
+el tipo y el texto de ayuda) y `prolongacion-prol.html`, `-frase.html`,
 `-periodo.html`. ⟶ DECIDIDO (2026-09-29) todo lo que sigue, salvo lo marcado.
 
 ## 1. Qué se muestra, qué se pide, qué se responde

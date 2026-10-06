@@ -286,6 +286,6 @@
 
   const api = { generar, toMEI, midis, midiOf, MAX_NIVEL, INV_LABEL, INV_CIFRA, KEYS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else global.U0Acordes = api;
+  else global.Acordes = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin */

@@ -9,7 +9,7 @@
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
-<script src="unidad0-intervalos-core.js"></script>
+<script src="intervalos-core.js"></script>
 <script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
@@ -117,9 +117,9 @@ function decorarGrados(svg){
     text.textContent=''; text.append(num, caret);
   });
 }
-const notas = (...ps) => ps.map(n=>({midi:U0Intervalos.midiOf(n.letter,n.alter,n.oct)}));
+const notas = (...ps) => ps.map(n=>({midi:Intervalos.midiOf(n.letter,n.alter,n.oct)}));
 ArmoniaEj.ejercicio({
-  generar: () => U0Intervalos.generarGrados(),
+  generar: () => Intervalos.generarGrados(),
   mei: inst => inst.mei({mascara:true, dato:inst.key.nombre}),
   trasRender: root => decorarGrados(root.querySelector('svg')),
   // una sola línea: modo · grados apilados (superior sobre inferior) · intervalo

@@ -1,4 +1,4 @@
-// Validación masiva de la familia Cadencias (c4u0-cadencias-core.js) sobre el
+// Validación masiva de la familia Cadencias (cadencias-core.js) sobre el
 // motor a cuatro voces, con el comprobador independiente (cuatro-voces-check.js):
 //   1. cero infracciones de las normas;
 //   2. frecuencia de cada fórmula (para vetar/ajustar pesos, cadencias.md §3);
@@ -18,7 +18,7 @@ const BASE = path.join(__dirname, '..', 'public') + '/';
 const CV = require(BASE + 'ejercicios/cuatro-voces-core.js');
 const CK = require(BASE + 'ejercicios/cuatro-voces-check.js');
 const ML = require(BASE + 'ejercicios/mini-lilypond-parser.js');
-const C  = require(BASE + 'ejercicios/c4u0-cadencias-core.js');
+const C  = require(BASE + 'ejercicios/cadencias-core.js');
 
 const nivel = parseInt(process.argv[2] || '1', 10);
 const N = parseInt(process.argv[3] || '2000', 10);
