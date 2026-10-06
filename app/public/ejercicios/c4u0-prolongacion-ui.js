@@ -4,87 +4,46 @@
    Las tres páginas (c4u0-prolongacion-prol/-frase/-periodo.html)
    son iguales salvo el tipo y la ayuda: cada una fija
    `window.PROL_TIPO` (1, 2 o 3) antes de cargar este fichero.
-   La lógica musical vive en c4u0-prolongacion-core.js; aquí solo
-   se pinta y se escucha. Antes de revelar se ve y suena SOLO el
-   bajo (y, en el tipo 1, la tonalidad como dato).
+   La lógica musical vive en c4u0-prolongacion-core.js; lo común de
+   la página (nivel, revelado, audio), en ArmoniaEj.ejercicio
+   (comun.js). Antes de revelar se ve y suena SOLO el bajo (y, en el
+   tipo 1, la tonalidad como dato): las voces superiores, los
+   cifrados y los tramos ya están dibujados, pero ocultos (máscara).
    ============================================================ */
 (function(){
   'use strict';
   const TIPO = window.PROL_TIPO || 1;
   const P = window.Prolongacion;
-  const $ = ArmoniaEj.$;
-  let tk=null, level=1, current=null, revelado=false;
+  const sep='<span class="sep-q">·</span>';
 
-  const dato = () => (TIPO===1 && current) ? current.key.nombre : null;
-
-  function renderSVG(){
-    if(!tk || !current) return;
-    tk.loadData(P.toMEI(current, revelado
-      ? {cifrados:true, tramos:true, dato:dato(), saltoFrase:true}
-      : {ocultas:[0,1,2], dato:dato(), saltoFrase:true}));
-    $('notation').innerHTML = tk.renderToSVG(1);
-    ArmoniaEj.apilarCifras($('notation'));
-    // corchete de cada etiqueta de tramo hasta su último acorde; abierto (sin
-    // gancho) si solapa con el siguiente: la bisagra prolongación–cadencia
-    if(revelado){
-      const tr=current.est.tramos;
-      ArmoniaEj.corchetesTramo($('notation'), tr.map((t,i)=>({etiqueta:'tramo'+i, hasta:'s'+t.hasta,
+  ArmoniaEj.ejercicio({
+    maxNivel: P.MAX_NIVEL,
+    generar: n => P.generar(TIPO, n),
+    mei: inst => P.toMEI(inst, {mascara:true, ocultas:[0,1,2], cifrados:true, tramos:true,
+      dato: TIPO===1 ? inst.key.nombre : null, saltoFrase:true}),
+    trasRender: (root, inst) => {
+      ArmoniaEj.apilarCifras(root);
+      // corchete de cada etiqueta de tramo hasta su último acorde; abierto (sin
+      // gancho) si solapa con el siguiente: la bisagra prolongación–cadencia.
+      // Se dibuja dentro de la etiqueta, así que se oculta y aparece con ella.
+      const tr=inst.est.tramos;
+      ArmoniaEj.corchetesTramo(root, tr.map((t,i)=>({etiqueta:'tramo'+i, hasta:'s'+t.hasta,
         abierto: !!tr[i+1] && tr[i+1].desde===t.hasta})));
-    }
-  }
-
-  function newExercise(){
-    current = P.generar(TIPO, level);
-    revelado=false;
-    $('lvl').textContent = level;
-    $('lvlNote').textContent = P.NIVELES[level-1] || '';
-    $('answer').className='answer';
-    $('btnReveal').disabled=false;
-    $('btnSimilar').style.display='none';
-    $('btnHarder').style.display='none';
-    renderSVG();
-    play();
-  }
-
-  function reveal(){
-    if(!current) return;
-    revelado=true;
-    const a=current.json.answer;
-    const sep='<span class="sep-q">·</span>';
+    },
     // Titular: tonalidad (si no era el dato) y la forma. Los acordes no se
     // repiten aquí: salen cifrados en la partitura, con sus alternativas.
-    $('ansQ').innerHTML = (TIPO===1 ? '' : `<span class="ton">${a.tonalidad}</span>${sep}`)
-      + `<span>${a.resumen}</span>`;
-    $('ansDet').innerHTML = '<ul class="tramos">'
-      + a.tramos.map(t=>`<li><b>${t.compases}</b> · ${t.texto}</li>`).join('') + '</ul>';
-    $('answer').className='answer show';
-    $('btnReveal').disabled=true;
-    $('btnSimilar').style.display='';
-    $('btnHarder').style.display = level<P.MAX_NIVEL ? '' : 'none';
-    renderSVG();
-    play();
-  }
-
-  async function play(){
-    if(!current) return;
-    try{ await ArmoniaEj.tocar(P.midis(current, revelado ? null : {voces:[3]})); }
-    catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
-  }
-
-  $('btnReveal').onclick = reveal;
-  $('btnSimilar').onclick = ()=>newExercise();
-  $('btnHarder').onclick = ()=>{ level=Math.min(level+1,P.MAX_NIVEL); newExercise(); };
-  $('btnListen').onclick = play;
-
-  // Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
-  newExercise();
-
-  // El periodo va en dos sistemas, uno por frase (<sb/> en el MEI), los dos
-  // del mismo ancho: el último se justifica siempre (minLastJustification 0;
-  // por defecto Verovio solo lo estira si ya ocupa el 80 %).
-  ArmoniaEj.initVerovio(
-    Object.assign({scale:60, pageWidth:1000}, TIPO===3 ? {breaks:'encoded', minLastJustification:0} : {}),
-    t=>{ tk=t; renderSVG(); },
-    msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
-  );
+    respuesta: inst => {
+      const a=inst.json.answer;
+      return {
+        ansQ: (TIPO===1 ? '' : `<span class="ton">${a.tonalidad}</span>${sep}`) + `<span>${a.resumen}</span>`,
+        ansDet: '<ul class="tramos">' + a.tramos.map(t=>`<li><b>${t.compases}</b> · ${t.texto}</li>`).join('') + '</ul>'
+      };
+    },
+    audio: (inst, revelado) => P.midis(inst, revelado ? null : {voces:[3]}),
+    sonarAlRevelar: true,
+    // El periodo va en dos sistemas, uno por frase (<sb/> en el MEI), los dos
+    // del mismo ancho: el último se justifica siempre (minLastJustification 0;
+    // por defecto Verovio solo lo estira si ya ocupa el 80 %).
+    verovio: Object.assign({scale:60, pageWidth:1000}, TIPO===3 ? {breaks:'encoded', minLastJustification:0} : {})
+  });
 })();

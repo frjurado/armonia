@@ -130,7 +130,18 @@ if(conVerovio){
         mal++; if(mal<5) console.log('VEROVIO', rev, {ok, notas, espN, harms, espH, medidas, paginas});
       }
     }));
+    // Con máscara (la página): todo dibujado; «preg» las cifras solas, «resp»
+    // el romano con cifras, el grado, el americano y el acorde de clave de Sol.
+    renders.forEach(x=>{
+      const ok=tk.loadData(M.toMEI(x,{mascara:true}));
+      const svg=ok ? tk.renderToSVG(1) : '', c=re=>(svg.match(re)||[]).length;
+      const n=x.acordes.length, cif=x.acordes.filter(a=>a.cifras.length).length;
+      const r={ok, notas:c(/class="note"/g), preg:c(/class="harm preg"/g), resp:c(/class="harm[^"]* resp"|class="harm resp"/g), acordes:c(/class="chord resp"/g)};
+      if(!ok || r.notas!==4*n || r.preg!==cif || r.resp!==3*n || r.acordes!==n){
+        mal++; if(mal<5) console.log('VEROVIO máscara', r, {n, cif});
+      }
+    });
     console.log(`
-Verovio: ${2*renders.length} MEI renderizados en ${Date.now()-t1} ms · con problema: ${mal}`);
+Verovio: ${3*renders.length} MEI renderizados (con y sin revelar, y con máscara) en ${Date.now()-t1} ms · con problema: ${mal}`);
   };
 }

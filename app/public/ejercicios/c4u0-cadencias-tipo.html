@@ -12,6 +12,7 @@
 <script src="../tonalidades.js"></script>
 <script src="cuatro-voces-core.js"></script>
 <script src="c4u0-cadencias-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 <style>
@@ -26,16 +27,15 @@
   <h1>Tipo de cadencia</h1>
   <span class="sub">Cadencias · Unidad 0 · 4.º</span>
   <a class="back" href="../index.html">← Menú</a>
-  <span class="level">Nivel <b id="lvl">1</b></span>
+  <span class="level"></span>
 </header>
 
 <main>
   <div class="ej-row">
     <div class="ej-main">
+      <p class="pregunta">¿Qué <b>tipo de cadencia</b> es?</p>
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under">
-        <p class="pregunta">¿Qué <b>tipo de cadencia</b> es?</p>
-      </div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
       </div>
@@ -44,8 +44,7 @@
       <button id="btnListen" title="Escuchar la cadencia"><span class="ic">▶</span>Escuchar</button>
       <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
       <div class="sep"></div>
-      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
-      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Otro</button>
     </div>
   </div>
 
@@ -56,73 +55,27 @@
      imperfecta), <b>SC</b> (semicadencia, también la frigia) o <b>CR</b> (rota)—. CAP y CAI
      se distinguen solo por la soprano: acaba en 1̂ en la perfecta, en 3̂ o 5̂ en la
      imperfecta. Al revelar aparecen el cifrado americano (encima) y los grados con sus
-     cifras (debajo). <span id="lvlNote"></span></p>
+     cifras (debajo).</p>
   </details>
 </main>
 
 <script>
-/* ============================================================
-   UI / RENDER / AUDIO — tipo de cadencia
-   La lógica musical (catálogo, realización, ritmo, MEI, MIDI)
-   vive en c4u0-cadencias-core.js; aquí solo se pinta y se escucha.
-   ============================================================ */
-let tk=null, level=1, current=null, revelado=false;
-const $=ArmoniaEj.$;
-
-function renderSVG(){
-  if(tk && current){
-    // La tonalidad es el dato de partida: va en la partitura, sobre el primer
-    // tiempo, no repetida en el texto. El compás se lee en la propia partitura.
-    tk.loadData(Cadencias.toMEI(current,{cifrados:revelado, dato:current.key.nombre}));
-    $('notation').innerHTML = tk.renderToSVG(1);
-    ArmoniaEj.apilarCifras($('notation'));
-  }
-}
-
-function newExercise(){
-  current = Cadencias.generar(level);
-  revelado=false;
-  $('lvl').textContent = level;
-  $('lvlNote').textContent = Cadencias.NIVELES[level-1] || '';
-  $('answer').className='answer';
-  $('btnReveal').disabled=false;
-  $('btnSimilar').style.display='none';
-  $('btnHarder').style.display='none';
-  renderSVG();
-  play();
-}
-
-function reveal(){
-  if(!current) return;
-  revelado=true;
-  const a=current.json.answer;
-  $('ansQ').innerHTML = `<span>${a.sigla}</span><span class="nombre">${a.nombre}</span>`;
-  $('answer').className='answer show';
-  $('btnReveal').disabled=true;
-  $('btnSimilar').style.display='';
-  $('btnHarder').style.display = level<Cadencias.MAX_NIVEL ? '' : 'none';
-  renderSVG();
-}
-
-async function play(){
-  if(!current) return;
-  try{ await ArmoniaEj.tocar(Cadencias.midis(current)); }
-  catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
-}
-
-$('btnReveal').onclick = reveal;
-$('btnSimilar').onclick = ()=>newExercise();
-$('btnHarder').onclick = ()=>{ level=Math.min(level+1,Cadencias.MAX_NIVEL); newExercise(); };
-$('btnListen').onclick = play;
-
-// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
-newExercise();
-
-ArmoniaEj.initVerovio(
-  {scale:60, pageWidth:1000},
-  t=>{ tk=t; renderSVG(); },
-  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
-);
+/* UI — tipo de cadencia. La lógica musical vive en c4u0-cadencias-core.js;
+   lo común de la página, en ArmoniaEj.ejercicio (comun.js). La tonalidad es
+   el dato de partida: va en la partitura, sobre el primer tiempo. Al
+   revelar aparecen los cifrados (americano encima, grados debajo). */
+ArmoniaEj.ejercicio({
+  maxNivel: Cadencias.MAX_NIVEL,
+  generar: n => Cadencias.generar(n),
+  mei: inst => Cadencias.toMEI(inst, {mascara:true, cifrados:true, dato:inst.key.nombre}),
+  trasRender: root => ArmoniaEj.apilarCifras(root),
+  respuesta: inst => {
+    const a=inst.json.answer;
+    return {ansQ: `<span>${a.sigla}</span><span class="nombre">${a.nombre}</span>`};
+  },
+  audio: inst => Cadencias.midis(inst),
+  verovio: {scale:60, pageWidth:1000}
+});
 </script>
 </body>
 </html>

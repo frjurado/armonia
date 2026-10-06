@@ -472,7 +472,7 @@
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const VO_ALT = -1.5;    // separación extra de la fila de alternativas
 
-  // toMEI(inst, {cifrados, ocultas, alternativas, dato}):
+  // toMEI(inst, {cifrados, ocultas, alternativas, dato, mascara}):
   //   cifrados: dibuja el americano encima y los romanos con cifras debajo;
   //   ocultas: array de índices de voz que se ocultan (<space>), p. ej.
   //     [0,1,2] en Bajo dado, [1,2,3] en Canto dado;
@@ -494,14 +494,20 @@
   function toMEI(inst, opts){
     opts=opts||{};
     const ocultas=opts.ocultas||[];
+    // mascara (páginas sobre ArmoniaEj.ejercicio): se dibuja TODO, y lo que es
+    // respuesta —las voces de `ocultas`, los cifrados, las alternativas— lleva
+    // type="resp" (llega al SVG como clase; comun.css lo oculta hasta revelar).
+    // Sin mascara, las voces ocultas son <space> y lo demás sale si se pide.
+    const masc=!!opts.mascara, R=masc?' resp':'';
+    const vacia=v=>!masc && ocultas.includes(v);
     const sig=CV.keysigAlters(inst.key.sig);
     const [num,den]=inst.ritmo.time.split('/');
     const nota=(p,x,id)=>{
-      if(ocultas.includes(id.v)) return `<space ${durAttrs(x.dur)}/>`;
+      if(vacia(id.v)) return `<space ${durAttrs(x.dur)}/>`;
       const acc = p.alter!==sig[p.letter] ? ` accid="${accMap[p.alter]}"` : '';
       return `<note xml:id="${id.pre}${x.k}" ${durAttrs(x.dur)} pname="${p.letter.toLowerCase()}" oct="${p.oct}"${acc}/>`;
     };
-    const capa=(v,m,pre)=>`<layer n="${v%2+1}">${m.map(x=>nota(inst.voces[v][x.k],x,{v,pre})).join('')}</layer>`;
+    const capa=(v,m,pre)=>`<layer n="${v%2+1}"${masc&&ocultas.includes(v)?' type="resp"':''}>${m.map(x=>nota(inst.voces[v][x.k],x,{v,pre})).join('')}</layer>`;
     const romanoXml=a=>{
       const figs=a.cifras ? a.cifras.split('/') : [];
       return `<rend>${a.romano.replace(a.cifras,'')}</rend>`+
@@ -517,17 +523,17 @@
         // el americano se ancla a la soprano salvo que esté oculta
         // americano en segundo plano (type="americano", más pequeño): aquí es
         // información añadida, no lo que se pregunta
-        const am=`type="americano"><rend fontsize="80%">${esc(a.americano)}</rend>`;
-        const arriba = ocultas.includes(0)
+        const am=`type="americano${R}"><rend fontsize="80%">${esc(a.americano)}</rend>`;
+        const arriba = vacia(0)
           ? `<harm place="above" staff="2" startid="#b${x.k}" ${am}</harm>`
           : `<harm place="above" staff="1" startid="#s${x.k}" ${am}</harm>`;
-        harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1">${romanoXml(a)}</harm>`;
+        harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1"${masc?' type="resp"':''}>${romanoXml(a)}</harm>`;
         // Filas de alternativas: `n` las apila, `type="alt"` llega al SVG como
         // clase (las pinta en gris comun.css) y `vo` las separa un poco más de
         // la principal (negativo = hacia abajo en place="below").
         const alt=(opts.alternativas||[])[x.k]||[];
         alt.forEach((id,j)=>{
-          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt" vo="${VO_ALT}">`
+          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt${R}" vo="${VO_ALT}">`
                  + romanoXml(CV.acorde(inst.key, ACORDES[id]))+`</harm>`;
         });
       });
@@ -562,14 +568,9 @@
     return out;
   }
 
-  const NIVELES = [
-    'CAP, CAI y SC; tónica inicial I o I6, predominante IV o II6, V o V7; 12 tonalidades; sin anacrusa.',
-    'Añade la cadencia rota (sobre VI), la semicadencia frigia, el 6/4 cadencial, II en fundamental (mayor), IV6 (menor) y la anacrusa.',
-    'Añade VI como tónica inicial, IV6 en mayor y la rota sobre IV6; 16 tonalidades.'
-  ];
 
   const api = {
-    generar, generarBajo, generarCanto, toMEI, midis, MAX_NIVEL, NIVELES, TIPOS, CA, NOMBRE_VOZ,
+    generar, generarBajo, generarCanto, toMEI, midis, MAX_NIVEL, TIPOS, CA, NOMBRE_VOZ,
     // lecturas alternativas (Bajo dado / Canto dado)
     enumerarFormulas, lecturasDelBajo, alternativasPorCasilla, comprimeLecturas, bajosPosibles,
     leeEnRelativa, bajoDe, bajoTxt, tipoDesdeBajo, etiquetaChocante,

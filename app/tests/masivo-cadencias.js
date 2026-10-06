@@ -155,7 +155,15 @@ if(conVerovio){
       if(!ok || notas!==esp || harms!==inst.ids.length*2 || medidas!==inst.ritmo.nCompases){
         mal++; if(mal<5) console.log('VEROVIO', fk, inst.ritmo.plantilla, {ok, notas, esp, harms, medidas});
       }
+      // Con máscara, como Bajo dado: todo dibujado; las tres voces superiores,
+      // los cifrados y las alternativas con la clase «resp».
+      const svgM=tk.loadData(C.toMEI(inst,{mascara:true, ocultas:[0,1,2], cifrados:true, alternativas:inst.alternativas})) ? tk.renderToSVG(1) : '';
+      const cM=re=>(svgM.match(re)||[]).length, alt=(inst.alternativas||[]).reduce((s,a)=>s+a.length,0);
+      const rM={notas:cM(/class="note"/g), capas:cM(/class="layer resp"/g), harms:cM(/class="harm[^"]*"/g), harmsResp:cM(/class="harm[^"]* ?resp"/g)};
+      if(rM.notas!==esp || rM.capas!==3*inst.ritmo.nCompases || rM.harms!==rM.harmsResp || rM.harms!==inst.ids.length*2+alt){
+        mal++; if(mal<5) console.log('VEROVIO máscara', fk, rM, {alt});
+      }
     });
-    console.log(`\n7. Verovio: ${muestraMEI.length} MEI renderizados en ${Date.now()-t1} ms · con problema: ${mal}`);
+    console.log(`\n7. Verovio: ${2*muestraMEI.length} MEI renderizados (con y sin máscara) en ${Date.now()-t1} ms · con problema: ${mal}`);
   };
 }

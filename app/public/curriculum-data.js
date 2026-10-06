@@ -18,7 +18,9 @@
    `tipos` [{key, label, title, icono, texto?, url, desc, publico?}].
    `icono` es una clave de TIPO_ICONS (index.html) o 'apilado' para
    el icono tipográfico de cifras (con el campo `texto`).
-   Las familias sin `niveles` no tienen niveles de dificultad.
+   Las familias sin `niveles` no tienen niveles de dificultad. Este es el
+   único sitio donde se dice qué incluye cada nivel: las páginas sobre
+   ArmoniaEj.ejercicio (comun.js) lo leen de aquí.
    ============================================================ */
 const CURRICULO = {
   modos: [
@@ -88,7 +90,7 @@ const CURRICULO = {
               ],
               niveles:[
                 'Modo mayor (Do y Sol mayor).',
-                'Añade el modo menor (La y Re menor), con la alteración de la sensible en el cifrado.'
+                'Añade el modo menor (La y Re menor): la sensible lleva su alteración en el cifrado (♯, ♯6).'
               ]},
             { nombre:'Intervalos', publico:false,
               desc:'Nombrar la amplitud y la calidad del intervalo a dos voces, y clasificarlo como consonancia perfecta / imperfecta o disonancia.',

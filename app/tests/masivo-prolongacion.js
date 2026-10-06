@@ -131,7 +131,18 @@ if(conVerovio){
          || paginas!==1 || sistemas!==(inst.tipo===3?2:1)){
         mal++; if(mal<5) console.log('VEROVIO', inst.ritmo.plantilla, {ok, notas, esp:4*n, harms, espH:2*n+alt, medidas, dirs, sistemas, paginas});
       }
+      // Con máscara, como la página: todo dibujado; voces superiores, cifrados,
+      // alternativas y tramos con la clase «resp»; el dato, no.
+      const svgM=tk.loadData(P.toMEI(inst,{mascara:true, ocultas:[0,1,2], cifrados:true, tramos:true,
+        dato:inst.tipo===1?inst.key.nombre:null, saltoFrase:true})) ? tk.renderToSVG(1) : '';
+      const cM=re=>(svgM.match(re)||[]).length;
+      const rM={notas:cM(/class="note"/g), capas:cM(/class="layer resp"/g), harms:cM(/class="harm[^"]*"/g),
+        harmsResp:cM(/class="harm[^"]* ?resp"/g), tramos:cM(/class="reh tramo resp"/g), dato:cM(/class="reh dato"/g)};
+      if(rM.notas!==4*n || rM.capas!==3*inst.ritmo.nCompases || rM.harms!==rM.harmsResp || rM.harms!==2*n+alt
+         || rM.tramos!==inst.est.tramos.length || rM.dato!==(inst.tipo===1?1:0)){
+        mal++; if(mal<5) console.log('VEROVIO máscara', rM);
+      }
     });
-    console.log(`\n6. Verovio: ${muestra.length} MEI renderizados en ${Date.now()-t1} ms · con problema: ${mal}`);
+    console.log(`\n6. Verovio: ${2*muestra.length} MEI renderizados (con y sin máscara) en ${Date.now()-t1} ms · con problema: ${mal}`);
   };
 }

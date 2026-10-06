@@ -208,7 +208,9 @@ dato → pregunta → respuesta, y **nada se dice dos veces**:
    izquierdo llega justo al comienzo del pentagrama, y aún quedan 600 unidades de margen
    de página, así que no se recorta. Comprobado en 1080 render: las tres variantes, los
    tres niveles, antes y después de revelar.
-2. **La pregunta va debajo de la partitura** (`.pregunta`), en una línea y con menos peso
+2. *(Revisado el 2026-10-06: la pregunta pasa **encima** de la partitura y con más peso,
+   `../Modelo-ejercicios.md` §2.1. Lo que sigue es la decisión original.)*
+   **La pregunta va debajo de la partitura** (`.pregunta`), en una línea y con menos peso
    que el dato y que la respuesta. El enunciado largo sigue dentro de «Ayuda».
 3. **La respuesta no repite lo que ya está dibujado.** Al revelar, los cifrados aparecen
    en la partitura; el texto solo lleva lo que ahí **no** se lee. Excepción: la **línea de

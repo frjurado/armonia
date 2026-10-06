@@ -5,6 +5,10 @@
        arrancado aunque onRuntimeInitialized haya disparado antes
        de engancharlo, y distingue los motivos de fallo)
      · audio por samples de piano (soundfont-player)
+     · la página común (ejercicio): nivel, revelado por máscara y
+       audio, para las páginas migradas (Modelo-ejercicios.md §2)
+     · dibujos tras el render: cifras apiladas, grados en círculo,
+       corchetes de tramo, líneas adicionales de notas ocultas
    Depende de los <script> de Verovio y soundfont-player
    (../vendor/), cargados por cada página.
    ============================================================ */
@@ -239,6 +243,139 @@
     });
   }
 
+  /* ---------- líneas adicionales de notas ocultas ---------- */
+  // Verovio dibuja las líneas adicionales por pentagrama (g.ledgerLines.above
+  // | .below, un <path> por línea), FUERA de la nota: ocultar una nota (clase
+  // `resp`) dejaría sus líneas a la vista. Aquí, tras el render, cada línea
+  // que solo necesitan notas ocultas recibe también la clase `resp`. Una
+  // línea la necesita una nota que solapa en x y cuyo centro está en ella o
+  // más allá (encima, en las de arriba; debajo, en las de abajo).
+  function lineasAdicionales(root){
+    if(!root || !root.querySelectorAll) return;
+    root.querySelectorAll('g.ledgerLines').forEach(g=>{
+      const staff=g.closest('g.staff'); if(!staff) return;
+      const arriba=g.classList.contains('above');
+      const notas=Array.from(staff.querySelectorAll('g.note')).map(n=>{
+        try{
+          const b=(n.querySelector('g.notehead')||n).getBBox();
+          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp')};
+        }catch(e){ return null; }
+      }).filter(Boolean);
+      g.querySelectorAll('path').forEach(p=>{
+        const m=(p.getAttribute('d')||'').match(/M\s*(-?[\d.]+)[\s,]+(-?[\d.]+)\s*L\s*(-?[\d.]+)/);
+        if(!m) return;
+        const x0=+m[1], y=+m[2], x1=+m[3];
+        const usan=notas.filter(n=>n.x0<x1 && n.x1>x0 && (arriba ? n.cy<=y+n.tol : n.cy>=y-n.tol));
+        if(usan.length && usan.every(n=>n.oculta)) p.classList.add('resp');
+      });
+    });
+  }
+
+  /* ---------- la página de ejercicio (Modelo-ejercicios.md §2) ---------- */
+  // ejercicio(cfg) monta lo común a todas las consignas: nivel, generación,
+  // render, revelado y audio. La página solo aporta su marcado (cabecera,
+  // .pregunta, #notation, #answer, botones) y estas funciones:
+  //   maxNivel   número de niveles del core (0 o ausente: sin niveles)
+  //   generar(nivel) → instancia
+  //   mei(inst)  → MEI COMPLETO: lo que es respuesta lleva @type "resp" (y lo
+  //              que solo se ve antes de revelar, "preg"); Verovio vuelca el
+  //              @type como clase y comun.css lo oculta según el estado
+  //   trasRender(root, inst)   apilarCifras, circularGrados…  (opcional)
+  //   respuesta(inst) → {idDeElemento: html}: se escribe al generar, oculta,
+  //              para que el panel ocupe ya su sitio
+  //   audio(inst, revelado) → [{midi, at, dur}]
+  //   sonarAlRevelar  vuelve a tocar al revelar (con lo que se añada)
+  //   verovio    opciones de initVerovio
+  // Revelar no vuelve a dibujar nada: pone la clase `revelado` en <body>. Así
+  // la partitura y el panel no se mueven (Modelo-ejercicios.md §2.4).
+  // El texto de cada nivel sale de curriculum-data.js (fuente única), que la
+  // página carga antes que este fichero; ?nivel=N fija el nivel inicial.
+  function ejercicio(cfg){
+    const body=document.body;
+    body.classList.add('mascara');
+    const niveles=nivelesDelCurriculo();
+    const max=cfg.maxNivel||0;
+    let tk=null, inst=null;
+    let nivel=Math.min(Math.max(parseInt(new URLSearchParams(location.search).get('nivel'),10)||1, 1), max||1);
+
+    function render(){
+      if(!tk || !inst) return;
+      const root=$('notation');
+      tk.loadData(cfg.mei(inst));
+      root.innerHTML=tk.renderToSVG(1);
+      if(cfg.trasRender) cfg.trasRender(root, inst);
+      lineasAdicionales(root);
+    }
+    async function sonar(){
+      if(!inst) return;
+      try{ await tocar(cfg.audio(inst, body.classList.contains('revelado'))); }
+      catch(e){ audioNoDisponible($('btnListen')); }
+    }
+    function nuevo(){
+      inst=cfg.generar(nivel);
+      body.classList.remove('revelado');
+      const r=cfg.respuesta(inst)||{};
+      Object.keys(r).forEach(id=>{ const el=$(id); if(el) el.innerHTML=r[id]; });
+      $('btnReveal').disabled=false;
+      pintarNivel();
+      render();
+      sonar();
+    }
+    function revelar(){
+      if(!inst || body.classList.contains('revelado')) return;
+      body.classList.add('revelado');
+      $('btnReveal').disabled=true;
+      if(cfg.sonarAlRevelar) sonar();
+    }
+
+    // Selector de nivel en la cabecera (en .level) y su descripción bajo la
+    // partitura (#nivelDesc). Sin niveles, no aparece ninguno de los dos.
+    const caja=document.querySelector('header .level');
+    function pintarNivel(){
+      if(!caja) return;
+      caja.querySelectorAll('button.niv').forEach(b=>b.setAttribute('aria-pressed', +b.dataset.n===nivel));
+      const desc=$('nivelDesc');
+      if(desc) desc.innerHTML = max>1 && niveles[nivel-1] ? `<b>Nivel ${nivel}.</b> ${niveles[nivel-1]}` : '';
+    }
+    if(caja){
+      if(max>1){
+        caja.innerHTML='<span class="niv-rotulo">Nivel</span>'
+          + Array.from({length:max},(_,i)=>`<button type="button" class="niv" data-n="${i+1}" title="${esc(niveles[i]||'')}">${i+1}</button>`).join('');
+        caja.setAttribute('role','group');
+        caja.addEventListener('click', e=>{
+          const b=e.target.closest('button.niv'); if(!b) return;
+          detener();
+          nivel=+b.dataset.n;
+          const u=new URL(location.href); u.searchParams.set('nivel', nivel);
+          history.replaceState(null, '', u);
+          nuevo();
+        });
+      }else caja.style.display='none';
+    }
+
+    $('btnReveal').onclick=revelar;
+    $('btnSimilar').onclick=()=>nuevo();
+    $('btnListen').onclick=sonar;
+
+    nuevo();                               // texto y botones funcionan ya, sin esperar a Verovio
+    initVerovio(cfg.verovio||{}, t=>{ tk=t; render(); },
+      msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; });
+  }
+
+  // Los `niveles` de la familia de esta página en curriculum-data.js (se busca
+  // por nombre de fichero, como hace el menú con #de=). [] si no está.
+  function nivelesDelCurriculo(){
+    let C; try{ C=CURRICULO; }catch(e){ return []; }      // const global de curriculum-data.js
+    const fichero=location.pathname.split('/').pop();
+    const fin=u=>!!u && u.split('/').pop()===fichero;
+    for(const curso of C.cursos) for(const ud of curso.unidades) for(const fam of ud.familias){
+      const urls=(fam.tipos||[]).map(t=>t.url).concat(Object.values(fam.modos||{}).map(m=>m&&m.url));
+      if(urls.some(fin)) return fam.niveles||[];
+    }
+    return [];
+  }
+  const esc=s=>String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
   /* ---------- audio ---------- */
   let piano=null;
   async function getPiano(){
@@ -276,10 +413,11 @@
     sonando.forEach(nodo=>{ try{ nodo.stop(); }catch(e){} });
     sonando=[];
   }
-  // Respuesta, Similar y Más difícil cortan siempre el audio, toque o no la
-  // página algo después (fase de captura: antes que el manejador de la página).
+  // Respuesta, Otro (#btnSimilar), Más difícil y el selector de nivel cortan
+  // siempre el audio, toque o no la página algo después (fase de captura:
+  // antes que el manejador de la página).
   document.addEventListener('click', e=>{
-    if(e.target.closest && e.target.closest('#btnReveal, #btnSimilar, #btnHarder')) detener();
+    if(e.target.closest && e.target.closest('#btnReveal, #btnSimilar, #btnHarder, button.niv')) detener();
   }, true);
 
   function audioNoDisponible(btn){ btn.textContent='(sin audio)'; btn.disabled=true; }
@@ -301,5 +439,6 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, tocar, detener, audioNoDisponible };
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales,
+                       ejercicio, tocar, detener, audioNoDisponible };
 })(window);

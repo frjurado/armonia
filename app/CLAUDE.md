@@ -72,8 +72,8 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 - **Audio:** samples de piano vía soundfont-player
   (`ArmoniaEj.tocar([{midi, at, dur}])`, en `comun.js`). **Cada llamada a `tocar()` es una
   reproducción completa y corta la anterior** (note off general), y los botones
-  Respuesta/Similar/Más difícil (`#btnReveal`, `#btnSimilar`, `#btnHarder`) cortan siempre
-  el audio. No encadenar varias llamadas para una sola reproducción: una lista con `at`.
+  Respuesta/Otro/Más difícil (`#btnReveal`, `#btnSimilar`, `#btnHarder`) y el selector de
+  nivel (`button.niv`) cortan siempre el audio. No encadenar varias llamadas para una sola reproducción: una lista con `at`.
 - **Terceros en `public/vendor/`** (Verovio 6.3.0, soundfont-player, la
   fuente de alteraciones), no por CDN: copias literales, versión y origen
   en `vendor/README.md`.
@@ -111,8 +111,29 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     **Sin DOM.**
   - Una página HTML por variante/modo (`-id`, `-au`, `-ct`, o las variantes de
     la UD 0) que solo contiene UI: carga scripts, pinta, escucha botones.
-  - `comun.js` (`ArmoniaEj`: init robusto de Verovio + audio) y `comun.css`,
-    compartidos por todas las páginas. En `comun.css`, la fila
+  - **Página común** (`docs/Modelo-ejercicios.md` §2): las páginas migradas (Bajo
+    cifrado, Cadencias, Prolongación; las demás, al rediseñarlas) no llevan su
+    propia lógica de nivel, revelado ni audio: llaman a
+    `ArmoniaEj.ejercicio({maxNivel, generar, mei, respuesta, audio, …})` y
+    cargan `../curriculum-data.js` antes de `comun.js`, porque **el texto de
+    cada nivel solo está ahí** (campo `niveles` de la familia, buscada por el
+    nombre de fichero de la página; un core ya no lleva `NIVELES`). Reglas:
+    - **Revelar no vuelve a dibujar.** El MEI sale completo desde el
+      principio (`toMEI(…, {mascara:true})`): lo que es respuesta lleva
+      `@type` con `resp` —y lo que solo es pregunta, `preg`—, Verovio lo
+      vuelca como clase y `comun.css` lo oculta hasta que `<body>` tiene
+      `revelado`. Algo de respuesta que se emita sin `resp` se verá antes de
+      tiempo; algo que solo se emita al revelar no tendrá su sitio reservado.
+    - Ocultar es `visibility:hidden`, **nunca `display:none`**: las medidas tras
+      el render (`apilarCifras`, `circularGrados`, `corchetesTramo`) necesitan
+      la caja.
+    - Las líneas adicionales no están dentro de la nota: tras cada render,
+      `ArmoniaEj.lineasAdicionales` (lo llama `ejercicio`) marca `resp` las que
+      solo necesitan notas ocultas.
+    - Los `masivo-*.js` renderizan también con máscara y comprueban que no se
+      pierde ninguna nota y que todo lo que es respuesta lleva `resp`.
+  - `comun.js` (`ArmoniaEj`: init robusto de Verovio, audio y la página común)
+    y `comun.css`, compartidos por todas las páginas. En `comun.css`, la fila
     partitura + acciones pasa a columna por debajo de 860 px **con
     `align-items:stretch`**: con `flex-start`, cada hijo tomaría el ancho de
     su contenido y la tira de armaduras (5000 px) desbordaba en móvil.
@@ -179,8 +200,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 
 - Las **tonalidades disponibles** dependen del trimestre; la UD 0 de 3.º queda fuera
   de esa progresión (su familia de armaduras recorre las 24 por diseño).
-- Niveles de dificultad 1–3 por familia (cuando los hay); «Más difícil» sube
-  de nivel.
+- Niveles de dificultad 1–3 por familia, solo donde crece el contenido
+  (`docs/Modelo-ejercicios.md` §1.4). En las páginas migradas se eligen con el
+  selector de la cabecera y `?nivel=N`; en las demás, «Más difícil» sube.
 - **Nunca 7 alteraciones** en armadura: se prefiere la enarmónica de 5.
 - Tesitura controlada por líneas adicionales (`MAX_LEDGER_LINES`), calculadas
   por **pasos diatónicos** (letra + octava), no por semitonos.

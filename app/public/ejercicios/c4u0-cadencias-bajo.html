@@ -12,6 +12,7 @@
 <script src="../tonalidades.js"></script>
 <script src="cuatro-voces-core.js"></script>
 <script src="c4u0-cadencias-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 <style>
@@ -28,17 +29,16 @@
   <h1>Bajo dado</h1>
   <span class="sub">Cadencias · Unidad 0 · 4.º</span>
   <a class="back" href="../index.html">← Menú</a>
-  <span class="level">Nivel <b id="lvl">1</b></span>
+  <span class="level"></span>
 </header>
 
 <main>
   <div class="ej-row">
     <div class="ej-main">
-      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under">
-        <p class="pregunta">¿En qué <b>tonalidad</b> estás y qué <b>cadencia</b> es?
+      <p class="pregunta">¿En qué <b>tonalidad</b> estás y qué <b>cadencia</b> es?
            ¿Qué <b>acordes</b> puedes usar?</p>
-      </div>
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
         <div class="det" id="ansDet"></div>
@@ -48,8 +48,7 @@
       <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
       <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
       <div class="sep"></div>
-      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
-      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Otro</button>
     </div>
   </div>
 
@@ -62,79 +61,32 @@
      El bajo <b>no distingue CAP de CAI</b> (eso lo decide la soprano), así que la
      respuesta es <b>CA</b>; y varias casillas admiten <b>dos acordes</b> con el mismo bajo
      (4̂ → IV o II6; 5̂ → V o V7). Al revelar se dibuja <b>una</b> realización posible con
-     su cifrado, y debajo, en una segunda fila, los acordes que también habrían cabido.
-     <span id="lvlNote"></span></p>
+     su cifrado, y debajo, en una segunda fila, los acordes que también habrían cabido.</p>
   </details>
 </main>
 
 <script>
-/* ============================================================
-   UI / RENDER / AUDIO — bajo dado
-   La lógica musical (catálogo, realización, lecturas alternativas,
-   MEI, MIDI) vive en c4u0-cadencias-core.js; aquí solo se pinta y
-   se escucha. Antes de revelar suena y se ve SOLO el bajo.
-   ============================================================ */
-let tk=null, level=1, current=null, revelado=false;
-const $=ArmoniaEj.$;
-
-function renderSVG(){
-  if(!tk || !current) return;
-  tk.loadData(Cadencias.toMEI(current, revelado
-    ? {cifrados:true, alternativas:current.alternativas}
-    : {ocultas:[0,1,2]}));
-  $('notation').innerHTML = tk.renderToSVG(1);
-  ArmoniaEj.apilarCifras($('notation'));
-}
-
-function newExercise(){
-  current = Cadencias.generarBajo(level);
-  revelado=false;
-  $('lvl').textContent = level;
-  $('lvlNote').textContent = Cadencias.NIVELES[level-1] || '';
-  $('answer').className='answer';
-  $('btnReveal').disabled=false;
-  $('btnSimilar').style.display='none';
-  $('btnHarder').style.display='none';
-  renderSVG();
-  play();
-}
-
-function reveal(){
-  if(!current) return;
-  revelado=true;
-  const a=current.json.answer;
-  const sep='<span class="sep-q">·</span>';
-  $('ansQ').innerHTML = `<span class="ton">${a.tonalidad}</span>${sep}`
-    + a.tipos.map(t=>`<span>${t.sigla}</span>`).join(sep);
-  const nombres=a.tipos.map(t=>t.nombre).join(' o ');
-  $('ansDet').innerHTML = `${nombres}. En esta realización, <b>${a.tipoRealizado}</b>.`;
-  $('answer').className='answer show';
-  $('btnReveal').disabled=true;
-  $('btnSimilar').style.display='';
-  $('btnHarder').style.display = level<Cadencias.MAX_NIVEL ? '' : 'none';
-  renderSVG();
-  play();
-}
-
-async function play(){
-  if(!current) return;
-  try{ await ArmoniaEj.tocar(Cadencias.midis(current, revelado ? null : {voces:[3]})); }
-  catch(e){ ArmoniaEj.audioNoDisponible($('btnListen')); }
-}
-
-$('btnReveal').onclick = reveal;
-$('btnSimilar').onclick = ()=>newExercise();
-$('btnHarder').onclick = ()=>{ level=Math.min(level+1,Cadencias.MAX_NIVEL); newExercise(); };
-$('btnListen').onclick = play;
-
-// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
-newExercise();
-
-ArmoniaEj.initVerovio(
-  {scale:60, pageWidth:1000},
-  t=>{ tk=t; renderSVG(); },
-  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
-);
+/* UI — bajo dado. La lógica musical (catálogo, realización, lecturas
+   alternativas, MEI, MIDI) vive en c4u0-cadencias-core.js; lo común de la
+   página, en ArmoniaEj.ejercicio (comun.js). Antes de revelar se ve y
+   suena SOLO el bajo: las voces superiores, los cifrados y las
+   alternativas ya están dibujados, pero ocultos (máscara). */
+ArmoniaEj.ejercicio({
+  maxNivel: Cadencias.MAX_NIVEL,
+  generar: n => Cadencias.generarBajo(n),
+  mei: inst => Cadencias.toMEI(inst, {mascara:true, ocultas:[0,1,2], cifrados:true, alternativas:inst.alternativas}),
+  trasRender: root => ArmoniaEj.apilarCifras(root),
+  respuesta: inst => {
+    const a=inst.json.answer, sep='<span class="sep-q">·</span>';
+    return {
+      ansQ: `<span class="ton">${a.tonalidad}</span>${sep}` + a.tipos.map(t=>`<span>${t.sigla}</span>`).join(sep),
+      ansDet: `${a.tipos.map(t=>t.nombre).join(' o ')}. En esta realización, <b>${a.tipoRealizado}</b>.`
+    };
+  },
+  audio: (inst, revelado) => Cadencias.midis(inst, revelado ? null : {voces:[3]}),
+  sonarAlRevelar: true,
+  verovio: {scale:60, pageWidth:1000}
+});
 </script>
 </body>
 </html>

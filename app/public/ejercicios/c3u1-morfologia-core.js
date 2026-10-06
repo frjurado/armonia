@@ -88,10 +88,6 @@
 
   /* ---------- tonalidades y niveles ---------- */
   const MAX_NIVEL = 2;
-  const NIVELES = [
-    'Modo mayor (Do y Sol mayor); clave de Fa, 5 o 6 notas.',
-    'Añade el modo menor (La y Re menor): la sensible lleva su alteración en el cifrado (♯, ♯6).'
-  ];
   function tonalidades(nivel){
     const t=TON.delTrimestre(1);
     return nivel>=2 ? t : t.filter(k=>k.mode==='major');
@@ -306,7 +302,7 @@
   const sigStr = sig => sig===0 ? '0' : Math.abs(sig)+(sig>0?'s':'f');
   const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 
-  // toMEI(inst, {revelado}):
+  // toMEI(inst, {revelado, mascara}):
   //   siempre: los dos pentagramas, el bajo con su cifrado debajo y la
   //     tonalidad como dato (`<reh type="dato">`, como en 4.º);
   //   revelado: el romano delante de las cifras, el grado del bajo encima
@@ -314,6 +310,11 @@
   //     círculo) y, en clave de Sol, el acorde y su americano.
   //   Sin revelar, las cifras solas, centradas bajo la nota, como en un
   //   bajo cifrado; al revelar, el romano delante (y el conjunto se recentra).
+  //   mascara (páginas sobre ArmoniaEj.ejercicio): se dibuja TODO de una vez,
+  //     con @type para comun.css: «preg» lo que solo se ve sin revelar (las
+  //     cifras solas) y «resp» lo que es respuesta (romano + cifras, grado,
+  //     acorde y americano). Las dos filas de cifrado se superponen en el
+  //     mismo sitio (sin `n`), así que revelar no mueve nada.
   //   La fila del cifrado baja con `vo`: Verovio mide la caja del texto sin
   //   la subida del superíndice, y la cifra de arriba chocaba con las notas
   //   en línea adicional.
@@ -328,20 +329,22 @@
   const ALT_CLASE = {'♯':'sostenido', '♭':'bemol', '♮':'becuadro'};
   function toMEI(inst, opts){
     opts=opts||{};
-    const rev=!!opts.revelado, sig=CV.keysigAlters(inst.key.sig);
+    const masc=!!opts.mascara, rev=masc || !!opts.revelado, sig=CV.keysigAlters(inst.key.sig);
+    const tipo=t=>masc ? ` type="${t}"` : '';
     const nota=(p,id)=>{
       const acc = p.alter!==sig[p.letter] ? ` accid="${accMap[p.alter]}"` : '';
       return `<note${id?` xml:id="${id}"`:''} pname="${p.letter.toLowerCase()}" oct="${p.oct}"${acc}/>`;
     };
-    const cifrado=a=>{
-      const rom = rev ? `<rend>${esc(a.romano)}</rend>` : '';
+    const cifrado=(a, conRomano)=>{
+      const rom = conRomano ? `<rend>${esc(a.romano)}</rend>` : '';
       return rom + a.cifras.map((f,i)=>`<rend rend="${i===0?'sup':'sub'}" fontsize="${CUERPO_CIFRAS}">${esc(f)}</rend>`).join('');
     };
     const measures=inst.acordes.map((a,k)=>{
       const last=k===inst.acordes.length-1;
       let ctl = k===0 ? `<reh place="above" staff="1" tstamp="1" type="dato">${esc(inst.key.nombre)}</reh>` : '';
-      const tieneTexto = rev || a.cifras.length;
-      if(tieneTexto) ctl += `<harm place="below" staff="2" startid="#b${k}" vo="${VO_CIFRADO}">${cifrado(a)}</harm>`;
+      const fila=(conRomano, t)=>`<harm place="below" staff="2" startid="#b${k}"${tipo(t)} vo="${VO_CIFRADO}">${cifrado(a, conRomano)}</harm>`;
+      if(masc){ if(a.cifras.length) ctl += fila(false,'preg'); ctl += fila(true,'resp'); }
+      else if(rev || a.cifras.length) ctl += fila(rev);
       if(rev){
         // Solo la cifra; la alteración va en el @type (llega al SVG como
         // clase) y la dibuja ArmoniaEj.circularGrados con el círculo: dentro
@@ -350,12 +353,12 @@
         // círculo es más grande que la caja que Verovio mide; sin subirlo,
         // roza las notas de la línea superior.
         const acc = a.gradoBajo.acc ? ' alt-'+ALT_CLASE[a.gradoBajo.acc] : '';
-        ctl += `<harm place="above" staff="2" startid="#b${k}" type="gradobajo${acc}" vo="${VO_GRADO}">`
+        ctl += `<harm place="above" staff="2" startid="#b${k}" type="gradobajo${acc}${masc?' resp':''}" vo="${VO_GRADO}">`
              + `<rend fontsize="${CUERPO_GRADO}">${a.gradoBajo.num}</rend></harm>`;
-        ctl += `<harm place="above" staff="1" startid="#s${k}" type="americano"><rend fontsize="80%">${esc(a.americano)}</rend></harm>`;
+        ctl += `<harm place="above" staff="1" startid="#s${k}" type="americano${masc?' resp':''}"><rend fontsize="80%">${esc(a.americano)}</rend></harm>`;
       }
       const agudo = rev
-        ? `<chord xml:id="s${k}" dur="1">${a.agudo.map(p=>nota(p)).join('')}</chord>`
+        ? `<chord xml:id="s${k}" dur="1"${tipo('resp')}>${a.agudo.map(p=>nota(p)).join('')}</chord>`
         : `<space dur="1"/>`;
       return `<measure n="${k+1}"${last?' right="end"':''}>`
         + `<staff n="1"><layer n="1">${agudo}</layer></staff>`
@@ -389,7 +392,7 @@
   }
 
   const api = {
-    generar, toMEI, midis, MAX_NIVEL, NIVELES, CIRCULO,
+    generar, toMEI, midis, MAX_NIVEL, CIRCULO,
     // para pruebas
     ACORDES, SIGUE, EN_MAYOR, EN_MENOR, RANGO, tonalidades, intervaloValido, melodiaValida,
     pasoValido, cifrasDe, acordeAgudo

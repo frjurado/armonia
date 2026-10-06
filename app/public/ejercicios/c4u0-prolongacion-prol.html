@@ -13,6 +13,7 @@
 <script src="cuatro-voces-core.js"></script>
 <script src="c4u0-cadencias-core.js"></script>
 <script src="c4u0-prolongacion-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 <style>
@@ -29,16 +30,15 @@
   <h1>Prolongación</h1>
   <span class="sub">Prolongación · Unidad 0 · 4.º</span>
   <a class="back" href="../index.html">← Menú</a>
-  <span class="level">Nivel <b id="lvl">1</b></span>
+  <span class="level"></span>
 </header>
 
 <main>
   <div class="ej-row">
     <div class="ej-main">
+      <p class="pregunta">¿Qué <b>acordes</b> lleva este bajo? ¿Qué armonía se <b>prolonga</b>, y cómo?</p>
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under">
-        <p class="pregunta">¿Qué <b>acordes</b> lleva este bajo? ¿Qué armonía se <b>prolonga</b>, y cómo?</p>
-      </div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
         <div class="det" id="ansDet"></div>
@@ -48,8 +48,7 @@
       <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
       <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
       <div class="sep"></div>
-      <button id="btnSimilar" style="display:none" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Similar</button>
-      <button id="btnHarder"  style="display:none" title="Otro ejercicio, un nivel más difícil"><span class="ic">↑</span>Más difícil</button>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Otro</button>
     </div>
   </div>
 
@@ -58,8 +57,7 @@
   <p class="prompt">Se da <b>solo el bajo</b> y la tonalidad: di qué acorde va sobre cada nota (grado e inversión), qué armonía se prolonga y con qué técnica. Una <b>prolongación</b> sostiene una armonía (I o V) con acordes subordinados: de <b>bordadura</b> si la armonía vuelve en la misma posición (①–⑦–①), de <b>paso</b> si vuelve en otra (①–②–③). Dentro de una prolongación de I, la dominante va siempre <b>invertida</b>: el V en estado fundamental es de la cadencia.
      Al revelar se dibuja <b>una</b> realización posible: los acordes subordinados van
      <b>entre paréntesis</b>, y debajo, en gris, los que también habrían cabido con esa nota
-     del bajo. Encima, dónde empieza cada tramo.
-     <span id="lvlNote"></span></p>
+     del bajo. Encima, dónde empieza cada tramo.</p>
   </details>
 </main>
 

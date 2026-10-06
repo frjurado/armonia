@@ -620,15 +620,21 @@
   function toMEI(inst, opts){
     opts=opts||{};
     const ocultas=opts.ocultas||[];
+    // mascara (páginas sobre ArmoniaEj.ejercicio): se dibuja TODO, y lo que es
+    // respuesta —las voces de `ocultas`, los cifrados, las alternativas— lleva
+    // type="resp" (llega al SVG como clase; comun.css lo oculta hasta revelar).
+    // Sin mascara, las voces ocultas son <space> y lo demás sale si se pide.
+    const masc=!!opts.mascara, R=masc?' resp':'';
+    const vacia=v=>!masc && ocultas.includes(v);
     const key=inst.key;
     const sig=CV.keysigAlters(key.sig);
     const [num,den]=inst.ritmo.time.split('/');
     const nota=(p,x,id)=>{
-      if(ocultas.includes(id.v)) return `<space ${durAttrs(x.dur)}/>`;
+      if(vacia(id.v)) return `<space ${durAttrs(x.dur)}/>`;
       const acc = p.alter!==sig[p.letter] ? ` accid="${accMap[p.alter]}"` : '';
       return `<note xml:id="${id.pre}${x.k}" ${durAttrs(x.dur)} pname="${p.letter.toLowerCase()}" oct="${p.oct}"${acc}/>`;
     };
-    const capa=(v,m,pre)=>`<layer n="${v%2+1}">${m.map(x=>nota(inst.voces[v][x.k],x,{v,pre})).join('')}</layer>`;
+    const capa=(v,m,pre)=>`<layer n="${v%2+1}"${masc&&ocultas.includes(v)?' type="resp"':''}>${m.map(x=>nota(inst.voces[v][x.k],x,{v,pre})).join('')}</layer>`;
     const romanoXml=(a, paren)=>{
       const figs=a.cifras ? a.cifras.split('/') : [];
       return `<rend>${paren?'(':''}${a.romano.replace(a.cifras,'')}</rend>`+
@@ -642,18 +648,18 @@
       let harms = '';
       m.forEach(x=>{
         (inicioTramo[x.k]||[]).forEach(e=>{
-          const ancla = ocultas.includes(0) ? `staff="2" startid="#b${x.k}"` : `staff="1" startid="#s${x.k}"`;
-          harms += `<reh xml:id="tramo${e.i}" place="above" ${ancla} type="tramo">${esc(e.txt)}</reh>`;
+          const ancla = vacia(0) ? `staff="2" startid="#b${x.k}"` : `staff="1" startid="#s${x.k}"`;
+          harms += `<reh xml:id="tramo${e.i}" place="above" ${ancla} type="tramo${R}">${esc(e.txt)}</reh>`;
         });
         if(!opts.cifrados) return;
         const a=inst.acordes[x.k], sub=inst.est.ev[x.k].rol==='S';
-        const am=`type="americano"><rend fontsize="80%">${esc(a.americano)}</rend>`;
-        const arriba = ocultas.includes(0)
+        const am=`type="americano${R}"><rend fontsize="80%">${esc(a.americano)}</rend>`;
+        const arriba = vacia(0)
           ? `<harm place="above" staff="2" startid="#b${x.k}" ${am}</harm>`
           : `<harm place="above" staff="1" startid="#s${x.k}" ${am}</harm>`;
-        harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1">${romanoXml(a, sub)}</harm>`;
+        harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1"${masc?' type="resp"':''}>${romanoXml(a, sub)}</harm>`;
         (inst.alternativas[x.k]||[]).forEach((id,j)=>{
-          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt" vo="${VO_ALT}">`
+          harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt${R}" vo="${VO_ALT}">`
                  + romanoXml(acordeDe(key,id), sub)+`</harm>`;
         });
       });
@@ -690,14 +696,9 @@
     return out;
   }
 
-  const NIVELES = [
-    'Solo tríadas: V6, VII6 e IV como acordes de bordadura o de paso; cadencias con IV o II6 y V; tonalidades mayores.',
-    'Añade las inversiones de V7 (V6/5, V4/3, V4/2), V7 y el 6/4 cadencial en la cadencia, y el modo menor (con ♯6̂ al subir de 5̂ a 7̂).',
-    'Añade los 6/4 de paso (V6/4) y de bordadura (IV6/4 sobre I, I6/4 sobre V); 16 tonalidades.'
-  ];
 
   const api = {
-    generar, toMEI, midis, MAX_NIVEL, NIVELES, TIPOS, CADENCIAS,
+    generar, toMEI, midis, MAX_NIVEL, TIPOS, CADENCIAS,
     // gramática y análisis (para pruebas)
     CELULAS, CEL, SOPRANO, parRepetido, estructura, ritmo, ritmosFrase, analizar, acordeDe, acordesDe, ganchos,
     tonalidades, relativas, resumen, etiquetaTramo, spec
