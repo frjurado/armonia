@@ -8,7 +8,13 @@ Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**:
 
 - **Identificación** y **Con grados**: en **pentagrama doble** siempre, con intervalos compuestos (la forma simple primero y la real en segundo plano, como ya hace la familia 2). Absorbe lo que eran los niveles 2–3 de la familia 2.
 - **Con inversión**: en un pentagrama, porque invertir es una operación dentro de la 8.ª.
-- **Sin niveles** en la UD 0.
+- **Sin niveles** en la UD 0 (ya no los tenía).
+- ⟶ HECHO (2026-10-06): las tres páginas de la UD 0, sobre la página común
+  (`../Modelo-ejercicios.md` §2), aún con su contenido actual. En *Con inversión* el segundo
+  compás y la barra doble están dibujados desde el principio, ocultos (el compás lleva
+  `type="barra-resp"`); en *Con grados*, los grados, y la tonalidad pasa a la partitura como
+  dato. Corregido de paso: en el unísono, el grado de arriba se colocaba como el de abajo y
+  caía dentro del pentagrama.
 - **Consonancia**: la pregunta es la clasificación (perfecta / imperfecta / disonancia), con la presentación «Oír» disponible (la consonancia se oye). Sus niveles, si los tiene, por decidir.
 
 ## Consignas de la UD 0

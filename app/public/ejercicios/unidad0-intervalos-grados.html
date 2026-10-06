@@ -10,6 +10,7 @@
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
 <script src="unidad0-intervalos-core.js"></script>
+<script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
 <link rel="stylesheet" href="comun.css">
 <style>
@@ -31,15 +32,14 @@
   <h1>Intervalos con grados</h1>
   <span class="sub">Intervalos · Unidad 0</span>
   <a class="back" href="../index.html">← Menú</a>
+  <span class="level"></span>
 </header>
 
 <main>
   <div class="ej-row">
     <div class="ej-main">
+      <p class="pregunta">¿Qué <b>intervalo</b> es, y qué <b>grado</b> de la escala es cada nota?</p>
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under">
-        <div class="motion" id="keyName">—</div>
-      </div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
         <div class="det" id="ansDet"></div>
@@ -49,36 +49,24 @@
       <button id="btnListen" title="Escuchar el intervalo"><span class="ic">▶</span>Escuchar</button>
       <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
       <div class="sep"></div>
-      <button id="btnSimilar" style="display:none" title="Otro intervalo"><span class="ic">↻</span>Otro</button>
+      <button id="btnSimilar" title="Otro ejercicio"><span class="ic">↻</span>Otro</button>
     </div>
   </div>
 
   <details class="ayuda">
     <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
   <p class="prompt">El intervalo pertenece a la <b>tonalidad</b> indicada (armadura y
-     nombre): di el <b>intervalo</b> y el <b>grado</b> de cada nota (número con
-     circunflejo, p. ej. 4̂). Al revelar, los grados se escriben encima y debajo del
-     pentagrama. Único accidental posible: la <b>sensible</b> del modo menor.</p>
+     nombre, sobre la partitura): di el <b>intervalo</b> y el <b>grado</b> de cada nota
+     (número con circunflejo, p. ej. 4̂). Al revelar, los grados se escriben encima y
+     debajo del pentagrama. Único accidental posible: la <b>sensible</b> del modo menor.</p>
   </details>
 </main>
 
 <script>
-/* ============================================================
-   UI / RENDER / AUDIO — intervalos con grados de la escala
-   Tonalidades del trimestre 1 (Do M, Sol M, La m, Re m). Los
-   grados (encima/debajo del pentagrama) se dibujan al revelar.
-   ============================================================ */
-let tk=null, current=null, revelado=false;
-const $=ArmoniaEj.$;
-
-function renderSVG(){
-  if(tk && current){
-    tk.loadData(current.mei(revelado));
-    $('notation').innerHTML = tk.renderToSVG(1);
-    if(revelado) decorarGrados($('notation').querySelector('svg'));
-  }
-}
-
+/* UI — intervalos con grados de la escala. Tonalidades del trimestre 1 (Do M,
+   Sol M, La m, Re m). La tonalidad es el dato, en la partitura; los grados
+   están dibujados desde el principio, ocultos (máscara). Lo común de la
+   página, en ArmoniaEj.ejercicio (comun.js). */
 // Grado en HTML: dígito con circunflejo encima (ver CSS .gr).
 const gradoHTML = g => `<span class="gr"><i>^</i>${g}</span>`;
 
@@ -107,7 +95,9 @@ function decorarGrados(svg){
     // dígito y circunflejo se fijan por separado para poder ajustarlos
     const fs = 520, fsCaret = 450;
     const y0 = +text.getAttribute('y');
-    const c  = Math.abs(y0-sup.y) < Math.abs(y0-inf.y) ? sup : inf;
+    // el grado de arriba queda por encima de las dos notas; el de abajo, por
+    // debajo (por cercanía fallaba en el unísono: las dos notas coinciden)
+    const c  = y0 < (sup.y+inf.y)/2 ? sup : inf;
     // el de abajo baja algo más: que el circunflejo no pise plica ni pentagrama
     const y  = c===inf ? y0 + 540 : y0;
     text.setAttribute('y', y);
@@ -127,56 +117,20 @@ function decorarGrados(svg){
     text.textContent=''; text.append(num, caret);
   });
 }
-
-function newExercise(){
-  current = U0Intervalos.generarGrados();
-  revelado=false;
-  $('keyName').textContent = current.key.nombre;
-  $('answer').className='answer';
-  $('btnReveal').disabled=false;
-  $('btnSimilar').style.display='none';
-  renderSVG();
-  playInterval();
-}
-
-function reveal(){
-  if(!current) return;
-  revelado=true;
+const notas = (...ps) => ps.map(n=>({midi:U0Intervalos.midiOf(n.letter,n.alter,n.oct)}));
+ArmoniaEj.ejercicio({
+  generar: () => U0Intervalos.generarGrados(),
+  mei: inst => inst.mei({mascara:true, dato:inst.key.nombre}),
+  trasRender: root => decorarGrados(root.querySelector('svg')),
   // una sola línea: modo · grados apilados (superior sobre inferior) · intervalo
-  $('ansQ').innerHTML =
-    `<span class="modo">Modo ${current.key.mode==='minor' ? 'menor' : 'mayor'}</span><span class="sep-q">·</span>`+
-    `<span class="grados">${gradoHTML(current.gradoSup)}${gradoHTML(current.gradoInf)}</span>`+
-    `<span class="sep-q">·</span><span>${current.label}</span>`;
-  $('ansDet').textContent = '';
-  $('answer').className='answer show';
-  $('btnReveal').disabled=true;
-  $('btnSimilar').style.display='';
-  renderSVG();   // añade los grados sobre/bajo el pentagrama
-}
-
-async function playInterval(){
-  if(!current) return;
-  try{
-    await ArmoniaEj.tocar([current.lower,current.upper].map(
-      n=>({midi:U0Intervalos.midiOf(n.letter,n.alter,n.oct)})));
-  }catch(e){
-    ArmoniaEj.audioNoDisponible($('btnListen'));
-  }
-}
-
-$('btnReveal').onclick = reveal;
-$('btnSimilar').onclick = ()=>newExercise();
-$('btnListen').onclick = playInterval;
-
-// Primer ejercicio inmediato (texto + botones funcionan ya, sin esperar a Verovio)
-newExercise();
-
-ArmoniaEj.initVerovio(
+  respuesta: inst => ({ansQ:
+    `<span class="modo">Modo ${inst.key.mode==='minor' ? 'menor' : 'mayor'}</span><span class="sep-q">·</span>`+
+    `<span class="grados">${gradoHTML(inst.gradoSup)}${gradoHTML(inst.gradoInf)}</span>`+
+    `<span class="sep-q">·</span><span>${inst.label}</span>`}),
+  audio: inst => notas(inst.lower, inst.upper),
   // margen superior amplio: sitio para el circunflejo del grado superior
-  {scale:60, pageWidth:900, pageMarginTop:60, pageMarginBottom:60},
-  t=>{ tk=t; renderSVG(); },
-  msg=>{ $('notation').innerHTML='<span class="ph">'+msg+'</span>'; }
-);
+  verovio: {scale:60, pageWidth:900, pageMarginTop:60, pageMarginBottom:60}
+});
 </script>
 </body>
 </html>

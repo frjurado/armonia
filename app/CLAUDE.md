@@ -111,8 +111,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     **Sin DOM.**
   - Una página HTML por variante/modo (`-id`, `-au`, `-ct`, o las variantes de
     la UD 0) que solo contiene UI: carga scripts, pinta, escucha botones.
-  - **Página común** (`docs/Modelo-ejercicios.md` §2): las páginas migradas (Bajo
-    cifrado, Cadencias, Prolongación; las demás, al rediseñarlas) no llevan su
+  - **Página común** (`docs/Modelo-ejercicios.md` §2): las páginas migradas (todo
+    lo publicado salvo Armaduras, que son series en tira; las familias ocultas
+    de 3.º UD 1, al rediseñarlas) no llevan su
     propia lógica de nivel, revelado ni audio: llaman a
     `ArmoniaEj.ejercicio({maxNivel, generar, mei, respuesta, audio, …})` y
     cargan `../curriculum-data.js` antes de `comun.js`, porque **el texto de

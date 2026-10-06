@@ -4,6 +4,10 @@
 
 Hoy en el menú: 3.º UD 0, familia *Armaduras*. Sin niveles. Es la única familia en **series** (12 armaduras, sin repetir): el orden es contenido (el círculo, la escala cromática) o garantiza cubrirlo todo (Aleatorio). Ver `../Modelo-ejercicios.md` §1.5.
 
+Por eso no usa la página común (§2 de ese documento): su flujo es otro —«Respuesta» y la
+tira avanza sola— y no tiene niveles. De la página común toma solo la **pregunta visible
+encima de la partitura** (⟶ HECHO 2026-10-06).
+
 Series **encadenadas de 12 armaduras** (siempre las 12 clases de altura, sin repetir), en
 clave de Sol, desveladas una a una («Respuesta» → «Siguiente»; en *Por quintas*, ya como
 tira deslizante con avance automático — ver abajo). Conmutadores **inclusivos**

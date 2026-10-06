@@ -32,6 +32,7 @@ septiembre (14 commits) y el 16 (9).
 | 5. Ampliación de materiales | 28–30 sep | c3u1, ejemplos para clase, fichas, familia Prolongación |
 | 6. Granularidad fina | 5 oct | Visibilidad por familia/ejercicio; 3.º UD 1 en la app con Morfología |
 | 7. Revisión del modelo | 5 oct | Tras el uso en clase: cuatro ejes de ejercicio, plan por fases, documentación dividida, `informes/` |
+| 8. La página común | 6 oct | Pregunta arriba, nivel visible, revelado por máscara sin movimiento, en todo lo publicado |
 
 ---
 
@@ -208,6 +209,18 @@ en espacio reservado. `Generador-ejercicios.md` se divide en `Modelo-ejercicios.
 un documento por material, y nace esta carpeta de informes. La implementación queda
 en cuatro fases más (página común, estructura, contenido, y la reorganización de los
 apuntes del curso que viene).
+
+## Fase 8 — La página común (6 de octubre)
+
+Segunda fase del plan ([informe](2026-10-06-fase2-pagina-comun.md)). Todo lo publicado
+—salvo las series de Armaduras— pasa a una página común: la pregunta encima de la
+partitura, el nivel en un selector de la cabecera con una línea que dice qué incluye, y
+un **revelado por máscara**: la partitura se dibuja completa una vez, lo que es
+respuesta va marcado en el MEI y el CSS lo oculta hasta revelar, así que nada se mueve.
+Verovio pone las líneas adicionales fuera de la nota, y hubo que ocultar a mano las de
+las notas ocultas. Los textos de los niveles quedan solo en `curriculum-data.js`, y
+Acordes pierde el sentido *construir*. Se valida en un Chrome sin interfaz manejado
+desde Node, midiendo antes y después de revelar.
 
 ---
 

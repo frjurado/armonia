@@ -203,14 +203,18 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
    desde el principio, invisible. visibility (no display): las medidas tras el
    render (cifras apiladas, círculos, corchetes) siguen funcionando. */
 .mascara:not(.revelado) #notation .resp,
-.mascara.revelado #notation .preg{visibility:hidden}
+.mascara.revelado #notation .preg,
+/* barra de un compás que solo existe al revelar (la doble entre el intervalo
+   y su inversión): Verovio la dibuja dentro del compás, marcado barra-resp */
+.mascara:not(.revelado) #notation g.measure.barra-resp > g.barLine{visibility:hidden}
 .mascara .answer{display:block}
 .mascara:not(.revelado) .answer{visibility:hidden}
 
-/* La pregunta, ENCIMA de la partitura y siempre visible (en las páginas
-   antiguas sigue debajo, dentro de .under, con su estilo de arriba). */
-.mascara .pregunta{font-size:19px;color:var(--fg);margin:0 0 12px;line-height:1.35}
-.mascara .pregunta b{color:var(--ink);font-weight:700}
+/* La pregunta, ENCIMA de la partitura y siempre visible: primer hijo de
+   .ej-main (también en las series de armaduras, que no usan la máscara). En
+   las páginas antiguas sigue debajo, dentro de .under, con su estilo de arriba. */
+.ej-main > .pregunta:first-child{font-size:19px;color:var(--fg);margin:0 0 12px;line-height:1.35}
+.ej-main > .pregunta:first-child b{color:var(--ink);font-weight:700}
 /* Lo que incluye el nivel actual, bajo la partitura */
 .nivel-desc{font-size:15px;color:var(--muted);margin:0;max-width:860px}
 .nivel-desc b{color:var(--fg);font-weight:600}
@@ -257,7 +261,7 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
   .level{font-size:13px;gap:8px}
   .level b{min-width:36px;height:36px;font-size:15px}
   .level button.niv{min-width:42px;min-height:42px;font-size:16px}
-  .mascara .pregunta{font-size:16px;margin-bottom:10px}
+  .ej-main > .pregunta:first-child{font-size:16px;margin-bottom:10px}
   .nivel-desc{font-size:13px}
 
   /* main pasa a columna flex y .ej-row se disuelve (display:contents):

@@ -11,9 +11,8 @@
      · variante 'grados': tríada diatónica en estado fundamental
        sobre un grado de una tonalidad (las 4 del trimestre 1);
        en menor, la sensible solo en V y VII (III natural, mayor);
-     · dos sentidos: VER el acorde y nombrarlo, o CONSTRUIRLO a
-       partir del dato (cifrado americano / bajo cifrado). Qué
-       sentidos admite cada variante y nivel lo fija SENTIDOS;
+     · se ve el acorde y se nombra (el sentido inverso, construirlo
+       a partir del nombre, se quitó el 2026-10-05);
      · niveles: 1 clave de Sol · 2 clave de Fa (posición cerrada)
        · 3 posición abierta en pentagrama doble (el bajo en Fa,
        las otras dos notas en Sol, nunca a más de una 8.ª).
@@ -170,24 +169,12 @@
   }
 
   /* ---------- generador ---------- */
-  // Sentidos admitidos por variante y nivel. 'construir' solo tiene
-  // sentido cuando la disposición revelada es la única posible (posición
-  // cerrada, niveles 1-2): en el nivel 3 la disposición abierta es
-  // arbitraria y solo se podrían contrastar nombres de notas. En
-  // 'inversion' se mantiene en todos los niveles: leer un bajo cifrado
-  // en clave de Fa es precisamente el ejercicio. 'grados' es solo ver.
-  const SENTIDOS = {
-    tipo:      {1:['ver','construir'], 2:['ver','construir'], 3:['ver']},
-    inversion: {1:['ver','construir'], 2:['ver','construir'], 3:['ver','construir']},
-    grados:    {1:['ver'],             2:['ver'],             3:['ver']}
-  };
-
   // variante: 'tipo' | 'inversion' | 'grados'. Solo 'inversion' usa
-  // inversiones; en su sentido 'construir' el bajo cifrado se limita a
-  // 6/3 y 6/4 (con 5/3 el dato sería el mismo que en la variante 'tipo').
+  // inversiones. Siempre se muestra el acorde y se pide nombrarlo: el
+  // sentido inverso («construir», a partir del nombre) se quitó el
+  // 2026-10-05 (docs/familias/acordes.md).
   function generar(nivel, variante){
     for(let t=0;t<200;t++){
-      const dir = rnd(SENTIDOS[variante][nivel]);
       let root, type, triad, key=null, grado=0, inv=0;
       if(variante==='grados'){
         key=rnd(KEYS); grado=1+Math.floor(Math.random()*7);
@@ -198,8 +185,7 @@
         root=rndRoot();
         triad=buildTriad(root,type);
         if(!triad) continue;
-        if(variante==='inversion')
-          inv = dir==='ver' ? Math.floor(Math.random()*3) : 1+Math.floor(Math.random()*2);
+        if(variante==='inversion') inv = Math.floor(Math.random()*3);
       }
 
       let ej;
@@ -213,7 +199,7 @@
         if(!v) continue;
         ej={ single:false, bass:v.bass, upper:v.upper };
       }
-      ej.nivel=nivel; ej.variante=variante; ej.dir=dir;
+      ej.nivel=nivel; ej.variante=variante;
       ej.root=root; ej.type=type; ej.inv=inv;
       ej.cifrado=cifradoAm(root,type);
       // cifrado con barra: el bajo tras la barra cuando hay inversión (C/E)
@@ -244,12 +230,11 @@
                                    : 'clef.shape="G" clef.line="2"';
   function parse1(music){ return MiniLily.parseVoice(music,{time:null}).events[0]; }
 
-  // toMEI(ej, {solo, cifras}):
-  //   solo   → dibuja solo el bajo (sentido 'construir', antes de revelar);
-  //   cifras → añade el bajo cifrado (6/3 o 6/4) bajo la nota más grave.
-  // Con tonalidad (variante 'grados') se escribe la armadura y solo llevan
-  // accidental las notas ajenas a ella (la sensible); sin tonalidad
-  // (keysig 0) toda alteración se escribe como accidental.
+  // toMEI(ej, {dato}): el acorde, y `dato` (la tonalidad, en la variante con
+  // grados) sobre él como <reh type="dato">, como en 4.º. Con tonalidad se
+  // escribe la armadura y solo llevan accidental las notas ajenas a ella (la
+  // sensible); sin tonalidad (keysig 0) toda alteración es accidental. Nada
+  // cambia al revelar: no hay máscara.
   function toMEI(ej, opts){
     opts=opts||{};
     const sig = ej.key ? ej.key.sig : 0;
@@ -260,29 +245,21 @@
       const xid = id ? ` xml:id="${id}"` : '';
       return `<note${xid} dur="${ev.base||1}" pname="${ev.letter}" oct="${ev.octave}"${acc}/>`;
     };
-    // idBajo: la nota más grave del acorde lleva xml:id="bajo" (ancla de
-    // las cifras) solo cuando ese acorde contiene realmente al bajo.
-    const chordXml = (notas, idBajo) => {
+    // El acorde del pentagrama superior lleva xml:id="sup": ancla del dato.
+    const chordXml = notas => {
       const ev=MiniLily.parseVoice('<'+notas.map(pitchToken).join(' ')+'>1',{time:null}).events[0];
-      return `<chord dur="${ev.base}">${
-        ev.notes.map((n,i)=>noteXml(n, (idBajo && i===0)?'bajo':null)).join('')}</chord>`;
+      return `<chord xml:id="sup" dur="${ev.base}">${ev.notes.map(n=>noteXml(n)).join('')}</chord>`;
     };
-    const harm = opts.cifras
-      ? `<harm place="below" startid="#bajo"><fb>${
-          ej.invCifra.split('/').map(f=>`<f>${f}</f>`).join('')}</fb></harm>`
-      : '';
+    const harm = opts.dato ? `<reh place="above" staff="1" startid="#sup" type="dato">${opts.dato}</reh>` : '';
     let staffDefs, staves;
     if(ej.single){
       staffDefs=`<staffDef n="1" lines="5" ${clefAttr(ej.clef)}/>`;
-      const cuerpo = opts.solo
-        ? noteXml(parse1(pitchToken(ej.notes[0])+'1'),'bajo')
-        : chordXml(ej.notes, true);
-      staves=`<staff n="1"><layer n="1">${cuerpo}</layer></staff>`;
+      staves=`<staff n="1"><layer n="1">${chordXml(ej.notes)}</layer></staff>`;
     }else{
       staffDefs=`<staffDef n="1" lines="5" ${clefAttr('treble')}/>`+
                 `<staffDef n="2" lines="5" ${clefAttr('bass')}/>`;
-      const sup = opts.solo ? '<space dur="1"/>' : chordXml(ej.upper, false);
-      const baj = noteXml(parse1(pitchToken(ej.bass)+'1'),'bajo');
+      const sup = chordXml(ej.upper);
+      const baj = noteXml(parse1(pitchToken(ej.bass)+'1'));
       staves=`<staff n="1"><layer n="1">${sup}</layer></staff>`+
              `<staff n="2"><layer n="1">${baj}</layer></staff>`;
     }
@@ -305,15 +282,9 @@
     return notas.map(n=>({midi:midiOf(n.letter,n.alter,n.oct)}));
   }
 
-  // Descripciones de nivel (compartidas por las tres páginas).
-  const LVL_NOTES = {
-    1: '(clave de Sol, posición cerrada)',
-    2: '(clave de Fa, posición cerrada)',
-    3: '(posición abierta en pentagrama doble: bajo en Fa, las otras dos notas en Sol)'
-  };
   const MAX_NIVEL = 3;
 
-  const api = { generar, toMEI, midis, midiOf, LVL_NOTES, MAX_NIVEL, SENTIDOS, INV_LABEL, INV_CIFRA, KEYS };
+  const api = { generar, toMEI, midis, midiOf, MAX_NIVEL, INV_LABEL, INV_CIFRA, KEYS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.U0Acordes = api;
 })(typeof window !== 'undefined' ? window : globalThis);

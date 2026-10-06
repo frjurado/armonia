@@ -108,13 +108,14 @@
   function generarNormal(){
     const ej = generarLibre(0,7,HI);
     ej.sig = 0;
-    ej.mei = build([{lower:ej.lower, upper:ej.upper, visible:true}], 0, []);
+    ej.mei = opts => build([{lower:ej.lower, upper:ej.upper, visible:true}], 0, [], opts);
     return ej;
   }
 
   // Variante 2 — con inversión (2.ª a 7.ª, para que la inversión sea otra
   // cosa distinta): la nota inferior sube una octava. La inversión aparece
-  // como segundo compás, oculto (spaces) hasta revelar la respuesta.
+  // como segundo compás: con máscara, dibujado y marcado «resp» (lo oculta
+  // comun.css); sin ella, <space> hasta revelar la respuesta.
   function generarInversion(){
     const ej = generarLibre(1,6,HI-7);    // la nota grave invertida debe caber
     const inv = {
@@ -127,10 +128,10 @@
     inv.label  = etiqueta(inv.steps, inv.quality);
     ej.inv = inv;
     ej.sig = 0;
-    ej.mei = revelado => build([
+    ej.mei = opts => { const o=opciones(opts); return build([
       {lower:ej.lower, upper:ej.upper, visible:true},
-      {lower:inv.lower, upper:inv.upper, visible:!!revelado}
-    ], 0, []);
+      {lower:inv.lower, upper:inv.upper, visible:o.mascara||o.revelado, resp:o.mascara}
+    ], 0, [], o); };
     return ej;
   }
 
@@ -163,10 +164,11 @@
     return {
       key, lower, upper, steps, semis, quality, label:etiqueta(steps,quality),
       gradoInf, gradoSup, gradoInfTxt:caret(gradoInf), gradoSupTxt:caret(gradoSup),
-      // los grados (encima/debajo del pentagrama) solo se dibujan al revelar
-      mei: revelado => build([{lower, upper, visible:true}], key.sig,
-        revelado ? [ {place:'above', id:'m0s', text:caret(gradoSup)},
-                     {place:'below', id:'m0b', text:caret(gradoInf)} ] : [])
+      // los grados (encima/debajo del pentagrama): con máscara, siempre y
+      // marcados «resp»; sin ella, solo al revelar
+      mei: opts => { const o=opciones(opts); return build([{lower, upper, visible:true}], key.sig,
+        (o.mascara||o.revelado) ? [ {place:'above', id:'m0s', text:caret(gradoSup)},
+                                    {place:'below', id:'m0b', text:caret(gradoInf)} ] : [], o); }
     };
   }
 
@@ -181,7 +183,17 @@
   }
   const accMap={1:'s',0:'n','-1':'f',2:'x','-2':'ff'};
 
-  function build(medidas, sig, dirs){
+  // mei(opts) de cada instancia: opts = {mascara, dato} (página común) o, como
+  // antes, un booleano «revelado».
+  const opciones = o => (o && typeof o==='object') ? o : {revelado:!!o};
+
+  // build(medidas, sig, dirs, {mascara, dato}):
+  //   mascara: lo que es respuesta (un compás con `resp`, los grados) se
+  //     dibuja con type="resp" (comun.css lo oculta hasta revelar);
+  //   dato: texto que se DA, sobre la primera nota (<reh type="dato">, como
+  //     en 4.º): la tonalidad, en la variante con grados.
+  function build(medidas, sig, dirs, opts){
+    opts=opts||{};
     const sigMap=keysigAlters(sig);
     const noteXml=(n,id,force)=>{
       const ev=MiniLily.parseVoice(pitchToken(n)+'2',{time:null}).events[0];
@@ -196,14 +208,19 @@
                     m.lower.oct===m.upper.oct && m.lower.alter!==m.upper.alter;
       const l1 = m.visible ? noteXml(m.upper,`m${i}s`,force) : '<space dur="2"/>';
       const l2 = m.visible ? noteXml(m.lower,`m${i}b`,force) : '<space dur="2"/>';
+      const capa = m.resp ? ' type="resp"' : '';
       const dirXml = dirs.filter(d=>d.id.indexOf(`m${i}`)===0)
-        .map(d=>`<dir place="${d.place}" startid="#${d.id}">${d.text}</dir>`).join('');
+        .map(d=>`<dir place="${d.place}" startid="#${d.id}"${opts.mascara?' type="resp"':''}>${d.text}</dir>`).join('')
+        + (i===0 && opts.dato ? `<reh place="above" staff="1" startid="#m0s" type="dato">${opts.dato}</reh>` : '');
       // Con un 2.º compás aún oculto no se dibuja la barra intermedia;
       // al revelarlo se separa el original de la inversión con barra doble.
+      // Con máscara la barra doble se dibuja siempre, y el compás lleva
+      // type="barra-resp": comun.css oculta su barra hasta revelar.
       const right = (i===0 && medidas.length===2)
         ? (medidas[1].visible ? ' right="dbl"' : ' right="invis"') : '';
-      return `<measure n="${i+1}"${right}><staff n="1">`+
-             `<layer n="1">${l1}</layer><layer n="2">${l2}</layer>`+
+      const tipoMedida = (i===0 && medidas.length===2 && medidas[1].resp) ? ' type="barra-resp"' : '';
+      return `<measure n="${i+1}"${right}${tipoMedida}><staff n="1">`+
+             `<layer n="1"${capa}>${l1}</layer><layer n="2"${capa}>${l2}</layer>`+
              `</staff>${dirXml}</measure>`;
     }).join('');
     const sigAttr = sig===0?'0':(Math.abs(sig)+(sig>0?'s':'f'));

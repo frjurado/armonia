@@ -65,8 +65,8 @@ niveles**; *Intervalos* y *Acordes* pasan a pentagrama doble (`familias/interval
 
 Qué incluye cada nivel se escribe **una sola vez**, en el campo `niveles` de
 `curriculum-data.js`; la página lo lee de ahí (`ArmoniaEj.ejercicio` busca la familia por
-el nombre de fichero de la página). ⟶ HECHO (2026-10-06) en las páginas migradas (§2); las
-demás siguen con el `LVL_NOTES` de su core hasta migrarlas.
+el nombre de fichero de la página). ⟶ HECHO (2026-10-06) en las páginas migradas (§2); solo
+las familias ocultas de 3.º UD 1 siguen con su `LVL_NOTES`, hasta rediseñarlas.
 
 ### 1.5. Serie o sin fin
 
@@ -84,14 +84,17 @@ Patrón común a todas las consignas, implementado **una vez**: `ArmoniaEj.ejerc
 funciones (generar, MEI, respuesta, audio y, si hace falta, retoques tras el render); el
 nivel, el revelado y el audio son comunes.
 
-⟶ HECHO (2026-10-06): *Bajo cifrado*, *Cadencias* (Tipo, Bajo dado, Canto dado) y
-*Prolongación* (los tres tipos). ⟶ PENDIENTE: la UD 0 de 3.º (con los cambios de contenido
-de la fase 4) y las familias ocultas de 3.º UD 1, que se rediseñan antes.
+⟶ HECHO (2026-10-06): *Bajo cifrado*, *Cadencias* (Tipo, Bajo dado, Canto dado),
+*Prolongación* (los tres tipos) e *Intervalos* y *Acordes* de la UD 0 de 3.º (las seis
+consignas, aún con su contenido actual: el de la fase 4 cambiará qué se genera, no la
+página). *Armaduras* no la usa —son series en tira, con su propio flujo— pero lleva la
+pregunta visible encima. ⟶ PENDIENTE: las familias ocultas de 3.º UD 1, al rediseñarlas.
 
 ### 2.1. Capas, de arriba abajo
 
 1. **Pregunta** — una línea, **encima de la tarjeta de la partitura**, siempre visible, en
-   el cuerpo del texto y con las palabras clave en tinta (`.mascara .pregunta`). El orden
+   el cuerpo del texto y con las palabras clave en tinta (`.ej-main > .pregunta:first-child`:
+   la regla depende de dónde está, no de la máscara, y así vale también en *Armaduras*). El orden
    de lectura es pregunta → partitura → respuesta; en la pizarra la clase lee primero qué
    se pide. (En las páginas sin migrar sigue debajo, o solo dentro de «Ayuda».)
 2. **Partitura** — con el **dato** dentro (la tonalidad o el tipo como `<reh>` sobre el
@@ -279,10 +282,9 @@ Cambian las URL públicas de las páginas; el QR apunta a la raíz y no le afect
 Las cerradas están en los informes y en la historia de git; aquí solo las vivas.
 
 **Comunes**
-- [x] ~~Página común (§2)~~ → hecha, con *Bajo cifrado*, *Cadencias* y *Prolongación*
-      migradas (2026-10-06).
-- [ ] Migrar a la página común la UD 0 de 3.º (fase 4, con sus cambios de contenido) y
-      las familias ocultas de 3.º UD 1 (al rediseñarlas).
+- [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
+      que solo toma la pregunta visible (2026-10-06).
+- [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas).
 - [ ] Un solo esquema en `curriculum-data.js`, menú en filas, renombrado (§3, §6). (fase 3)
 - [ ] `?oir` y enlaces cruzados apunte ↔ ejercicio (§2.5; `?nivel` ya está). (fase 3)
 - [ ] Empaquetar los samples; mecanismo offline (§4).
@@ -291,7 +293,8 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 **Por material**
 - [ ] *Intervalos*: fundir los dos generadores; pentagrama doble; consigna Consonancia
       (`familias/intervalos.md`). (fase 4)
-- [ ] *Acordes*: quitar *construir* y los niveles (`familias/acordes.md`). (fase 2 / 4)
+- [ ] *Acordes*: quitar los niveles; pentagrama doble (`familias/acordes.md`). (fase 4;
+      *construir*, fuera desde el 2026-10-06)
 - [ ] *Bajo cifrado*: romano al revelar con o sin la alteración del cifrado
       (`familias/bajo-cifrado.md` §1).
 - [ ] *Cadencias*: «Oír» en Tipo; pesos y vetos de fórmulas; gesto no cadencial;
