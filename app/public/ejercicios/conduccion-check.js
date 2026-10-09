@@ -19,7 +19,7 @@
      opciones roles: ['soprano','bajo'…] (uno por voz; por defecto,
                 los de las 4 voces desde arriba); reglas: lista de
                 las que se comprueban (por defecto todas: N1 N2 N3
-                P2 N4 N5 N12 N13 P9); saltoMax: tope de N13 en pasos
+                P2 N4 N5 N12 N13 N15 P9); saltoMax: tope de N13 en pasos
                 diatónicos para todas las voces (UD 1 a dos voces: 4,
                 la 5.ª); superposicion: false para no mirar la parte
                 de N3 entre una sonoridad y la siguiente.
@@ -164,6 +164,14 @@
           const sig = voces[v][k+1];
           const resuelve = m.pasos===4 && m.cal==='disminuida' && sig && Math.abs(sig.abs-q.abs)===1 && Math.sign(sig.abs-q.abs)===-dir;
           if(!resuelve) f('N12',k,[v], nom(v)+': '+m.nombre+' melódica');
+        }
+        // N15 dos saltos seguidos en la misma dirección no abarcan 7.ª ni 9.ª
+        if(activa('N15') && k>=2){
+          const o2=voces[v][k-2], d0=p.abs-o2.abs, d1=q.abs-p.abs;
+          if(Math.abs(d0)>=2 && Math.abs(d1)>=2 && Math.sign(d0)===Math.sign(d1)){
+            const tot=Math.abs(q.abs-o2.abs);
+            if(tot===6 || tot===8) f('N15',k,[v], nom(v)+': dos saltos seguidos que suman '+intervalo(o2,q).nombre);
+          }
         }
         // P9 tras salto de 4.ª o mayor, cambio de dirección por grado
         if(activa('P9') && m.pasos>=3 && k+1<n && !(roles[v]==='bajo' && m.pasos===7)){

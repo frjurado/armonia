@@ -95,6 +95,7 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 |----|-------|
 | **N12** ② | **Sin intervalos melódicos aumentados** (2.ª aumentada 6̂–7̂ en menor, 4.ª aumentada) **ni disminuidos**, con una excepción: la 5.ª disminuida, solo si a continuación resuelve por grado hacia dentro (por tanto, nunca hacia el último acorde). |
 | **N13** ② | **Saltos.** Voces superiores: máximo **6.ª**. Bajo: hasta la **8.ª**. **Nunca 7.ª** ni mayor que 8.ª. A dos voces (3.º UD 1): máximo 5.ª en ambas. |
+| **N15** ② | **Saltos sumados.** Dos saltos seguidos en la **misma dirección** (un arpegio) no abarcan entre los dos una **7.ª** ni una **9.ª**. |
 | **P7** ② | Voces superiores preferentemente por **grado conjunto y notas comunes**; en la soprano, a lo sumo **un salto** por fragmento cadencial, y mejor si va en **movimiento contrario al bajo**. |
 | **P8** | **Perfil de la soprano:** un solo punto culminante; no más de dos veces seguidas la misma nota; **cláusula final idiomática** según el tipo de cadencia (tabla en `app/docs/familias/cadencias.md` §4). |
 | **P9** ② | Tras un salto de 4.ª o mayor, **cambio de dirección por grado conjunto**; seguir en la misma dirección es lo peor, sobre todo en la soprano. No se aplica al bajo tras un salto de 8.ª (5̂–5̂–1̂). |
@@ -106,7 +107,7 @@ siempre. La app aplica, en cada familia, las vigentes en su unidad.
 
 | Desde | Normas | Preferencias |
 |-------|--------|--------------|
-| 3.º UD 1 (dos voces) | N1, N2, N3, N4, N5, N12, N13 | P2, P3, P7, P9 |
+| 3.º UD 1 (dos voces) | N1, N2, N3, N4, N5, N12, N13, N15 | P2, P3, P7, P9 |
 | 3.º UD 2 (cuatro voces: I, V, VII6) | + N7, N10, N11 | + P1, P4, P5, P8, P10, P11 |
 | 3.º UD 3 (IV, cadencias) | + N6 | — |
 | 3.º UD 4 (V7, 6/4 cadencial, 6/4 de paso) | + N8, N9, N14 | + P6, P12 |
@@ -120,6 +121,11 @@ bordadura en UD 5. Revisar cuando se llegue a esas unidades.
 la UD 1 ya tratan tesituras, distancias y unísonos (c3u1 §2.1), y la familia *Disposición*
 los pregunta (`app/docs/familias/disposicion.md`). En la UD 1 se enseñan y se reconocen; a
 escribir a cuatro voces se empieza en la UD 2.
+
+⟶ AÑADIDA (2026-10-09): **N15**, saltos sumados. Estaba en los apuntes (c3u1 §2.2) y en el
+motor de contrapunto (`saltosSumados`), pero no aquí; la consigna *Movimientos · Melódicos*
+la señala como falta. Desde entonces la cumplen también el motor a cuatro voces y los dos
+comprobadores. (El número 14 ya era el 6/4 de paso y de bordadura.)
 
 ⟶ HECHO (2026-10-09): `contrapunto-core.js` puntúa ya P3, P8 (un solo ápice), P9 y P10
 como preferencias (pesos), además de la superposición de N3 como norma; perfil medido en

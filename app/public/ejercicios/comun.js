@@ -283,6 +283,94 @@
     });
   }
 
+  // Rótulos ENTRE notas (Movimientos): cada uno, centrado entre dos notas
+  // (ids de nota del MEI: desde, hasta), en la misma línea base que
+  // rotulosBajo; con `corchete`, además, un corchete abierto hacia arriba que
+  // abarca las dos. Si dos se solapan, el segundo baja a otra fila. La clase
+  // `resp` va en el grupo (rótulo y corchete), y las de color, en el texto;
+  // `paso` (1, 2…) lo deja para el modo por pasos de ejercicio().
+  // Las filas dependen del ancho de cada texto: si la fuente aún no ha
+  // llegado (la cursiva solo se pide al usarla), se mediría con la de
+  // sustitución, más ancha; por eso se vuelven a colocar al cargar las fuentes.
+  function rotulosEntre(root, items){
+    const b=baseRotulos(root); if(!b || !items || !items.length) return;
+    const {esp, NS, medida, caja}=b;
+    const puestos=[];
+    items.forEach(it=>{
+      const a=caja(it.desde), z=caja(it.hasta); if(!a || !z) return;
+      const cls=(it.clase||'').split(/\s+/).filter(Boolean), color=cls.filter(c=>c!=='resp').join(' ');
+      const g=document.createElementNS(NS,'g');
+      g.setAttribute('class','rotulo-entre '+cls.join(' '));
+      if(it.paso) g.setAttribute('data-paso', it.paso);
+      medida.appendChild(g);
+      const xa=a.x+a.width/2, xz=z.x+z.width/2;
+      const t=document.createElementNS(NS,'text');
+      t.setAttribute('x',(xa+xz)/2); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size',esp*1.9);
+      t.setAttribute('class','rotulo '+color);
+      t.textContent=it.texto;
+      g.appendChild(t);
+      let p=null;
+      if(it.corchete){
+        p=document.createElementNS(NS,'path');
+        p.setAttribute('stroke-width',esp*0.16);
+        p.setAttribute('class','corchete-rot '+color);
+        g.insertBefore(p, t);
+      }
+      puestos.push({t, p, xa, xz});
+    });
+    const colocar=()=>{
+      const filas=[];
+      puestos.forEach(({t, p, xa, xz})=>{
+        const xc=(xa+xz)/2;
+        let w=0; try{ w=t.getBBox().width; }catch(e){}
+        // lo que ocupa: el texto y, si lo hay, el corchete
+        const x0=(p ? Math.min(xa, xc-w/2) : xc-w/2)-esp*0.6,
+              x1=(p ? Math.max(xz, xc+w/2) : xc+w/2)+esp*0.6;
+        let f=0; while(filas[f] && filas[f].some(([u,v])=>u<x1 && x0<v)) f++;
+        (filas[f]=filas[f]||[]).push([x0,x1]);
+        const y=b.fondo+esp*(p?3.6:2)+f*esp*3.4;
+        t.setAttribute('y',y);
+        if(p){ const yc=y-esp*2.1, h=esp*0.7; p.setAttribute('d',`M${xa} ${yc-h} V${yc} H${xz} V${yc-h}`); }
+      });
+    };
+    colocar();
+    if(document.fonts && document.fonts.status!=='loaded') document.fonts.ready.then(colocar);
+  }
+  // Rayas entre dos notas de una misma voz (Movimientos · Armónicos): de cabeza
+  // a cabeza, recortadas para no tapar ninguna. rayas: [{de, a, clase, paso}].
+  function lineasMovimiento(root, rayas){
+    const b=baseRotulos(root); if(!b || !rayas || !rayas.length) return;
+    const {esp, NS, medida, caja}=b;
+    rayas.forEach(r=>{
+      const a=caja(r.de), z=caja(r.a); if(!a || !z) return;
+      const x1=a.x+a.width/2, y1=a.y+a.height/2, x2=z.x+z.width/2, y2=z.y+z.height/2;
+      const dx=x2-x1, dy=y2-y1, l=Math.hypot(dx,dy)||1, c=Math.min(esp*0.9, l*0.3);
+      const ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1',x1+dx*c/l); ln.setAttribute('y1',y1+dy*c/l);
+      ln.setAttribute('x2',x2-dx*c/l); ln.setAttribute('y2',y2-dy*c/l);
+      ln.setAttribute('stroke-width',esp*0.28);
+      ln.setAttribute('class','raya '+(r.clase||''));
+      if(r.paso) ln.setAttribute('data-paso', r.paso);
+      medida.appendChild(ln);
+    });
+  }
+  // Lo común a los rótulos entre notas y las rayas: el fondo del sistema, el
+  // tamaño de una cabeza de nota (≈ un espacio) y la caja de una nota por id.
+  function baseRotulos(root){
+    if(!root || !root.querySelectorAll) return null;
+    const medida=root.querySelector('g.measure'); if(!medida) return null;
+    let fondo=-Infinity, esp=180;
+    try{
+      root.querySelectorAll('g.measure').forEach(m=>{ const b=m.getBBox(); fondo=Math.max(fondo, b.y+b.height); });
+      const cab=root.querySelector('g.notehead'); if(cab) esp=cab.getBBox().height;
+    }catch(e){ return null; }
+    const caja=id=>{
+      const g=root.querySelector('#'+CSS.escape(id)); if(!g) return null;
+      try{ return (g.querySelector('g.notehead')||g).getBBox(); }catch(e){ return null; }
+    };
+    return {fondo, esp, NS:'http://www.w3.org/2000/svg', medida, caja};
+  }
+
   /* ---------- líneas adicionales de notas ocultas ---------- */
   // Verovio dibuja las líneas adicionales por pentagrama (g.ledgerLines.above
   // | .below, un <path> por línea), FUERA de la nota: ocultar una nota (clase
@@ -326,6 +414,11 @@
   //   audio(inst, revelado) → [{midi, at, dur}]
   //   sonarAlRevelar  vuelve a tocar al revelar (con lo que se añada)
   //   verovio    opciones de initVerovio
+  //   pasos(inst) → n   modo POR PASOS (opcional; la página pone un botón
+  //              #btnPaso, «Siguiente»): cada pulsación muestra lo de un paso
+  //              más —los elementos `resp` con data-paso ≤ el paso reciben
+  //              `visto`— y, con el último, revela. «Respuesta» los muestra todos.
+  //   audioPaso(inst, k) → [{midi, at, dur}]   lo que suena al mostrar el paso k
   // Revelar no vuelve a dibujar nada: pone la clase `revelado` en <body>. Así
   // la partitura y el panel no se mueven (Modelo-ejercicios.md §2.4).
   // El texto de cada nivel sale de curriculum-data.js (fuente única), que la
@@ -335,7 +428,7 @@
     body.classList.add('mascara');
     const niveles=nivelesDelCurriculo();
     const max=cfg.maxNivel||0;
-    let tk=null, inst=null;
+    let tk=null, inst=null, paso=0;
     let nivel=Math.min(Math.max(parseInt(new URLSearchParams(location.search).get('nivel'),10)||1, 1), max||1);
 
     function render(){
@@ -345,6 +438,22 @@
       root.innerHTML=tk.renderToSVG(1);
       if(cfg.trasRender) cfg.trasRender(root, inst);
       lineasAdicionales(root);
+      marcarPasos();
+    }
+    // modo por pasos: lo de los pasos ya mostrados, visible (clase `visto`)
+    function marcarPasos(){
+      if(!cfg.pasos) return;
+      $('notation').querySelectorAll('[data-paso]').forEach(el=>el.classList.toggle('visto', +el.dataset.paso<=paso));
+      const b=$('btnPaso'); if(b) b.disabled = !inst || paso>=cfg.pasos(inst);
+    }
+    function avanzar(){
+      if(!inst || !cfg.pasos) return;
+      const n=cfg.pasos(inst);
+      if(paso>=n) return;
+      paso++;
+      marcarPasos();
+      if(cfg.audioPaso) tocar(cfg.audioPaso(inst, paso)).catch(()=>audioNoDisponible($('btnListen')));
+      if(paso>=n) revelar();
     }
     async function sonar(){
       if(!inst) return;
@@ -353,6 +462,7 @@
     }
     function nuevo(){
       inst=cfg.generar(nivel);
+      paso=0;
       body.classList.remove('revelado');
       const r=cfg.respuesta(inst)||{};
       Object.keys(r).forEach(id=>{ const el=$(id); if(el) el.innerHTML=r[id]; });
@@ -365,6 +475,7 @@
       if(!inst || body.classList.contains('revelado')) return;
       body.classList.add('revelado');
       $('btnReveal').disabled=true;
+      if(cfg.pasos){ paso=cfg.pasos(inst); marcarPasos(); }
       if(cfg.sonarAlRevelar) sonar();
     }
 
@@ -426,6 +537,7 @@
 
     $('btnReveal').onclick=revelar;
     $('btnSimilar').onclick=()=>nuevo();
+    if(cfg.pasos && $('btnPaso')) $('btnPaso').onclick=avanzar;
     $('btnListen').onclick=sonar;
 
     nuevo();                               // texto y botones funcionan ya, sin esperar a Verovio
@@ -444,7 +556,9 @@
         if(c.url && c.url.split('/').pop()===fichero) return {ud, fam, consigna:c};
     return null;
   }
-  function nivelesDelCurriculo(){ const d=deEstaPagina(); return (d && d.fam.niveles) || []; }
+  // los niveles, de la consigna si los tiene (cuando no todas las de la
+  // familia tienen niveles); si no, de la familia
+  function nivelesDelCurriculo(){ const d=deEstaPagina(); return (d && (d.consigna.niveles || d.fam.niveles)) || []; }
 
   /* ---------- enlace a los apuntes (Modelo-ejercicios.md §3) ---------- */
   // El primer epígrafe que cita la consigna (`apuntes` en curriculum-data.js)
@@ -549,6 +663,6 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales, rotulosBajo,
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales, rotulosBajo, rotulosEntre, lineasMovimiento,
                        ejercicio, tocar, detener, audioNoDisponible };
 })(window);

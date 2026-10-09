@@ -179,6 +179,17 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     la falta antes de revelar. Los dibuja `ArmoniaEj.rotulosBajo(root, filas)`
     tras el render, en una línea base común (y la página reserva sitio con
     `pageMarginBottom`).
+  - `movimientos-core.js` (`Movimientos`) — Melódicos (una voz correcta con
+    defectos inyectados; respuesta del comprobador) y Armónicos (tipo de
+    movimiento; nivel 2, una pareja resaltada entre las cuatro voces de un
+    bajo de `BajoCifrado` realizado por `CuatroVoces`). Lo que se dibuja
+    bajo las notas tampoco es MEI: `ArmoniaEj.rotulosEntre` (rótulo entre dos
+    notas, con corchete opcional; se recoloca al cargar las fuentes, porque
+    la cursiva medida con la de sustitución es más ancha) y
+    `ArmoniaEj.lineasMovimiento`. Armónicos usa el **modo por pasos** de la
+    página común (`pasos`, `audioPaso`, botón `#btnPaso`). Las notas llevan
+    `xml:id` `n<voz>_<k>`, que es como las encuentran.
+    `tests/masivo-movimientos.js`.
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las

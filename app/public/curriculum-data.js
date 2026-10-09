@@ -13,7 +13,8 @@
      familias sin `niveles` no tienen niveles de dificultad. Este es
      el único sitio donde se dice qué incluye cada nivel.
    · consigna: {key, title, icono, texto?, url, desc, apuntes?,
-     oir?, publico?}. `url` null = todavía no disponible. `oir:true`: la
+     oir?, niveles?, publico?}. `niveles` en la consigna, cuando
+     no los tienen todas las de su familia (manda sobre los de ella). `url` null = todavía no disponible. `oir:true`: la
      consigna admite la presentación «Oír» (solo audio hasta revelar). `icono` es una
      clave de TIPO_ICONS (index.html), o 'apilado' para el icono
      tipográfico de cifras (con `texto`). `apuntes`: los epígrafes
@@ -102,23 +103,19 @@ const CURRICULO = {
                  url:'ejercicios/disposicion-cuatro-voces.html', apuntes:['c3u1#coro-mixto'],
                  desc:'Tres tríadas a cuatro voces: su disposición (cerrada, abierta o mixta) y las faltas de tesitura, distancia o cruce, si las hay.'}
               ]},
-            { nombre:'Movimiento armónico', publico:false,
-              desc:'Contrapunto 1:1 de 10 notas a dos voces: identificar los intervalos armónicos y el tipo de movimiento de cada transición (oblicuo / contrario / directo / paralelo).',
+            { nombre:'Movimientos', publico:false,
+              desc:'Cómo se mueve cada voz por sí sola (melódicos) y dos voces una respecto de la otra (armónicos).',
               consignas:[
-                {key:'id', title:'Identificación', icono:'lupa',
-                 url:'ejercicios/movimientos-id.html', apuntes:['c3u1#movimientos-armónicos'],
-                 desc:'El fragmento se revela intervalo a intervalo; la solución (cifra y línea) va un paso por detrás, para poder adivinar antes.'},
-                {key:'au', title:'Audición', icono:'oido',
-                 url:'ejercicios/movimientos-au.html', apuntes:['c3u1#movimientos-armónicos'],
-                 desc:'Solo audio, con movimiento casi uniforme: identificar de oído el tipo dominante.'},
-                {key:'ct', title:'Canto', icono:'canto',
-                 url:'ejercicios/movimientos-ct.html', apuntes:['c3u1#movimientos-armónicos'],
-                 desc:'Cantar el fragmento a dos voces; los conmutadores muestran la solución sobre la partitura.'}
-              ],
-              niveles:[
-                'Clave de Sol, modo mayor.',
-                'Añade la clave de Fa y el modo menor (con posible sensible).',
-                'Una voz en clave de Sol y otra en clave de Fa (pentagrama doble).'
+                {key:'melodicos', title:'Melódicos', icono:'melodia',
+                 url:'ejercicios/movimientos-melodicos.html', apuntes:['c3u1#movimientos-melódicos'],
+                 desc:'Una voz del coro de 8 notas: encontrar sus defectos (intervalos aumentados y disminuidos, saltos excesivos, saltos que suman 7.ª o 9.ª; el salto sin compensar, como mejorable).'},
+                {key:'armonicos', title:'Armónicos', icono:'flechas',
+                 url:'ejercicios/movimientos-armonicos.html', apuntes:['c3u1#movimientos-armónicos'],
+                 desc:'Ocho sonoridades: el tipo de movimiento de cada paso (oblicuo, contrario, directo, paralelo), revelado paso a paso.',
+                 niveles:[
+                   'Dos voces de una pareja del coro.',
+                   'Una pareja resaltada entre las cuatro voces de una realización.'
+                 ]}
               ]}
           ]},
         { id:'c3u2', n:2, titulo:'Tónica y dominante', familias:[] },

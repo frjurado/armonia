@@ -32,6 +32,7 @@ const casos=[
  ['DUP sensible doblada', C, ['V','I'],        "b' c''|d' e'|b c'|g c", ['N7']],
  ['DUP 6/4 sin doblar bajo', C, ['I64','V'],   "e'' d''|c'' b'|e' d'|g g", ['DUP']],
  ['acorde ajena',      C, ['I','V'],           "c'' a'|e' d'|g g|c g,", ['acorde']],
+ ['N15 saltos que suman 7.ª', C, ['I','IV','V7'], "g' c'' f''|e' c'' b'|c' a g|c f g", ['N15']],
  ['N6 dim→justa',      C, ['V65','I'],         "d'' c''|f' g'|g g|b, c", ['N6']],
  // N8, excepción: V4/3 → I6 con el bajo ②–③, la 7.ª puede subir a 5̂
  ['limpio V4/3→I6, 7.ª sube', C, ['I','V43','I6'], "e' f' g'|c' b c'|g g g|c d e", []],

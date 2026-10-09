@@ -121,6 +121,16 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
 #notation text.rotulo.dis{fill:var(--ok)}
 #notation text.rotulo.aviso{fill:var(--muted)}
 #notation text.rotulo.bien{fill:var(--ink)}
+/* Corchete de los rótulos entre notas (ArmoniaEj.rotulosEntre), del color del
+   rótulo; rayas de movimiento (ArmoniaEj.lineasMovimiento), una por voz */
+#notation path.corchete-rot{fill:none;stroke:var(--fg)}
+#notation path.corchete-rot.dis{stroke:var(--ok)}
+#notation path.corchete-rot.aviso{stroke:var(--muted)}
+#notation line.raya{stroke-linecap:round;opacity:.85}
+#notation line.raya.voz-sup{stroke:var(--voz-sup)}
+#notation line.raya.voz-inf{stroke:var(--voz-inf)}
+/* voces que no se preguntan (la pareja resaltada entre cuatro), en gris */
+#notation g.note.gris{opacity:.32}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);
@@ -227,6 +237,8 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
    y su inversión): Verovio la dibuja dentro del compás, marcado barra-resp */
 .mascara:not(.revelado) #notation g.measure.barra-resp > g.barLine{visibility:hidden}
 .mascara .answer{display:block}
+/* modo por pasos (ejercicio con `pasos`): lo de los pasos ya mostrados */
+.mascara:not(.revelado) #notation .resp.visto{visibility:visible}
 /* «Oír» (body.oir): la partitura se oculta hasta revelar y en su lugar sale el
    aviso; la tarjeta conserva su tamaño (visibility, no display) */
 .mascara.oir:not(.revelado) #notation{visibility:hidden}

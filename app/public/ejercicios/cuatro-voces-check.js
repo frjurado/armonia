@@ -144,6 +144,12 @@
           }
         }
       }
+      // N15 dos saltos seguidos en la misma dirección no abarcan 7.ª ni 9.ª
+      if(k>=2) for(let v=0;v<4;v++){
+        const o=voces[v][k-2], d0=a[v].abs-o.abs, d1=d[v].abs-a[v].abs, tot=Math.abs(d[v].abs-o.abs);
+        if(Math.abs(d0)>=2 && Math.abs(d1)>=2 && Math.sign(d0)===Math.sign(d1) && (tot===6 || tot===8))
+          f('N15',k,[v],NOMBRE_VOZ[v]+': dos saltos seguidos que suman '+(tot===6?'7.ª':'9.ª'));
+      }
       // N7 resolución de la sensible (si el acorde siguiente no la contiene)
       if(!ch.tones.some(t=>t.deg===7)) for(let v=0;v<4;v++){
         const t=ra[v]; if(!t || t.deg!==7) continue;

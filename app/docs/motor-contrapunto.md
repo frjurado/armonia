@@ -3,7 +3,7 @@
 > Lo común a las familias de conducción de 3.º UD 1 (Consonancia, Disposición, Movimientos,
 > Paralelas y directas). Decidido el 2026-10-09 (`../../informes/2026-10-09-plan-ud1.md`).
 > Las reglas son las de `../../curriculum/Minimos-conduccion.md`. ⟶ HECHO (fase 5a,
-> 2026-10-09): §1 (en `consonancia-core.js`), §2, §3 y §5; §4, con *Armónicos*.
+> 2026-10-09): §1 (en `consonancia-core.js`), §2, §3 y §5; §4, en *Movimientos · Armónicos* (fase 5d).
 
 ## 1. Correcto + faltas inyectadas + comprobador
 
@@ -43,7 +43,8 @@ Reglas:
 | N4 | 5.as, 8.as y unísonos paralelos (también por movimiento contrario) | Paralelas y directas |
 | N5 | directas de 5.ª y 8.ª entre extremas, salvo soprano por grado | Paralelas y directas (solo a 3–4 voces) |
 | N12 | intervalos melódicos aumentados y disminuidos | Melódicos |
-| N13 | saltos excesivos (a dos voces, máximo 5.ª) | Melódicos |
+| N13 | saltos excesivos (a dos voces, máximo 5.ª; en Melódicos, el tope de cuatro voces) | Melódicos |
+| N15 | dos saltos seguidos en la misma dirección que suman 7.ª o 9.ª | Melódicos |
 | P9 | salto no compensado («mejorable», no falta) | Melódicos |
 
 Y además la **clasificación** de cada intervalo armónico (`clasificar`: perfecta /
@@ -51,7 +52,7 @@ imperfecta / disonancia; la 4.ª justa, disonancia sobre el bajo) y el **tipo de
 movimiento** de cada paso (`movimiento`: oblicuo / directo / contrario / paralelo, este
 con la misma amplitud **diatónica**: 3.ª mayor → 3.ª menor es paralelo), que no son faltas
 sino respuestas. Cada regla, con su caso de falta y su control en
-`../tests/sensibilidad-conduccion.js` (50/50).
+`../tests/sensibilidad-conduccion.js` (54/54).
 
 ## 3. Dos voces del coro
 
@@ -65,7 +66,8 @@ bajo). Qué parejas usa cada consigna lo dice su ficha.
 
 En *Armónicos* y *Paralelas y directas* (nivel 2), las dos voces por las que se pregunta
 van en tinta y las demás en gris: una clase en el MEI (`@type`, como la máscara de la
-página común) y una regla de CSS.
+página común) y una regla de CSS. ⟶ HECHO en *Armónicos* nivel 2: `type="gris"` en las
+notas de las otras dos voces, y `#notation g.note.gris{opacity:.32}` en `comun.css`.
 
 ## 5. Motor de contrapunto
 

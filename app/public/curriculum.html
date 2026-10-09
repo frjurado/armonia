@@ -112,10 +112,13 @@ function consignasHTML(fam){
   }).join('');
 }
 function nivelesHTML(fam){
-  if(!fam.niveles || !fam.niveles.length)
+  // los de la familia o, si no, los de cada consigna que los tenga
+  const grupos = fam.niveles && fam.niveles.length ? [{t:'', ns:fam.niveles}]
+    : fam.consignas.filter(c=>c.niveles && c.niveles.length).map(c=>({t:c.title+' · ', ns:c.niveles}));
+  if(!grupos.length)
     return `<li><span class="txt">Sin niveles de dificultad.</span></li>`;
-  return fam.niveles.map((d,i)=>
-    `<li><span class="lvl">Nivel ${i+1}</span><span class="txt">${d}</span></li>`).join('');
+  return grupos.map(g=>g.ns.map((d,i)=>
+    `<li><span class="lvl">${g.t}Nivel ${i+1}</span><span class="txt">${d}</span></li>`).join('')).join('');
 }
 
 app.innerHTML += CURRICULO.cursos.map(curso => `

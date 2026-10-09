@@ -61,15 +61,16 @@ Una presentación nunca cambia al azar entre una instancia y la siguiente.
 
 **Qué contenido puede salir.** Solo hay niveles donde el contenido crece de verdad
 (catálogo de acordes y cadencias, modos, tonalidades): *Bajo cifrado*, *Cadencias*,
-*Prolongación*, *Movimiento armónico*. La **notación** (clave, uno o dos pentagramas) no
+*Prolongación*, *Movimientos · Armónicos* (dos voces, o una pareja entre cuatro). La **notación** (clave, uno o dos pentagramas) no
 es un nivel: se fija por consigna. ⟶ DECIDIDO (2026-10-05): **la UD 0 de 3.º, sin
 niveles**; *Intervalos* y *Acordes* pasan a pentagrama doble (`familias/intervalos.md`,
 `familias/acordes.md`).
 
 Qué incluye cada nivel se escribe **una sola vez**, en el campo `niveles` de
 `curriculum-data.js`; la página lo lee de ahí (`ArmoniaEj.ejercicio` busca la familia por
-el nombre de fichero de la página). ⟶ HECHO (2026-10-06) en las páginas migradas (§2); solo
-las familias ocultas de 3.º UD 1 siguen con su `LVL_NOTES`, hasta rediseñarlas.
+el nombre de fichero de la página). ⟶ HECHO (2026-10-06) en las páginas migradas (§2). Si
+en una familia solo una consigna tiene niveles (*Movimientos*: Armónicos sí, Melódicos no),
+van en la consigna, que manda sobre la familia (2026-10-09).
 
 ### 1.5. Serie o sin fin
 
@@ -124,6 +125,12 @@ lo pone la página común si la consigna lleva `oir:true` en `curriculum-data.js
 Táctiles, ≥ 56 px (ver `../CLAUDE.md`, capa visual). El audio: cada llamada a `tocar()` es
 una reproducción completa, y *Respuesta*, *Otro* y el selector de nivel la cortan. ⟶ HECHO.
 
+**Por pasos** (⟶ HECHO 2026-10-09, *Movimientos · Armónicos*): con `pasos(inst)` en la
+configuración y un botón *Siguiente* (`#btnPaso`), cada pulsación muestra la respuesta de un
+paso más —los elementos `resp` con `data-paso` ≤ el paso reciben `visto`— y suena lo de
+`audioPaso(inst, k)`; con el último, se revela. *Respuesta* los muestra todos de una vez.
+Tampoco aquí se vuelve a dibujar nada.
+
 ### 2.4. Revelar sin mover nada
 
 Al revelar, la página saltaba por dos motivos: el panel de respuesta pasaba de
@@ -149,6 +156,10 @@ tarjeta, ni la partitura, ni el panel, ni los botones se mueven un píxel.
   que también la saca del árbol de accesibilidad), así que ocupa exactamente su tamaño
   aunque varíe (la lista de bajos de *Canto dado*).
 - **Oír**: la máscara oculta la partitura entera; la tarjeta conserva su tamaño.
+- **Rótulos que no son del MEI**: lo que se dibuja bajo las notas tras el render
+  (`rotulosBajo`, `rotulosEntre`, `lineasMovimiento`, en `comun.js`) lleva también `resp`.
+  No van como `<harm>` porque Verovio ensancha el compás según el texto: las notas se
+  separarían de forma desigual y delatarían dónde está la respuesta.
 
 ### 2.5. Parámetros en la URL
 
@@ -328,7 +339,8 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 - [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
       que solo toma la pregunta visible (2026-10-06).
 - [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
-      fase 5).
+      fase 5): Consonancia, Disposición y Movimientos, hechas; falta *Paralelas y
+      directas* (5e).
 - [x] ~~Un solo esquema, menú en filas, renombrado, enlaces con los apuntes (§3, §6)~~
       → hechos (2026-10-06).
 - [x] ~~«Oír» y `?oir` (§1.3, §2.5)~~ → hechos (2026-10-09), en *Cadencias · Tipo*.

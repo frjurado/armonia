@@ -4,7 +4,7 @@
 
 Hoy en el menú: 3.º UD 1, familia *Morfología* (consigna Bajo cifrado; la segunda, Consonancia, usa el material de `intervalos.md`).
 
-Primera familia de la UD 1, **antes** de *Intervalos* y *Movimiento armónico*, que quedan
+Primera familia de la UD 1, **antes** de las de conducción (*Disposición*, *Movimientos*…), que quedan
 detrás y ocultas en la versión pública (`publico:false` por familia, `../Modelo-ejercicios.md` §3). Solo hay
 identificación, así que la familia no usa modos id/au/ct sino `tipos`, como las UD 0.
 Ficheros: `ejercicios/bajo-cifrado-core.js` (global `BajoCifrado`, sobre el modelo de

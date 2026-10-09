@@ -293,6 +293,9 @@
       // 5.ª dim anterior: ahora grado conjunto en dirección contraria
       if(path.length>=2){
         const PP=path[path.length-2].v[v];
+        // N15: dos saltos seguidos en la misma dirección no abarcan 7.ª ni 9.ª
+        const d0=P[v].abs-PP.abs, d1=C[v].abs-P[v].abs, tot=Math.abs(C[v].abs-PP.abs);
+        if(Math.abs(d0)>=2 && Math.abs(d1)>=2 && sgn(d0)===sgn(d1) && (tot===6 || tot===8)) return 'N15';
         if(esQuintaDim(PP,P[v])){
           const dir=sgn(P[v].abs-PP.abs);
           if(!(Math.abs(C[v].abs-P[v].abs)===1 && sgn(C[v].abs-P[v].abs)===-dir)) return 'N12';

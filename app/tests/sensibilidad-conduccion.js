@@ -59,6 +59,11 @@ caso('salto de 9.ª en el bajo', ['C3 D4 C4'], {roles:['bajo']}, ['N13']);
 caso('control: 6.ª en la soprano', ['C4 A4 G4'], {roles:['soprano']}, ['!N13']);
 caso('6.ª con tope de 5.ª (UD 1 a dos voces)', ['C4 A4 G4'], {roles:['soprano'], saltoMax:4}, ['N13']);
 caso('control: 8.ª en el bajo', ['C3 C4 B3'], {roles:['bajo']}, ['!N13']);
+// N15
+caso('dos saltos que suman 7.ª', ['C4 F4 B4 A4'], {roles:['soprano']}, ['N15']);
+caso('dos saltos que suman 9.ª (bajo)', ['C3 G3 D4 C4'], {roles:['bajo']}, ['N15']);
+caso('control: arpegio de 5.ª', ['C4 E4 G4 F4'], {roles:['soprano']}, ['!N15']);
+caso('control: dos saltos en direcciones contrarias', ['C4 G4 C4'], {roles:['soprano']}, ['!N15']);
 // P9
 caso('salto no compensado', ['C4 G4 A4'], {roles:['soprano']}, ['P9']);
 caso('control: salto compensado', ['C4 G4 F4'], {roles:['soprano']}, ['!P9']);
