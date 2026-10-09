@@ -344,7 +344,8 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 - [ ] *Prolongación*: revisar a ojo y oído realizaciones y pesos de la soprano
       (`familias/prolongacion.md` §6).
 - [ ] **La UD 1 de 3.º** (fase 5; plan en `../../informes/2026-10-09-plan-ud1.md`):
-      5a motor (`motor-contrapunto.md`) · 5b *Consonancia* (`familias/consonancia.md`) ·
+      ~~5a motor (`motor-contrapunto.md`)~~ · ~~5b *Consonancia*
+      (`familias/consonancia.md`)~~ (hechos, 2026-10-09) ·
       5c *Disposición* (`familias/disposicion.md`) · 5d *Movimientos*
       (`familias/movimientos.md`) · 5e *Paralelas y directas*
       (`familias/paralelas-directas.md`). Canto y oído, aparcados.

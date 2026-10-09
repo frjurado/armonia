@@ -2,7 +2,8 @@
 
 > Lo común a las familias de conducción de 3.º UD 1 (Consonancia, Disposición, Movimientos,
 > Paralelas y directas). Decidido el 2026-10-09 (`../../informes/2026-10-09-plan-ud1.md`).
-> ⟶ PENDIENTE (fase 5a). Las reglas son las de `../../curriculum/Minimos-conduccion.md`.
+> Las reglas son las de `../../curriculum/Minimos-conduccion.md`. ⟶ HECHO (fase 5a,
+> 2026-10-09): §1 (en `consonancia-core.js`), §2, §3 y §5; §4, con *Armónicos*.
 
 ## 1. Correcto + faltas inyectadas + comprobador
 
@@ -26,9 +27,12 @@ aplicado al revés: allí el comprobador demuestra que no hay faltas; aquí, cu�
 ## 2. Comprobador general (de una a cuatro voces)
 
 `cuatro-voces-check.js` comprueba realizaciones a cuatro voces con sus acordes. Las reglas
-de la UD 1 no dependen del acorde, así que se generaliza a **una, dos, tres o cuatro voces,
-sin acordes**, conservando los identificadores de regla y la independencia respecto a los
-generadores (no comparte con ellos las funciones de transición). Reglas que debe cubrir:
+de la UD 1 no dependen del acorde: ⟶ HECHO en un módulo aparte, **`conduccion-check.js`**
+(`ConduccionCheck.comprobar(voces, {roles, reglas, saltoMax, superposicion})`), de una a
+cuatro voces, sin acordes, con los mismos identificadores de regla y sin compartir reglas
+con los generadores. El de 4.º se queda como está (necesita acordes); fundirlos no hace
+falta. Cada falta lleva `grado`: `'falta'` (norma) o `'mejorable'` (preferencia: P2, P9).
+Reglas:
 
 | Regla | Qué | Consignas |
 |---|---|---|
@@ -42,10 +46,12 @@ generadores (no comparte con ellos las funciones de transición). Reglas que deb
 | N13 | saltos excesivos (a dos voces, máximo 5.ª) | Melódicos |
 | P9 | salto no compensado («mejorable», no falta) | Melódicos |
 
-Y además la **clasificación** de cada intervalo armónico (perfecta / imperfecta /
-disonancia; la 4.ª justa, disonancia a dos voces) y el **tipo de movimiento** de cada paso
-(oblicuo / directo / contrario / paralelo), que no son faltas sino respuestas. Cada regla
-nueva, con su caso de sensibilidad (`../tests/sensibilidad-comprobador.js`).
+Y además la **clasificación** de cada intervalo armónico (`clasificar`: perfecta /
+imperfecta / disonancia; la 4.ª justa, disonancia sobre el bajo) y el **tipo de
+movimiento** de cada paso (`movimiento`: oblicuo / directo / contrario / paralelo, este
+con la misma amplitud **diatónica**: 3.ª mayor → 3.ª menor es paralelo), que no son faltas
+sino respuestas. Cada regla, con su caso de falta y su control en
+`../tests/sensibilidad-conduccion.js` (50/50).
 
 ## 3. Dos voces del coro
 
@@ -63,6 +69,20 @@ página común) y una regla de CSS.
 
 ## 5. Motor de contrapunto
 
-`contrapunto-core.js` genera contrapuntos 1:1 correctos pero sosos. Antes de la UD 1:
-**preferencias puntuadas** (el mecanismo de `cuatro-voces-core.js`: normas duras +
-preferencias con peso), las parejas del coro (§3) y los ganchos para inyectar faltas (§1).
+`contrapunto-core.js` generaba contrapuntos 1:1 correctos pero sosos. ⟶ HECHO
+(2026-10-09):
+
+- **Parejas del coro** (§3): opción `pareja:['soprano','contralto']`, que da las
+  tesituras de N1 y la distancia de N2 entre contiguas.
+- **N3, superposición**, como norma (el comprobador independiente la encontró: la
+  permitía).
+- **Preferencias como pesos** (`PREF`): P3 (contrario sobre oblicuo y directo), variedad
+  (sin rachas de paralelos), P8 (un solo ápice en la voz aguda), P9 (salto compensado;
+  y, como la fórmula cadencial fija las dos últimas sonoridades, a la cadencia se llega
+  por grado), P10 (registro central de cada voz, también al empezar).
+
+Perfil medido con `../tests/masivo-contrapunto.js` (2000 cadenas de 8, todas las parejas),
+antes → después: movimiento contrario 49 → 58 %, paralelo 30 → 26 %, ápice único 60 →
+72 %, saltos no compensados 0,46 → 0,26 por cadena; notas en el cuarto grave de la
+tesitura (S–A) ~7 %; **0 faltas** según el comprobador independiente (antes, 71 en 1000
+superposiciones).

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Consonancia y disonancia</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="conduccion-check.js"></script>
+<script src="consonancia-core.js"></script>
+<script src="../curriculum-data.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* Bajo cada sonoridad, al revelar: el intervalo (forma simple) y su clase;
+     las disonancias, en el color de la respuesta. */
+  #notation g.harm.clase text{font-weight:700}
+  #notation g.harm.dis, #notation g.harm.dis text{fill:var(--ok)}
+  .answer .q{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .answer .q .sep-q{color:var(--soft);font-weight:400}
+</style>
+</head>
+<body>
+<header>
+  <h1>Consonancia y disonancia</h1>
+  <span class="sub">Morfología · Unidad 1 · 3.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level"></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <p class="pregunta">Clasifica cada intervalo: consonancia <b>perfecta</b>, <b>imperfecta</b> o <b>disonancia</b>.</p>
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar la cadena"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Otro</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Dos voces del coro, nota contra nota. Clasifica el intervalo de cada
+     sonoridad: consonancia <b>perfecta</b> (P: unísono, 5.ª y 8.ª justas), <b>imperfecta</b>
+     (I: 3.as y 6.as mayores y menores) o <b>disonancia</b> (D: 2.as, 7.as y todos los
+     aumentados y disminuidos). Los compuestos se clasifican como los simples. A dos voces,
+     la de abajo hace de bajo, así que la <b>4.ª justa es disonancia</b>. Cuenta el intervalo
+     escrito: en menor, sol♯–do es una 4.ª disminuida aunque suene como una 3.ª. Puede no
+     haber ninguna disonancia. Al revelar, bajo cada sonoridad aparecen el intervalo y su
+     clase; las disonancias, en color.</p>
+  </details>
+</main>
+
+<script>
+/* UI — la lógica musical vive en consonancia-core.js (sobre el motor de
+   contrapunto y el comprobador general); lo común de la página, en
+   ArmoniaEj.ejercicio (comun.js). */
+(function(){
+  'use strict';
+  const Co = window.Consonancia;
+  const sep = '<span class="sep-q">·</span>';
+  // «2, 4 y 6»: la posición de las disonancias (contadas desde 1)
+  const lista = ks => { const s=ks.map(k=>k+1); return s.length<2 ? String(s[0]) : s.slice(0,-1).join(', ')+' y '+s[s.length-1]; };
+  ArmoniaEj.ejercicio({
+    maxNivel: Co.MAX_NIVEL,
+    generar: n => Co.generar(n),
+    mei: inst => Co.toMEI(inst, {mascara:true}),
+    respuesta: inst => ({
+      ansQ: inst.disonancias.length
+        ? inst.disonancias.map(k=>`<span>${inst.intervalos[k].nombreSimple}</span>`).join(sep)
+        : 'Ninguna disonancia',
+      ansDet: `${inst.key.nombre} · ${inst.pareja.voces.join(' y ')}`
+        + (inst.disonancias.length===1 ? ` · disonancia en la sonoridad ${lista(inst.disonancias)}`
+           : inst.disonancias.length ? ` · disonancias en las sonoridades ${lista(inst.disonancias)}` : '')
+    }),
+    audio: inst => Co.midis(inst),
+    verovio: {scale:60, pageWidth:1000}
+  });
+})();
+</script>
+</body>
+</html>

@@ -106,8 +106,8 @@ siempre. La app aplica, en cada familia, las vigentes en su unidad.
 
 | Desde | Normas | Preferencias |
 |-------|--------|--------------|
-| 3.º UD 1 (dos voces) | N3, N4, N5, N12, N13 | P3, P7, P9 |
-| 3.º UD 2 (cuatro voces: I, V, VII6) | + N1, N2, N7, N10, N11 | + P1, P2, P4, P5, P8, P10, P11 |
+| 3.º UD 1 (dos voces) | N1, N2, N3, N4, N5, N12, N13 | P2, P3, P7, P9 |
+| 3.º UD 2 (cuatro voces: I, V, VII6) | + N7, N10, N11 | + P1, P4, P5, P8, P10, P11 |
 | 3.º UD 3 (IV, cadencias) | + N6 | — |
 | 3.º UD 4 (V7, 6/4 cadencial, 6/4 de paso) | + N8, N9, N14 | + P6, P12 |
 | 3.º UD 5 (VI, II, rota) | (duplicaciones §4 completas) | — |
@@ -116,6 +116,11 @@ siempre. La app aplica, en cada familia, las vigentes en su unidad.
 ⟶ PROVISIONAL (2026-09-30): N14 entra en 3.º UD 4, con el 6/4 de paso; el plan pone el de
 bordadura en UD 5. Revisar cuando se llegue a esas unidades.
 
-⟶ ABIERTO: los ejemplos a dos voces de 3.º UD 1 (familia *Movimiento armónico*) cumplen
-las normas pero no usan aún las preferencias; incorporar P3/P7/P9 como puntuación en
-`contrapunto-core.js` es el camino para que dejen de ser sosos.
+⟶ CAMBIADO (2026-10-09): N1, N2 y P2 entran en 3.º UD 1, no en la UD 2: los apuntes de
+la UD 1 ya tratan tesituras, distancias y unísonos (c3u1 §2.1), y la familia *Disposición*
+los pregunta (`app/docs/familias/disposicion.md`). En la UD 1 se enseñan y se reconocen; a
+escribir a cuatro voces se empieza en la UD 2.
+
+⟶ HECHO (2026-10-09): `contrapunto-core.js` puntúa ya P3, P8 (un solo ápice), P9 y P10
+como preferencias (pesos), además de la superposición de N3 como norma; perfil medido en
+`app/tests/masivo-contrapunto.js` (`app/docs/motor-contrapunto.md` §5).

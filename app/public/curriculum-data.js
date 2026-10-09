@@ -83,11 +83,14 @@ const CURRICULO = {
               consignas:[
                 {key:'bajo', label:'BAJO', title:'Bajo cifrado', icono:'cifrado',
                  url:'ejercicios/bajo-cifrado-lectura.html', apuntes:['c3u1#cifrado-de-grados'],
-                 desc:'Un bajo de 5 o 6 notas con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'}
+                 desc:'Un bajo de 5 o 6 notas con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'},
+                {key:'consonancia', title:'Consonancia', icono:'consonancia', publico:false,
+                 url:'ejercicios/consonancia-cadena.html', apuntes:['c3u1#consonancia-y-disonancia'],
+                 desc:'Una cadena a dos voces del coro, nota contra nota, con disonancias puestas a propósito: clasificar cada intervalo como consonancia perfecta, imperfecta o disonancia (la 4.ª justa, disonancia a dos voces). Puede no haber ninguna.'}
               ],
               niveles:[
                 'Modo mayor (Do y Sol mayor).',
-                'Añade el modo menor (La y Re menor): la sensible lleva su alteración en el cifrado (♯, ♯6).'
+                'Añade el modo menor (La y Re menor). Con la sensible: en Bajo cifrado, su alteración en el cifrado (♯, ♯6); en Consonancia, los aumentados y disminuidos que forma.'
               ]},
             { nombre:'Movimiento armónico', publico:false,
               desc:'Contrapunto 1:1 de 10 notas a dos voces: identificar los intervalos armónicos y el tipo de movimiento de cada transición (oblicuo / contrario / directo / paralelo).',

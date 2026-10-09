@@ -137,7 +137,25 @@
     cadencia: true,              // penúltima: 3.ª (7̂-2̂ → unísono) o 6.ª (2̂-7̂ → 8.ª)
     saltoMaximo: 4,              // en pasos diatónicos (4 = 5.ª); las aum/dim se excluyen siempre
     saltosSumados: true,         // dos saltos seguidos en la misma dirección no suman 7.ª ni 9.ª
-    rebote: true                 // (blanda) tras salto ≥ 4.ª, girar por grado conjunto
+    superposicion: true,         // N3: una voz no sobrepasa la nota que la contigua acaba de dejar
+    rebote: true,                // (blanda) tras salto ≥ 4.ª, girar por grado conjunto (P9)
+    preferencias: true           // (blandas) P3, variedad, ápice único: ver PREF
+  };
+
+  // Preferencias como pesos (docs/motor-contrapunto.md §5): multiplican el peso
+  // de cada candidato, no lo descartan. Medidas con tests/masivo-contrapunto.js.
+  const PREF = {
+    movimiento: {contrario:1.6, oblicuo:1.1, directo:0.8, paralelo:1},   // P3
+    paraleloSeguido: 0.45,      // dos paralelos seguidos
+    paraleloTercero: 0.1,       // tres o más
+    mismoMovimiento3: 0.4,      // tres transiciones con el mismo movimiento
+    apiceRepetido: 0.3,         // la voz aguda vuelve a su nota más alta (P8: un solo ápice)
+    sinRebote: 0.1,             // tras un salto de 4.ª o más, no girar por grado (P9)
+    saltoAntesCadencia: 0.15,   // salto de 4.ª o más hacia las dos sonoridades previas al
+                                // final: la fórmula cadencial fija lo que sigue y no podría
+                                // compensarse (P9); a la cadencia se llega por grado
+    registro: 1.2               // P10: cuánto se aleja cada voz del centro de su tesitura
+                                // (exp(−registro·d²), d en tercios del ámbito)
   };
 
   // Interválica melódica: dentro del salto máximo y nunca aum/dim
@@ -182,6 +200,18 @@
     return true;                                           // 3.ª, 5.ª, 6.ª, 8.ª (y compuestos)
   }
 
+  /* ---------- parejas del coro (docs/motor-contrapunto.md §3) ---------- */
+  // Tesituras de N1 (Minimos-conduccion.md), en índices diatónicos absolutos
+  // (C4 = 28). Copia propia del motor: el comprobador lleva la suya.
+  const TESITURA = { soprano:[28,40], contralto:[24,36], tenor:[21,33], bajo:[16,28] };
+  const ORDEN_CORO = ['soprano','contralto','tenor','bajo'];
+  // Distancia máxima entre dos voces contiguas del coro (N2): 8.ª, o 15.ª
+  // entre tenor y bajo; entre no contiguas, sin límite.
+  function distanciaMax(aguda, grave){
+    if(ORDEN_CORO.indexOf(grave)-ORDEN_CORO.indexOf(aguda)!==1) return Infinity;
+    return grave==='bajo' ? 14 : 7;
+  }
+
   /* ---------- generador con backtracking ---------- */
   const MOVES=[-4,-3,-2,-1,0,1,2,3,4];
   const MOVE_W={0:1.6, 1:4, 2:2, 3:1, 4:0.7};
@@ -213,6 +243,8 @@
      opciones:
        tonalidad  — {tonic, sig, mode}
        rangos     — [[min,max], …] índices diatónicos abs, de GRAVE a AGUDA
+       pareja     — en lugar de rangos, dos voces del coro de AGUDA a grave
+                    (['soprano','bajo']…): tesituras de N1 y distancia de N2
        nNotas     — sonoridades por voz (por defecto 10)
        reglas     — overrides parciales de REGLAS_DEFECTO
        filtroCandidato(ctx) → bool   — condición extra del ejercicio
@@ -228,8 +260,9 @@
     const reglas = Object.assign({}, REGLAS_DEFECTO, o.reglas||{});
     const tonalidad = o.tonalidad;
     const alters = altersByLetter(tonalidad);
-    const rangos = o.rangos;
+    const rangos = o.pareja ? [TESITURA[o.pareja[1]], TESITURA[o.pareja[0]]] : o.rangos;
     const nv = rangos.length;
+    const distMax = o.pareja ? distanciaMax(o.pareja[0], o.pareja[1]) : Infinity;
     const n = o.nNotas || 10;
     const maxVisitas = o.maxVisitas || 8000;
     const L = scaleLetters(tonalidad.tonic);
@@ -240,6 +273,7 @@
 
     // Comprobaciones a nivel de sonoridad (todas las parejas de voces).
     function sonoridadOK(son, esExtremo){
+      if(son[nv-1]-son[0] > distMax) return false;               // N2 en la pareja
       for(let i=0;i<nv;i++) for(let j=i+1;j<nv;j++){
         const steps=son[j]-son[i], semis=M(son[j])-M(son[i]);
         if(!armoniaParOK(steps, semis,
@@ -249,6 +283,19 @@
            && letterOctAt(son[i]).letter===sensLetter) return false;
       }
       return true;
+    }
+
+    // P10: peso del registro de una sonoridad, mayor cuanto más cerca del
+    // centro de la tesitura de cada voz (los extremos se visitan, no se habitan).
+    function pesoRegistro(son){
+      if(!reglas.preferencias) return 1;
+      let w=1;
+      for(let v=0; v<nv; v++){
+        const [lo,hi]=rangos[v], c=(lo+hi)/2, ancho=Math.max(1,(hi-lo)/3);
+        const d=(son[v]-c)/ancho;
+        w *= Math.exp(-PREF.registro*d*d/2);
+      }
+      return w;
     }
 
     // Sonoridades iniciales: tónica en el bajo + sonoridad de extremo válida.
@@ -263,7 +310,8 @@
           son.push(x); fill(son); son.pop();
         }
       })([]);
-      return shuffle(out);
+      // orden aleatorio ponderado por el registro: se empieza cerca del centro
+      return weightedOrder(out.map(son=>({son, w:pesoRegistro(son)}))).map(c=>c.son);
     }
 
     function extend(seq){
@@ -293,7 +341,7 @@
           if(reglas.rebote && prev2){
             const dPrev = prev[v]-prev2[v];
             if(Math.abs(dPrev)>=3)
-              w *= (Math.abs(d)===1 && Math.sign(d)===-Math.sign(dPrev)) ? 3 : 0.25;
+              w *= (Math.abs(d)===1 && Math.sign(d)===-Math.sign(dPrev)) ? 3 : PREF.sinRebote;
           }
           lista.push({x, d, w});
         }
@@ -311,12 +359,21 @@
         ? motionOf(prev[nv-1]-prev2[nv-1], prev[0]-prev2[0],
                    (prev[nv-1]-prev[0])===(prev2[nv-1]-prev2[0]))
         : null;
+      const prev3 = seq[k-3]||null;
+      const tipoAnte = prev3
+        ? motionOf(prev2[nv-1]-prev3[nv-1], prev2[0]-prev3[0],
+                   (prev2[nv-1]-prev2[0])===(prev3[nv-1]-prev3[0]))
+        : null;
+      const apice = Math.max(...seq.map(s=>s[nv-1]));
 
       const cands=[];
       (function combi(v, son, ds, w){
         if(v===nv){
           if(ds.every(d=>d===0)) return;                   // sin movimiento: prohibido
           if(!sonoridadOK(son, esUltima)) return;
+          // N3, superposición: ninguna voz sobrepasa la nota que la contigua acaba de dejar
+          if(reglas.superposicion) for(let v=0; v+1<nv; v++)
+            if(M(son[v]) > M(prev[v+1]) || M(son[v+1]) < M(prev[v])) return;
           if(esUltima && reglas.extremos
              && letterOctAt(son[0]).letter!==tonalidad.tonic) return;
 
@@ -349,6 +406,15 @@
           const ctx={k, motionIdx, tipo, tipoPrevio, seq, cand:son};
           if(o.filtroCandidato && !o.filtroCandidato(ctx)) return;
           let peso = w * (pcExterior?1:3);                 // prioriza consonancias imperfectas
+          if(reglas.preferencias && tipo){
+            peso *= PREF.movimiento[tipo] || 1;
+            if(tipo==='paralelo' && tipoPrevio==='paralelo')
+              peso *= tipoAnte==='paralelo' ? PREF.paraleloTercero : PREF.paraleloSeguido;
+            else if(tipo===tipoPrevio && tipo===tipoAnte) peso *= PREF.mismoMovimiento3;
+            if(!esUltima && son[nv-1]===apice) peso *= PREF.apiceRepetido;
+            if(k>=n-3 && !esUltima && ds.some(d=>Math.abs(d)>=3)) peso *= PREF.saltoAntesCadencia;
+            peso *= pesoRegistro(son);
+          }
           if(o.pesoCandidato) peso=o.pesoCandidato(ctx, peso);
           if(!(peso>0)) return;
           cands.push({son:son.slice(), w:peso});
@@ -444,7 +510,7 @@
   }
 
   const api = {
-    generar, analizar, REGLAS_DEFECTO, MOTION_TYPES,
+    generar, analizar, REGLAS_DEFECTO, PREF, MOTION_TYPES, TESITURA, distanciaMax,
     // utilidades de altura/tonalidad e intervalos, para las familias
     keysigAlters, scaleLetters, scaleDegreeAlters, altersByLetter,
     midiOf, absLetterIndex, letterOctAt, pitchAt, midiAt,

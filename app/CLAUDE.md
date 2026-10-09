@@ -157,9 +157,20 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     (anclas configurables), con velos y capas de respuesta en CSS (`.tira*`).
     Ojo: Verovio solo renderiza cambios de armadura vía
     `scoreDef/staffGrp/staffDef@keysig`.
-  - `contrapunto-core.js` — motor genérico de contrapunto de 1.ª especie
-    (reglas melódicas y armónicas), reutilizado por la familia 3 y pensado
-    para las variantes con faltas y a tres voces.
+  - `contrapunto-core.js` (`Contrapunto`) — motor genérico de contrapunto de
+    1.ª especie: normas como filtro y preferencias como pesos (P3, P8, P9,
+    P10), parejas del coro (`pareja:['soprano','bajo']`: tesituras de N1 y
+    distancia de N2). Perfil y cero faltas: `tests/masivo-contrapunto.js`.
+  - `conduccion-check.js` (`ConduccionCheck`) — **comprobador independiente
+    de una a cuatro voces, sin acordes** (N1–N5, N12, N13, P2, P9), más la
+    clase de cada intervalo y el tipo de movimiento: es la respuesta de los
+    ejercicios de la UD 1 (las faltas inyectadas las encuentra él, no el
+    generador). No comparte reglas con el motor de contrapunto; su
+    sensibilidad, en `tests/sensibilidad-conduccion.js` (un caso por regla, y
+    su control). `docs/motor-contrapunto.md`.
+  - `consonancia-core.js` (`Consonancia`) — cadena a dos voces con
+    disonancias inyectadas (3.º UD 1, Morfología); su validación masiva,
+    `tests/masivo-consonancia.js`, recalcula las clases con una tabla propia.
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las
