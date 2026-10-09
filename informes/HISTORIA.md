@@ -34,6 +34,7 @@ septiembre (14 commits) y el 16 (9).
 | 7. Revisión del modelo | 5 oct | Tras el uso en clase: cuatro ejes de ejercicio, plan por fases, documentación dividida, `informes/` |
 | 8. La página común | 6 oct | Pregunta arriba, nivel visible, revelado por máscara sin movimiento, en todo lo publicado |
 | 9. Estructura | 6 oct | Nombres por material, un solo esquema, menú en filas, enlaces apuntes ↔ ejercicios |
+| 10. Plan de la UD 1 y UD 0 | 9 oct | Plan completo de la UD 1; «Oír»; Intervalos y Acordes en pentagrama doble |
 
 ---
 
@@ -233,6 +234,18 @@ ejercicios**: se declaran una vez, en cada consigna del currículo; la construcc
 apuntes los lee con Node, pone en el sitio «Ejercicios» y «Para practicar», y publica un
 pequeño `enlaces.js` del que la app saca el botón «Apuntes» de cada ejercicio. Si un
 título cambia y rompe un ancla, la construcción avisa.
+
+## Fase 10 — Plan de la UD 1 y cierre de la UD 0 (9 de octubre)
+
+El profesor trae el plan completo de ejercicios de la UD 1 de 3.º
+([informe](2026-10-09-plan-ud1.md)): Morfología (Bajo cifrado y una Consonancia que pasa
+a ser una cadena a dos voces), Disposición, Movimientos y Paralelas y directas, apoyados
+en una idea común —material correcto, faltas inyectadas a propósito y la respuesta dada
+por el comprobador independiente—. Las fases se replantean: la 4 cierra la UD 0 y la 5
+será la UD 1 entera. La fase 4 ([informe](2026-10-09-fase4-ud0.md)) trae «Oír» a la
+página común, funde los dos generadores de intervalos y pone Intervalos y Acordes en
+pentagrama doble y sin niveles, con un criterio para los aumentados y disminuidos: solo
+los que aparecen en la escala.
 
 ---
 

@@ -4,7 +4,7 @@
 
 Hoy en el menú: 4.º UD 0, familia *Cadencias* (consignas Tipo, Bajo dado, Canto dado). La ubicación es un dato de `curriculum-data.js`.
 
-⟶ DECIDIDO (2026-10-05): la presentación «Oír» (solo audio, misma pregunta) se ofrece **solo en Tipo**; en Bajo dado y Canto dado, no. ⟶ PENDIENTE.
+⟶ DECIDIDO (2026-10-05): la presentación «Oír» (solo audio, misma pregunta) se ofrece **solo en Tipo**; en Bajo dado y Canto dado, no. ⟶ HECHO (2026-10-09): `oir:true` en `curriculum-data.js`; el conmutador y `?oir=1` los pone la página común.
 
 Unidad de repaso al comienzo de 4.º (trimestre 4). Tres familias —**Cadencias**, **Bajo
 dado** y **Canto dado**— que comparten el **motor a cuatro voces** (`../motor-cuatro-voces.md`) y las reglas de
@@ -174,7 +174,7 @@ En el MEI, el compás de anacrusa lleva `metcon="false"` y numera desde 0.
   de cada core a un fichero de datos compartido, `public/tonalidades.js` (global
   `TONALIDADES`: tónica, armadura, modo, nombre, trimestre; y una función «acumuladas
   hasta el trimestre t»). Los cores de 3.º UD 0 que hoy llevan las 4 del trimestre 1
-  escritas dentro migran después. ⟶ PENDIENTE.
+  escritas dentro migran después. ⟶ HECHO (2026-10-09: Intervalos y Acordes).
 - Niveles 1–2: las **12** tonalidades de 3.º (trimestres 1–3). Nivel 3: **16** (+ trimestre 4).
 - **Menor: escala armónica** como colección (V y V7 con sensible, II6 disminuido, IV menor, VI mayor,
   I6/4 natural). N12 (sin 2.ª aumentada) es norma del motor: el único riesgo es 6̂→7̂ en una

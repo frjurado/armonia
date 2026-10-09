@@ -13,7 +13,8 @@
      familias sin `niveles` no tienen niveles de dificultad. Este es
      el único sitio donde se dice qué incluye cada nivel.
    · consigna: {key, title, icono, texto?, url, desc, apuntes?,
-     publico?}. `url` null = todavía no disponible. `icono` es una
+     oir?, publico?}. `url` null = todavía no disponible. `oir:true`: la
+     consigna admite la presentación «Oír» (solo audio hasta revelar). `icono` es una
      clave de TIPO_ICONS (index.html), o 'apilado' para el icono
      tipográfico de cifras (con `texto`). `apuntes`: los epígrafes
      que la explican, como 'c3u1#cifrado-de-grados' (el ancla que
@@ -49,11 +50,11 @@ const CURRICULO = {
                  desc:'Las 12 armaduras barajadas, sin repetir; se muestra la armadura y se pide la tonalidad (con 6 alteraciones, enarmónico al azar).'}
               ]},
             { nombre:'Intervalos',
-              desc:'Intervalos armónicos en clave de Sol, hasta la 8.ª, a dos voces (plicas arriba/abajo). Alteraciones simples (un solo ♯/♭) y sin intervalos doble aumentados/disminuidos. Sin niveles de dificultad.',
+              desc:'Intervalos armónicos a dos voces. Identificación y Con grados, en pentagrama doble y con compuestos hasta la 12.ª; Con inversión, en clave de Sol y dentro de la 8.ª. Alteraciones simples (un solo ♯/♭); de los aumentados y disminuidos, solo los de la escala mayor y la menor armónica. Sin niveles de dificultad.',
               consignas:[
                 {key:'normal', label:'SIMPLE', title:'Identificación', icono:'dosvoces',
-                 url:'ejercicios/intervalos-normal.html', apuntes:['c3u0#intervalos'],
-                 desc:'Dos notas simultáneas: nombrar amplitud y calidad («3.ª menor»).'},
+                 url:'ejercicios/intervalos-normal.html', apuntes:['c3u0#intervalos', 'c3u0#intervalos-compuestos'],
+                 desc:'Dos notas simultáneas, en el mismo pentagrama o una en cada uno: nombrar amplitud y calidad («3.ª menor»); los compuestos, por su forma simple.'},
                 {key:'inversion', label:'INV.', title:'Con inversión', icono:'flechas',
                  url:'ejercicios/intervalos-inversion.html', apuntes:['c3u0#inversión-de-intervalos'],
                  desc:'Se muestra el intervalo (2.ª a 7.ª) y se pide su inversión; la respuesta añade las notas invertidas y el intervalo resultante (do–mi → mi–do, 6.ª menor).'},
@@ -62,7 +63,7 @@ const CURRICULO = {
                  desc:'Intervalo dentro de una tonalidad (armadura + nombre; las 4 del trimestre 1): nombrar el intervalo y el grado de cada nota (número con circunflejo, encima y debajo del pentagrama). Único accidental posible: la sensible del menor.'}
               ]},
             { nombre:'Acordes',
-              desc:'Tríadas con alteraciones simples (reubica la antigua familia de tríadas de la Unidad 1): aisladas, sin tonalidad, salvo en la variante con grados. Se ve el acorde y se nombra.',
+              desc:'Tríadas con alteraciones simples (reubica la antigua familia de tríadas de la Unidad 1): aisladas, sin tonalidad, salvo en la variante con grados. Se ve el acorde y se nombra. Siempre en pentagrama doble: en posición cerrada en el de Sol o en el de Fa, o abierta y repartida. Sin niveles de dificultad.',
               consignas:[
                 {key:'tipo', label:'TIPO', title:'Tipo y cifrado', icono:'triada',
                  url:'ejercicios/acordes-tipo.html', apuntes:['c3u0#tipos-y-cifrado-americano'],
@@ -73,11 +74,6 @@ const CURRICULO = {
                 {key:'grados', label:'GRADOS', title:'Con grados', icono:'romano',
                  url:'ejercicios/acordes-grados.html', apuntes:['c3u1#grados-de-la-escala-y-morfología'],
                  desc:'Tríada diatónica en estado fundamental dentro de una tonalidad (armadura + nombre; las 4 del trimestre 1): decir modo, grado de la fundamental y tipo («Modo mayor · II grado · Tríada menor»). En menor, la sensible solo en V y VII; el III se toma de la escala natural.'}
-              ],
-              niveles:[
-                'Clave de Sol, posición cerrada.',
-                'Clave de Fa, posición cerrada.',
-                'Posición abierta en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol.'
               ]}
           ]},
         { id:'c3u1', n:1, titulo:'Morfología. Conducción de voces', publico:true,
@@ -92,21 +88,6 @@ const CURRICULO = {
               niveles:[
                 'Modo mayor (Do y Sol mayor).',
                 'Añade el modo menor (La y Re menor): la sensible lleva su alteración en el cifrado (♯, ♯6).'
-              ]},
-            { nombre:'Intervalos', publico:false,
-              desc:'Nombrar la amplitud y la calidad del intervalo a dos voces, y clasificarlo como consonancia perfecta / imperfecta o disonancia.',
-              consignas:[
-                {key:'id', title:'Identificación', icono:'lupa',
-                 url:'ejercicios/familia2-intervalos-id.html', apuntes:['c3u1#consonancia-y-disonancia'],
-                 desc:'Partitura visible; nombrar amplitud, calidad y tipo.'},
-                {key:'au', title:'Audición', icono:'oido',
-                 url:'ejercicios/familia2-intervalos-au.html', apuntes:['c3u1#consonancia-y-disonancia'],
-                 desc:'Solo audio; la partitura se muestra al revelar la respuesta.'}
-              ],
-              niveles:[
-                'Modo mayor, clave de Sol; del unísono a la 8.ª (únicos aumentados/disminuidos posibles: 4.ª aum. / 5.ª dism.).',
-                'Añade el modo menor (la sensible genera otros aumentados/disminuidos) y la clave de Fa; amplitudes hasta la 12.ª (compuestos).',
-                'Dos claves a la vez (una nota en Fa y otra en Sol, pentagrama doble); casi todos los intervalos son compuestos; sin cruces.'
               ]},
             { nombre:'Movimiento armónico', publico:false,
               desc:'Contrapunto 1:1 de 10 notas a dos voces: identificar los intervalos armónicos y el tipo de movimiento de cada transición (oblicuo / contrario / directo / paralelo).',
@@ -143,7 +124,7 @@ const CURRICULO = {
               desc:'Cadencias a cuatro voces (CAP, CAI, SC —también frigia— y CR), realizadas al vuelo por el motor a cuatro voces según los mínimos de conducción; 12 tonalidades (16 en el nivel 3), compases de 2/4, 3/4 y 4/4, anacrusa desde el nivel 2. Al revelar, cifrado americano encima y grados con cifras debajo.',
               consignas:[
                 {key:'tipo', label:'TIPO', title:'Tipo', icono:'cadencia',
-                 url:'ejercicios/cadencias-tipo.html', apuntes:['c4u0#progresiones-cadenciales'],
+                 url:'ejercicios/cadencias-tipo.html', apuntes:['c4u0#progresiones-cadenciales'], oir:true,
                  desc:'Se muestra la cadencia completa y la tonalidad; se pide el tipo. CAP y CAI se distinguen solo por la soprano (1̂ frente a 3̂ o 5̂).'},
                 {key:'bajo', label:'BAJO', title:'Bajo dado', icono:'clavefa',
                  url:'ejercicios/cadencias-bajo.html', apuntes:['c4u0#progresiones-cadenciales'],

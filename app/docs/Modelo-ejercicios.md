@@ -45,8 +45,11 @@ y la presentación es una **máscara** sobre ella: revelar es quitar la máscara
   de oído. Si la pregunta cambia (el movimiento uniforme: «¿qué movimiento predomina?»),
   es otra consigna.
 
-Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05): *Cadencias · Tipo* y *Consonancia*.
-No en *Bajo dado*, *Canto dado* ni *Prolongación*. Lo demás, al diseñar cada material.
+Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05; corregido el 2026-10-09): *Cadencias ·
+Tipo*. No en *Bajo dado*, *Canto dado* ni *Prolongación*; tampoco, de momento, en
+*Consonancia* (ahora una cadena: clasificar de oído diez intervalos seguidos es demasiado).
+Lo demás, al diseñar cada material. **Se mantiene** activado de un ejercicio al siguiente
+hasta que se quita, y va en la URL (`?oir=1`, §2.5).
 
 **El canto** no es una presentación sino una actividad distinta: va como consigna donde
 encaje (contrapunto a dos voces), no como casilla obligatoria.
@@ -86,8 +89,7 @@ nivel, el revelado y el audio son comunes.
 
 ⟶ HECHO (2026-10-06): *Bajo cifrado*, *Cadencias* (Tipo, Bajo dado, Canto dado),
 *Prolongación* (los tres tipos) e *Intervalos* y *Acordes* de la UD 0 de 3.º (las seis
-consignas, aún con su contenido actual: el de la fase 4 cambiará qué se genera, no la
-página). *Armaduras* no la usa —son series en tira, con su propio flujo— pero lleva la
+consignas; su contenido cambió en la fase 4 sin tocar la página). *Armaduras* no la usa —son series en tira, con su propio flujo— pero lleva la
 pregunta visible encima. ⟶ PENDIENTE: las familias ocultas de 3.º UD 1, al rediseñarlas.
 
 ### 2.1. Capas, de arriba abajo
@@ -117,7 +119,8 @@ pregunta visible encima. ⟶ PENDIENTE: las familias ocultas de 3.º UD 1, al re
 ### 2.3. Botones
 
 *Escuchar* · *Respuesta* · *Otro* (nueva instancia, mismo nivel; siempre visible, se
-puede pasar sin revelar), más el conmutador «Oír» donde exista (§1.3, ⟶ PENDIENTE, fase 4).
+puede pasar sin revelar), más el conmutador «Oír» donde exista (§1.3, ⟶ HECHO 2026-10-09:
+lo pone la página común si la consigna lleva `oir:true` en `curriculum-data.js`).
 Táctiles, ≥ 56 px (ver `../CLAUDE.md`, capa visual). El audio: cada llamada a `tocar()` es
 una reproducción completa, y *Respuesta*, *Otro* y el selector de nivel la cortan. ⟶ HECHO.
 
@@ -152,7 +155,7 @@ tarjeta, ni la partitura, ni el panel, ni los botones se mueven un píxel.
 `?nivel=2` y `?oir=1` fijan el estado inicial. Sirven para enlazar desde los apuntes y las
 fichas a un ejercicio concreto. ⟶ HECHO `?nivel` (2026-10-06): lo lee `ArmoniaEj.ejercicio`,
 y el selector lo reescribe en la URL (`history.replaceState`), así que recargar conserva el
-nivel. `?oir`, con «Oír» (fase 4).
+nivel. `?oir=1`, igual (⟶ HECHO 2026-10-09).
 
 ### 2.6. Sin registro de aciertos
 
@@ -167,7 +170,7 @@ y el conmutador pueden recordarse en `localStorage` como comodidad, nunca como d
 - **`curriculum-data.js`** es la fuente única: unidades (con `id`, el del apunte) →
   familias → **consignas**. ⟶ HECHO (2026-10-06): **un solo esquema**, `consignas` (una
   entrada por botón, con su icono y sus `apuntes`), sin `modos` id/au/ct; la familia lleva
-  sus `niveles`. Cuando exista «Oír» (fase 4), cada consigna declarará si lo admite.
+  sus `niveles`. Cada consigna declara si admite «Oír» (`oir:true`).
 - **Dónde está un ejercicio es un dato**, no un nombre de fichero: mover una familia a otra
   unidad (la Morfología a la UD 0 de 3.º, el curso que viene) es mover un bloque de
   `curriculum-data.js`, sin renombrar nada y sin cambiar URL.
@@ -282,7 +285,7 @@ llevarla: una URL que no cambia cuando se reorganiza el curso.
   `cuatro-voces-core.js`, `cuatro-voces-check.js`, `tonalidades.js`, `comun.js`.
 
 ⟶ HECHO (2026-10-06), en una pasada, con sus URL en `curriculum-data.js`, `../CLAUDE.md` y
-los documentos (`familia2-intervalos-*` se queda hasta fundirse con `intervalos-*`, fase 4;
+los documentos (`familia2-intervalos-*` se fundió con `intervalos-*` y se retiró en la fase 4;
 la página de *Bajo cifrado* es `bajo-cifrado-lectura.html`, y su validación,
 `tests/masivo-bajo-cifrado.js`):
 
@@ -307,7 +310,11 @@ Cambian las URL públicas de las páginas; el QR apunta a la raíz y no le afect
 - **`familias/<material>.md`** — diseño de cada material y sus consignas: qué se da, qué se
   pide, generación, niveles, validación. Con el mismo nombre que su código (§6). La
   unidad en la que aparece se menciona como dato, no organiza el documento.
-- **`motor-cuatro-voces.md`** y **`Gramatica-mini-lilypond.md`** — piezas compartidas.
+- **`motor-cuatro-voces.md`**, **`motor-contrapunto.md`** (lo común a la conducción de la
+  UD 1: faltas inyectadas, comprobador general, parejas del coro) y
+  **`Gramatica-mini-lilypond.md`** — piezas compartidas.
+- Las familias de la UD 1 que no son un solo material (`disposicion.md`,
+  `paralelas-directas.md`, `consonancia.md`) llevan el nombre de la familia o la consigna.
 - **`../../informes/`** — registro fechado de hitos y decisiones; no se reescribe. Los
   documentos de aquí, en cambio, describen el estado vigente y se reescriben.
 
@@ -320,24 +327,25 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 **Comunes**
 - [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
       que solo toma la pregunta visible (2026-10-06).
-- [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas).
+- [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
+      fase 5).
 - [x] ~~Un solo esquema, menú en filas, renombrado, enlaces con los apuntes (§3, §6)~~
       → hechos (2026-10-06).
-- [ ] `?oir`, con «Oír» (§2.5). (fase 4)
+- [x] ~~«Oír» y `?oir` (§1.3, §2.5)~~ → hechos (2026-10-09), en *Cadencias · Tipo*.
 - [ ] Empaquetar los samples; mecanismo offline (§4).
-- [ ] Migrar los cores de 3.º UD 0 a `tonalidades.js` (se hace al fundirlos, fase 4).
+- [x] ~~Migrar los cores de 3.º UD 0 a `tonalidades.js`~~ → hecho (2026-10-09).
 
 **Por material**
-- [ ] *Intervalos*: fundir los dos generadores; pentagrama doble; consigna Consonancia
-      (`familias/intervalos.md`). (fase 4)
-- [ ] *Acordes*: quitar los niveles; pentagrama doble (`familias/acordes.md`). (fase 4;
-      *construir*, fuera desde el 2026-10-06)
-- [ ] *Bajo cifrado*: romano al revelar con o sin la alteración del cifrado
-      (`familias/bajo-cifrado.md` §1).
+- [x] ~~*Intervalos* (un generador, pentagrama doble, alterados de la escala), *Acordes*
+      (sin niveles, pentagrama doble) y *Bajo cifrado* (romano sin alteración)~~ → hechos
+      en la fase 4 (2026-10-09).
 - [ ] *Cadencias*: «Oír» en Tipo; pesos y vetos de fórmulas; gesto no cadencial;
       revisar niveles en clase (`familias/cadencias.md` §3, §2, §8).
 - [ ] *Prolongación*: revisar a ojo y oído realizaciones y pesos de la soprano
       (`familias/prolongacion.md` §6).
-- [ ] *Movimiento armónico*: preferencias puntuadas en `contrapunto-core.js` y rediseño con
-      este modelo; faltas de la UD 1 (`familias/movimientos.md`). (fase 4)
+- [ ] **La UD 1 de 3.º** (fase 5; plan en `../../informes/2026-10-09-plan-ud1.md`):
+      5a motor (`motor-contrapunto.md`) · 5b *Consonancia* (`familias/consonancia.md`) ·
+      5c *Disposición* (`familias/disposicion.md`) · 5d *Movimientos*
+      (`familias/movimientos.md`) · 5e *Paralelas y directas*
+      (`familias/paralelas-directas.md`). Canto y oído, aparcados.
 - [ ] Motor: revisar penalizaciones a ojo y oído (`motor-cuatro-voces.md`).

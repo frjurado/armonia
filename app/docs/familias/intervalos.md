@@ -2,11 +2,25 @@
 
 > Procede de `Generador-ejercicios.md` (dividido el 2026-10-05, ver `../../informes/2026-10-05-revision-tras-clase.md`). El modelo común —material, consigna, presentación, nivel; la página de ejercicio— está en `../Modelo-ejercicios.md`; aquí, solo lo propio de este material.
 
-Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**: `intervalos-core.js` (3.º UD 0, tres consignas) y `familia2-intervalos-core.js` (la antigua «familia 2», oculta en 3.º UD 1). ⟶ DECIDIDO (2026-10-05): **se funden** en un generador, y la familia oculta queda reducida a su única consigna propia, **consonancia / disonancia**, que pasa a ser la 2.ª variante de *Morfología* en 3.º UD 1 (`bajo-cifrado.md` §2).
+Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**:
+`intervalos-core.js` (3.º UD 0, tres consignas) y `familia2-intervalos-core.js` (la antigua
+«familia 2», oculta en 3.º UD 1). ⟶ DECIDIDO: **se funden** en `intervalos-core.js`, que
+absorbe de la familia 2 los compuestos y las dos claves, y pasa a usar `tonalidades.js`; la
+familia oculta se **retiró** (fase 4, 2026-10-09). Su consigna propia, la consonancia, no se queda aquí:
+el 2026-10-09 pasó a ser una **cadena a dos voces** (`consonancia.md`), otro material.
 
-⟶ DECIDIDO (2026-10-05), ⟶ PENDIENTE de implementar:
+⟶ DECIDIDO (2026-10-05 y 2026-10-09), ⟶ HECHO (2026-10-09; validación:
+`../../tests/masivo-intervalos.js`, 0 fallos en 3000 instancias por consigna):
 
-- **Identificación** y **Con grados**: en **pentagrama doble** siempre, con intervalos compuestos (la forma simple primero y la real en segundo plano, como ya hace la familia 2). Absorbe lo que eran los niveles 2–3 de la familia 2.
+- **Identificación** y **Con grados**: en **pentagrama doble** siempre, con intervalos
+  compuestos **hasta la 12.ª** (la forma simple en el titular y la real en segundo plano,
+  «5.ª justa (12.ª)», como ya hace la familia 2). Las dos notas, por tercios: las dos en
+  Sol, las dos en Fa, o una en cada pentagrama (2026-10-09).
+- **Aumentados y disminuidos** (2026-10-09): solo los que aparecen en la escala mayor o en
+  la menor armónica, y sus compuestos —4.ª aumentada y 5.ª disminuida; 2.ª aumentada y 7.ª
+  disminuida; 5.ª aumentada y 4.ª disminuida—. Fuera el unísono aumentado, la 2.ª
+  disminuida, las 3.as y 6.as aumentadas y disminuidas, la 7.ª aumentada y las 8.as
+  alteradas (la 6.ª aumentada volverá en 4.º).
 - **Con inversión**: en un pentagrama, porque invertir es una operación dentro de la 8.ª.
 - **Sin niveles** en la UD 0 (ya no los tenía).
 - ⟶ HECHO (2026-10-06): las tres páginas de la UD 0, sobre la página común
@@ -15,7 +29,8 @@ Un solo material (el intervalo armónico a dos voces) y hoy **dos generadores**:
   `type="barra-resp"`); en *Con grados*, los grados, y la tonalidad pasa a la partitura como
   dato. Corregido de paso: en el unísono, el grado de arriba se colocaba como el de abajo y
   caía dentro del pentagrama.
-- **Consonancia**: la pregunta es la clasificación (perfecta / imperfecta / disonancia), con la presentación «Oír» disponible (la consonancia se oye). Sus niveles, si los tiene, por decidir.
+- ~~Consonancia como consigna de intervalos sueltos~~ → cadena a dos voces, en
+  `consonancia.md` (2026-10-09).
 
 ## Consignas de la UD 0
 
@@ -36,7 +51,7 @@ de los casos (sin amortiguar dominarían la generación libre).
   **grado** de cada nota, que al revelar se escriben encima/debajo del pentagrama
   (`<dir>` de MEI, «4̂»). Único accidental posible: la sensible del menor.
 
-## Consonancia (hoy «Intervalos», 3.º UD 1, oculta)
+## La antigua «familia 2» (3.º UD 1, oculta; retirada el 2026-10-09)
 
 - Clave de sol, luego de fa, luego las dos; tonalidades válidas; accidentales limitados (sensible).
 - Se muestra un **intervalo a dos voces** → indicar **amplitud** (p. ej. "3.ª Mayor") y

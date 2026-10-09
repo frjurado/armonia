@@ -2,9 +2,27 @@
 
 > Procede de `Generador-ejercicios.md` (dividido el 2026-10-05, ver `../../informes/2026-10-05-revision-tras-clase.md`). El modelo común —material, consigna, presentación, nivel; la página de ejercicio— está en `../Modelo-ejercicios.md`; aquí, solo lo propio de este material.
 
-Hoy en el menú: 3.º UD 1, familia *Movimiento armónico*, oculta (`publico:false`), con los modos id/au/ct del modelo antiguo. Motor: `ejercicios/contrapunto-core.js`.
+Hoy en el menú: 3.º UD 1, familia *Movimiento armónico*, oculta (`publico:false`), con
+las consignas id/au/ct del modelo antiguo. Motor: `ejercicios/contrapunto-core.js`.
 
-⟶ APLAZADO (2026-10-05): se rediseña con el modelo de `../Modelo-ejercicios.md` **después** de mejorar el motor (preferencias puntuadas, como `cuatro-voces-core.js`: hoy los contrapuntos son correctos pero sosos). Orientación: identificación encadenada con la presentación «Oír»; el movimiento uniforme de oído es **otra consigna** (la pregunta cambia: qué movimiento predomina); el canto, otra consigna. Lo que sigue es el diseño original, con el reparto antiguo en tres tipos.
+⟶ DECIDIDO (2026-10-09, `../../../informes/2026-10-09-plan-ud1.md`), ⟶ PENDIENTE (fase 5d):
+la familia pasa a llamarse **Movimientos**, con dos consignas, sobre lo común de
+`../motor-contrapunto.md` (faltas inyectadas, comprobador general, parejas del coro,
+pareja resaltada). Apuntes: c3u1 §2.2 y §2.3.
+
+- **Melódicos**: una voz, en clave de Sol o de Fa, con el **nombre de la voz** como dato
+  (N13 depende de ella; a dos voces, máximo 5.ª). Se señalan **solo los defectos**:
+  intervalos aumentados y disminuidos (N12) y saltos excesivos (N13) como faltas, y el
+  **salto no compensado (P9) como «mejorable»**. Nombrar cada intervalo ya es UD 0.
+- **Armónicos**: dos voces de cualquier pareja, o **una pareja resaltada entre cuatro**
+  (el resto en gris; las cuatro voces, realizaciones del motor a cuatro voces sobre las
+  sucesiones de *Bajo cifrado*). Se marca el tipo de movimiento de cada paso (oblicuo,
+  directo, contrario, paralelo), **revelando paso a paso** como ahora.
+- **Canto**: aparcado como ejercicio independiente; en clase se valorará qué se adapta.
+  **Oído** (el «movimiento predominante»): pospuesto hasta ver dónde encaja.
+- *Paralelas y directas* va en su propia familia (`paralelas-directas.md`), detrás.
+
+Lo que sigue es el diseño original, con el reparto antiguo en tres tipos.
 
 El esquema original de la UD 1 tenía cuatro familias y un andamiaje de tipos: la 1.ª, solo identificación; la 2.ª añadía audición; la 3.ª, canto; la 4.ª (faltas) reutilizaba los tipos ya introducidos.
 

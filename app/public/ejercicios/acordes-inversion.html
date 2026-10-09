@@ -9,6 +9,7 @@
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
+<script src="../tonalidades.js"></script>
 <script src="acordes-core.js"></script>
 <script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
@@ -27,7 +28,6 @@
     <div class="ej-main">
       <p class="pregunta">¿En qué <b>inversión</b> está la tríada, y cuál es su <b>cifrado</b>?</p>
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
         <div class="det" id="ansDet"></div>
@@ -53,8 +53,7 @@
 /* UI — inversiones. La generación vive en acordes-core.js; lo común
    de la página, en ArmoniaEj.ejercicio (comun.js). */
 ArmoniaEj.ejercicio({
-  maxNivel: Acordes.MAX_NIVEL,
-  generar: n => Acordes.generar(n, 'inversion'),
+  generar: () => Acordes.generar('inversion'),
   mei: inst => Acordes.toMEI(inst),
   respuesta: inst => ({ansQ: inst.invLabel+' · '+inst.invCifra,
     ansDet: inst.cifradoBajo+' · Tríada '+inst.type+' ('+inst.nombres.join(' – ')+')'}),

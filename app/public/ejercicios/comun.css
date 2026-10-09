@@ -220,6 +220,14 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
    y su inversión): Verovio la dibuja dentro del compás, marcado barra-resp */
 .mascara:not(.revelado) #notation g.measure.barra-resp > g.barLine{visibility:hidden}
 .mascara .answer{display:block}
+/* «Oír» (body.oir): la partitura se oculta hasta revelar y en su lugar sale el
+   aviso; la tarjeta conserva su tamaño (visibility, no display) */
+.mascara.oir:not(.revelado) #notation{visibility:hidden}
+.score-card{position:relative}
+.oir-aviso{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;
+     justify-content:center;gap:10px;color:var(--soft);font-size:17px;font-weight:600}
+.oir-aviso svg{width:44px;height:44px}
+.mascara.oir:not(.revelado) .oir-aviso{display:flex}
 .mascara:not(.revelado) .answer{visibility:hidden}
 
 /* La pregunta, ENCIMA de la partitura y siempre visible: primer hijo de

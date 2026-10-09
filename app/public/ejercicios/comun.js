@@ -353,6 +353,37 @@
       }else caja.style.display='none';
     }
 
+    // «Oír» (Modelo-ejercicios.md §1.3): si la consigna lo admite (`oir:true` en
+    // curriculum-data.js), un conmutador al final de las acciones. Activo, pone
+    // `oir` en <body>: comun.css oculta la partitura hasta revelar y muestra el
+    // aviso «Escucha». Se mantiene de un ejercicio al siguiente y va en la URL
+    // (?oir=1), como el nivel. No genera otro ejercicio: solo cambia la vista.
+    const pagina=deEstaPagina();
+    if(pagina && pagina.consigna.oir){
+      const card=document.querySelector('.score-card');
+      if(card){
+        const aviso=document.createElement('div');
+        aviso.className='oir-aviso';
+        aviso.innerHTML=ICONO_OIDO+'<span>Escucha</span>';
+        card.appendChild(aviso);
+      }
+      const b=document.createElement('button');
+      b.id='btnOir'; b.type='button'; b.className='toggle';
+      b.title='Solo audio: la partitura aparece al revelar';
+      b.innerHTML=`<span class="ic">${ICONO_OIDO}</span>Oír`;
+      const sep=document.createElement('div'); sep.className='sep';
+      $('btnSimilar').after(sep, b);
+      const poner=on=>{
+        body.classList.toggle('oir', on);
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', on);
+        const u=new URL(location.href);
+        if(on) u.searchParams.set('oir','1'); else u.searchParams.delete('oir');
+        history.replaceState(null, '', u);
+      };
+      b.onclick=()=>poner(!body.classList.contains('oir'));
+      poner(new URLSearchParams(location.search).get('oir')==='1');
+    }
+
     $('btnReveal').onclick=revelar;
     $('btnSimilar').onclick=()=>nuevo();
     $('btnListen').onclick=sonar;
@@ -411,6 +442,8 @@
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enlaceApuntes);
   else enlaceApuntes();
+  // auriculares (el mismo icono que la audición en el menú)
+  const ICONO_OIDO='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>';
   const esc=s=>String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   /* ---------- audio ---------- */

@@ -335,9 +335,14 @@
       const acc = p.alter!==sig[p.letter] ? ` accid="${accMap[p.alter]}"` : '';
       return `<note${id?` xml:id="${id}"`:''} pname="${p.letter.toLowerCase()}" oct="${p.oct}"${acc}/>`;
     };
+    // Sin romano: el cifrado del dato, con sus alteraciones (♯, ♯6) y el 5/3
+    // tras el 6/4 cadencial. Con romano (al revelar): las cifras del acorde a
+    // la convención de los apuntes, sin alteraciones —«V», «VII6»—, que ya se
+    // leen en el dato (decidido el 2026-10-09; docs/familias/bajo-cifrado.md §1).
     const cifrado=(a, conRomano)=>{
       const rom = conRomano ? `<rend>${esc(a.romano)}</rend>` : '';
-      return rom + a.cifras.map((f,i)=>`<rend rend="${i===0?'sup':'sub'}" fontsize="${CUERPO_CIFRAS}">${esc(f)}</rend>`).join('');
+      const cifras = conRomano ? (a.cifrasRomano ? a.cifrasRomano.split('/') : []) : a.cifras;
+      return rom + cifras.map((f,i)=>`<rend rend="${i===0?'sup':'sub'}" fontsize="${CUERPO_CIFRAS}">${esc(f)}</rend>`).join('');
     };
     const measures=inst.acordes.map((a,k)=>{
       const last=k===inst.acordes.length-1;

@@ -52,9 +52,10 @@ su alteración: sola si es la 3.ª (♯), delante si es la 6.ª (♯6: V6/4, VII
 cambia la alteración por un glifo de su fuente musical, con otro cuerpo:
 `ArmoniaEj.apilarCifras` lo descarta al comparar cuerpos y apila centrando la parte numérica
 (el ♯ de «♯6» cuelga a la izquierda; un ♯ solo, como en 5/♯, se centra bajo el 5). Al revelar,
-el romano va delante **con las mismas cifras** (en menor, «V♯»). ⟶ ABIERTO: ¿se quiere así,
-o el romano a la convención de los apuntes (sin alteración) y la alteración solo en el
-dato?
+el romano va delante con las cifras **a la convención de los apuntes**, sin alteraciones
+(«V», «VII6»). ⟶ HECHO (2026-10-09; hasta entonces llevaba las mismas cifras del dato,
+«V♯»). Como la fila revelada ocupa el sitio de la del dato, tras revelar el ♯ ya no se lee
+en la cifra, sino en el acorde escrito en clave de Sol y en su americano.
 
 **Grado del bajo en círculo.** `<harm type="gradobajo">` con la cifra sola (y la
 alteración delante, separada por un espacio de cuarto: ♯⑦); el círculo lo dibuja
@@ -69,4 +70,6 @@ en ~24 % de los ejercicios, de paso en ~19 %; III en ~1 %.
 
 ## 2. Segunda consigna de la familia: consonancia y disonancia
 
-⟶ DECIDIDO (2026-10-05): la segunda variante de *Morfología* es **Consonancia** (apuntes c3u1 §1.3). Su material no es el bajo cifrado sino el **intervalo**: se diseña en `intervalos.md` (§ Consonancia) y aquí solo se ubica. Si el curso que viene la Morfología pasa a la UD 0 y la consonancia se queda con la conducción, se mueve en `curriculum-data.js`, sin tocar ficheros.
+⟶ DECIDIDO (2026-10-05, precisado el 2026-10-09): la segunda variante de *Morfología* es
+**Consonancia** (apuntes c3u1 §1.3): una cadena a dos voces en la que se clasifica cada
+intervalo. Se diseña en `consonancia.md`; aquí solo se ubica. Si el curso que viene la Morfología pasa a la UD 0 y la consonancia se queda con la conducción, se mueve en `curriculum-data.js`, sin tocar ficheros.

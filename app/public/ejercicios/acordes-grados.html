@@ -9,6 +9,7 @@
 <script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
 <script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
 <script src="mini-lilypond-parser.js"></script>
+<script src="../tonalidades.js"></script>
 <script src="acordes-core.js"></script>
 <script src="../curriculum-data.js"></script>
 <script src="comun.js"></script>
@@ -33,7 +34,6 @@
     <div class="ej-main">
       <p class="pregunta">¿Qué <b>grado</b> es la fundamental de la tríada, y de qué <b>tipo</b> es?</p>
       <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
-      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
       <div class="answer" id="answer">
         <div class="q" id="ansQ">—</div>
         <div class="det" id="ansDet"></div>
@@ -63,8 +63,7 @@
    vive en acordes-core.js; lo común de la página, en
    ArmoniaEj.ejercicio (comun.js). */
 ArmoniaEj.ejercicio({
-  maxNivel: Acordes.MAX_NIVEL,
-  generar: n => Acordes.generar(n, 'grados'),
+  generar: () => Acordes.generar('grados'),
   mei: inst => Acordes.toMEI(inst, {dato:inst.key.nombre}),
   respuesta: inst => ({
     ansQ: `<span class="modo">Modo ${inst.modoTxt}</span><span class="sep-q">·</span>`+

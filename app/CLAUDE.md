@@ -119,7 +119,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 - `ejercicios/`, un patrón por familia:
   - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
     `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
-    `Movimientos`, `Familia2`, `Contrapunto`) con TODA la
+    `Movimientos`, `Contrapunto`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
   - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
@@ -200,14 +200,18 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     type="gradobajo">` con la cifra sola: el círculo lo dibuja
     `ArmoniaEj.circularGrados` tras el render (ninguna de las fuentes trae
     ①…⑦). `tests/masivo-bajo-cifrado.js [nivel] [n]` es su validación masiva.
+  - `intervalos-core.js` (`Intervalos`) y `acordes-core.js` (`Acordes`) — 3.º
+    UD 0, sin niveles y en pentagrama doble (salvo *Con inversión*, en un
+    pentagrama). Sus validaciones masivas: `tests/masivo-intervalos.js [n]`
+    (entre otras cosas, que solo salen los aumentados y disminuidos de la
+    escala) y `tests/masivo-acordes.js [n]`.
   - `tonalidades.js` (en `public/`, global `TONALIDADES`) — tabla única de
-    tonalidades por trimestre. Los cores nuevos la usan; los de 3.º UD 0
-    aún llevan sus 4 tonalidades dentro (migración pendiente).
+    tonalidades por trimestre. La usan todos los cores con tonalidad (la
+    familia de armaduras recorre las 24 por diseño y no la necesita).
   - Nombres: **por material, sin curso ni unidad** (`docs/Modelo-ejercicios.md`
     §6; la convención `c<curso>u<ud>-` es solo de los apuntes). Dónde sale un
     ejercicio es un dato de `curriculum-data.js`, así que mover una familia de
-    unidad no renombra nada ni cambia URL. Queda `familia2-intervalos-*`, que
-    se funde con `intervalos-*` en la fase 4.
+    unidad no renombra nada ni cambia URL.
 
 ## Convenciones de dominio
 

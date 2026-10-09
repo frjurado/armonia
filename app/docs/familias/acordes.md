@@ -7,7 +7,8 @@ Hoy en el menú: 3.º UD 0, familia *Acordes* (Tipo y cifrado, Inversiones, Con 
 ⟶ DECIDIDO (2026-10-05):
 
 - **Fuera el sentido *construir***, en todas las variantes: la alternancia al 50 % cambiaba la tarea sin aviso. Escribir acordes es trabajo de las fichas en papel. ⟶ HECHO (2026-10-06): siempre se ve el acorde y se nombra; las tres páginas, sobre la página común (`../Modelo-ejercicios.md` §2), y en *Con grados* la tonalidad pasa a la partitura como dato (`<reh type="dato">`, como en 4.º).
-- **Sin niveles** (⟶ PENDIENTE, fase 4): la clave y la disposición dejan de graduar. Pentagrama doble siempre; el acorde cae en el de Sol, en el de Fa (posición cerrada) o repartido (abierta: bajo en Fa, el resto en Sol). La UD 0 de 3.º queda entera sin niveles.
+- **Sin niveles** (⟶ HECHO 2026-10-09; validación: `../../tests/masivo-acordes.js`, con
+  las tres disposiciones por tercios): la clave y la disposición dejan de graduar. Pentagrama doble siempre; el acorde cae en el de Sol, en el de Fa (posición cerrada) o repartido (abierta: bajo en Fa, el resto en Sol). La UD 0 de 3.º queda entera sin niveles.
 
 ## Origen
 
@@ -24,7 +25,7 @@ Reubica la antigua **familia 1** (tríadas de la UD 1). Tres variantes, paralela
 Intervalos (simple · inversión · grados). En las dos primeras, tríadas **aisladas**, sin
 tonalidad: fundamental libre con alteración simple (se rechazan los acordes que exigirían
 dobles alteraciones, y las fundamentales Mi♯/Si♯/Fa♭/Do♭). Se ve el acorde y se nombra.
-Niveles (hasta la fase 4): **1** clave de Sol y **2** clave de Fa (posición cerrada); **3** posición abierta
+Disposiciones (antes eran los niveles): **1** clave de Sol y **2** clave de Fa (posición cerrada); **3** posición abierta
 en pentagrama doble: el bajo en clave de Fa y las otras dos notas en clave de Sol, apiladas
 ascendentes desde Do4, de modo que **nunca distan más de una 8.ª entre sí** (la distancia
 grande, si la hay, queda entre el bajo y ellas).

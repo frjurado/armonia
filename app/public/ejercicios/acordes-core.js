@@ -13,16 +13,19 @@
        en menor, la sensible solo en V y VII (III natural, mayor);
      · se ve el acorde y se nombra (el sentido inverso, construirlo
        a partir del nombre, se quitó el 2026-10-05);
-     · niveles: 1 clave de Sol · 2 clave de Fa (posición cerrada)
-       · 3 posición abierta en pentagrama doble (el bajo en Fa,
-       las otras dos notas en Sol, nunca a más de una 8.ª).
-   Depende de `mini-lilypond-parser.js` (variable global MiniLily).
+     · sin niveles (2026-10-09): siempre en pentagrama doble, y
+       el acorde, por tercios, en posición cerrada en el de Sol, en
+       posición cerrada en el de Fa, o abierta y repartida (el bajo
+       en Fa, las otras dos notas en Sol, nunca a más de una 8.ª).
+   Depende de `mini-lilypond-parser.js` (global MiniLily) y de
+   `../tonalidades.js` (global TONALIDADES).
    ============================================================ */
 (function (global) {
   'use strict';
 
-  const MiniLily = (typeof module !== 'undefined' && module.exports)
-    ? require('./mini-lilypond-parser') : global.MiniLily;
+  const esNode = typeof module !== 'undefined' && module.exports;
+  const MiniLily = esNode ? require('./mini-lilypond-parser') : global.MiniLily;
+  const TON = esNode ? require('../tonalidades') : global.TONALIDADES;
 
   /* ---------- núcleo de alturas (igual que las otras familias) ---------- */
   const LETTERS = ['C','D','E','F','G','A','B'];
@@ -78,12 +81,7 @@
 
   /* ---------- tríadas diatónicas (variante 'grados') ---------- */
   // Tonalidades del trimestre 1 (las mismas que Intervalos con grados).
-  const KEYS = [
-    {tonic:'C', sig:0,  mode:'major', nombre:'Do mayor'},
-    {tonic:'G', sig:1,  mode:'major', nombre:'Sol mayor'},
-    {tonic:'A', sig:0,  mode:'minor', nombre:'La menor'},
-    {tonic:'D', sig:-1, mode:'minor', nombre:'Re menor'}
-  ];
+  const KEYS = TON.hastaTrimestre(1);
   const ROMANOS = ['I','II','III','IV','V','VI','VII'];
 
   // Tríada sobre el grado `grado` (1–7) de `key`, como {letter,alter}[].
@@ -114,7 +112,7 @@
   const INV_CIFRA = ['5/3','6/3','6/4'];
 
   /* ---------- disposición (voicing) ---------- */
-  // Posición cerrada (niveles 1-2), como la antigua familia 1:
+  // Posición cerrada (en el pentagrama de Sol o en el de Fa):
   //   Sol (treble): Do4–La5  ·  Fa (bass): Mi2–Do4  (máx. 1 línea adicional)
   const RANGE = { treble:[60,81], bass:[40,60] };
 
@@ -139,7 +137,7 @@
     return (Math.min.apply(null,m)>=lo && Math.max.apply(null,m)<=hi) ? notes : null;
   }
 
-  // Posición abierta (nivel 3): el bajo (según la inversión) en clave de Fa
+  // Posición abierta (repartida): el bajo (según la inversión) en clave de Fa
   // y las otras dos notas en clave de Sol, en cualquier orden y apiladas
   // ascendentes desde Do4: así quedan siempre a menos de una 8.ª entre sí
   // (la distancia grande, si la hay, va entre el bajo y ellas).
@@ -172,8 +170,12 @@
   // variante: 'tipo' | 'inversion' | 'grados'. Solo 'inversion' usa
   // inversiones. Siempre se muestra el acorde y se pide nombrarlo: el
   // sentido inverso («construir», a partir del nombre) se quitó el
-  // 2026-10-05 (docs/familias/acordes.md).
-  function generar(nivel, variante){
+  // 2026-10-05 (docs/familias/acordes.md). Sin niveles: la disposición sale
+  // por tercios ('sol' | 'fa' | 'repartido'). Se admite aún generar(nivel,
+  // variante), y el nivel se ignora.
+  const DISPOSICIONES = ['sol','fa','repartido'];
+  function generar(a, b){
+    const variante = typeof a==='number' ? b : a;
     for(let t=0;t<200;t++){
       let root, type, triad, key=null, grado=0, inv=0;
       if(variante==='grados'){
@@ -189,8 +191,9 @@
       }
 
       let ej;
-      if(nivel<=2){
-        const clef = nivel===1 ? 'treble' : 'bass';
+      const disp=rnd(DISPOSICIONES);
+      if(disp!=='repartido'){
+        const clef = disp==='sol' ? 'treble' : 'bass';
         const notes=voiceClose(triad,clef,inv);
         if(!notes) continue;
         ej={ single:true, clef, notes };
@@ -199,7 +202,7 @@
         if(!v) continue;
         ej={ single:false, bass:v.bass, upper:v.upper };
       }
-      ej.nivel=nivel; ej.variante=variante;
+      ej.disp=disp; ej.variante=variante;
       ej.root=root; ej.type=type; ej.inv=inv;
       ej.cifrado=cifradoAm(root,type);
       // cifrado con barra: el bajo tras la barra cuando hay inversión (C/E)
@@ -230,8 +233,9 @@
                                    : 'clef.shape="G" clef.line="2"';
   function parse1(music){ return MiniLily.parseVoice(music,{time:null}).events[0]; }
 
-  // toMEI(ej, {dato}): el acorde, y `dato` (la tonalidad, en la variante con
-  // grados) sobre él como <reh type="dato">, como en 4.º. Con tonalidad se
+  // toMEI(ej, {dato}): el acorde, siempre en pentagrama doble (el que no lleva
+  // notas, vacío), y `dato` (la tonalidad, en la variante con grados) sobre el
+  // primer tiempo del de Sol como <reh type="dato">, como en 4.º. Con tonalidad se
   // escribe la armadura y solo llevan accidental las notas ajenas a ella (la
   // sensible); sin tonalidad (keysig 0) toda alteración es accidental. Nada
   // cambia al revelar: no hay máscara.
@@ -245,31 +249,30 @@
       const xid = id ? ` xml:id="${id}"` : '';
       return `<note${xid} dur="${ev.base||1}" pname="${ev.letter}" oct="${ev.octave}"${acc}/>`;
     };
-    // El acorde del pentagrama superior lleva xml:id="sup": ancla del dato.
     const chordXml = notas => {
       const ev=MiniLily.parseVoice('<'+notas.map(pitchToken).join(' ')+'>1',{time:null}).events[0];
-      return `<chord xml:id="sup" dur="${ev.base}">${ev.notes.map(n=>noteXml(n)).join('')}</chord>`;
+      return `<chord dur="${ev.base}">${ev.notes.map(n=>noteXml(n)).join('')}</chord>`;
     };
-    const harm = opts.dato ? `<reh place="above" staff="1" startid="#sup" type="dato">${opts.dato}</reh>` : '';
-    let staffDefs, staves;
+    const vacio = '<space dur="1"/>';
+    const harm = opts.dato ? `<reh place="above" staff="1" tstamp="1" type="dato">${opts.dato}</reh>` : '';
+    let sup, inf;
     if(ej.single){
-      staffDefs=`<staffDef n="1" lines="5" ${clefAttr(ej.clef)}/>`;
-      staves=`<staff n="1"><layer n="1">${chordXml(ej.notes)}</layer></staff>`;
+      sup = ej.clef==='treble' ? chordXml(ej.notes) : vacio;
+      inf = ej.clef==='bass'   ? chordXml(ej.notes) : vacio;
     }else{
-      staffDefs=`<staffDef n="1" lines="5" ${clefAttr('treble')}/>`+
-                `<staffDef n="2" lines="5" ${clefAttr('bass')}/>`;
-      const sup = chordXml(ej.upper);
-      const baj = noteXml(parse1(pitchToken(ej.bass)+'1'));
-      staves=`<staff n="1"><layer n="1">${sup}</layer></staff>`+
-             `<staff n="2"><layer n="1">${baj}</layer></staff>`;
+      sup = chordXml(ej.upper);
+      inf = noteXml(parse1(pitchToken(ej.bass)+'1'));
     }
-    const grpAttrs = ej.single ? '' : ' symbol="brace" bar.thru="true"';
+    const staffDefs=`<staffDef n="1" lines="5" ${clefAttr('treble')}/>`+
+                    `<staffDef n="2" lines="5" ${clefAttr('bass')}/>`;
+    const staves=`<staff n="1"><layer n="1">${sup}</layer></staff>`+
+                 `<staff n="2"><layer n="1">${inf}</layer></staff>`;
     const sigAttr = sig===0?'0':(Math.abs(sig)+(sig>0?'s':'f'));
     return `<?xml version="1.0" encoding="UTF-8"?>
 <mei xmlns="http://www.music-encoding.org/ns/mei" meiversion="4.0.0">
  <music><body><mdiv><score>
-  <scoreDef keysig="${sigAttr}">
-   <staffGrp${grpAttrs}>${staffDefs}</staffGrp>
+  <scoreDef keysig="${sigAttr}" meter.count="1" meter.unit="1" meter.form="invis">
+   <staffGrp symbol="brace" bar.thru="true">${staffDefs}</staffGrp>
   </scoreDef>
   <section><measure>${staves}${harm}</measure></section>
  </score></mdiv></body></music>
@@ -282,10 +285,8 @@
     return notas.map(n=>({midi:midiOf(n.letter,n.alter,n.oct)}));
   }
 
-  const MAX_NIVEL = 3;
-
-  const api = { generar, toMEI, midis, midiOf, MAX_NIVEL, INV_LABEL, INV_CIFRA, KEYS };
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  const api = { generar, toMEI, midis, midiOf, INV_LABEL, INV_CIFRA, KEYS, DISPOSICIONES };
+  if (esNode) module.exports = api;
   else global.Acordes = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 /* fin */
