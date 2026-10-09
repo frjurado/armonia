@@ -92,6 +92,16 @@ const CURRICULO = {
                 'Modo mayor (Do y Sol mayor).',
                 'Añade el modo menor (La y Re menor). Con la sensible: en Bajo cifrado, su alteración en el cifrado (♯, ♯6); en Consonancia, los aumentados y disminuidos que forma.'
               ]},
+            { nombre:'Disposición', publico:false,
+              desc:'Tesitura, distancias, cruces y unísonos (N1–N3, P2), y la disposición de los acordes a cuatro voces: sonoridades y acordes sueltos, algunos con una falta puesta a propósito.',
+              consignas:[
+                {key:'dos', title:'Entre dos voces', icono:'pareja',
+                 url:'ejercicios/disposicion-dos-voces.html', apuntes:['c3u1#coro-mixto'],
+                 desc:'Cinco sonoridades de soprano y contralto, o de contralto y tenor: decir si cada una está bien o tiene distancia de más de una 8.ª, cruce o unísono.'},
+                {key:'cuatro', title:'A cuatro voces', icono:'satb',
+                 url:'ejercicios/disposicion-cuatro-voces.html', apuntes:['c3u1#coro-mixto'],
+                 desc:'Tres tríadas a cuatro voces: su disposición (cerrada, abierta o mixta) y las faltas de tesitura, distancia o cruce, si las hay.'}
+              ]},
             { nombre:'Movimiento armónico', publico:false,
               desc:'Contrapunto 1:1 de 10 notas a dos voces: identificar los intervalos armónicos y el tipo de movimiento de cada transición (oblicuo / contrario / directo / paralelo).',
               consignas:[

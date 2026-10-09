@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Disposición entre dos voces</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="conduccion-check.js"></script>
+<script src="disposicion-core.js"></script>
+<script src="../curriculum-data.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* Los rótulos de respuesta bajo cada sonoridad o acorde los dibuja
+     ArmoniaEj.rotulosBajo; su estilo, en comun.css (text.rotulo). */
+  .answer .q{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .answer .q .sep-q{color:var(--soft);font-weight:400}
+</style>
+</head>
+<body>
+<header>
+  <h1>Entre dos voces</h1>
+  <span class="sub">Disposición · Unidad 1 · 3.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level"></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <p class="pregunta">¿Está bien cada sonoridad, o hay <b>distancia</b> de más de una 8.ª, <b>cruce</b> o <b>unísono</b>?</p>
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" title="Otro ejercicio"><span class="ic">↻</span>Otro</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Cinco sonoridades sueltas de una pareja de voces del coro (soprano y contralto, o
+     contralto y tenor; sus nombres, sobre la partitura). Mira cada una: entre estas voces
+     no debe haber más de una <b>8.ª</b>; la de arriba nunca va por debajo de la de abajo
+     (<b>cruce</b>). El <b>unísono</b> no es una falta, pero conviene evitarlo entre estas
+     voces: se señala aparte, como aviso. Las plicas dicen qué voz es cuál: hacia arriba la
+     aguda, hacia abajo la grave. Puede que estén todas bien.</p>
+  </details>
+</main>
+
+<script>
+/* UI — Entre dos voces. La lógica musical vive en disposicion-core.js; lo
+   común de la página, en ArmoniaEj.ejercicio (comun.js). */
+(function(){
+  'use strict';
+  const D = window.Disposicion;
+  // «2, 4 y 5»: posiciones (contadas desde 1)
+  const lista = ks => { const s=ks.map(k=>k+1); return s.length<2 ? String(s[0]) : s.slice(0,-1).join(', ')+' y '+s[s.length-1]; };
+  ArmoniaEj.ejercicio({
+    generar: () => D.generarDosVoces(),
+    mei: inst => D.toMEI(inst),
+    trasRender: (root, inst) => ArmoniaEj.rotulosBajo(root, inst.rotulos),
+    respuesta: inst => {
+      // faltas (normas) en el titular; el unísono (preferencia), aparte
+      const mal = inst.errores.map((fs,k)=>fs.length?k:-1).filter(k=>k>=0);
+      const unis = inst.avisos.map((fs,k)=>fs.length?k:-1).filter(k=>k>=0);
+      return {
+        ansQ: mal.length ? (mal.length===1 ? 'Falta en ' : 'Faltas en ')+lista(mal)+'.' : 'Sin faltas.',
+        ansDet: `${inst.key.nombre} · ${inst.roles.join(' y ')}`
+          + (unis.length ? ` · cuidado: unísono en ${lista(unis)}` : '')
+      };
+    },
+    audio: inst => D.midis(inst),
+    // un solo sistema, estirado a todo el ancho: con los compases apretados, los
+    // rótulos de debajo se tocan. Con breaks:'none' Verovio ajusta el sistema al
+    // contenido; con 'auto' lo justifica, y minLastJustification:0 hace que lo
+    // haga aunque sea el último (por defecto, solo si ya ocupa el 80 %).
+    verovio: {scale:60, pageWidth:1250, breaks:'auto', minLastJustification:0,
+                pageMarginLeft:170,     // sitio para el nombre de la pareja, centrado sobre la primera nota
+                pageMarginBottom:75}   // sitio debajo para los rótulos de respuesta (ArmoniaEj.rotulosBajo)
+  });
+})();
+</script>
+</body>
+</html>

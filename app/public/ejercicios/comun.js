@@ -8,7 +8,8 @@
      · la página común (ejercicio): nivel, revelado por máscara y
        audio, para las páginas migradas (Modelo-ejercicios.md §2)
      · dibujos tras el render: cifras apiladas, grados en círculo,
-       corchetes de tramo, líneas adicionales de notas ocultas
+       corchetes de tramo, líneas adicionales de notas ocultas,
+       rótulos bajo cada compás
    Depende de los <script> de Verovio y soundfont-player
    (../vendor/), cargados por cada página.
    ============================================================ */
@@ -240,6 +241,45 @@
       path.setAttribute('d', d);
       path.setAttribute('stroke-width', unidad*0.06);
       c.et.appendChild(path);
+    });
+  }
+
+  /* ---------- rótulos bajo cada compás ---------- */
+  // rotulosBajo(root, filas): tras el render, escribe bajo cada compás sus
+  // rótulos de texto, centrados sobre sus notas. filas[k] = [{texto, clase}]
+  // para el compás k (una fila por elemento). Cada rótulo es un <text
+  // class="rotulo …">: con `resp`, la máscara lo oculta hasta revelar.
+  // No van como <harm> en el MEI a propósito: Verovio ensancha el compás
+  // según el texto, así que unos rótulos de respuesta, aun ocultos, delatarían
+  // cuál es diferente por su anchura (y no dejarían elegir la letra). La
+  // página reserva el sitio de debajo con pageMarginBottom.
+  function rotulosBajo(root, filas){
+    if(!root || !root.querySelectorAll) return;
+    const NS='http://www.w3.org/2000/svg';
+    const medidas=Array.from(root.querySelectorAll('g.measure'));
+    // una sola línea para todos: bajo lo más bajo del sistema (si cada rótulo
+    // se pusiera bajo su compás, una plica larga lo descolgaría)
+    let fondo=-Infinity, esp=180;
+    try{
+      medidas.forEach(m=>{ const b=m.getBBox(); fondo=Math.max(fondo, b.y+b.height); });
+      const cab=root.querySelector('g.notehead'); if(cab) esp=cab.getBBox().height;   // ~ un espacio
+    }catch(e){ return; }
+    const y0=fondo+esp*2;
+    medidas.forEach((m,k)=>{
+      const f=filas[k]; if(!f || !f.length) return;
+      const notas=Array.from(m.querySelectorAll('g.note')); if(!notas.length) return;
+      try{
+        const bb=notas.map(n=>n.getBBox());
+        const x0=Math.min(...bb.map(b=>b.x)), x1=Math.max(...bb.map(b=>b.x+b.width));
+        f.forEach((r,i)=>{
+          const t=document.createElementNS(NS,'text');
+          t.setAttribute('x',(x0+x1)/2); t.setAttribute('y',y0+i*esp*2.2);
+          t.setAttribute('text-anchor','middle'); t.setAttribute('font-size',esp*1.9);
+          t.setAttribute('class','rotulo '+(r.clase||''));
+          t.textContent=r.texto;
+          m.appendChild(t);
+        });
+      }catch(e){}
     });
   }
 
@@ -509,6 +549,6 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales,
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales, rotulosBajo,
                        ejercicio, tocar, detener, audioNoDisponible };
 })(window);

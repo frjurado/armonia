@@ -171,6 +171,14 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `consonancia-core.js` (`Consonancia`) — cadena a dos voces con
     disonancias inyectadas (3.º UD 1, Morfología); su validación masiva,
     `tests/masivo-consonancia.js`, recalcula las clases con una tabla propia.
+  - `disposicion-core.js` (`Disposicion`) — Entre dos voces y A cuatro voces
+    (3.º UD 1): enumera colocaciones y elige una cuyas faltas, según el
+    comprobador, sean las buscadas. `tests/masivo-disposicion.js`. Sus
+    rótulos de respuesta bajo cada compás **no son `<harm>`**: Verovio
+    ensancha el compás según el texto, lo que desiguala los compases y delata
+    la falta antes de revelar. Los dibuja `ArmoniaEj.rotulosBajo(root, filas)`
+    tras el render, en una línea base común (y la página reserva sitio con
+    `pageMarginBottom`).
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las
