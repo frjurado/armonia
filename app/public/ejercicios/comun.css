@@ -130,7 +130,7 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
 #notation line.raya.voz-sup{stroke:var(--voz-sup)}
 #notation line.raya.voz-inf{stroke:var(--voz-inf)}
 /* voces que no se preguntan (la pareja resaltada entre cuatro), en gris */
-#notation g.note.gris{opacity:.32}
+#notation g.note.gris, #notation g.ledgerLines path.gris{opacity:.32}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);

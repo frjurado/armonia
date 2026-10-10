@@ -116,6 +116,19 @@ const CURRICULO = {
                    'Dos voces de una pareja del coro.',
                    'Una pareja resaltada entre las cuatro voces de una realización.'
                  ]}
+              ]},
+            { nombre:'Paralelas y directas', publico:false,
+              desc:'Encontrar las 5.as y 8.as paralelas y las directas, primero a dos voces y después a cuatro.',
+              consignas:[
+                {key:'faltas', title:'Buscar faltas', icono:'paralelas',
+                 url:'ejercicios/paralelas-directas.html',
+                 apuntes:['c3u1#quintas-y-octavas-paralelas', 'c3u1#quintas-y-octavas-directas'],
+                 desc:'Ocho sonoridades con 0–2 faltas: 5.as u 8.as paralelas (también por movimiento contrario) y, a cuatro voces, directas entre las extremas.'}
+              ],
+              niveles:[
+                'Dos voces de una pareja del coro: 5.as y 8.as paralelas.',
+                'Cuatro voces, con la pareja que se pregunta resaltada: también las directas.',
+                'Cuatro voces, sin resaltar: hay que buscar en todas las parejas.'
               ]}
           ]},
         { id:'c3u2', n:2, titulo:'Tónica y dominante', familias:[] },

@@ -288,7 +288,8 @@
   // rotulosBajo; con `corchete`, además, un corchete abierto hacia arriba que
   // abarca las dos. Si dos se solapan, el segundo baja a otra fila. La clase
   // `resp` va en el grupo (rótulo y corchete), y las de color, en el texto;
-  // `paso` (1, 2…) lo deja para el modo por pasos de ejercicio().
+  // `paso` (1, 2…) lo deja para el modo por pasos de ejercicio(). Un texto
+  // con «\n» va en varias líneas.
   // Las filas dependen del ancho de cada texto: si la fuente aún no ha
   // llegado (la cursiva solo se pide al usarla), se mediría con la de
   // sustitución, más ancha; por eso se vuelven a colocar al cargar las fuentes.
@@ -307,7 +308,15 @@
       const t=document.createElementNS(NS,'text');
       t.setAttribute('x',(xa+xz)/2); t.setAttribute('text-anchor','middle'); t.setAttribute('font-size',esp*1.9);
       t.setAttribute('class','rotulo '+color);
-      t.textContent=it.texto;
+      // varias líneas con «\n»: una tspan por línea, centradas en la misma x
+      const lineas=String(it.texto).split('\n');
+      lineas.forEach((l,i)=>{
+        const s=document.createElementNS(NS,'tspan');
+        s.setAttribute('x',(xa+xz)/2);
+        if(i) s.setAttribute('dy',esp*2);
+        s.textContent=l;
+        t.appendChild(s);
+      });
       g.appendChild(t);
       let p=null;
       if(it.corchete){
@@ -316,8 +325,10 @@
         p.setAttribute('class','corchete-rot '+color);
         g.insertBefore(p, t);
       }
-      puestos.push({t, p, xa, xz});
+      puestos.push({t, p, xa, xz, lineas:lineas.length});
     });
+    // alto de una fila: el del rótulo más alto (en líneas)
+    const alto=esp*(1.3+2.1*Math.max(...puestos.map(x=>x.lineas), 1));
     const colocar=()=>{
       const filas=[];
       puestos.forEach(({t, p, xa, xz})=>{
@@ -328,7 +339,7 @@
               x1=(p ? Math.max(xz, xc+w/2) : xc+w/2)+esp*0.6;
         let f=0; while(filas[f] && filas[f].some(([u,v])=>u<x1 && x0<v)) f++;
         (filas[f]=filas[f]||[]).push([x0,x1]);
-        const y=b.fondo+esp*(p?3.6:2)+f*esp*3.4;
+        const y=b.fondo+esp*(p?3.6:2)+f*alto;
         t.setAttribute('y',y);
         if(p){ const yc=y-esp*2.1, h=esp*0.7; p.setAttribute('d',`M${xa} ${yc-h} V${yc} H${xz} V${yc-h}`); }
       });
@@ -386,7 +397,7 @@
       const notas=Array.from(staff.querySelectorAll('g.note')).map(n=>{
         try{
           const b=(n.querySelector('g.notehead')||n).getBBox();
-          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp')};
+          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp'), gris:n.classList.contains('gris')};
         }catch(e){ return null; }
       }).filter(Boolean);
       g.querySelectorAll('path').forEach(p=>{
@@ -395,6 +406,9 @@
         const x0=+m[1], y=+m[2], x1=+m[3];
         const usan=notas.filter(n=>n.x0<x1 && n.x1>x0 && (arriba ? n.cy<=y+n.tol : n.cy>=y-n.tol));
         if(usan.length && usan.every(n=>n.oculta)) p.classList.add('resp');
+        // y en gris, la que solo necesitan notas en gris (las voces que no se
+        // preguntan); si la comparte una nota en tinta, en tinta
+        if(usan.length && usan.every(n=>n.gris)) p.classList.add('gris');
       });
     });
   }

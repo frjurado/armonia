@@ -338,9 +338,9 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 **Comunes**
 - [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
       que solo toma la pregunta visible (2026-10-06).
-- [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
-      fase 5): Consonancia, Disposición y Movimientos, hechas; falta *Paralelas y
-      directas* (5e).
+- [x] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
+      fase 5) → hecho (2026-10-10): Consonancia, Disposición, Movimientos y Paralelas
+      y directas, todas sobre la página común.
 - [x] ~~Un solo esquema, menú en filas, renombrado, enlaces con los apuntes (§3, §6)~~
       → hechos (2026-10-06).
 - [x] ~~«Oír» y `?oir` (§1.3, §2.5)~~ → hechos (2026-10-09), en *Cadencias · Tipo*.
@@ -355,10 +355,8 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
       revisar niveles en clase (`familias/cadencias.md` §3, §2, §8).
 - [ ] *Prolongación*: revisar a ojo y oído realizaciones y pesos de la soprano
       (`familias/prolongacion.md` §6).
-- [ ] **La UD 1 de 3.º** (fase 5; plan en `../../informes/2026-10-09-plan-ud1.md`):
-      ~~5a motor (`motor-contrapunto.md`)~~ · ~~5b *Consonancia*
-      (`familias/consonancia.md`)~~ · ~~5c *Disposición* (`familias/disposicion.md`)~~
-      (hechos, 2026-10-09) · 5d *Movimientos*
-      (`familias/movimientos.md`) · 5e *Paralelas y directas*
-      (`familias/paralelas-directas.md`). Canto y oído, aparcados.
+- [x] ~~**La UD 1 de 3.º** (fase 5)~~ → hecha (2026-10-10,
+      `../../informes/2026-10-10-fase5-ud1.md`): motor, *Consonancia*, *Disposición*,
+      *Movimientos*, *Paralelas y directas*; ocultas hasta revisarlas en clase. Canto y
+      oído, aparcados.
 - [ ] Motor: revisar penalizaciones a ojo y oído (`motor-cuatro-voces.md`).

@@ -119,7 +119,8 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 - `ejercicios/`, un patrón por familia:
   - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
     `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
-    `Movimientos`, `Contrapunto`) con TODA la
+    `Movimientos`, `Contrapunto`, `Consonancia`, `Disposicion`,
+    `ParalelasDirectas`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
   - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
@@ -190,6 +191,11 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     página común (`pasos`, `audioPaso`, botón `#btnPaso`). Las notas llevan
     `xml:id` `n<voz>_<k>`, que es como las encuentran.
     `tests/masivo-movimientos.js`.
+  - `paralelas-directas-core.js` (`ParalelasDirectas`) — N4/N5 inyectadas a
+    dos voces (motor de contrapunto) o a cuatro (como Armónicos, cambiando
+    una nota por otra del mismo acorde); el comprobador de 4.º vigila que no
+    se cuele nada más. Reutiliza `Movimientos.toMEI` y `midis`.
+    `tests/masivo-paralelas-directas.js`.
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las
