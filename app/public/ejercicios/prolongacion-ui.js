@@ -15,6 +15,7 @@
   const TIPO = window.PROL_TIPO || 1;
   const P = window.Prolongacion;
   const sep='<span class="sep-q">·</span>';
+  const GANANCIA_OIR = [0.55, 0.55, 0.55, 1];       // S, A, T, B: el bajo, destacado
 
   ArmoniaEj.ejercicio({
     maxNivel: P.MAX_NIVEL,
@@ -39,7 +40,12 @@
         ansDet: '<ul class="tramos">' + a.tramos.map(t=>`<li><b>${t.compases}</b> · ${t.texto}</li>`).join('') + '</ul>'
       };
     },
-    audio: (inst, revelado) => P.midis(inst, revelado ? null : {voces:[3]}),
+    // sin «Oír», antes de revelar, solo el bajo; con «Oír» (tipo 1), las cuatro
+    // voces con el bajo destacado, la tonalidad en el aviso y «Solo el bajo»
+    audio: (inst, revelado, oir) => oir ? P.midis(inst, {ganancia:GANANCIA_OIR})
+                                        : P.midis(inst, revelado ? null : {voces:[3]}),
+    audioBajo: inst => P.midis(inst, {voces:[3]}),
+    avisoOir: inst => TIPO===1 ? inst.key.nombre : '',
     sonarAlRevelar: true,
     // El periodo va en dos sistemas, uno por frase (<sb/> en el MEI), los dos
     // del mismo ancho: el último se justifica siempre (minLastJustification 0;

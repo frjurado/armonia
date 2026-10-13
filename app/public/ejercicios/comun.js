@@ -244,6 +244,56 @@
     });
   }
 
+  // rotulosEncima(root, filas): lo que va ENCIMA de la partitura, dibujado tras
+  // el render en filas FIJAS por sistema (Secuencia). Los <reh> de Verovio se
+  // colocan cada uno donde caben, y una etiqueta de tramo podía acabar en otra
+  // fila o bajo el americano. filas[0] es la más cercana a la música (justo
+  // encima de lo más alto del sistema) y las siguientes, más arriba. Cada
+  // elemento: {desde, hasta (ids de nota), texto?, abierto?, clase}:
+  //   con texto, el rótulo empieza en la nota `desde` y sigue una línea hasta
+  //     el final de `hasta`, con gancho hacia abajo salvo `abierto`;
+  //   sin texto, un corchete de `desde` a `hasta` con ganchos hacia abajo (el
+  //     derecho, no, si `abierto`: llega hasta la nota siguiente, `sigue`).
+  // La página reserva el sitio con pageMarginTop (y spacingSystem, si hay
+  // varios sistemas). La clase `resp` oculta hasta revelar.
+  function rotulosEncima(root, filas){
+    if(!root || !root.querySelector) return;
+    const NS='http://www.w3.org/2000/svg';
+    const cab=root.querySelector('g.notehead'); if(!cab) return;
+    let esp; try{ esp=cab.getBBox().height; }catch(e){ return; }
+    const techo=new Map();                     // sistema → y más alta de su contenido
+    root.querySelectorAll('g.system').forEach(s=>{ try{ techo.set(s, s.getBBox().y); }catch(e){} });
+    const caja=id=>{ const g=root.querySelector('#'+CSS.escape(id)); if(!g) return null;
+      try{ return {g, b:(g.querySelector('g.notehead')||g).getBBox(), s:g.closest('g.system')}; }catch(e){ return null; } };
+    filas.forEach((fila, f)=>fila.forEach((it, j)=>{
+      const a=caja(it.desde), z=caja(it.hasta || it.desde); if(!a || !z || !a.s) return;
+      // el rótulo siguiente de la fila, si está en el mismo sistema: la línea se
+      // para antes de él (en la bisagra, el tramo y el siguiente comparten acorde)
+      const sig = fila[j+1] && fila[j+1].texto ? caja(fila[j+1].desde) : null;
+      const tope = sig && sig.s===a.s ? sig.b.x - esp*0.8 : Infinity;
+      const y0=techo.get(a.s); if(y0==null) return;
+      const y=y0 - esp*(1.0 + 2.6*f);           // línea base de la fila
+      const g=document.createElementNS(NS,'g');
+      g.setAttribute('class','rotulo-encima '+(it.clase||''));
+      a.s.appendChild(g);
+      const linea=d=>{ const p=document.createElementNS(NS,'path'); p.setAttribute('d',d); p.setAttribute('class','corchete');
+        p.setAttribute('stroke-width', esp*0.13); g.appendChild(p); };
+      const xz = it.abierto && it.sigue ? (caja(it.sigue)||z).b.x - esp*0.6 : z.b.x+z.b.width;
+      if(it.texto){
+        const t=document.createElementNS(NS,'text');
+        t.setAttribute('x', a.b.x); t.setAttribute('y', y); t.setAttribute('font-size', esp*2.1);
+        t.textContent=it.texto; g.appendChild(t);
+        let w=0; try{ w=t.getBBox().width; }catch(e){}
+        const x0=a.b.x+w+esp*0.7, ym=y-esp*0.65;
+        const x1=Math.min(xz, tope);
+        if(it.hasta && x1-x0>esp) linea(`M${x0} ${ym} H${x1}`+(it.abierto || x1<xz ? '' : ` V${ym+esp*1.1}`));
+      } else {
+        const ym=y-esp*0.6, h=esp*0.9;
+        linea(`M${a.b.x} ${ym+h} V${ym} H${xz}`+(it.abierto ? '' : ` V${ym+h}`));
+      }
+    }));
+  }
+
   /* ---------- rótulos bajo cada compás ---------- */
   // rotulosBajo(root, filas): tras el render, escribe bajo cada compás sus
   // rótulos de texto, centrados sobre sus notas. filas[k] = [{texto, clase}]
@@ -425,7 +475,12 @@
   //   trasRender(root, inst)   apilarCifras, circularGrados…  (opcional)
   //   respuesta(inst) → {idDeElemento: html}: se escribe al generar, oculta,
   //              para que el panel ocupe ya su sitio
-  //   audio(inst, revelado) → [{midi, at, dur}]
+  //   audio(inst, revelado, oir) → [{midi, at, dur, gain?}]   (oir: el
+  //              conmutador «Oír» activo)
+  //   audioBajo(inst) → notas del botón «Solo el bajo» (#btnBajo, que la página
+  //              pone con la clase solo-oir: solo se ve con «Oír»)
+  //   avisoOir(inst) → texto junto a «Escucha» con «Oír» (p. ej. la tonalidad,
+  //              si en la partitura era un dato)
   //   sonarAlRevelar  vuelve a tocar al revelar (con lo que se añada)
   //   verovio    opciones de initVerovio
   //   pasos(inst) → n   modo POR PASOS (opcional; la página pone un botón
@@ -471,7 +526,7 @@
     }
     async function sonar(){
       if(!inst) return;
-      try{ await tocar(cfg.audio(inst, body.classList.contains('revelado'))); }
+      try{ await tocar(cfg.audio(inst, body.classList.contains('revelado'), body.classList.contains('oir'))); }
       catch(e){ audioNoDisponible($('btnListen')); }
     }
     function nuevo(){
@@ -481,6 +536,8 @@
       const r=cfg.respuesta(inst)||{};
       Object.keys(r).forEach(id=>{ const el=$(id); if(el) el.innerHTML=r[id]; });
       $('btnReveal').disabled=false;
+      const dato=document.querySelector('.oir-aviso .oir-dato');
+      if(dato) dato.textContent = cfg.avisoOir ? (cfg.avisoOir(inst)||'') : '';
       pintarNivel();
       render();
       sonar();
@@ -529,7 +586,7 @@
       if(card){
         const aviso=document.createElement('div');
         aviso.className='oir-aviso';
-        aviso.innerHTML=ICONO_OIDO+'<span>Escucha</span>';
+        aviso.innerHTML=ICONO_OIDO+'<span>Escucha</span><span class="oir-dato"></span>';
         card.appendChild(aviso);
       }
       const b=document.createElement('button');
@@ -552,6 +609,9 @@
     $('btnReveal').onclick=revelar;
     $('btnSimilar').onclick=()=>nuevo();
     if(cfg.pasos && $('btnPaso')) $('btnPaso').onclick=avanzar;
+    if(cfg.audioBajo && $('btnBajo')) $('btnBajo').onclick=()=>{
+      if(inst) tocar(cfg.audioBajo(inst)).catch(()=>audioNoDisponible($('btnBajo')));
+    };
     $('btnListen').onclick=sonar;
 
     nuevo();                               // texto y botones funcionan ya, sin esperar a Verovio
@@ -642,7 +702,8 @@
     if(p.context.state!=='running') return;
     detener();               // por si otra llamada se coló mientras cargaba el piano
     const now=p.context.currentTime;
-    sonando = notas.map(n=>p.play(n.midi, now+(n.at||0), {duration:(n.dur!=null?n.dur:1.6)})).filter(Boolean);
+    // `gain` por nota: el volumen de cada voz (p. ej., el bajo destacado con «Oír»)
+    sonando = notas.map(n=>p.play(n.midi, now+(n.at||0), Object.assign({duration:(n.dur!=null?n.dur:1.6)}, n.gain!=null ? {gain:n.gain} : {}))).filter(Boolean);
   }
   // Para las notas de la reproducción en curso, una a una: piano.stop() recorre
   // TODAS las de la sesión (también las acabadas) y un error en una dejaría
@@ -677,6 +738,6 @@
     document.addEventListener('DOMContentLoaded', marcarEnlaceMenu);
   else marcarEnlaceMenu();
 
-  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales, rotulosBajo, rotulosEntre, lineasMovimiento,
+  global.ArmoniaEj = { $, initVerovio, apilarCifras, circularGrados, corchetesTramo, lineasAdicionales, rotulosBajo, rotulosEntre, lineasMovimiento, rotulosEncima,
                        ejercicio, tocar, detener, audioNoDisponible };
 })(window);

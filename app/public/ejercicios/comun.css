@@ -106,6 +106,11 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
    acierto y serif, como el titular de la respuesta. */
 #notation .reh.tramo text{fill:var(--ok);font-family:var(--serif);font-weight:600}
 #notation .reh.tramo path.corchete{fill:none;stroke:var(--ok)}
+/* lo que dibuja ArmoniaEj.rotulosEncima (Secuencia): tramos y corchetes de
+   módulo, como las etiquetas de tramo; la tonalidad, como el dato */
+#notation .rotulo-encima text{fill:var(--ok);font-family:var(--serif);font-weight:600}
+#notation .rotulo-encima path.corchete{fill:none;stroke:var(--ok)}
+#notation .rotulo-encima.dato text{fill:var(--ink)}
 /* Cifrado americano en segundo plano (<harm type="americano">, más pequeño
    desde el MEI): en Cadencias y Prolongación es información añadida, no lo
    que se pregunta. Donde el americano ES la respuesta (3.º UD 0), no se marca. */
@@ -247,6 +252,9 @@ button.toggle.on{background:var(--accent-soft);border-color:var(--ink);
      justify-content:center;gap:10px;color:var(--soft);font-size:17px;font-weight:600}
 .oir-aviso svg{width:44px;height:44px}
 .mascara.oir:not(.revelado) .oir-aviso{display:flex}
+.oir-aviso .oir-dato{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:20px}
+/* botones que solo tienen sentido con «Oír» (p. ej. «Solo el bajo») */
+body:not(.oir) .controls .solo-oir{display:none}
 .mascara:not(.revelado) .answer{visibility:hidden}
 
 /* La pregunta, ENCIMA de la partitura y siempre visible: primer hijo de

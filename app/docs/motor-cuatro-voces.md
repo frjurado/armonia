@@ -1,5 +1,13 @@
 # Motor a cuatro voces (`ejercicios/cuatro-voces-core.js`)
 
+> ⟶ AÑADIDO (2026-10-10, para *Secuencia*): el spec de acorde admite `baja` (grados que bajan
+> un semitono: `[7]` en menor da el VII, el III y el v de la menor natural); `realizar`
+> admite `licencia(k)` → normas sin efecto en la transición k-1 → k (en una secuencia, N7 y
+> N12; `'N12r'`, solo la resolución de una 5.ª disminuida que venía de dentro), y el
+> comprobador, `comprobar(key, acordes, voces, {licencias})`. Las licencias, en
+> `../../curriculum/Minimos-conduccion.md` (antes de §6). N15 sigue vigente dentro de la
+> secuencia.
+
 > Procede de `Generador-ejercicios.md` §5.3 (dividido el 2026-10-05). Motor compartido por todas las familias a cuatro voces; las normas y preferencias que aplica están en `../../curriculum/Minimos-conduccion.md`.
 
 ⟶ DECIDIDO: las realizaciones **no se escriben a mano** (ni siquiera «una o dos

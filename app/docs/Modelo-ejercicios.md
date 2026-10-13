@@ -45,9 +45,17 @@ y la presentación es una **máscara** sobre ella: revelar es quitar la máscara
   de oído. Si la pregunta cambia (el movimiento uniforme: «¿qué movimiento predomina?»),
   es otra consigna.
 
-Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05; corregido el 2026-10-09): *Cadencias ·
-Tipo*. No en *Bajo dado*, *Canto dado* ni *Prolongación*; tampoco, de momento, en
-*Consonancia* (ahora una cadena: clasificar de oído diez intervalos seguidos es demasiado).
+Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05; corregido el 2026-10-09 y el 2026-10-10):
+*Cadencias · Tipo*, y los tipos 1 de *Prolongación* y *Secuencia*. No en *Bajo dado* ni
+*Canto dado*; tampoco, de momento, en *Consonancia* (ahora una cadena: clasificar de oído
+diez intervalos seguidos es demasiado).
+
+**Oír un bajo dado** (2026-10-10, `familias/secuencia.md` §6): con el bajo solo falta la
+referencia tonal, así que con «Oír» suenan **las cuatro voces con el bajo destacado** por
+volumen (las superiores, a ~55 %: `gain` por nota en `ArmoniaEj.tocar`); un botón **«Solo
+el bajo»** (`#btnBajo`, clase `solo-oir`: solo se ve con «Oír») y la **tonalidad en el
+aviso** cuando en la partitura era un dato. En la página común: `audio(inst, revelado,
+oir)`, `audioBajo(inst)` y `avisoOir(inst)`.
 Lo demás, al diseñar cada material. **Se mantiene** activado de un ejercicio al siguiente
 hasta que se quita, y va en la URL (`?oir=1`, §2.5).
 

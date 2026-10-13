@@ -165,7 +165,7 @@ const CURRICULO = {
               desc:'Bajos sin cifrar con progresiones de prolongación de I o de V (bordadura y paso, con la regla de la 8.ª) y, según el tipo, cadencias (CA y SC). Se piden los acordes y la segmentación; al revelar, una realización a cuatro voces con los acordes subordinados entre paréntesis, sus alternativas y la etiqueta de cada tramo.',
               consignas:[
                 {key:'prol', label:'PROL.', title:'Prolongación', icono:'prolongacion',
-                 url:'ejercicios/prolongacion-prol.html', apuntes:['c4u0#progresiones-de-prolongación'],
+                 url:'ejercicios/prolongacion-prol.html', apuntes:['c4u0#progresiones-de-prolongación'], oir:true,
                  desc:'Dos o tres compases: una prolongación que empieza y acaba en la misma armonía. Se da la tonalidad; se piden los acordes, la armonía prolongada y la técnica.'},
                 {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
                  url:'ejercicios/prolongacion-frase.html', apuntes:['c4u0#progresiones-de-prolongación'],
@@ -178,6 +178,24 @@ const CURRICULO = {
                 'Solo tríadas: V6, VII6 e IV como acordes de bordadura o de paso; cadencias con IV o II6 y V; tonalidades mayores.',
                 'Añade las inversiones de V7 (V6/5, V4/3, V4/2), V7 y el 6/4 cadencial en la cadencia, y el modo menor (con ♯6̂ al subir de 5̂ a 7̂).',
                 'Añade los 6/4 de paso (V6/4) y de bordadura (IV6/4 sobre I, I6/4 sobre V); 16 tonalidades.'
+              ]},
+            { nombre:'Secuencia', publico:false,
+              desc:'Bajos sin cifrar con progresiones secuenciales —círculo de 5.as y romanesca, en estado fundamental o alternando la 1.ª inversión—, solas o con cadencia y prolongación. Al revelar, una realización a cuatro voces en la que el modelo se repite con la misma conducción, y la etiqueta de cada tramo y de cada módulo.',
+              consignas:[
+                {key:'sec', label:'SEC.', title:'Secuencia', icono:'secuencia',
+                 url:'ejercicios/secuencia-sec.html', apuntes:['c4u0#secuencias-diatónicas'], oir:true,
+                 desc:'Solo la secuencia, un módulo por compás. Se da la tonalidad; se piden la secuencia, su variante y los acordes.'},
+                {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
+                 url:'ejercicios/secuencia-frase.html', apuntes:['c4u0#secuencias-diatónicas'],
+                 desc:'Cuatro compases: secuencia y cadencia, CA o SC. Se piden tonalidad, acordes y tramos.'},
+                {key:'periodo', label:'PERIODO', title:'Periodo', icono:'cc8',
+                 url:'ejercicios/secuencia-periodo.html', apuntes:['c4u0#secuencias-diatónicas'],
+                 desc:'Ocho compases, … SC ‖ … CA: dos secuencias (de tipos distintos), o una prolongación y una secuencia. Se piden tonalidad, acordes y tramos.'}
+              ],
+              niveles:[
+                'Secuencias en estado fundamental, en mayor; el resto (cadencia, prolongación), solo tríadas.',
+                'Añade las variantes alternando la 1.ª inversión y el modo menor (en la secuencia, con los acordes de la menor natural), V7 y sus inversiones y el 6/4 cadencial.',
+                'Añade los 6/4 de paso y de bordadura en la prolongación; 16 tonalidades.'
               ]}
           ]},
         { id:'c4u1', n:1, titulo:'Séptimas diatónicas', familias:[] },

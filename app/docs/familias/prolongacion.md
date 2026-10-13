@@ -237,6 +237,9 @@ los reintentos (si no, la prolongación de V, con menos combinaciones válidas, 
 2 (sin V4/2 no cabe en cuatro compases). Las normas nuevas (N14, excepción de N8, N11 en
 las inversiones de V7) tienen sus casos en `tests/sensibilidad-comprobador.js` (28/28), y
 Cadencias sigue con 0 infracciones tras los cambios del motor.
+⟶ HECHO (2026-10-10): **«Oír» en el tipo 1** (*Prolongación · Prolongación*), con las
+cuatro voces y el bajo destacado, «Solo el bajo» y la tonalidad en el aviso; igual que en
+*Secuencia* (`secuencia.md` §6). Sin «Oír», como siempre: antes de revelar, solo el bajo.
 ⟶ ABIERTO: revisar a ojo y oído las realizaciones y los pesos de §6; las líneas de
 soprano preferidas se imponen bien en el tipo 1 (3̂–2̂–1̂ en `paso-asc`, 56 %) y menos en el
 periodo, donde compiten con P7 (un solo salto en toda la soprano).

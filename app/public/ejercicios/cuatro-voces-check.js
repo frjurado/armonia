@@ -54,10 +54,14 @@
     return {pasos:d, semis:s, cal, nombre:(d+1)+'.ª '+cal};
   }
 
-  function comprobar(key, acordes, voces){
+  // opts.licencias(k) → Set de normas que no se señalan en el evento k (el
+  // acorde k o la transición k-1 → k): dentro de una secuencia, N7, N10 y
+  // N12 (Minimos-conduccion.md §6, licencias de las secuencias).
+  function comprobar(key, acordes, voces, opts){
     const faltas=[];
     const n=acordes.length;
-    const f=(regla,evento,vs,texto)=>faltas.push({regla, evento, voces:vs, texto});
+    const lic=(opts && opts.licencias) || (()=>null);
+    const f=(regla,evento,vs,texto)=>{ const s=lic(evento); if(!(s && s.has(regla))) faltas.push({regla, evento, voces:vs, texto}); };
     const V = k => [0,1,2,3].map(v=>voces[v][k]);   // disposición del evento k (S,A,T,B)
 
     // Rol de cada nota en su acorde (o null si no pertenece).

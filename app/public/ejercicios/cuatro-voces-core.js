@@ -130,7 +130,9 @@
   //              sub64?, eleva?})
   //   sub64: 'paso' | 'bordadura' — 6/4 no cadencial (N14);
   //   eleva: grados de la escala que suben un semitono en ESTE acorde
-  //     (p. ej. [6] en menor: IV mayor de la melódica ascendente).
+  //     (p. ej. [6] en menor: IV mayor de la melódica ascendente);
+  //   baja: los que bajan (p. ej. [7] en menor: VII, III y v de la menor
+  //     natural, dentro de una secuencia).
   function acorde(key, spec){
     spec = Object.assign({}, spec, {inv: spec.inv||0, septima: !!spec.septima});
     const esc = escala(key);
@@ -140,7 +142,7 @@
     for(let i=0;i<n;i++){
       const deg = mod(spec.grado-1 + 2*i, 7) + 1;
       const e = esc[deg-1];
-      const alter = e.alter + ((spec.eleva||[]).includes(deg) ? 1 : 0);
+      const alter = e.alter + ((spec.eleva||[]).includes(deg) ? 1 : 0) - ((spec.baja||[]).includes(deg) ? 1 : 0);
       tones.push({deg, letter:e.letter, alter, rol:ROLES[i]});
     }
     const calidad = calidadDe(tones);
@@ -275,8 +277,12 @@
 
   // Comprueba la transición prev → cand (disposiciones) con sus acordes.
   // `path` = disposiciones anteriores (para la resolución de la 5.ª dim),
-  // `esUltimo` = cand es el último acorde. Devuelve id de norma o null.
-  function normasTransicion(prev, cand, chPrev, chCand, path, esUltimo){
+  // `esUltimo` = cand es el último acorde. `ignora`: normas con licencia en
+  // esta transición (dentro de una secuencia, N7 y N12; 'N12r', solo la
+  // resolución de una 5.ª disminuida que venía de antes). Devuelve id de
+  // norma o null.
+  function normasTransicion(prev, cand, chPrev, chCand, path, esUltimo, ignora){
+    const lic = r => !!(ignora && ignora.has(r));
     const P=prev.v, C=cand.v;
     // N11 (omisión de la 5.ª en el I final): solo tras un V7 completo
     if(cand.omision && !chCand.septima && !(esUltimo && chCand.grado===1 && chPrev.septima && prev.completo)) return 'N11';
@@ -286,17 +292,18 @@
       if(v<3 && C[v].midi < P[v+1].midi) return 'N3';
       // N12/N13: melódicas
       const m = melodica(v, P[v], C[v]);
-      if(m) return m;
-      if(esQuintaDim(P[v],C[v])){
+      if(m && !(m==='N12' && lic('N12'))) return m;
+      if(esQuintaDim(P[v],C[v]) && !lic('N12')){
         if(esUltimo) return 'N12';                        // sin resolución posible
       }
-      // 5.ª dim anterior: ahora grado conjunto en dirección contraria
       if(path.length>=2){
         const PP=path[path.length-2].v[v];
         // N15: dos saltos seguidos en la misma dirección no abarcan 7.ª ni 9.ª
+        // (sin licencia, tampoco en las secuencias)
         const d0=P[v].abs-PP.abs, d1=C[v].abs-P[v].abs, tot=Math.abs(C[v].abs-PP.abs);
         if(Math.abs(d0)>=2 && Math.abs(d1)>=2 && sgn(d0)===sgn(d1) && (tot===6 || tot===8)) return 'N15';
-        if(esQuintaDim(PP,P[v])){
+        // 5.ª dim anterior: ahora grado conjunto en dirección contraria
+        if(esQuintaDim(PP,P[v]) && !lic('N12') && !lic('N12r')){
           const dir=sgn(P[v].abs-PP.abs);
           if(!(Math.abs(C[v].abs-P[v].abs)===1 && sgn(C[v].abs-P[v].abs)===-dir)) return 'N12';
         }
@@ -316,7 +323,7 @@
       if(dS && dS===dB && (b==='P5'||b==='P8') && Math.abs(C[0].abs-P[0].abs)>1) return 'N5';
     }
     // N7: sensible
-    if(!tieneGrado(chCand,7)){
+    if(!tieneGrado(chCand,7) && !lic('N7')){
       for(let v=0;v<4;v++) if(P[v].deg===7){
         const sube = C[v].deg===1 && C[v].abs===P[v].abs+1;
         if(sube) continue;
@@ -454,6 +461,8 @@
    *         fija: {voz, alturas:[{abs,alter}…]}  — una voz dada (Canto dado),
    *         filtro(path, cand, k, acordes) → bool,
    *         puntuar(path, cand, k, acordes) → penalización extra,
+   *         licencia(k) → Set de normas sin efecto en la transición k-1 → k
+   *           (las secuencias: ver normasTransicion),
    *         mejorDe (nº de soluciones entre las que elegir por softmax; = reinicios) }
    */
   function realizar(key, acordes, opts){
@@ -473,7 +482,7 @@
       const prev = k>0 ? path[k-1] : null;
       const lista=[];
       cands[k].forEach(c=>{
-        if(prev && normasTransicion(prev, c, acordes[k-1], acordes[k], path, k===n-1)) return;
+        if(prev && normasTransicion(prev, c, acordes[k-1], acordes[k], path, k===n-1, opts.licencia ? opts.licencia(k) : null)) return;
         if(opts.filtro && !opts.filtro(path, c, k, acordes)) return;
         let pen = c.pen + (prev ? penTransicion(prev, c, acordes[k-1], acordes[k], path) : 0);
         if(opts.puntuar) pen += opts.puntuar(path, c, k, acordes);
