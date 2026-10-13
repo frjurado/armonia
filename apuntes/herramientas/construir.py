@@ -136,7 +136,7 @@ RE_EPIGRAFE = re.compile(r"^#{2,3} +(.+?)(?:\s*\{[^}]*\})?[ \t]*$", re.M)
 # escala algo mayor que en los apuntes: es para escribir encima. La caja
 # es más ancha (márgenes de 1,5 cm, _formato/ejemplos.yaml), para que un
 # ejemplo ancho no tenga que reducirse.
-ESPACIO_AULA = "3cm"
+ESPACIO_AULA = "1.5cm"
 ESCALA_AULA = 1.4    # provisional: pendiente de una prueba de impresión
 CAJA_AULA_PT = 510   # A4 (595 pt) menos 2 × 1,5 cm
 FORMATO_AULA = RAIZ / "_formato" / "ejemplos.yaml"
