@@ -85,7 +85,7 @@ const CURRICULO = {
                 {key:'bajo', label:'BAJO', title:'Bajo cifrado', icono:'cifrado',
                  url:'ejercicios/bajo-cifrado-lectura.html', apuntes:['c3u1#cifrado-de-grados'],
                  desc:'Un bajo de 5 o 6 notas con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'},
-                {key:'consonancia', title:'Consonancia', icono:'consonancia', publico:false,
+                {key:'consonancia', title:'Consonancia', icono:'consonancia',
                  url:'ejercicios/consonancia-cadena.html', apuntes:['c3u1#consonancia-y-disonancia'],
                  desc:'Una cadena a dos voces del coro, nota contra nota, con disonancias puestas a propósito: clasificar cada intervalo como consonancia perfecta, imperfecta o disonancia (la 4.ª justa, disonancia a dos voces). Puede no haber ninguna.'}
               ],
@@ -93,7 +93,7 @@ const CURRICULO = {
                 'Modo mayor (Do y Sol mayor).',
                 'Añade el modo menor (La y Re menor). Con la sensible: en Bajo cifrado, su alteración en el cifrado (♯, ♯6); en Consonancia, los aumentados y disminuidos que forma.'
               ]},
-            { nombre:'Disposición', publico:false,
+            { nombre:'Disposición',
               desc:'Tesitura, distancias, cruces y unísonos (N1–N3, P2), y la disposición de los acordes a cuatro voces: sonoridades y acordes sueltos, algunos con una falta puesta a propósito.',
               consignas:[
                 {key:'dos', title:'Entre dos voces', icono:'pareja',
@@ -179,7 +179,7 @@ const CURRICULO = {
                 'Añade las inversiones de V7 (V6/5, V4/3, V4/2), V7 y el 6/4 cadencial en la cadencia, y el modo menor (con ♯6̂ al subir de 5̂ a 7̂).',
                 'Añade los 6/4 de paso (V6/4) y de bordadura (IV6/4 sobre I, I6/4 sobre V); 16 tonalidades.'
               ]},
-            { nombre:'Secuencia', publico:false,
+            { nombre:'Secuencia',
               desc:'Bajos sin cifrar con progresiones secuenciales —círculo de 5.as y romanesca, en estado fundamental o alternando la 1.ª inversión—, solas o con cadencia y prolongación. Al revelar, una realización a cuatro voces en la que el modelo se repite con la misma conducción, y la etiqueta de cada tramo y de cada módulo.',
               consignas:[
                 {key:'sec', label:'SEC.', title:'Secuencia', icono:'secuencia',

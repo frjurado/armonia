@@ -1,7 +1,7 @@
 # Secuencia — diseño
 
-> Decidido el 2026-10-10 (con el profesor, al proponerla). ⟶ HECHO (2026-10-10), con
-> `publico:false` hasta revisarla. El modelo común
+> Decidido el 2026-10-10 (con el profesor, al proponerla). ⟶ HECHO (2026-10-10), pública
+> desde el 2026-10-14. El modelo común
 > —material, consigna, presentación, nivel; la página de ejercicio— está en
 > `../Modelo-ejercicios.md`; lo que se reutiliza de Prolongación, en `prolongacion.md`.
 
