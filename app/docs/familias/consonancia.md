@@ -2,7 +2,7 @@
 
 > Decidido el 2026-10-09 (`../../../informes/2026-10-09-plan-ud1.md`). ⟶ HECHO (fase 5b,
 > 2026-10-09): `consonancia-core.js` + `consonancia-cadena.html`, sobre la página común;
-> en el menú, 2.ª consigna de *Morfología*, con `publico:false` hasta revisarla. Lo común a las consignas de conducción de la UD 1 —faltas inyectadas, comprobador,
+> en el menú, 2.ª consigna de *Morfología*, pública desde el 2026-10-14. Lo común a las consignas de conducción de la UD 1 —faltas inyectadas, comprobador,
 > parejas del coro— está en `../motor-contrapunto.md`.
 
 Hoy en el plan: 3.º UD 1, familia *Morfología*, 2.ª consigna (tras *Bajo cifrado*).

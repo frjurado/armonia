@@ -3,7 +3,7 @@
 > Decidido el 2026-10-09 (`../../../informes/2026-10-09-plan-ud1.md`). ⟶ HECHO (fase 5c,
 > 2026-10-09): `disposicion-core.js` + `disposicion-dos-voces.html` y
 > `disposicion-cuatro-voces.html`, sobre la página común; en el menú, familia
-> *Disposición* de 3.º UD 1, con `publico:false` hasta revisarla. Lo común —faltas
+> *Disposición* de 3.º UD 1, pública desde el 2026-10-14. Lo común —faltas
 > inyectadas, comprobador general— está en `../motor-contrapunto.md`.
 
 Apuntes: c3u1 §2.1 *Coro mixto* (tesitura; distancias y disposición; cruces y unísonos).

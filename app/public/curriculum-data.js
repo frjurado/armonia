@@ -85,7 +85,7 @@ const CURRICULO = {
                 {key:'bajo', label:'BAJO', title:'Bajo cifrado', icono:'cifrado',
                  url:'ejercicios/bajo-cifrado-lectura.html', apuntes:['c3u1#cifrado-de-grados'],
                  desc:'Un bajo de 5 o 6 notas con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'},
-                {key:'consonancia', title:'Consonancia', icono:'consonancia', publico:false,
+                {key:'consonancia', title:'Consonancia', icono:'consonancia',
                  url:'ejercicios/consonancia-cadena.html', apuntes:['c3u1#consonancia-y-disonancia'],
                  desc:'Una cadena a dos voces del coro, nota contra nota, con disonancias puestas a propósito: clasificar cada intervalo como consonancia perfecta, imperfecta o disonancia (la 4.ª justa, disonancia a dos voces). Puede no haber ninguna.'}
               ],
@@ -93,7 +93,7 @@ const CURRICULO = {
                 'Modo mayor (Do y Sol mayor).',
                 'Añade el modo menor (La y Re menor). Con la sensible: en Bajo cifrado, su alteración en el cifrado (♯, ♯6); en Consonancia, los aumentados y disminuidos que forma.'
               ]},
-            { nombre:'Disposición', publico:false,
+            { nombre:'Disposición',
               desc:'Tesitura, distancias, cruces y unísonos (N1–N3, P2), y la disposición de los acordes a cuatro voces: sonoridades y acordes sueltos, algunos con una falta puesta a propósito.',
               consignas:[
                 {key:'dos', title:'Entre dos voces', icono:'pareja',
@@ -116,6 +116,19 @@ const CURRICULO = {
                    'Dos voces de una pareja del coro.',
                    'Una pareja resaltada entre las cuatro voces de una realización.'
                  ]}
+              ]},
+            { nombre:'Paralelas y directas', publico:false,
+              desc:'Encontrar las 5.as y 8.as paralelas y las directas, primero a dos voces y después a cuatro.',
+              consignas:[
+                {key:'faltas', title:'Buscar faltas', icono:'paralelas',
+                 url:'ejercicios/paralelas-directas.html',
+                 apuntes:['c3u1#quintas-y-octavas-paralelas', 'c3u1#quintas-y-octavas-directas'],
+                 desc:'Ocho sonoridades con 0–2 faltas: 5.as u 8.as paralelas (también por movimiento contrario) y, a cuatro voces, directas entre las extremas.'}
+              ],
+              niveles:[
+                'Dos voces de una pareja del coro: 5.as y 8.as paralelas.',
+                'Cuatro voces, con la pareja que se pregunta resaltada: también las directas.',
+                'Cuatro voces, sin resaltar: hay que buscar en todas las parejas.'
               ]}
           ]},
         { id:'c3u2', n:2, titulo:'Tónica y dominante', familias:[] },
@@ -152,7 +165,7 @@ const CURRICULO = {
               desc:'Bajos sin cifrar con progresiones de prolongación de I o de V (bordadura y paso, con la regla de la 8.ª) y, según el tipo, cadencias (CA y SC). Se piden los acordes y la segmentación; al revelar, una realización a cuatro voces con los acordes subordinados entre paréntesis, sus alternativas y la etiqueta de cada tramo.',
               consignas:[
                 {key:'prol', label:'PROL.', title:'Prolongación', icono:'prolongacion',
-                 url:'ejercicios/prolongacion-prol.html', apuntes:['c4u0#progresiones-de-prolongación'],
+                 url:'ejercicios/prolongacion-prol.html', apuntes:['c4u0#progresiones-de-prolongación'], oir:true,
                  desc:'Dos o tres compases: una prolongación que empieza y acaba en la misma armonía. Se da la tonalidad; se piden los acordes, la armonía prolongada y la técnica.'},
                 {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
                  url:'ejercicios/prolongacion-frase.html', apuntes:['c4u0#progresiones-de-prolongación'],
@@ -165,6 +178,24 @@ const CURRICULO = {
                 'Solo tríadas: V6, VII6 e IV como acordes de bordadura o de paso; cadencias con IV o II6 y V; tonalidades mayores.',
                 'Añade las inversiones de V7 (V6/5, V4/3, V4/2), V7 y el 6/4 cadencial en la cadencia, y el modo menor (con ♯6̂ al subir de 5̂ a 7̂).',
                 'Añade los 6/4 de paso (V6/4) y de bordadura (IV6/4 sobre I, I6/4 sobre V); 16 tonalidades.'
+              ]},
+            { nombre:'Secuencia',
+              desc:'Bajos sin cifrar con progresiones secuenciales —círculo de 5.as y romanesca, en estado fundamental o alternando la 1.ª inversión—, solas o con cadencia y prolongación. Al revelar, una realización a cuatro voces en la que el modelo se repite con la misma conducción, y la etiqueta de cada tramo y de cada módulo.',
+              consignas:[
+                {key:'sec', label:'SEC.', title:'Secuencia', icono:'secuencia',
+                 url:'ejercicios/secuencia-sec.html', apuntes:['c4u0#secuencias-diatónicas'], oir:true,
+                 desc:'Solo la secuencia, un módulo por compás. Se da la tonalidad; se piden la secuencia, su variante y los acordes.'},
+                {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
+                 url:'ejercicios/secuencia-frase.html', apuntes:['c4u0#secuencias-diatónicas'],
+                 desc:'Cuatro compases: secuencia y cadencia, CA o SC. Se piden tonalidad, acordes y tramos.'},
+                {key:'periodo', label:'PERIODO', title:'Periodo', icono:'cc8',
+                 url:'ejercicios/secuencia-periodo.html', apuntes:['c4u0#secuencias-diatónicas'],
+                 desc:'Ocho compases, … SC ‖ … CA: dos secuencias (de tipos distintos), o una prolongación y una secuencia. Se piden tonalidad, acordes y tramos.'}
+              ],
+              niveles:[
+                'Secuencias en estado fundamental, en mayor; el resto (cadencia, prolongación), solo tríadas.',
+                'Añade las variantes alternando la 1.ª inversión y el modo menor (en la secuencia, con los acordes de la menor natural), V7 y sus inversiones y el 6/4 cadencial.',
+                'Añade los 6/4 de paso y de bordadura en la prolongación; 16 tonalidades.'
               ]}
           ]},
         { id:'c4u1', n:1, titulo:'Séptimas diatónicas', familias:[] },

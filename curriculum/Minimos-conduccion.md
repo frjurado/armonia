@@ -100,6 +100,16 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | **P8** | **Perfil de la soprano:** un solo punto culminante; no más de dos veces seguidas la misma nota; **cláusula final idiomática** según el tipo de cadencia (tabla en `app/docs/familias/cadencias.md` §4). |
 | **P9** ② | Tras un salto de 4.ª o mayor, **cambio de dirección por grado conjunto**; seguir en la misma dirección es lo peor, sobre todo en la soprano. No se aplica al bajo tras un salto de 8.ª (5̂–5̂–1̂). |
 
+**Licencias dentro de una secuencia diatónica** (apuntes c4u0 §2.4; 3.º UD 6). Dentro de la
+secuencia los acordes valen por el patrón, y el modelo se repite con la misma conducción en
+todas las voces: ahí no se aplican **N7** (la sensible puede ir duplicada y no resolver),
+**N10** (tríada disminuida en estado fundamental) ni **N12** en lo que toca al tritono
+melódico (4.ª aumentada, 5.ª disminuida sin resolver). **N4 y N5 siguen vigentes**, y fuera de
+la secuencia —también en la transición que entra en ella— no cambia nada. En menor, los
+acordes de la secuencia son los de la menor natural (VII y III mayores, v menor). La app:
+`realizar(…, {licencia})` y `comprobar(…, {licencias})`, en la familia *Secuencia*
+(`app/docs/familias/secuencia.md`).
+
 ## 6. Vigencia por curso y unidad
 
 Las reglas entran cuando entra el material que las necesita, y desde entonces se exigen

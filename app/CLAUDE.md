@@ -119,7 +119,8 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
 - `ejercicios/`, un patrón por familia:
   - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
     `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
-    `Movimientos`, `Contrapunto`) con TODA la
+    `Movimientos`, `Contrapunto`, `Consonancia`, `Disposicion`,
+    `ParalelasDirectas`, `Secuencia`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
   - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
@@ -190,6 +191,11 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     página común (`pasos`, `audioPaso`, botón `#btnPaso`). Las notas llevan
     `xml:id` `n<voz>_<k>`, que es como las encuentran.
     `tests/masivo-movimientos.js`.
+  - `paralelas-directas-core.js` (`ParalelasDirectas`) — N4/N5 inyectadas a
+    dos voces (motor de contrapunto) o a cuatro (como Armónicos, cambiando
+    una nota por otra del mismo acorde); el comprobador de 4.º vigila que no
+    se cuele nada más. Reutiliza `Movimientos.toMEI` y `midis`.
+    `tests/masivo-paralelas-directas.js`.
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las
@@ -223,6 +229,22 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     (lo único que Verovio sube por encima del americano) y su corchete (abierto, sin gancho, en la bisagra) lo
     dibuja la página tras el render (`ArmoniaEj.corchetesTramo`, `comun.js`). `tests/masivo-prolongacion.js [nivel]
     [tipo] [n]` es su validación masiva.
+  - `secuencia-core.js` (`Secuencia`) — familia Secuencia de 4.º UD 0
+    (`docs/familias/secuencia.md`), sobre Prolongación (sus frases, su
+    cadencia, su ritmo, su análisis, su MEI; con `secuencia-ui.js` y
+    `window.SEC_TIPO`, como ella). La secuencia **se realiza como un modelo
+    trasladado** (filtro del motor: cada acorde, el de dos antes, bajado) y
+    con **licencias** (N7, N10, N12) que admiten el motor (`licencia`) y el
+    comprobador (`licencias`): sin pasárselas, el comprobador las señala.
+    Lo de encima de la partitura (tonalidad, tramos, corchetes de módulo) no
+    va en el MEI: lo dibuja `ArmoniaEj.rotulosEncima` en filas fijas por
+    sistema (los `<reh>` de Verovio caían a veces en otra fila o bajo el
+    americano); la página reserva el sitio con `pageMarginTop`.
+    `tests/masivo-secuencia.js [nivel] [tipo] [n]`.
+  - **«Oír» con bajo dado** (tipos 1 de Prolongación y Secuencia): las
+    cuatro voces con el bajo destacado (`gain` por nota en `tocar`), botón
+    `#btnBajo` (clase `solo-oir`) y tonalidad en el aviso; en la página
+    común, `audio(inst, revelado, oir)`, `audioBajo`, `avisoOir`.
   - `bajo-cifrado-core.js` (`BajoCifrado`) — familia Morfología de 3.º UD 1
     (`docs/familias/bajo-cifrado.md`): bajos cifrados generados con una gramática de sucesiones y
     las normas melódicas del bajo; usa el modelo de acorde de `CuatroVoces`

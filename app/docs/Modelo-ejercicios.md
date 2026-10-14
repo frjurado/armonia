@@ -45,9 +45,17 @@ y la presentación es una **máscara** sobre ella: revelar es quitar la máscara
   de oído. Si la pregunta cambia (el movimiento uniforme: «¿qué movimiento predomina?»),
   es otra consigna.
 
-Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05; corregido el 2026-10-09): *Cadencias ·
-Tipo*. No en *Bajo dado*, *Canto dado* ni *Prolongación*; tampoco, de momento, en
-*Consonancia* (ahora una cadena: clasificar de oído diez intervalos seguidos es demasiado).
+Dónde se ofrece «Oír» ⟶ DECIDIDO (2026-10-05; corregido el 2026-10-09 y el 2026-10-10):
+*Cadencias · Tipo*, y los tipos 1 de *Prolongación* y *Secuencia*. No en *Bajo dado* ni
+*Canto dado*; tampoco, de momento, en *Consonancia* (ahora una cadena: clasificar de oído
+diez intervalos seguidos es demasiado).
+
+**Oír un bajo dado** (2026-10-10, `familias/secuencia.md` §6): con el bajo solo falta la
+referencia tonal, así que con «Oír» suenan **las cuatro voces con el bajo destacado** por
+volumen (las superiores, a ~55 %: `gain` por nota en `ArmoniaEj.tocar`); un botón **«Solo
+el bajo»** (`#btnBajo`, clase `solo-oir`: solo se ve con «Oír») y la **tonalidad en el
+aviso** cuando en la partitura era un dato. En la página común: `audio(inst, revelado,
+oir)`, `audioBajo(inst)` y `avisoOir(inst)`.
 Lo demás, al diseñar cada material. **Se mantiene** activado de un ejercicio al siguiente
 hasta que se quita, y va en la URL (`?oir=1`, §2.5).
 
@@ -338,9 +346,9 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
 **Comunes**
 - [x] ~~Página común (§2)~~ → hecha, con todo lo publicado migrado salvo *Armaduras*,
       que solo toma la pregunta visible (2026-10-06).
-- [ ] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
-      fase 5): Consonancia, Disposición y Movimientos, hechas; falta *Paralelas y
-      directas* (5e).
+- [x] Migrar a la página común las familias ocultas de 3.º UD 1 (al rediseñarlas,
+      fase 5) → hecho (2026-10-10): Consonancia, Disposición, Movimientos y Paralelas
+      y directas, todas sobre la página común.
 - [x] ~~Un solo esquema, menú en filas, renombrado, enlaces con los apuntes (§3, §6)~~
       → hechos (2026-10-06).
 - [x] ~~«Oír» y `?oir` (§1.3, §2.5)~~ → hechos (2026-10-09), en *Cadencias · Tipo*.
@@ -355,10 +363,8 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
       revisar niveles en clase (`familias/cadencias.md` §3, §2, §8).
 - [ ] *Prolongación*: revisar a ojo y oído realizaciones y pesos de la soprano
       (`familias/prolongacion.md` §6).
-- [ ] **La UD 1 de 3.º** (fase 5; plan en `../../informes/2026-10-09-plan-ud1.md`):
-      ~~5a motor (`motor-contrapunto.md`)~~ · ~~5b *Consonancia*
-      (`familias/consonancia.md`)~~ · ~~5c *Disposición* (`familias/disposicion.md`)~~
-      (hechos, 2026-10-09) · 5d *Movimientos*
-      (`familias/movimientos.md`) · 5e *Paralelas y directas*
-      (`familias/paralelas-directas.md`). Canto y oído, aparcados.
+- [x] ~~**La UD 1 de 3.º** (fase 5)~~ → hecha (2026-10-10,
+      `../../informes/2026-10-10-fase5-ud1.md`): motor, *Consonancia*, *Disposición*,
+      *Movimientos*, *Paralelas y directas*; ocultas hasta revisarlas en clase. Canto y
+      oído, aparcados.
 - [ ] Motor: revisar penalizaciones a ojo y oído (`motor-cuatro-voces.md`).

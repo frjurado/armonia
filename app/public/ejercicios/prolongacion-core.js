@@ -607,7 +607,9 @@
   //     paréntesis) y filas de alternativas (n="2", "3"…, type="alt");
   //   ocultas: índices de voz como <space> (Bajo: [0,1,2]);
   //   dato: texto sobre el primer tiempo (<reh type="dato">, ver Cadencias);
-  //   tramos: etiqueta de cada tramo sobre su primer acorde, como <reh
+  //   tramos: true (los de la estructura, con su etiqueta) o una lista
+  //     [{desde, txt}]; la etiqueta de cada tramo va sobre su primer acorde,
+  //     como <reh
   //     type="tramo" xml:id="tramo{i}"> (el id lo usa la página para dibujar
   //     el corchete hasta el final del tramo, ArmoniaEj.corchetesTramo).
   //     Orden de arriba abajo: tonalidad (todo el ejercicio), tramo (una
@@ -641,7 +643,9 @@
         figs.map((f,i)=>`<rend rend="${i===0?'sup':'sub'}">${f}</rend>`).join('')+(paren?'<rend>)</rend>':'');
     };
     const inicioTramo={};
-    (opts.tramos ? inst.est.tramos : []).forEach((t,i)=>{ (inicioTramo[t.desde]=inicioTramo[t.desde]||[]).push({i, txt:etiquetaTramo(t)}); });
+    const listaTramos = Array.isArray(opts.tramos) ? opts.tramos
+      : opts.tramos ? inst.est.tramos.map(t=>({desde:t.desde, txt:etiquetaTramo(t)})) : [];
+    listaTramos.forEach((t,i)=>{ (inicioTramo[t.desde]=inicioTramo[t.desde]||[]).push({i, txt:t.txt}); });
     const n1 = inst.est.frases.length>1 ? inst.est.frases[0].hasta : null;
     const measures=inst.ritmo.compases.map((m,i)=>{
       const last = i===inst.ritmo.compases.length-1;
@@ -685,12 +689,14 @@
 
   /* ---------- audio ---------- */
   const NEGRA_S = 0.6;
+  // opts.voces: las que suenan (por defecto, las cuatro); opts.ganancia: volumen
+  // por voz (con «Oír», el bajo destacado: Secuencia y Prolongación, tipo 1)
   function midis(inst, opts){
-    const vs=(opts&&opts.voces)||[0,1,2,3];
+    const vs=(opts&&opts.voces)||[0,1,2,3], g=opts&&opts.ganancia;
     const out=[]; let t=0;
     inst.ritmo.durs.forEach((d,k)=>{
       const seg=ML.durTokenValue(d)*4*NEGRA_S;
-      vs.forEach(v=>out.push({midi:inst.voces[v][k].midi, at:t, dur:seg*0.95}));
+      vs.forEach(v=>out.push(Object.assign({midi:inst.voces[v][k].midi, at:t, dur:seg*0.95}, g ? {gain:g[v]} : {})));
       t+=seg;
     });
     return out;
@@ -701,7 +707,9 @@
     generar, toMEI, midis, MAX_NIVEL, TIPOS, CADENCIAS,
     // gramática y análisis (para pruebas)
     CELULAS, CEL, SOPRANO, parRepetido, estructura, ritmo, ritmosFrase, analizar, acordeDe, acordesDe, ganchos,
-    tonalidades, relativas, resumen, etiquetaTramo, spec
+    tonalidades, relativas, resumen, etiquetaTramo, spec,
+    // para Secuencia, que reutiliza sus frases de prolongación y su cadencia
+    frase, cadenciaTras, detalleTramo, compasDe, NEGRA_S
   };
   if (esNode) module.exports = api;
   else global.Prolongacion = api;

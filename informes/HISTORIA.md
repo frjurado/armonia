@@ -35,6 +35,7 @@ septiembre (14 commits) y el 16 (9).
 | 8. La página común | 6 oct | Pregunta arriba, nivel visible, revelado por máscara sin movimiento, en todo lo publicado |
 | 9. Estructura | 6 oct | Nombres por material, un solo esquema, menú en filas, enlaces apuntes ↔ ejercicios |
 | 10. Plan de la UD 1 y UD 0 | 9 oct | Plan completo de la UD 1; «Oír»; Intervalos y Acordes en pentagrama doble |
+| 11. La UD 1 | 9–10 oct | Comprobador general; Consonancia, Disposición, Movimientos, Paralelas y directas (ocultas, para revisar) |
 
 ---
 
@@ -246,6 +247,20 @@ será la UD 1 entera. La fase 4 ([informe](2026-10-09-fase4-ud0.md)) trae «Oír
 página común, funde los dos generadores de intervalos y pone Intervalos y Acordes en
 pentagrama doble y sin niveles, con un criterio para los aumentados y disminuidos: solo
 los que aparecen en la escala.
+
+## Fase 11 — La UD 1 (9–10 de octubre)
+
+La UD 1 de 3.º entera, en cinco pasos ([informe](2026-10-10-fase5-ud1.md)): primero lo
+común —un **comprobador general** de una a cuatro voces sin acordes, que da la respuesta
+de todos los ejercicios, y el motor de contrapunto con parejas reales del coro y
+preferencias como pesos—; después, una familia tras otra: *Consonancia*, *Disposición*,
+*Movimientos* (melódicos y armónicos) y *Paralelas y directas*, con niveles que van de dos
+voces a una pareja resaltada entre cuatro y a cuatro sin resaltar. La revisión de
+*Disposición* en clase sacó lo más visible de la fase: los rótulos de respuesta no
+pueden ir como `<harm>` (Verovio ensancha el compás y delata la falta), así que la
+página común los dibuja aparte. De paso entra una regla en los mínimos, **N15** (la suma
+de saltos), y la página común gana un modo por pasos. Todo queda oculto
+(`publico:false`) hasta que el profesor lo revise.
 
 ---
 

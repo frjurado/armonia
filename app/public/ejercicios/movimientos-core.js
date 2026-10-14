@@ -272,15 +272,17 @@
         + `<section><measure right="end"><staff n="1"><layer n="1">${notas}</layer></staff>`
         + `<reh place="above" staff="1" tstamp="1" type="dato">${may(inst.rol)}</reh></measure></section>` + pie;
     }
-    // armónicos: la pareja en tinta; en el nivel 2, las otras dos voces en gris
-    const capa = (v,n) => `<layer n="${n}">${inst.voces[v].map((p,k)=>nt(p, idNota(v,k), inst.sel.includes(v)?'':'gris')).join('')}</layer>`;
+    // armónicos (y Paralelas y directas, que lo reutiliza): dos voces, con el
+    // nombre de la pareja como dato; o cuatro (pent 'satb'), con las dos que no
+    // se preguntan en gris si hay pareja resaltada (`sel`)
+    const capa = (v,n) => `<layer n="${n}">${inst.voces[v].map((p,k)=>nt(p, idNota(v,k), !inst.sel || inst.sel.includes(v) ? '' : 'gris')).join('')}</layer>`;
     const vacia = `<layer n="1">${'<space dur="2"/>'.repeat(N)}</layer>`;
     let staves;
     if(inst.pent==='satb') staves = `<staff n="1">${capa(0,1)}${capa(1,2)}</staff><staff n="2">${capa(2,1)}${capa(3,2)}</staff>`;
     else if(inst.pent==='doble') staves = `<staff n="1">${capa(0,1)}</staff><staff n="2">${capa(1,1)}</staff>`;
     else if(inst.pent==='sol') staves = `<staff n="1">${capa(0,1)}${capa(1,2)}</staff><staff n="2">${vacia}</staff>`;
     else staves = `<staff n="1">${vacia}</staff><staff n="2">${capa(0,1)}${capa(1,2)}</staff>`;
-    const dato = inst.nivel===1 ? `<reh place="above" staff="1" tstamp="1" type="dato">${may(inst.roles[0])} y ${inst.roles[1]}</reh>` : '';
+    const dato = inst.pent!=='satb' ? `<reh place="above" staff="1" tstamp="1" type="dato">${may(inst.roles[0])} y ${inst.roles[1]}</reh>` : '';
     return cabecera(inst, `<staffGrp symbol="brace" bar.thru="true"><staffDef n="1" lines="5" ${CLAVES.sol}/><staffDef n="2" lines="5" ${CLAVES.fa}/></staffGrp>`)
       + `<section><measure right="end">${staves}${dato}</measure></section>` + pie;
   }
@@ -315,7 +317,7 @@
     return out;
   }
 
-  const api = { inyectar, generarMelodico, generarArmonico, toMEI, dibujo, midis, midisPaso, recuento, lineaCorrecta,
+  const api = { inyectar, idNota, generarMelodico, generarArmonico, toMEI, dibujo, midis, midisPaso, recuento, lineaCorrecta,
                 tramo, N, MAX_NIVEL_ARM, PAREJAS, VOCES, REGLAS_MEL };
   if (esNode) module.exports = api;
   else global.Movimientos = api;
