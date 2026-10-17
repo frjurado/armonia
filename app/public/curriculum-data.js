@@ -103,7 +103,7 @@ const CURRICULO = {
                  url:'ejercicios/disposicion-cuatro-voces.html', apuntes:['c3u1#coro-mixto'],
                  desc:'Tres tríadas a cuatro voces: su disposición (cerrada, abierta o mixta) y las faltas de tesitura, distancia o cruce, si las hay.'}
               ]},
-            { nombre:'Movimientos', publico:false,
+            { nombre:'Movimientos',
               desc:'Cómo se mueve cada voz por sí sola (melódicos) y dos voces una respecto de la otra (armónicos).',
               consignas:[
                 {key:'melodicos', title:'Melódicos', icono:'melodia',

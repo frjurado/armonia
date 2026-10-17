@@ -1,7 +1,7 @@
 # Movimientos — diseño
 
 > Decidido el 2026-10-09 (`../../../informes/2026-10-09-plan-ud1.md`; los detalles, al
-> empezar la fase 5d). ⟶ HECHO (fase 5d, 2026-10-09), con `publico:false` hasta revisarla.
+> empezar la fase 5d). ⟶ HECHO (fase 5d, 2026-10-09), pública desde el 2026-10-17.
 > Lo común —faltas inyectadas, comprobador general, parejas del coro, pareja resaltada—
 > está en `../motor-contrapunto.md`.
 
