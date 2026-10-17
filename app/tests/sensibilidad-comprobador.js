@@ -10,7 +10,8 @@ function tok(s){ const m=/^([a-g])(s*|f*)('*|,*)$/.exec(s); const alter=m[2].sta
 const voces=str=>str.split('|').map(v=>v.trim().split(/\s+/).map(tok));
 const C={tonic:'C',sig:0,mode:'major'}, Am={tonic:'A',sig:0,mode:'minor'};
 const ac=(k,ids)=>ids.map(id=>CV.acorde(k,{I:{grado:1},IV:{grado:4},V:{grado:5},V7:{grado:5,septima:true},V65:{grado:5,inv:1,septima:true},I64:{grado:1,inv:2,cadencial64:true},VI:{grado:6},II6:{grado:2,inv:1},
-  I6:{grado:1,inv:1},V43:{grado:5,inv:2,septima:true},V64p:{grado:5,inv:2,sub64:'paso'},IV64b:{grado:4,inv:2,sub64:'bordadura'}}[id]));
+  I6:{grado:1,inv:1},V43:{grado:5,inv:2,septima:true},V64p:{grado:5,inv:2,sub64:'paso'},IV64b:{grado:4,inv:2,sub64:'bordadura'},
+  II65:{grado:2,inv:1,septima:true},II7:{grado:2,septima:true}}[id]));
 const casos=[
  ['limpio',            C, ['I','IV','V7','I'], "e' f' d' c'|c' c' b g|g a f e|c f, g, c", []],
  ['N4 8.as S–B',       C, ['I','IV'],          "c'' f''|e' a'|g c'|c f", ['N4']],
@@ -43,6 +44,10 @@ const casos=[
  ['limpio 6/4 de bordadura', C, ['I','IV64b','I'], "g' a' g'|e' f' e'|c' c' c'|c c c", []],
  ['N14 salto hacia el 6/4', C, ['I','V64p','I6'], "c'' g' g'|e' d' e'|g b c'|c d e", ['N14']],
  ['N14 bajo del paso vuelve', C, ['I','V64p','I'], "e' d' e'|c' b c'|g g g|c d c", ['N14']],
+ // N16: preparación de la 7.ª diatónica (4.º UD 1)
+ ['limpio I–II6/5–V–I, 7.ª por nota común', C, ['I','II65','V','I'], "c'' c'' b' c''|g' a' g' g'|e' d' d' e'|c f g c", []],
+ ['limpio II6–II7, 7.ª de paso 8–7', C, ['II6','II7','V7','I'], "d'' c'' b' c''|a' a' g' g'|f' f' f' e'|f d g c", []],
+ ['N16 7.ª por salto',  C, ['I','II65','V','I'], "e'' c'' b' c''|g' a' g' g'|c' d' d' e'|c f g c", ['N16']],
 ];
 let ok=0;
 casos.forEach(([nombre,key,ids,v,esperado])=>{

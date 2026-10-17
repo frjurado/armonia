@@ -4,6 +4,12 @@
 
 Hoy en el menú: 4.º UD 0, familia *Prolongación* (consignas Prolongación, Frase, Periodo).
 
+⟶ AÑADIDO (2026-10-17): `generar(tipo, nivel, {perfil})` acepta un **perfil** que cambia la
+PD de la cadencia (al generar y al analizar), admite las células con 7.ª (`II42`, `IV65`,
+marcadas `septima:true`) y pone una condición a la estructura. Sin perfil, nada cambia. Lo
+usa *7.ª diatónica · Bajo dado* (`septimas.md` §5). La regla 3 del ritmo (§5) admite además
+tres acordes en un compás con los dos subordinados seguidos de una célula.
+
 Segunda familia de la UD 0 de 4.º, sobre el mismo motor (`../motor-cuatro-voces.md`) y los mismos mínimos. Todo
 son **bajos sin cifrar**, y a las cadencias se suma la **progresión de prolongación**
 (apuntes c4u0 §2.2–2.3): prolongaciones de **I** o de **V** hechas con la regla de la 8.ª,

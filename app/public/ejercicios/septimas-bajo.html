@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · 4.º · Unidad 1 — Bajo dado</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="mini-lilypond-parser.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="cuatro-voces-core.js"></script>
+<script src="cadencias-core.js"></script>
+<script src="prolongacion-core.js"></script>
+<script src="septimas-core.js"></script>
+<script src="../curriculum-data.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+<style>
+  /* Respuesta: tonalidad y forma; en el detalle, cada tramo y cada 7.ª. Los
+     acordes no se repiten: al revelar salen cifrados en la partitura. */
+  .answer .q{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  .answer .q .ton{font-size:.8em}
+  .answer .q .sep-q{color:var(--soft);font-weight:400}
+  .answer .tramos{margin:6px 0 0;padding-left:1.2em}
+</style>
+</head>
+<body>
+<header>
+  <h1>Bajo dado</h1>
+  <span class="sub">7.ª diatónica · Unidad 1 · 4.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level"></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <p class="pregunta">¿En qué <b>tonalidad</b> estás? Armoniza el bajo con un <b>II</b> o un <b>IV con 7.ª</b>. ¿Dónde se <b>prolonga</b> y dónde está la <b>cadencia</b>?</p>
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnReveal" class="primary" title="Mostrar la respuesta"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" title="Otro ejercicio del mismo nivel"><span class="ic">↻</span>Otro</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Se da <b>solo el bajo</b> de una frase de cuatro compases: una prolongación
+     y una cadencia, <b>CA</b> o <b>SC</b>. Di la tonalidad y armoniza el bajo con al menos un
+     <b>II o IV con 7.ª</b> (II7, II6/5, IV7… y, desde el nivel 2, también II4/2 o IV6/5
+     dentro de la prolongación). La 7.ª se prepara como nota común y se resuelve bajando por
+     grado, en la misma voz. Al revelar se dibuja <b>una</b> realización. La 7.ª, su
+     preparación y su resolución van en el color de la respuesta, con la ligadura. Los acordes
+     subordinados van <b>entre paréntesis</b>. Debajo, en gris, los que también habrían cabido
+     con esa nota del bajo (en la cadencia, solo los que llevan 7.ª). Encima, dónde empieza
+     cada tramo.</p>
+  </details>
+</main>
+
+<script>
+/* UI — Bajo dado (7.ª diatónica): una frase de Prolongación (tipo 2) con el
+   perfil de séptimas (septimas-core.js); lo común de la página, en
+   ArmoniaEj.ejercicio (comun.js). Antes de revelar se ve y suena SOLO el
+   bajo. */
+ArmoniaEj.ejercicio({
+  maxNivel: Septimas.MAX_NIVEL,
+  generar: n => Septimas.generarFrase(n),
+  mei: inst => Septimas.toMEIFrase(inst, {mascara:true, ocultas:[0,1,2], cifrados:true, tramos:true}),
+  trasRender: (root, inst) => {
+    ArmoniaEj.apilarCifras(root);
+    const tr=inst.est.tramos;
+    ArmoniaEj.corchetesTramo(root, tr.map((t,i)=>({etiqueta:'tramo'+i, hasta:'s'+t.hasta,
+      abierto: !!tr[i+1] && tr[i+1].desde===t.hasta})));
+  },
+  respuesta: inst => {
+    const a=inst.json.answer, sep='<span class="sep-q">·</span>';
+    const lineas=a.tramos.map(t=>`<li><b>${t.compases}</b> · ${t.texto}</li>`)
+      .concat(Septimas.explicacionFrase(inst).map(t=>`<li>${t}</li>`));
+    return {
+      ansQ: `<span class="ton">${a.tonalidad}</span>${sep}<span>${a.resumen}</span>`,
+      ansDet: '<ul class="tramos">' + lineas.join('') + '</ul>'
+    };
+  },
+  audio: (inst, revelado) => Prolongacion.midis(inst, revelado ? null : {voces:[3]}),
+  sonarAlRevelar: true,
+  verovio: {scale:60, pageWidth:1000}
+});
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    Módulo AISLADO: recibe tonalidad + secuencia de acordes y
    devuelve una realización a cuatro voces que cumple las NORMAS
-   (N1–N13) y optimiza las PREFERENCIAS (P1–P10) de
+   (N1–N16) y optimiza las PREFERENCIAS (P1–P12) de
    `curriculum/Minimos-conduccion.md`. No sabe nada de cadencias,
    ritmo, niveles, MEI ni UI: eso es de cada familia
    (`cadencias-core.js`, …). Diseño en
@@ -154,9 +154,11 @@
     const romano = ROMANOS[spec.grado-1] + cifras;
     const root = tones[0], bassT = tones[inv];
     const cal = {mayor:'',menor:'m',dim:'°',aum:'+',otra:'?'}[calidad.triada];
-    let americano = root.letter + SYM(root.alter) + cal;
+    // el semidisminuido lleva solo «ø7» (Bø7, no B°ø7)
+    let americano = root.letter + SYM(root.alter) + (spec.septima && calidad.triada==='dim' && calidad.septima!=='dim' ? '' : cal);
     if(spec.septima) americano += (calidad.triada==='dim' && calidad.septima==='dim') ? '7'
-                                : (calidad.triada==='dim') ? 'ø7' : '7';
+                                : (calidad.triada==='dim') ? 'ø7'
+                                : (calidad.septima==='mayor') ? 'maj7' : '7';
     if(inv>0) americano += '/' + bassT.letter + SYM(bassT.alter);
     return {
       id: spec.id || romano, grado: spec.grado, inv, septima: !!spec.septima,
@@ -343,6 +345,16 @@
       if(!baja && !queda && !sube) return 'N8';
       if(baja){
         for(let u=0;u<4;u++) if(u!==v && P[u].rol==='F' && C[u].deg===C[v].deg && P[u].abs!==C[u].abs) return 'N8';
+      }
+    }
+    // N16: 7.ª diatónica (séptima que no es de dominante) preparada en la
+    // misma voz: por nota común o, sobre el mismo grado (II–II7), como paso
+    // descendente 8–7. Nunca por salto ni por grado ascendente.
+    if(chCand.septima && chCand.grado!==5){
+      for(let v=0;v<4;v++) if(C[v].rol==='7'){
+        const comun = P[v].abs===C[v].abs && P[v].alter===C[v].alter;
+        const paso = chPrev.grado===chCand.grado && P[v].rol==='F' && P[v].abs===C[v].abs+1;
+        if(!comun && !paso) return 'N16';
       }
     }
     // N9: 6/4 cadencial → V (el bajo se mantiene o salta de 8.ª)

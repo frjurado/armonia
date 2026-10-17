@@ -3,7 +3,7 @@
    ------------------------------------------------------------
    `comprobar(key, acordes, voces)` revisa una realización SATB
    cualquiera y devuelve la lista de infracciones de las NORMAS
-   de `curriculum/Minimos-conduccion.md` (N1–N14, más la
+   de `curriculum/Minimos-conduccion.md` (N1–N16, más la
    pertenencia de cada nota al acorde y las duplicaciones
    prohibidas). Cada infracción: {regla, evento, voces, texto}.
 
@@ -178,6 +178,14 @@
           if(r[u].deg===r[v].deg && d[u].abs!==a[u].abs) f('N8',k,[u],NOMBRE_VOZ[u]+': la fundamental dobla la resolución de la 7.ª');
         }
       }
+      // N16 preparación de la 7.ª diatónica (no de dominante): nota común en la
+      // misma voz, o paso descendente desde la fundamental del mismo grado
+      if(ch.septima && ch.grado!==5) for(let v=0;v<4;v++){
+        if(!r[v] || r[v].rol!=='7') continue;
+        const comun = a[v].abs===d[v].abs && a[v].alter===d[v].alter;
+        const paso = chA.grado===ch.grado && ra[v] && ra[v].rol==='F' && a[v].abs===d[v].abs+1;
+        if(!comun && !paso) f('N16',k,[v],NOMBRE_VOZ[v]+': la 7.ª del '+ch.romano+' no está preparada');
+      }
       // N9 6/4 cadencial
       if(chA.cadencial64){
         if(ch.grado!==5) f('N9',k,[],'el 6/4 cadencial no va a V');
@@ -204,6 +212,7 @@
       }
     }
     if(n>0 && acordes[0].sub64) f('N14',0,[],'6/4 de '+acordes[0].sub64+' sin acorde que lo preceda');
+    if(n>0 && acordes[0].septima && acordes[0].grado!==5) f('N16',0,[],'la 7.ª del '+acordes[0].romano+' no puede prepararse: es el primer acorde');
     return faltas;
   }
 

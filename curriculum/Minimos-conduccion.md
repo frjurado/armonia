@@ -60,11 +60,12 @@
 | Id | Regla |
 |----|-------|
 | **N7** | **Sensible (7̂).** Nunca duplicada. En voz **extrema**, sube a 1̂. En voz **interna**, en V(7) → I puede bajar a 5̂ para completar la tónica, **solo si el 1̂ de su resolución lo da la voz inmediatamente superior**. En V(7) → VI (cadencia rota) sube **siempre**. Si el acorde siguiente también contiene la sensible (V → V7), no se exige resolución. |
-| **N8** | **7.ª del acorde de dominante.** Nunca duplicada. **Resuelve descendiendo por grado** (4̂ → 3̂) en el acorde siguiente, en la misma voz; o se **mantiene** como nota común si el acorde siguiente la contiene (V7 → IV6). Complemento: si la 7.ª baja 4̂ → 3̂, **ninguna otra voz baja 5̂ → 3̂** (la fundamental no dobla la resolución). Excepción: en **V4/3 → I6**, con el bajo subiendo ②–③, la 7.ª puede **subir por grado** a 5̂ (10.as paralelas con el bajo). |
+| **N8** | **7.ª de un acorde de séptima** (desde 4.º UD 1, también las diatónicas: apuntes c4u1 §1.2). Nunca duplicada. **Resuelve descendiendo por grado** (en el V7, 4̂ → 3̂) en el acorde siguiente, en la misma voz; o se **mantiene** como nota común si el acorde siguiente la contiene (V7 → IV6). Complemento: si la 7.ª baja 4̂ → 3̂, **ninguna otra voz baja 5̂ → 3̂** (la fundamental no dobla la resolución). Excepción: en **V4/3 → I6**, con el bajo subiendo ②–③, la 7.ª puede **subir por grado** a 5̂ (10.as paralelas con el bajo). |
 | **N9** | **6/4 cadencial** (I6/4 → V). El bajo (5̂) va **duplicado** y en la V **se mantiene o salta de 8.ª**; la 6.ª y la 4.ª (1̂ y 3̂) **bajan por grado** a 7̂ y 2̂ en las **mismas voces**; cae en parte métrica **más fuerte** que la V que la sigue; en compás **ternario** se admite también el 6/4 en el **2.º tiempo** y la V en el 3.º. |
 | **N10** | **Tríadas disminuidas** (II en menor, VII) **solo en 1.ª inversión**. |
-| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: V7 **en estado fundamental** puede omitir la 5.ª (fundamental duplicada) —sus inversiones van **siempre completas**—; el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada). |
+| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: un acorde de séptima **en estado fundamental** (el V7 y, desde 4.º UD 1, el II7 y el IV7) puede omitir la 5.ª (fundamental duplicada) —sus inversiones van **siempre completas**—; el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada). |
 | **N14** | **6/4 de paso y de bordadura.** El bajo va **duplicado**. **De paso**: el bajo llega y sale **por grado conjunto en la misma dirección** (I–V6/4–I6). **De bordadura**: el bajo **se mantiene** antes, durante y después (I–IV6/4–I, V–I6/4–V). En los dos, las voces superiores entran y salen del 6/4 **por grado conjunto o nota común**, y el 6/4 cae en **parte débil** (lo garantiza el ritmo de cada familia, como en N9). |
+| **N16** | **Preparación de la 7.ª diatónica** (toda séptima que no sea de dominante: II7, IV7…). La 7.ª se **prepara** en la misma voz: por **nota común** (ya suena en el acorde anterior, como consonancia) o como **nota de paso descendente** desde la fundamental del mismo grado (II–II7: 8–7). **Nunca por salto ni por grado ascendente.** Con N8, la 7.ª se prepara y se resuelve en la misma voz (PRMV, apuntes c4u1 §1.2). |
 | **P6** | La 7.ª de V7 se toma por **nota común o grado conjunto**. |
 
 ## 4. Duplicaciones
@@ -86,6 +87,8 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | V6 | fundamental | 5.ª | el bajo (sensible) |
 | VII6 | el bajo (3.ª del acorde, 2̂) | 5.ª | fundamental (sensible) |
 | V7 | completo, sin duplicar | fundamental (omitiendo la 5.ª) | 3.ª, 7.ª |
+| II7, IV7 en fundamental | completo, sin duplicar | fundamental (omitiendo la 5.ª) | 3.ª, 7.ª |
+| II6/5, II4/3, II4/2, IV6/5 | **completos** (N11) | — | cualquiera |
 | V6/5, V4/3, V4/2 | **completos** (N11) | — | cualquiera |
 | I final tras V7 completo | fundamental (triple, sin 5.ª) | completo (sensible interna baja a 5̂) | — |
 
@@ -99,6 +102,14 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | **P7** ② | Voces superiores preferentemente por **grado conjunto y notas comunes**; en la soprano, a lo sumo **un salto** por fragmento cadencial, y mejor si va en **movimiento contrario al bajo**. |
 | **P8** | **Perfil de la soprano:** un solo punto culminante; no más de dos veces seguidas la misma nota; **cláusula final idiomática** según el tipo de cadencia (tabla en `app/docs/familias/cadencias.md` §4). |
 | **P9** ② | Tras un salto de 4.ª o mayor, **cambio de dirección por grado conjunto**; seguir en la misma dirección es lo peor, sobre todo en la soprano. No se aplica al bajo tras un salto de 8.ª (5̂–5̂–1̂). |
+
+⟶ ABIERTO (2026-10-17, lo señaló el usuario): **saltos sumados mayores que la 8.ª**. Hoy
+nada impide dos saltos seguidos en la misma dirección que abarquen más de una 8.ª: N15 solo
+veta la 7.ª y la 9.ª, y P9 deja libre el bajo tras un salto de 8.ª. Ejemplo visto en *7.ª
+diatónica* (bajo Do4–Si3–Mi3–Mi2–La2): Si3–Mi3–Mi2, una 5.ª y una 8.ª descendentes, suma una
+12.ª (una 13.ª desde el Do). Se tratará más adelante, junto con otros detalles melódicos que
+el usuario tiene apuntados; probablemente, una norma que limite a la 8.ª el ámbito de dos
+saltos seguidos en la misma dirección (con el salto de 8.ª del bajo como caso aparte).
 
 **Licencias dentro de una secuencia diatónica** (apuntes c4u0 §2.4; 3.º UD 6). Dentro de la
 secuencia los acordes valen por el patrón, y el modelo se repite con la misma conducción en
@@ -123,6 +134,13 @@ siempre. La app aplica, en cada familia, las vigentes en su unidad.
 | 3.º UD 4 (V7, 6/4 cadencial, 6/4 de paso) | + N8, N9, N14 | + P6, P12 |
 | 3.º UD 5 (VI, II, rota) | (duplicaciones §4 completas) | — |
 | 4.º UD 0 (repaso) | todas | todas |
+| 4.º UD 1 (séptimas diatónicas) | + N16 (N8 y N11, ampliadas a las séptimas diatónicas) | — |
+
+⟶ AÑADIDA (2026-10-17): **N16**, preparación de la 7.ª diatónica, y N8 y N11 ampliadas a
+las séptimas diatónicas, como proponían los apuntes (c4u1 §1.2). La aplican el motor y el
+comprobador a cuatro voces (familia *7.ª diatónica*, `app/docs/familias/septimas.md`). La
+duplicación de la 3.ª en el II7 incompleto (apuntes c4u1 §1.2, «menos a menudo») no se
+admite de momento.
 
 ⟶ PROVISIONAL (2026-09-30): N14 entra en 3.º UD 4, con el 6/4 de paso; el plan pone el de
 bordadura en UD 5. Revisar cuando se llegue a esas unidades.

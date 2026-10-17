@@ -8,6 +8,11 @@
 > `../../curriculum/Minimos-conduccion.md` (antes de §6). N15 sigue vigente dentro de la
 > secuencia.
 
+> ⟶ AÑADIDO (2026-10-17, para *7.ª diatónica*, `familias/septimas.md`): **N16** (la 7.ª
+> diatónica, preparada por nota común o paso 8–7) en el realizador y en el comprobador; N8 y
+> N11 ya valían para cualquier séptima. Americano: `maj7` para la 7.ª mayor (`Fmaj7`) y `ø7`
+> sin `°` en el semidisminuido (`Bø7`).
+
 > Procede de `Generador-ejercicios.md` §5.3 (dividido el 2026-10-05). Motor compartido por todas las familias a cuatro voces; las normas y preferencias que aplica están en `../../curriculum/Minimos-conduccion.md`.
 
 ⟶ DECIDIDO: las realizaciones **no se escriben a mano** (ni siquiera «una o dos

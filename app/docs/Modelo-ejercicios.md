@@ -368,3 +368,5 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
       *Movimientos*, *Paralelas y directas*; ocultas hasta revisarlas en clase. Canto y
       oído, aparcados.
 - [ ] Motor: revisar penalizaciones a ojo y oído (`motor-cuatro-voces.md`).
+- [ ] *7.ª diatónica* (4.º UD 1, 2026-10-17, oculta): revisar en clase; la familia
+      *Secuencias* de la unidad, por diseñar (`familias/septimas.md`).

@@ -241,6 +241,14 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     sistema (los `<reh>` de Verovio caían a veces en otra fila o bajo el
     americano); la página reserva el sitio con `pageMarginTop`.
     `tests/masivo-secuencia.js [nivel] [tipo] [n]`.
+  - `septimas-core.js` (`Septimas`) — familia 7.ª diatónica de 4.º UD 1
+    (`docs/familias/septimas.md`): fórmula T0 · PD con 7.ª · (6/4) · D · (I),
+    realizada con N16 (la 7.ª preparada); su MEI marca por nota `resp` y
+    `atenua` (gris al revelar) y lleva la ligadura de preparación (`<tie>`).
+    El Bajo dado es una frase de Prolongación con un **perfil**
+    (`generar(2, 2, {perfil})`: PD, células con 7.ª, condición), y su MEI se
+    retoca después (`destaca`, ligadura). Páginas `septimas-ii.html`,
+    `septimas-ii-iv.html`, `septimas-bajo.html`; `tests/masivo-septimas.js [n]`.
   - **«Oír» con bajo dado** (tipos 1 de Prolongación y Secuencia): las
     cuatro voces con el bajo destacado (`gain` por nota en `tocar`), botón
     `#btnBajo` (clase `solo-oir`) y tonalidad en el aviso; en la página

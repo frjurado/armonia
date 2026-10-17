@@ -198,7 +198,30 @@ const CURRICULO = {
                 'Añade los 6/4 de paso y de bordadura en la prolongación; 16 tonalidades.'
               ]}
           ]},
-        { id:'c4u1', n:1, titulo:'Séptimas diatónicas', familias:[] },
+        { id:'c4u1', n:1, titulo:'Séptimas diatónicas',
+          familias:[
+            { nombre:'7.ª diatónica', publico:false,
+              desc:'Séptimas de predominante (II7, IV7 y sus inversiones) en la progresión cadencial, siempre tras una tónica que prepara la 7.ª como nota común. Al revelar, una realización a cuatro voces con la ligadura de preparación y la línea de la 7.ª destacada: preparación, 7.ª y resolución, en la misma voz.',
+              consignas:[
+                {key:'ii', label:'II', title:'II grado', icono:'apilado', texto:'6/5',
+                 url:'ejercicios/septimas-ii.html', apuntes:['c4u1#ii65', 'c4u1#la-séptima-como-disonancia'],
+                 desc:'Bajo cifrado y primer acorde: en qué voz irá la 7.ª del II y en qué voz la sensible (la misma).'},
+                {key:'iiiv', label:'II/IV', title:'II y IV grados', icono:'romano',
+                 url:'ejercicios/septimas-ii-iv.html', apuntes:['c4u1#iv7-y-iv65', 'c4u1#ii65'],
+                 desc:'Bajo sin cifrar, primer acorde y la ligadura que prepara la 7.ª: si es un II o un IV, y en qué inversión.'},
+                {key:'bajo', label:'BAJO', title:'Bajo dado', icono:'cc4',
+                 url:'ejercicios/septimas-bajo.html', apuntes:['c4u1#ii7', 'c4u1#otras-inversiones-del-ii7'],
+                 desc:'Cuatro compases, prolongación y cadencia: tonalidad, acordes (con un II o un IV con 7.ª) y tramos.',
+                 niveles:[
+                   'La 7.ª, en la predominante de la cadencia (II6/5, II7 o IV7); en la prolongación, como en Prolongación (nivel 2): inversiones de V7, 6/4 cadencial, mayor y menor.',
+                   'Añade II4/2 → V6/5 e IV6/5 → V6/5 (solo en mayor) dentro de la prolongación; la cadencia puede ir entonces sin 7.ª.'
+                 ]}
+              ],
+              niveles:[
+                'Solo II6/5 (en II y IV grados, II6/5 frente a IV7, sobre el mismo bajo ④); tónica inicial I o I6; 6/4 cadencial; V o V7; 12 tonalidades.',
+                'Añade II7, II4/3 y II4/2 → V6 o V6/5 (en II y IV grados, también IV6/5 → V6/5, en mayor) y VI como tónica inicial.'
+              ]}
+          ]},
         { id:'c4u2', n:2, titulo:'Modulación y dominante secundaria', familias:[] },
         { id:'c4u3', n:3, titulo:'Acordes de VII con 7.ª', familias:[] },
         { id:'c4u4', n:4, titulo:'VII como D.S. Secuencias modulantes', familias:[] },

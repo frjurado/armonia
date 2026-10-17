@@ -447,7 +447,8 @@
       const notas=Array.from(staff.querySelectorAll('g.note')).map(n=>{
         try{
           const b=(n.querySelector('g.notehead')||n).getBBox();
-          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp'), gris:n.classList.contains('gris')};
+          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp'),
+                  gris:n.classList.contains('gris'), atenua:n.classList.contains('atenua')};
         }catch(e){ return null; }
       }).filter(Boolean);
       g.querySelectorAll('path').forEach(p=>{
@@ -459,6 +460,8 @@
         // y en gris, la que solo necesitan notas en gris (las voces que no se
         // preguntan); si la comparte una nota en tinta, en tinta
         if(usan.length && usan.every(n=>n.gris)) p.classList.add('gris');
+        // igual con las que solo se atenúan al revelar (7.ª diatónica)
+        if(usan.length && usan.every(n=>n.atenua)) p.classList.add('atenua');
       });
     });
   }
