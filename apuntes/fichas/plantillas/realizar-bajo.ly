@@ -14,24 +14,39 @@
 %% enseña dónde se cifra. Las cadencias, con \encima sobre la soprano.
 %% En el ejercicio quedan los dos pentagramas con el bajo solo.
 %%
-%% espacio: 0.6cm
+%% El compás es 4/4 si el material no define otro: compas = { \time 3/4 }.
+%% Las filas de los grados y de las cadencias quedan siempre reservadas
+%% (\reservaArriba, \reservaAbajo), también en los apartados de una serie,
+%% que no llevan modelo.
+%%
+%% espacio: 0.1cm
 
 \include "comun.ily"
 \include "etiquetas.ily"
 
-alturaGrados = #-9.5
-alturaEncima = #8
+alturaGrados = #-8.5
+alturaEncima = #6.5
+
+compas = { \time 4/4 }
 
 %%MATERIAL%%
 
+%% Ancho fijo: la caja de texto (CAJA_PT en construir.py) entre la escala
+%% de las figuras (ESCALA), y el sistema estirado hasta ella. Así todos los
+%% apartados de una serie miden lo mismo y quedan alineados a los dos lados.
+\paper { line-width = 327\pt ragged-right = ##f ragged-last = ##f }
+
+reservaArriba = \etiquetaArriba #alturaEncima \markup \transparent "CAP"
+reservaAbajo = \etiquetaAbajo #alturaGrados \markup \transparent "I"
+
 \score {
   \new GrandStaff <<
-    \new Staff << %%TONALIDAD%% \time 4/4
-                  \new Voice { \voiceOne \soprano }
+    \new Staff << %%TONALIDAD%% \compas
+                  \new Voice { \voiceOne \reservaArriba \soprano }
                   \new Voice { \voiceTwo \contralto } >>
-    \new Staff << \clef bass %%TONALIDAD%% \time 4/4
+    \new Staff << \clef bass %%TONALIDAD%% \compas
                   \new Voice { \voiceOne \tenor }
-                  \new Voice { \voiceTwo \textLengthOn \bajo } >>
+                  \new Voice { \voiceTwo \textLengthOn \reservaAbajo \bajo } >>
   >>
   \layout { }
 }
