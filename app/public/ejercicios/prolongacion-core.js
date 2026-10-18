@@ -51,7 +51,8 @@
   };
   const CADENCIAS = {
     CA:{sigla:'CA', nombre:'Cadencia Auténtica'},
-    SC:{sigla:'SC', nombre:'Semicadencia'}
+    SC:{sigla:'SC', nombre:'Semicadencia'},
+    CR:{sigla:'CR', nombre:'Cadencia Rota'}      // solo la frase de Secuencias con 7.as (4.º UD 1)
   };
 
   /* ---------- acordes ---------- */
@@ -63,7 +64,10 @@
     V:{grado:5}, V6:{grado:5,inv:1}, V64:{grado:5,inv:2,sub64:'paso'},
     V7:{grado:5,septima:true}, V65:{grado:5,inv:1,septima:true},
     V43:{grado:5,inv:2,septima:true}, V42:{grado:5,inv:3,septima:true},
-    VII6:{grado:7,inv:1}
+    VII6:{grado:7,inv:1},
+    // séptimas diatónicas (perfil de 4.º UD 1, septimas-core.js)
+    II65:{grado:2,inv:1,septima:true}, II7:{grado:2,septima:true}, IV7:{grado:4,septima:true},
+    II42:{grado:2,inv:3,septima:true}, IV65:{grado:4,inv:1,septima:true}
   };
   // Spec del motor. En menor, IV6 solo sale en `paso-V` (⑤–♯⑥–♯⑦): es el IV
   // MAYOR de la melódica ascendente (la PD de la cadencia no usa IV6, §3).
@@ -102,11 +106,20 @@
     {id:'arp-V-desc',prol:'V', tecnica:'arpegio', pos:[[['V6',1]],[['V',1]]], w:1, inversa:'arp-V-asc'},
     // Enlaces de la prolongación de V con la tónica (§3); la llegada es la bisagra.
     {id:'enl-V6',    prol:'V→I', tecnica:'V6 → I', pos:[[['V6',1]],[['I',1]]], w:3},
-    {id:'enl-V42',   prol:'V→I', tecnica:'V – V4/2 – I6', pos:[[['V',1]],[['V42',2]],[['I6',1]]], w:2, desde:2}
+    {id:'enl-V42',   prol:'V→I', tecnica:'V – V4/2 – I6', pos:[[['V',1]],[['V42',2]],[['I6',1]]], w:2, desde:2},
+    // Con 7.ª diatónica: solo con un perfil que las pida (`perfil.celulas`;
+    // 7.ª diatónica, 4.º UD 1). El IV6/5 → V6/5, solo en mayor: en menor, el
+    // bajo ♭⑥–♯⑦ es una 2.ª aumentada.
+    {id:'II42',      prol:'I', tecnica:'bordadura inferior (II4/2 – V6/5)', pos:[[['I',1]],[['II42',2]],[['V65',2],['V6',2]],[['I',1]]], w:3, septima:true},
+    {id:'IV65',      prol:'I', tecnica:'bajo ①–⑥–⑦–① (IV6/5 – V6/5)', pos:[[['I',1]],[['IV65',2]],[['V65',2]],[['I',1]]], w:2, septima:true, soloMayor:true}
   ];
   const CEL = {}; CELULAS.forEach(c=>{ CEL[c.id]=c; });
   const esArpegio = c => c.tecnica==='arpegio';
-  const disponible = (c, nivel, modo) => (c.desde||1)<=nivel && !(c.soloMayor && modo==='minor');
+  // `perfil` (opcional): variante del material para otra unidad (septimas-core.js):
+  //   pdGen(modo) / pdLect(modo): PD de la cadencia al generar y al analizar el bajo;
+  //   celulas: admite las células con 7.ª; exige(est): condición de la estructura.
+  const disponible = (c, nivel, modo, perfil) => (c.desde||1)<=nivel && !(c.soloMayor && modo==='minor')
+    && (!c.septima || !!(perfil && perfil.celulas));
   const opcionesPos = (c, j, nivel) => c.pos[j].filter(o=>o[1]<=nivel).map(o=>o[0]);
   const inicioDe = c => c.pos[0][0][0];
   const finDe = c => c.pos[c.pos.length-1][0][0];
@@ -125,7 +138,10 @@
     'salto-371':{'1>2>3':2,'5>5>5':2,'3>2>1':2},
     'pedal-IV':{'5>6>5':4,'3>4>3':4,'1>1>1':1},
     'paso-V':{'7>1>2':4,'2>1>2':2,'5>4>5':2},
-    'bord-V':{'2>3>2':4,'7>1>7':4}
+    'bord-V':{'2>3>2':4,'7>1>7':4},
+    // la 7.ª del V6/5 (4̂) preparada en el II4/2; la del IV6/5 (3̂), en el I
+    'II42':{'3>4>4>3':4,'5>6>5>5':3,'3>2>2>1':2},
+    'IV65':{'3>3>2>1':4,'5>4>4>3':3,'1>1>2>3':2}
   };
   const PESO_MAX = 4, SIN_LINEA = 3;
   // Penalización de la soprano `sop` (grados desde el comienzo de la célula
@@ -146,11 +162,11 @@
   /* ---------- construcción de la cadena (§2–4q.4) ---------- */
   // Cadena de nCel células de la armonía `prol`; `empieza` fuerza el acorde
   // inicial (o null). → [célula…] o null.
-  function cadena(prol, nivel, modo, nCel, empieza){
+  function cadena(prol, nivel, modo, nCel, empieza, perfil){
     const cels=[];
     for(let i=0;i<nCel;i++){
       const prev=cels[cels.length-1];
-      const cand=CELULAS.filter(c=>c.prol===prol && disponible(c,nivel,modo) && encadena(prev,c)
+      const cand=CELULAS.filter(c=>c.prol===prol && disponible(c,nivel,modo,perfil) && encadena(prev,c)
         && (i>0 || !empieza || inicioDe(c)===empieza));
       if(!cand.length) return null;
       cels.push(pesado(cand.map(c=>({x:c, w:c.w}))));
@@ -180,8 +196,8 @@
   }
   // Cadencia tras la bisagra: PD obligatoria, 6/4 cadencial opcional (nivel ≥ 2),
   // D; y I en la CA. → [{id, rol}] o null si el par bisagra–PD está vetado.
-  function cadenciaTras(bisagra, sigla, nivel, modo){
-    const pds=CAD.casilla('PD',nivel,modo).filter(x=>x.x!=='IV6' && !CAD.vetada([bisagra,x.x]));
+  function cadenciaTras(bisagra, sigla, nivel, modo, perfil){
+    const pds=(perfil ? perfil.pdGen(modo) : CAD.casilla('PD',nivel,modo)).filter(x=>x.x!=='IV6' && !CAD.vetada([bisagra,x.x]));
     if(!pds.length) return null;
     const out=[{id:pesado(pds), rol:'PD'}];
     if(nivel>=2 && rnd()<0.5) out.push({id:'I64', rol:'D64'});
@@ -199,13 +215,13 @@
     let cels;
     if(o.repite){ cels=o.repite; }
     else{
-      cels=cadena(o.prol, nivel, modo, pesado([{x:1,w:2},{x:2,w:3}]), null);
+      cels=cadena(o.prol, nivel, modo, pesado([{x:1,w:2},{x:2,w:3}]), null, o.perfil);
       if(!cels) return null;
     }
     if(o.prol==='V'){
       const fin=finDe(cels[cels.length-1]);
       if(o.sigla){                                           // enlace V → I
-        const enl=CELULAS.filter(c=>c.prol==='V→I' && disponible(c,nivel,modo) && inicioDe(c)===fin);
+        const enl=CELULAS.filter(c=>c.prol==='V→I' && disponible(c,nivel,modo,o.perfil) && inicioDe(c)===fin);
         if(!enl.length) return null;
         cels=cels.concat([pesado(enl.map(c=>({x:c,w:c.w})))]);
       }
@@ -227,7 +243,7 @@
     const h=est.ev.length-1;
     const bis=est.ev[h].id;
     if(bis!=='I' && bis!=='I6') return null;
-    const cad=cadenciaTras(bis, o.sigla, nivel, modo);
+    const cad=cadenciaTras(bis, o.sigla, nivel, modo, o.perfil);
     if(!cad) return null;
     est.ev[h].bisagra=true;
     cad.forEach(x=>est.ev.push({id:x.id, rol:x.rol, cel:[], abierta:false}));
@@ -248,10 +264,10 @@
     return {prol2, repite: prol2==='I' && rnd()<0.4};
   }
   // Estructura completa de un tipo → {ev, celulas, tramos, frases:[{desde,hasta,compases}]}
-  function estructura(tipo, nivel, modo, forma){
+  function estructura(tipo, nivel, modo, forma, perfil){
     forma = forma || elegirForma(tipo);
     const est={ev:[], celulas:[], tramos:[], frases:[]};
-    const o={nivel, modo};
+    const o={nivel, modo, perfil:perfil||null};
     if(tipo===1){
       const prol = forma.prol;
       if(!frase(est, Object.assign({prol}, o))) return null;
@@ -275,6 +291,7 @@
       }
       est.frases.push({desde:n1, hasta:est.ev.length-1, compases:[4]});
     }
+    if(perfil && perfil.exige && !perfil.exige(est)) return null;
     return est;
   }
 
@@ -315,8 +332,9 @@
         if(grupo[0].rol==='S') return;
         // 2. un acorde por compás: la llegada o la D de la cadencia
         if(k===1 && !ultimoBar && grupo[0].rol!=='D') return;
-        // 3. tres acordes: solo en el compás de la bisagra o de la cadencia
-        if(k===3 && !grupo.some(g=>g.bisagra || cad(g.rol))) return;
+        // 3. tres acordes: solo en el compás de la bisagra o de la cadencia, o
+        //    con los dos subordinados seguidos de una célula (I – II4/2 – V6/5)
+        if(k===3 && !grupo.some(g=>g.bisagra || cad(g.rol)) && !(grupo[1].rol==='S' && grupo[2].rol==='S')) return;
         // 4. negra–blanca: el subordinado en la blanca
         let wp = k===2 ? 3 : 1;
         if(pat.join(' ')==='4 2'){
@@ -393,10 +411,10 @@
   /* ---------- lecturas: análisis del bajo (§7) ---------- */
   // Todas las cadenas de células de `prol` que empiezan en i sobre el bajo
   // dado. → [{fin, slots:[[ids]…], cels:[id…]}] (slots desde i hasta fin).
-  function cadenasEn(key, nivel, bajo, prol, i, prev, primerId){
+  function cadenasEn(key, nivel, bajo, prol, i, prev, primerId, perfil){
     const out=[];
     CELULAS.forEach(c=>{
-      if(c.prol!==prol || !disponible(c,nivel,key.mode) || !encadena(prev,c)) return;
+      if(c.prol!==prol || !disponible(c,nivel,key.mode,perfil) || !encadena(prev,c)) return;
       if(!prev && primerId && inicioDe(c)!==primerId) return;
       const L=c.pos.length;
       if(i+L-1>=bajo.length) return;
@@ -409,7 +427,7 @@
       const fin=i+L-1;
       const esta={fin, slots, cels:[c.id], soloArp:esArpegio(c)};
       out.push(esta);
-      cadenasEn(key, nivel, bajo, prol, fin, c, null).forEach(r=>{
+      cadenasEn(key, nivel, bajo, prol, fin, c, null, perfil).forEach(r=>{
         out.push({fin:r.fin, slots:slots.concat(r.slots.slice(1)), cels:[c.id].concat(r.cels),
                   soloArp:esta.soloArp && r.soloArp});
       });
@@ -417,9 +435,9 @@
     return prev ? out : out.filter(r=>!r.soloArp);
   }
   // Cadencia desde la bisagra h: → [{fin, slots}] (slots desde h+1).
-  function cadenciasEn(key, nivel, bajo, h, bisagra, sigla){
+  function cadenciasEn(key, nivel, bajo, h, bisagra, sigla, perfil){
     const out=[], modo=key.mode;
-    const pd=CAD.casilla('PD',nivel,modo).map(x=>x.x)
+    const pd=(perfil ? perfil.pdLect(modo) : CAD.casilla('PD',nivel,modo)).map(x=>x.x)
       .filter(id=>id!=='IV6' && !CAD.vetada([bisagra,id]) && bajo[h+1] && mismoBajo(acordeDe(key,id), bajo[h+1]));
     if(!pd.length) return out;
     const ds = sigla==='SC' ? ['V'] : (nivel>=2 ? CAD.casilla('D',nivel,modo).map(x=>x.x) : ['V']);
@@ -436,16 +454,16 @@
   }
   // Frase analizada desde i: prolongación (+ enlace) (+ cadencia) que acaba
   // EXACTAMENTE en `fin`. → [{slots, tramos}]
-  function frasesEn(key, nivel, bajo, i, fin, siglas, prols){
+  function frasesEn(key, nivel, bajo, i, fin, siglas, prols, perfil){
     const out=[];
     prols.forEach(prol=>{
-      cadenasEn(key, nivel, bajo, prol, i, null, null).forEach(ch=>{
+      cadenasEn(key, nivel, bajo, prol, i, null, null, perfil).forEach(ch=>{
         const tramosProl=[{tipo:'prol', armonia:prol, desde:i, hasta:ch.fin, celulas:ch.cels}];
         if(!siglas){ if(ch.fin===fin) out.push({slots:ch.slots, tramos:tramosProl}); return; }
         let llegadas=[{h:ch.fin, slots:ch.slots, cels:ch.cels}];
         if(prol==='V'){
           const ultima=CEL[ch.cels[ch.cels.length-1]];
-          llegadas=CELULAS.filter(c=>c.prol==='V→I' && disponible(c,nivel,key.mode) && inicioDe(c)===finDe(ultima))
+          llegadas=CELULAS.filter(c=>c.prol==='V→I' && disponible(c,nivel,key.mode,perfil) && inicioDe(c)===finDe(ultima))
             .map(c=>{
               const L=c.pos.length; const sl=[];
               for(let j=1;j<L;j++){
@@ -459,7 +477,7 @@
         llegadas.forEach(ll=>{
           const bis=ll.slots[ll.slots.length-1];
           if(bis.length!==1 || (bis[0]!=='I' && bis[0]!=='I6')) return;
-          siglas.forEach(sigla=>cadenciasEn(key, nivel, bajo, ll.h, bis[0], sigla).forEach(cd=>{
+          siglas.forEach(sigla=>cadenciasEn(key, nivel, bajo, ll.h, bis[0], sigla, perfil).forEach(cd=>{
             if(cd.fin!==fin) return;
             const hp = prol==='V' ? ll.h-1 : ll.h;
             out.push({slots:ll.slots.concat(cd.slots), tramos:[
@@ -484,18 +502,18 @@
     });
   }
   // Todos los análisis del bajo (notas {letter, alter}) según el tipo.
-  function analizar(key, nivel, tipo, bajo){
-    return analisisSinVeto(key, nivel, tipo, bajo).filter(a=>!parRepetido(bajo, a.tramos));
+  function analizar(key, nivel, tipo, bajo, perfil){
+    return analisisSinVeto(key, nivel, tipo, bajo, perfil).filter(a=>!parRepetido(bajo, a.tramos));
   }
-  function analisisSinVeto(key, nivel, tipo, bajo){
+  function analisisSinVeto(key, nivel, tipo, bajo, perfil){
     const n=bajo.length;
-    if(tipo===1) return frasesEn(key, nivel, bajo, 0, n-1, null, ['I','V']);
-    if(tipo===2) return frasesEn(key, nivel, bajo, 0, n-1, ['CA','SC'], ['I','V']);
+    if(tipo===1) return frasesEn(key, nivel, bajo, 0, n-1, null, ['I','V'], perfil);
+    if(tipo===2) return frasesEn(key, nivel, bajo, 0, n-1, ['CA','SC'], ['I','V'], perfil);
     const out=[];
     for(let m=3;m<n-3;m++){
-      const a=frasesEn(key, nivel, bajo, 0, m, ['SC'], ['I']);
+      const a=frasesEn(key, nivel, bajo, 0, m, ['SC'], ['I'], perfil);
       if(!a.length) continue;
-      const b=frasesEn(key, nivel, bajo, m+1, n-1, ['CA'], ['I','V']);
+      const b=frasesEn(key, nivel, bajo, m+1, n-1, ['CA'], ['I','V'], perfil);
       a.forEach(x=>b.forEach(y=>out.push({slots:x.slots.concat(y.slots), tramos:x.tramos.concat(y.tramos)})));
     }
     return out;
@@ -520,7 +538,8 @@
     return t.tipo==='prol' ? 'Prol. '+t.armonia : CADENCIAS[t.sigla].sigla;
   }
 
-  // generar(tipo, nivel) → instancia (o null)
+  // generar(tipo, nivel, opts) → instancia (o null). opts.key fija la tonalidad;
+  // opts.perfil, la variante del material (ver `disponible`).
   function generar(tipo, nivel, opts){
     opts=opts||{};
     tipo=Math.max(1,Math.min(3,tipo|0));
@@ -530,17 +549,18 @@
     for(let intento=0;intento<300;intento++){
       if(intento%100===0) forma=elegirForma(tipo);        // se cambia solo si no sale
       const key=elige(keys);
-      const est=estructura(tipo, nivel, key.mode, forma);
+      const perfil=opts.perfil||null;
+      const est=estructura(tipo, nivel, key.mode, forma, perfil);
       if(!est) continue;
       const r=ritmo(est);
       if(!r) continue;
       const bajo=est.ev.map(e=>bajoDeAc(acordeDe(key,e.id)));
       if(parRepetido(bajo, est.tramos)) continue;
       // Lecturas y guarda de tonalidad (tipos 2 y 3)
-      const analisis=analizar(key, nivel, tipo, bajo);
+      const analisis=analizar(key, nivel, tipo, bajo, perfil);
       if(tipo>1 && relativas(key).some(rel=>{
         const b=bajo;                                         // mismas notas escritas
-        return analizar(rel, nivel, tipo, b).length>0;
+        return analizar(rel, nivel, tipo, b, perfil).length>0;
       })) continue;
       const acordes=acordesDe(key, est.ev);
       const real=CV.realizar(key, acordes, ganchos(est));
@@ -565,7 +585,11 @@
     return partes.join(' ‖ ');
   }
   // Compás (1…) de un evento
-  function compasDe(inst, k){ return inst.ritmo.compases.findIndex(m=>m.some(x=>x.k===k))+1; }
+  // (con anacrusa, el compás incompleto es el 0; lo que empieza en él, c. 1)
+  function compasDe(inst, k){
+    const i=inst.ritmo.compases.findIndex(m=>m.some(x=>x.k===k));
+    return inst.ritmo.anacrusa ? Math.max(1, i) : i+1;
+  }
   function detalleTramo(inst, t){
     const c1=compasDe(inst,t.desde), c2=compasDe(inst,t.hasta);
     const cc = c1===c2 ? 'c. '+c1 : 'cc. '+c1+'–'+c2;
@@ -664,7 +688,7 @@
         harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1"${masc?' type="resp"':''}>${romanoXml(a, sub)}</harm>`;
         (inst.alternativas[x.k]||[]).forEach((id,j)=>{
           harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt${R}" vo="${VO_ALT}">`
-                 + romanoXml(acordeDe(key,id), sub)+`</harm>`;
+                 + romanoXml(typeof id==="string" ? acordeDe(key,id) : CV.acorde(key,id), sub)+`</harm>`;   // id del catálogo o spec (Secuencia con 7.as)
         });
       });
       if(i===0 && opts.dato) harms += `<reh place="above" staff="1" tstamp="1" type="dato">${esc(opts.dato)}</reh>`;

@@ -136,6 +136,15 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
 #notation line.raya.voz-inf{stroke:var(--voz-inf)}
 /* voces que no se preguntan (la pareja resaltada entre cuatro), en gris */
 #notation g.note.gris, #notation g.ledgerLines path.gris{opacity:.32}
+/* 7.ª diatónica: al revelar, en gris las notas superiores que no son de la
+   línea de la 7.ª (preparación, 7.ª, resolución), y en el color de la
+   respuesta la línea (y su ligadura) cuando se destaca sobre la realización */
+.mascara.revelado #notation g.note.atenua, .mascara.revelado #notation g.ledgerLines path.atenua{opacity:.32}
+.mascara.revelado #notation g.note.destaca{fill:var(--ok)}
+/* nota dada dentro de una voz oculta (el primer acorde de Secuencias ·
+   Círculo de 5.as): a la vista aunque su capa sea `resp` */
+.mascara:not(.oir) #notation g.note.dada, .mascara.revelado #notation g.note.dada{visibility:visible}
+.mascara.revelado #notation g.tie.destaca path{fill:var(--ok);stroke:var(--ok)}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
 #notation .big-name,.big-name{font-family:var(--serif);font-size:clamp(28px,5vw,44px);

@@ -147,12 +147,16 @@ RE_EJERCICIO = re.compile(
     r"^:::+[ \t]*\{\.ejercicio\b(?P<attr>[^}]*)\}[ \t]*\n(?P<cuerpo>.*?)^:::+[ \t]*$",
     re.M | re.S)
 RE_ATRIBUTO = re.compile(r'([\w-]+)="([^"]*)"')
-RE_LILYPOND = re.compile(r"^```[ \t]*lilypond[ \t]*\n(?P<codigo>.*?)^```[ \t]*$", re.M | re.S)
+# Un bloque `lilypond` puede llevar atributos propios en la línea de
+# apertura (```lilypond tono="La menor"): los de un apartado de una serie.
+RE_LILYPOND = re.compile(r"^```[ \t]*lilypond(?P<attr>[^\n]*)\n(?P<codigo>.*?)^```[ \t]*$", re.M | re.S)
 RE_TIPO = re.compile(r"^\|\s*`([a-z0-9-]+)`\s*\|\s*([^|]+?)\s*\|", re.M)
 RE_ESPACIO = re.compile(r"^%%\s*espacio:\s*(\S+)", re.M)
 # Fragmento opcional de una consigna: `[cadencias: , así como las cadencias]`.
 # Sale solo si la ficha lo pide (pide="cadencias"); si no, desaparece.
 RE_FRAGMENTO = re.compile(r"\[([\w-]+):([^\]]*)\]")
+# En una serie con tonalidades distintas, lo que dice el {tono} de la consigna.
+TONO_DE_CADA_APARTADO = "la tonalidad indicada en cada apartado"
 NOTAS_LY = {"do": "c", "re": "d", "mi": "e", "fa": "f", "sol": "g", "la": "a", "si": "b"}
 
 # Salto: se escribe `<!-- salto -->` en el .md y se cambia por dos
@@ -504,11 +508,20 @@ def porcentaje(puntos, escala=ESCALA, caja=CAJA_PT):
     return round(min(escala * puntos / caja, 1.0) * 100)
 
 
-def imagen_typst(svg, md, escala=ESCALA, caja=CAJA_PT):
+def imagen_typst(svg, md, escala=ESCALA, caja=CAJA_PT, rotulo=""):
     """Una imagen centrada, en typst en bruto, para lo que solo es PDF
-    (ejemplos para clase y fichas)."""
-    return (f'```{{=typst}}\n#align(center, image("imagenes/{svg}", '
-            f"width: {porcentaje(puntos_svg(IMAGENES / svg, md), escala, caja)}%))\n```\n")
+    (ejemplos para clase y fichas).
+
+    `rotulo` (markup typst: el «a) Sol mayor» de un apartado) va colgado
+    a la izquierda de la imagen, en el margen, a la altura del primer
+    pentagrama: así no le quita altura a la página.
+    """
+    imagen = (f'image("imagenes/{svg}", '
+              f"width: {porcentaje(puntos_svg(IMAGENES / svg, md), escala, caja)}%)")
+    if rotulo:
+        imagen = (f"box[#place(top + left, dx: -2.3cm, dy: 0.55cm, "
+                  f"box(width: 2cm, align(right)[{rotulo}]))#{imagen}]")
+    return f"```{{=typst}}\n#align(center, {imagen})\n```\n"
 
 
 def preparar(md):
@@ -1118,6 +1131,11 @@ def documentar_ficha(ficha):
 
     Solo PDF, y sin enlazar desde la web: las fichas se reparten en
     clase. Un `obra="…"` en el bloque pone la referencia de un fragmento.
+
+    Varios bloques lilypond en un mismo ejercicio son una serie: los
+    apartados a), b)… de una sola consigna, cada uno grabado aparte
+    (`<ficha>-<k><letra>.svg`) y con sus propios atributos, si los lleva
+    en la línea de apertura (```lilypond tono="La menor").
     """
     catalogo = tipos_de_ejercicio()
     texto = sin_fuentes(sin_guion(ficha.read_text(encoding="utf-8")))
@@ -1138,25 +1156,42 @@ def documentar_ficha(ficha):
         plantilla = PLANTILLAS / f"{tipo}.ly"
         if not plantilla.exists():
             sys.exit(f"{ficha.name}, ejercicio {k}: falta la plantilla {plantilla.relative_to(RAIZ)}")
-        codigo = RE_LILYPOND.search(m.group("cuerpo"))
-        if not codigo:
+        bloques = list(RE_LILYPOND.finditer(m.group("cuerpo")))
+        if not bloques:
             sys.exit(f"{ficha.name}, ejercicio {k}: falta el bloque ```lilypond con el material")
         nota = RE_LILYPOND.sub("", m.group("cuerpo")).strip()
-        consigna = consigna_de(catalogo[tipo], atributos, f"{ficha.name}, ejercicio {k}")
+        # Una SERIE: varios bloques lilypond en un mismo ejercicio son los
+        # apartados a), b)… de una sola consigna, cada uno con los
+        # atributos del ejercicio más los suyos. Si la consigna dice la
+        # tonalidad y no es la misma en todos, la dice cada apartado.
+        serie = len(bloques) > 1
+        propios = [{**atributos, **dict(RE_ATRIBUTO.findall(b.group("attr")))} for b in bloques]
+        cada_tono = (serie and "{tono}" in catalogo[tipo]
+                     and len({a.get("tono") for a in propios}) > 1)
+        consigna = consigna_de(catalogo[tipo],
+                               {**atributos, "tono": TONO_DE_CADA_APARTADO} if cada_tono else atributos,
+                               f"{ficha.name}, ejercicio {k}")
 
         modelo = plantilla.read_text(encoding="utf-8")
         espacio = RE_ESPACIO.search(modelo)
-        ly = TMP / "fichas" / f"{ficha.stem}-{k}.ly"
-        escribir_si_cambia(ly, modelo
-                           .replace("%%TONALIDAD%%", tonalidad_ly(atributos.get("tono"), ficha))
-                           .replace("%%MATERIAL%%", codigo.group("codigo")))
-        nombre = f"{ficha.stem}-{k}"
-        hechos += grabar(ly, nombre, sin_analisis=True)
-        hechos += grabar(ly, f"{nombre}-sol")
-        svgs += [IMAGENES / f"{nombre}.svg", IMAGENES / f"{nombre}-sol.svg"]
+        apartados = []
+        for j, (bloque, attr) in enumerate(zip(bloques, propios)):
+            letra = "abcdefghijklmnopqrstuvwxyz"[j] if serie else ""
+            nombre = f"{ficha.stem}-{k}{letra}"
+            ly = TMP / "fichas" / f"{nombre}.ly"
+            escribir_si_cambia(ly, modelo
+                               .replace("%%TONALIDAD%%", tonalidad_ly(attr.get("tono"), ficha))
+                               .replace("%%MATERIAL%%", bloque.group("codigo")))
+            hechos += grabar(ly, nombre, sin_analisis=True)
+            hechos += grabar(ly, f"{nombre}-sol")
+            svgs += [IMAGENES / f"{nombre}.svg", IMAGENES / f"{nombre}-sol.svg"]
+            rotulo = ""
+            if serie:
+                rotulo = f"*{letra})*" + (f" \\ {attr.get('tono')}" if cada_tono else "")
+            apartados.append({"nombre": nombre, "rotulo": rotulo})
         dependencias.append(plantilla)
         trozos.append({"k": k, "consigna": consigna, "nota": nota,
-                       "obra": atributos.get("obra"), "nombre": nombre,
+                       "obra": atributos.get("obra"), "apartados": apartados,
                        "espacio": espacio.group(1) if espacio else "1cm"})
     trozos.append(texto[pos:])
     if not svgs:
@@ -1177,17 +1212,20 @@ def documentar_ficha(ficha):
             if isinstance(trozo, str):
                 partes.append(trozo)
                 continue
-            svg = f"{trozo['nombre']}{'-sol' if solucion else ''}.svg"
             obra = f"*{trozo['obra']}*\n\n" if trozo["obra"] else ""
             # Todo el ejercicio en un bloque que no se parte: la consigna
             # en una página y la partitura en la siguiente no sirven. El
             # espacio para escribir va fuera del bloque: al pie de una
             # página Typst lo descarta, y no empuja el ejercicio a la otra.
-            partes.append(f"```{{=typst}}\n#block(breakable: false)[\n```\n\n"
-                          f"## Ejercicio {trozo['k']} {{.unnumbered .unlisted}}\n\n"
-                          f"{obra}{trozo['consigna']} {trozo['nota']}\n\n"
-                          f"{imagen_typst(svg, ficha)}\n"
-                          f"```{{=typst}}\n]\n#v({trozo['espacio']})\n```\n\n")
+            # En una serie, la consigna va con el primer apartado, y cada
+            # uno de los demás es un bloque aparte.
+            for j, apartado in enumerate(trozo["apartados"]):
+                svg = f"{apartado['nombre']}{'-sol' if solucion else ''}.svg"
+                cabeza = "" if j else (f"## Ejercicio {trozo['k']} {{.unnumbered .unlisted}}\n\n"
+                                       f"{obra}{trozo['consigna']} {trozo['nota']}\n\n")
+                partes.append(f"```{{=typst}}\n#block(breakable: false)[\n```\n\n"
+                              f"{cabeza}{imagen_typst(svg, ficha, rotulo=apartado['rotulo'])}\n"
+                              f"```{{=typst}}\n]\n#v({trozo['espacio']})\n```\n\n")
         md = "".join(partes)
         revisar_cobertura(md, ficha)
         sub = f"{subtitulo} · Soluciones" if solucion else subtitulo

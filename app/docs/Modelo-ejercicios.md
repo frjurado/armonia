@@ -353,6 +353,13 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
       → hechos (2026-10-06).
 - [x] ~~«Oír» y `?oir` (§1.3, §2.5)~~ → hechos (2026-10-09), en *Cadencias · Tipo*.
 - [ ] Empaquetar los samples; mecanismo offline (§4).
+- [ ] **Americanos que se solapan** (pospuesto por el usuario, 2026-10-18): en compases apretados
+      (Secuencias, sobre todo las de 4/2 con anacrusa, 3/4 y 2/4), cifrados largos como «Fmaj7/E»
+      y «B°/D» se tocan. Su efecto vertical ya está resuelto: Verovio subía entonces toda la fila
+      y dejaba un hueco bajo el americano; `ArmoniaEj.bajarAmericano` (comun.js) la vuelve a bajar
+      tras el render. Queda el solape horizontal: opciones, más ancho para esos compases, un
+      americano más pequeño solo donde choca (probado: a 62 % aún se tocaban algunos y se lee
+      mal) o cifrados alternos a dos alturas.
 - [x] ~~Migrar los cores de 3.º UD 0 a `tonalidades.js`~~ → hecho (2026-10-09).
 
 **Por material**
@@ -368,3 +375,6 @@ Las cerradas están en los informes y en la historia de git; aquí solo las viva
       *Movimientos*, *Paralelas y directas*; ocultas hasta revisarlas en clase. Canto y
       oído, aparcados.
 - [ ] Motor: revisar penalizaciones a ojo y oído (`motor-cuatro-voces.md`).
+- [ ] *7.ª diatónica* (4.º UD 1, 2026-10-17, pública desde el 2026-10-18): revisar en clase; la familia
+      *Secuencias* (círculo de 5.as con 7.as, 2026-10-17, pública: `familias/secuencia.md` §9),
+      también por revisar.

@@ -185,6 +185,34 @@ en fichas, varias por unidad. Se separan dos cosas:
   `consigna="…"` la sustituye entera. Qué variables define el material lo
   dice el comentario de la plantilla de su tipo.
 
+**Series.** Un ejercicio con varios bloques `lilypond` es una serie: una sola
+consigna y varios apartados equivalentes, a), b), c)… (así caben cuatro
+bajos, o cuatro bajos cifrados, en una hoja). Cada bloque puede llevar sus
+propios atributos en la línea de apertura, que se suman a los del ejercicio:
+
+    ::: {.ejercicio tipo="grados-bajo-cifrado"}
+    ```lilypond tono="Do mayor"
+    …
+    ```
+    ```lilypond tono="La menor"
+    …
+    ```
+    :::
+
+El rótulo del apartado («a)») va colgado en el margen izquierdo, a la altura
+del primer pentagrama, para no gastar altura. Si la consigna del tipo dice la
+tonalidad (`{tono}`) y los apartados no la comparten, la consigna dice «en la
+tonalidad indicada en cada apartado» y el rótulo la lleva debajo; si no la
+dice (`realizar-bajo`: la tonalidad es parte de lo que se pide), el rótulo es
+solo la letra. El modelo (`\modelo`), en el primer apartado: las plantillas
+de los tipos que se usan en serie reservan las filas de respuesta, para que
+los demás apartados tengan el mismo sitio para escribir, y estiran el
+sistema a la caja entera (`line-width` fijo, sin `ragged-right`), para que
+todos los apartados midan lo mismo y queden alineados a los dos lados. Lo
+mismo hacen las de `faltas-melodicas` (una línea larga se parte con
+`\bar "" \break`) y `paralelas`: mejor apretar los acordes que encoger el
+pentagrama.
+
 **La solución va dentro del material**, escrita como análisis: de un mismo
 `.ly` salen el ejercicio (sin análisis) y la solución (con él). Las rayas
 donde va cada respuesta (`huecos = ##t`) existen, pero ninguna plantilla las
@@ -382,7 +410,9 @@ El flujo está completo y las tres salidas se generan.
   cierre). Publicada.
   El de §1.2 va en los ejemplos para clase. `c3u1-triada-im.ly` (la prueba de
   que una cadena de la app se pega aquí sin retocar) no lo usa ningún texto.
-  Tiene una ficha de prueba, `fichas/c3u1-f1.md`.
+  Fichas: `c3u1-f1` (la de prueba del formato) a `c3u1-f4` (grados y cifrado,
+  en serie; disposición; movimientos). De 4.º UD 0, `c4u0-f1` y `c4u0-f2`
+  (cuatro bajos, en serie).
 - **`c3u2.md`** — todavía guion, sin redactar.
 
 Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
