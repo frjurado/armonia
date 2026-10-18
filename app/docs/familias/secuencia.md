@@ -155,3 +155,61 @@ mueve al revelar.
 
 Tras los cambios del motor (licencias, `baja`), Cadencias, Prolongación y Bajo cifrado
 siguen con 0 infracciones y 0 fallos, y `sensibilidad-comprobador.js` 29/29.
+
+## 9. Con 7.as: familia *Secuencias* de 4.º UD 1
+
+> Decidido el 2026-10-17 con el usuario. ⟶ HECHO (2026-10-17), pública desde el 2026-10-18. Apuntes:
+> c4u1 §3.1–3.2.
+
+El mismo material, con `generar(tipo, nivel, {septimas:true})` y las páginas
+`secuencia-septimas-circulo.html` (tipo 1), `-frase.html` y `-periodo.html`, sobre
+`secuencia-ui.js` con `window.SEC_SEPTIMAS`. `nivel` es el de esta familia (1–2); lo demás va
+con el **nivel 2 de la UD 0** (mayor y menor, V7, 6/4 cadencial, 12 tonalidades), y las
+cadencias y prolongaciones admiten las 7.as de predominante (`septimas.md` §5: el perfil de
+Prolongación, sin exigirlas).
+
+| Variante (`SECUENCIAS7`) | Acordes | Bajo | Nivel | Frase y periodo |
+|---|---|---|---|---|
+| `quintas7` | I · IV7 · VII7–III7 · VI7–II7 · (V7–I) | ①④⑦③⑥②⑤① | 1 | sí |
+| `quintas7_65` | I–IV6/5 · VII–III6/5 · VI–II6/5 · (V–I) | ①⑥⑦⑤⑥④⑤① | 2 | sí |
+| `quintas7_42` | I6 · IV4/2–VII6 · III4/2–VI6 · II4/2–V6 · I | ③③②②①①⑦① | 2 | sí, con anacrusa (ver abajo) |
+| `quintas7_4265` | I6 · IV4/2–VII6/5 · III4/2–VI6/5 · II4/2–V6/5 · I | el mismo | 2 | sí, con anacrusa |
+
+- **Qué decide el bajo.** En estado fundamental, solo la cadena con todas las 7.as (la
+  alternada 5/3–7 de A/S 24-6 queda fuera: los apuntes no la dan en el texto). Las dos de
+  4/2 tienen el **mismo bajo**: las dos lecturas valen, y la otra sale como alternativa bajo
+  cada 6/x (un spec, no un id del catálogo: `Prolongacion.toMEI` acepta los dos).
+- Las de 4/2 empiezan en **I6** (`pre`): el bajo prepara la 7.ª del primer 4/2. Acaban en
+  V6 → I, que no es cadencia: así solo en el tipo 1 (5 cc., el I6 y el I final en compases
+  enteros).
+- **Traslado** de módulo a módulo solo entre acordes de la misma forma (inversión, 7.ª): en
+  `quintas7`, el I inicial no tiene 7.ª y el VII7 no lo traslada.
+- **Licencias**, las de §2 (N7, N10, N12), también con 7.as: el VII7 incompleto dobla la
+  sensible en mayor. N8 y **N16** (preparación de la 7.ª) siguen vigentes.
+- **Cadencia** tras el círculo: II7 → V7 (3) o V (1); tras el II6/5, V (2) o V7 (1).
+- **Formas.** Tipo 1: el primer acorde (sin 7.ª) a la vista (`dada`). Se pide **en qué voz**
+  va la 7.ª de cada acorde y, en el nivel 2, en qué inversión está (la pregunta cambia con el
+  nivel: la página la toma de `respuesta`, id `preg`). Tipo 2, como §3, con `quintas7` o `quintas7_65`.
+  Tipo 3, SC ‖ CA: una mitad, el círculo con 7.as; la otra, prolongación (2), romanesca en
+  tríadas (1) u otro círculo con 7.as de otra variante (1, en el nivel 2), en cualquier orden.
+- **Al revelar**, además de lo de §4: cada 7.ª en el color de la respuesta (`destaca`) con su
+  **ligadura de preparación** (también la del bajo en los 4/2, y hasta el 6/4 si se
+  mantiene) y, en el texto, la voz de cada 7.ª y por qué van donde van (`septimasDe`).
+- **Variedad ante la cadencia** (revisión del 2026-10-17): en frase y periodo, el último
+  módulo puede salir del patrón (40 %): VI **sin 7.ª** (su 7.ª resolvería en 4̂, el bajo del
+  II6/5) y II6/5 —o II7, si el patrón daba II6/5— como PD (`pdLibre`). La frase admite
+  además la **cadencia rota** (CA 40 %, SC 35 %, CR 25 %: … II7 – V7 – VI, VI con la 3.ª
+  doblada). Las de **4/2**, también en frase y periodo (en el periodo, solo como primera
+  mitad): **↑I6 | IV4/2 VII6 | III4/2 VI6 | II6/5 V | I** (SC: | II6/5 | I6/4 V), con el 4/2
+  en parte fuerte y el VI sin 7.ª (`fraseCuatroDos`, ritmo fijo; `compasDe` de Prolongación
+  cuenta la anacrusa como c. 1, y el MEI numera el compás incompleto como 0).
+- **Rótulos encima** (`ArmoniaEj.rotulosEncima`, también para la UD 0): el techo de cada
+  sistema se mide sobre notas, ligaduras, pentagrama y la línea base de los cifrados (la
+  caja de la clave de sol y la de un ♭ en la fuente musical llegaban muy arriba: filas
+  despegadas o fuera del margen); en cada sistema, solo las filas que tienen algo; y se
+  recolocan al cargar las fuentes.
+- Pesos: en el nivel 2, las inversiones pesan 1,25 frente a 1 (se realizan peor y se
+  reintentan más). Reparto: tipo 1, ~20 % en estado fundamental y ~27 % cada inversión;
+  tipo 2, ~45/55.
+- Validación: `tests/masivo-septimas.js`: 0 faltas con licencias, ninguna ajena a N7, N10 y
+  N12 sin ellas, ninguna 7.ª de la secuencia sin preparar, cuadre del parser, render.

@@ -240,7 +240,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     va en el MEI: lo dibuja `ArmoniaEj.rotulosEncima` en filas fijas por
     sistema (los `<reh>` de Verovio caían a veces en otra fila o bajo el
     americano); la página reserva el sitio con `pageMarginTop`.
-    `tests/masivo-secuencia.js [nivel] [tipo] [n]`.
+    `tests/masivo-secuencia.js [nivel] [tipo] [n]`. Con `{septimas:true}`, la
+    familia Secuencias de 4.º UD 1 (círculo de 5.as con 7.as, `secuencia.md` §9;
+    páginas `secuencia-septimas-*.html`, `window.SEC_SEPTIMAS`).
   - `septimas-core.js` (`Septimas`) — familia 7.ª diatónica de 4.º UD 1
     (`docs/familias/septimas.md`): fórmula T0 · PD con 7.ª · (6/4) · D · (I),
     realizada con N16 (la 7.ª preparada); su MEI marca por nota `resp` y

@@ -198,9 +198,9 @@ const CURRICULO = {
                 'Añade los 6/4 de paso y de bordadura en la prolongación; 16 tonalidades.'
               ]}
           ]},
-        { id:'c4u1', n:1, titulo:'Séptimas diatónicas',
+        { id:'c4u1', n:1, titulo:'Séptimas diatónicas', publico:true,
           familias:[
-            { nombre:'7.ª diatónica', publico:false,
+            { nombre:'7.ª diatónica',
               desc:'Séptimas de predominante (II7, IV7 y sus inversiones) en la progresión cadencial, siempre tras una tónica que prepara la 7.ª como nota común. Al revelar, una realización a cuatro voces con la ligadura de preparación y la línea de la 7.ª destacada: preparación, 7.ª y resolución, en la misma voz.',
               consignas:[
                 {key:'ii', label:'II', title:'II grado', icono:'apilado', texto:'6/5',
@@ -220,6 +220,24 @@ const CURRICULO = {
               niveles:[
                 'Solo II6/5 (en II y IV grados, II6/5 frente a IV7, sobre el mismo bajo ④); tónica inicial I o I6; 6/4 cadencial; V o V7; 12 tonalidades.',
                 'Añade II7, II4/3 y II4/2 → V6 o V6/5 (en II y IV grados, también IV6/5 → V6/5, en mayor) y VI como tónica inicial.'
+              ]},
+            { nombre:'Secuencias',
+              desc:'El círculo de 5.as con 7.as —en estado fundamental, y con inversiones: 5/3–6/5, 4/2–6/3, 4/2–6/5—, solo o con cadencia y prolongación. Al revelar, una realización a cuatro voces con la ligadura de preparación de cada 7.ª, y el tramo y los módulos encima.',
+              consignas:[
+                {key:'circulo', label:'C. 5.as', title:'Círculo de 5.as', icono:'secuencia',
+                 url:'ejercicios/secuencia-septimas-circulo.html',
+                 apuntes:['c4u1#quintas-descendentes-en-estado-fundamental', 'c4u1#quintas-descendentes-con-inversiones'],
+                 desc:'El bajo del círculo, la tonalidad y el primer acorde: en qué voz va la 7.ª de cada acorde (y, en el nivel 2, en qué inversión está cada uno).'},
+                {key:'frase', label:'FRASE', title:'Frase', icono:'cc4',
+                 url:'ejercicios/secuencia-septimas-frase.html', apuntes:['c4u1#quintas-descendentes-en-estado-fundamental'],
+                 desc:'Cuatro compases: el círculo con 7.as y su cadencia, CA, SC o rota. Se piden tonalidad, acordes (con sus 7.as) y tramos.'},
+                {key:'periodo', label:'PERIODO', title:'Periodo', icono:'cc8',
+                 url:'ejercicios/secuencia-septimas-periodo.html', apuntes:['c4u1#quintas-descendentes-en-estado-fundamental'],
+                 desc:'Ocho compases, … SC ‖ … CA: un círculo con 7.as y, en la otra mitad, prolongación (con 7.as de predominante), romanesca u otro círculo con 7.as.'}
+              ],
+              niveles:[
+                'Círculo de 5.as con todos los acordes con 7.ª, en estado fundamental (salvo el I). Antes de la cadencia el patrón puede romperse (VI sin 7.ª y II6/5), y la frase puede acabar en cadencia rota. Lo demás, como Secuencia (nivel 2): mayor y menor, V7 y 6/4 cadencial.',
+                'Añade el círculo con inversiones: 5/3–6/5, 4/2–6/3 y 4/2–6/5 (en la frase y el periodo, las de 4/2 empiezan en anacrusa y, tras dos módulos, van a la cadencia por un II6/5).'
               ]}
           ]},
         { id:'c4u2', n:2, titulo:'Modulación y dominante secundaria', familias:[] },

@@ -258,13 +258,50 @@
   // varios sistemas). La clase `resp` oculta hasta revelar.
   function rotulosEncima(root, filas){
     if(!root || !root.querySelector) return;
+    // se mide sobre lo dibujado (el americano incluido): si las fuentes aún no
+    // han llegado, la medida cambia al cargar, y se vuelve a colocar todo
+    root.querySelectorAll('g.rotulo-encima').forEach(g=>g.remove());
+    if(document.fonts && document.fonts.status!=='loaded' && !root.__encimaPendiente){
+      root.__encimaPendiente=true;
+      const svg=root.querySelector('svg');
+      document.fonts.ready.then(()=>{ root.__encimaPendiente=false; if(root.querySelector('svg')===svg) rotulosEncima(root, filas); });
+    }
     const NS='http://www.w3.org/2000/svg';
     const cab=root.querySelector('g.notehead'); if(!cab) return;
     let esp; try{ esp=cab.getBBox().height; }catch(e){ return; }
-    const techo=new Map();                     // sistema → y más alta de su contenido
-    root.querySelectorAll('g.system').forEach(s=>{ try{ techo.set(s, s.getBBox().y); }catch(e){} });
+    // sistema → y más alta de su contenido MUSICAL: notas, cifrados, ligaduras,
+    // líneas del pentagrama. No la caja del sistema: la de la clave de sol (el
+    // <use> del glifo) llega mucho más arriba de lo que se ve, y las filas
+    // quedaban despegadas del americano o se salían del margen reservado.
+    const techo=new Map();
+    root.querySelectorAll('g.system').forEach(s=>{
+      let y=Infinity;
+      s.querySelectorAll('g.note, g.tie, g.ledgerLines, g.staff > path').forEach(e=>{
+        try{ const b=e.getBBox(); if(b.height>0 || b.width>0) y=Math.min(y, b.y); }catch(err){}
+      });
+      // los cifrados, desde su línea base y su cuerpo: la caja de un texto con
+      // alteración (♭, en un <tspan> de la fuente musical, a otro cuerpo) llega
+      // muy por encima de lo que se ve
+      s.querySelectorAll('g.harm text').forEach(t=>{
+        // (más lo que la haya bajado bajarAmericano: translate en su <g>)
+        const tr=/translate\(0 ([-\d.e]+)\)/.exec((t.closest('g.harm')||t).getAttribute('transform')||'');
+        const base=parseFloat(t.getAttribute('y')) + (tr ? parseFloat(tr[1]) : 0);
+        const cuerpo=Math.max(0, ...[...t.querySelectorAll('tspan[font-size]:not([font-family])')].map(x=>parseFloat(x.getAttribute('font-size'))||0));
+        if(base && cuerpo) y=Math.min(y, base-0.8*cuerpo);
+      });
+      if(y<Infinity) techo.set(s, y);
+    });
     const caja=id=>{ const g=root.querySelector('#'+CSS.escape(id)); if(!g) return null;
       try{ return {g, b:(g.querySelector('g.notehead')||g).getBBox(), s:g.closest('g.system')}; }catch(e){ return null; } };
+    // en cada sistema, solo las filas que tienen algo (en el periodo, el sistema
+    // de la prolongación no tiene módulos): rango[sistema][f] = altura de la fila
+    const rango=new Map();
+    filas.forEach((fila, f)=>fila.forEach(it=>{
+      const a=caja(it.desde); if(!a || !a.s) return;
+      if(!rango.has(a.s)) rango.set(a.s, new Set());
+      rango.get(a.s).add(f);
+    }));
+    const altura=(s, f)=>[...rango.get(s)].filter(x=>x<f).length;
     filas.forEach((fila, f)=>fila.forEach((it, j)=>{
       const a=caja(it.desde), z=caja(it.hasta || it.desde); if(!a || !z || !a.s) return;
       // el rótulo siguiente de la fila, si está en el mismo sistema: la línea se
@@ -272,7 +309,7 @@
       const sig = fila[j+1] && fila[j+1].texto ? caja(fila[j+1].desde) : null;
       const tope = sig && sig.s===a.s ? sig.b.x - esp*0.8 : Infinity;
       const y0=techo.get(a.s); if(y0==null) return;
-      const y=y0 - esp*(1.0 + 2.6*f);           // línea base de la fila
+      const y=y0 - esp*(1.0 + 2.6*altura(a.s, f));   // línea base de la fila
       const g=document.createElementNS(NS,'g');
       g.setAttribute('class','rotulo-encima '+(it.clase||''));
       a.s.appendChild(g);
@@ -447,7 +484,8 @@
       const notas=Array.from(staff.querySelectorAll('g.note')).map(n=>{
         try{
           const b=(n.querySelector('g.notehead')||n).getBBox();
-          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25, oculta:!!n.closest('.resp'),
+          return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25,
+                  oculta:!!n.closest('.resp') && !n.classList.contains('dada'),
                   gris:n.classList.contains('gris'), atenua:n.classList.contains('atenua')};
         }catch(e){ return null; }
       }).filter(Boolean);
@@ -463,6 +501,43 @@
         // igual con las que solo se atenúan al revelar (7.ª diatónica)
         if(usan.length && usan.every(n=>n.atenua)) p.classList.add('atenua');
       });
+    });
+  }
+
+  /* ---------- la fila del americano, pegada a la música ---------- */
+  // Cuando dos americanos (<harm type="americano">) de un sistema se tocan en
+  // horizontal —cifrados largos en compases apretados: «Fmaj7/E» junto a
+  // «B°/D»—, Verovio sube TODA la fila de cifrados del sistema, y queda un
+  // hueco bajo el americano. Aquí, tras el render, cada fila se baja hasta su
+  // distancia normal sobre lo que tiene debajo (notas, plicas, ligaduras,
+  // pentagrama…; también lo oculto, que conserva su caja: revelar no mueve
+  // nada). El solape horizontal en sí queda pendiente (Modelo-ejercicios.md §8).
+  // Se mide en pantalla (el SVG ya está en el DOM) y se mueve en unidades SVG.
+  function bajarAmericano(root){
+    if(!root || !root.querySelectorAll) return;
+    const cab=root.querySelector('g.notehead'); if(!cab) return;
+    const esp=cab.getBoundingClientRect().height; if(!esp) return;
+    root.querySelectorAll('g.system').forEach(s=>{
+      const harms=Array.from(s.querySelectorAll('g.harm.americano'));
+      if(!harms.length) return;
+      // caja visible de cada americano: su texto, sin el glifo de la fuente
+      // musical (♭, ♯), cuya caja baja mucho más que lo que se ve
+      const cajas=harms.map(g=>{
+        const sp=Array.from(g.querySelectorAll('tspan[font-size]:not([font-family])')).map(t=>t.getBoundingClientRect()).filter(b=>b.width);
+        if(!sp.length) return null;
+        return {l:Math.min(...sp.map(b=>b.left)), r:Math.max(...sp.map(b=>b.right)), b:Math.max(...sp.map(b=>b.bottom))};
+      }).filter(Boolean);
+      if(!cajas.length) return;
+      const hojas=Array.from(s.querySelectorAll('path, use, rect, polygon, ellipse'))
+        .filter(e=>!e.closest('g.harm') && !e.closest('.rotulo-encima')).map(e=>e.getBoundingClientRect()).filter(b=>b.height || b.width);
+      // la menor holgura entre un americano y lo que tiene debajo
+      let holgura=Infinity;
+      cajas.forEach(c=>hojas.forEach(h=>{ if(h.right>c.l && h.left<c.r && h.bottom>c.b) holgura=Math.min(holgura, h.top-c.b); }));
+      const exceso=holgura - 0.6*esp;
+      if(!(exceso > 0.3*esp) || holgura===Infinity) return;
+      const ctm=s.getScreenCTM(); if(!ctm || !ctm.d) return;
+      const dy=exceso/ctm.d;
+      harms.forEach(g=>{ const t=g.getAttribute('transform')||''; g.setAttribute('transform', `translate(0 ${dy}) ${t}`.trim()); });
     });
   }
 
@@ -508,6 +583,7 @@
       const root=$('notation');
       tk.loadData(cfg.mei(inst));
       root.innerHTML=tk.renderToSVG(1);
+      bajarAmericano(root);
       if(cfg.trasRender) cfg.trasRender(root, inst);
       lineasAdicionales(root);
       marcarPasos();

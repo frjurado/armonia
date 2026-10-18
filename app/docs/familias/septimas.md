@@ -1,7 +1,7 @@
 # 7.ª diatónica — diseño
 
-> Decidido el 2026-10-17 con el usuario. ⟶ HECHO (2026-10-17), con `publico:false` hasta
-> revisarla. El modelo común (material, consigna, presentación, nivel; la página de
+> Decidido el 2026-10-17 con el usuario. ⟶ HECHO (2026-10-17), pública desde el
+> 2026-10-18. El modelo común (material, consigna, presentación, nivel; la página de
 > ejercicio) está en `../Modelo-ejercicios.md`; el motor, en `../motor-cuatro-voces.md`.
 
 Familia *7.ª diatónica* de 4.º UD 1, con tres consignas: **II grado**, **II y IV grados** y

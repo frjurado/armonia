@@ -51,7 +51,8 @@
   };
   const CADENCIAS = {
     CA:{sigla:'CA', nombre:'Cadencia Auténtica'},
-    SC:{sigla:'SC', nombre:'Semicadencia'}
+    SC:{sigla:'SC', nombre:'Semicadencia'},
+    CR:{sigla:'CR', nombre:'Cadencia Rota'}      // solo la frase de Secuencias con 7.as (4.º UD 1)
   };
 
   /* ---------- acordes ---------- */
@@ -584,7 +585,11 @@
     return partes.join(' ‖ ');
   }
   // Compás (1…) de un evento
-  function compasDe(inst, k){ return inst.ritmo.compases.findIndex(m=>m.some(x=>x.k===k))+1; }
+  // (con anacrusa, el compás incompleto es el 0; lo que empieza en él, c. 1)
+  function compasDe(inst, k){
+    const i=inst.ritmo.compases.findIndex(m=>m.some(x=>x.k===k));
+    return inst.ritmo.anacrusa ? Math.max(1, i) : i+1;
+  }
   function detalleTramo(inst, t){
     const c1=compasDe(inst,t.desde), c2=compasDe(inst,t.hasta);
     const cc = c1===c2 ? 'c. '+c1 : 'cc. '+c1+'–'+c2;
@@ -683,7 +688,7 @@
         harms += arriba + `<harm place="below" staff="2" startid="#b${x.k}" n="1"${masc?' type="resp"':''}>${romanoXml(a, sub)}</harm>`;
         (inst.alternativas[x.k]||[]).forEach((id,j)=>{
           harms += `<harm place="below" staff="2" startid="#b${x.k}" n="${j+2}" type="alt${R}" vo="${VO_ALT}">`
-                 + romanoXml(acordeDe(key,id), sub)+`</harm>`;
+                 + romanoXml(typeof id==="string" ? acordeDe(key,id) : CV.acorde(key,id), sub)+`</harm>`;   // id del catálogo o spec (Secuencia con 7.as)
         });
       });
       if(i===0 && opts.dato) harms += `<reh place="above" staff="1" tstamp="1" type="dato">${esc(opts.dato)}</reh>`;

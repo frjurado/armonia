@@ -141,6 +141,9 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
    respuesta la línea (y su ligadura) cuando se destaca sobre la realización */
 .mascara.revelado #notation g.note.atenua, .mascara.revelado #notation g.ledgerLines path.atenua{opacity:.32}
 .mascara.revelado #notation g.note.destaca{fill:var(--ok)}
+/* nota dada dentro de una voz oculta (el primer acorde de Secuencias ·
+   Círculo de 5.as): a la vista aunque su capa sea `resp` */
+.mascara:not(.oir) #notation g.note.dada, .mascara.revelado #notation g.note.dada{visibility:visible}
 .mascara.revelado #notation g.tie.destaca path{fill:var(--ok);stroke:var(--ok)}
 /* enunciado textual en la tarjeta de partitura (Unidad 0: nombre de la
    tonalidad o cifrado americano, cuando la partitura es la respuesta) */
