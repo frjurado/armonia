@@ -44,7 +44,9 @@ En la consigna:
 | `movimientos-armonicos` | Entre cada sonoridad y la siguiente, escribe debajo el movimiento armónico de las dos voces: contrario, oblicuo, directo o paralelo. | Dos voces, cada una en su pentagrama. | El movimiento de cada paso. | 3.º UD 1 |
 | `paralelas` | Busca todos los movimientos paralelos entre cualquier pareja de voces. Escríbelos debajo, entre los dos acordes, con las voces y el intervalo que forman (S–A 3.as), y marca los que sean incorrectos. | Un fragmento a cuatro voces. | Cada paralela, con sus voces y su intervalo; las 5.as y 8.as, como faltas. | 3.º UD 1 |
 | `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
-| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices]. | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
+| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
+| `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
+| `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
 
 ## Notas sobre cada tipo
 
@@ -149,3 +151,32 @@ Una forma cómoda de comprobarla: fijar el bajo y la soprano y dejar que el
 motor a cuatro voces de la app (`cuatro-voces-core.js`) busque contralto y
 tenor; el conjunto se pasa por el comprobador independiente
 (`cuatro-voces-check.js`). Así se hicieron las de `c4u0-f2`.
+
+Con `pide="septimas"` (4.º UD 1), la consigna pide además una 7.ª que no sea
+la del V: el bajo tiene que dejar sitio para ella, en la prolongación (el ①
+repetido que admite un II4/2) o en la cadencia (④ antes del 6/4 o del V).
+
+### `septima-bajo-cifrado`
+
+La versión en papel de 7.ª diatónica › II grado (`app/docs/familias/septimas.md`),
+terminada a cuatro voces. El orden es lo que se enseña: primero la línea de la
+7.ª (preparación, 7.ª, resolución, y entre medias el 6/4 si lo hay), y el
+resto de las voces alrededor. Como en la app, en el primer acorde solo **una**
+voz superior lleva la nota que será la 7.ª, para que la voz sea única; en
+gestos distintos, voces distintas.
+
+Material: dos o tres gestos, mayor y menor, en un sistema (las armaduras y la
+doble barra, en `global`; la tonalidad no se dice: la dan la armadura y el
+primer acorde). Cifras
+como en un bajo cifrado: la sensible del menor con su alteración (5/♮ tras el
+6/4 en Fa menor). La solución lleva la ligadura de preparación.
+
+### `septima-ligadura`
+
+La versión en papel de 7.ª diatónica › II y IV grados. El bajo sin cifrar y la
+nota ligada deciden el acorde: sobre ④, 1̂ ligado es II6/5 y 3̂ es IV7; sobre
+⑥, II4/3 o IV6/5 (este, solo en mayor). Conviene que dos gestos compartan el
+grado del bajo y difieran en la nota ligada.
+
+Material: como el anterior; la ligadura llega a una nota oculta (`\llega` en
+la plantilla), así que se ve de dónde sale pero no se lee nada más.
