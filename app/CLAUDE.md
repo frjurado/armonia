@@ -120,7 +120,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
     `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
     `Movimientos`, `Contrapunto`, `Consonancia`, `Disposicion`,
-    `ParalelasDirectas`, `Secuencia`) con TODA la
+    `ParalelasDirectas`, `Enlace`, `Secuencia`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
   - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
@@ -196,6 +196,13 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     una nota por otra del mismo acorde); el comprobador de 4.º vigila que no
     se cuele nada más. Reutiliza `Movimientos.toMEI` y `midis`.
     `tests/masivo-paralelas-directas.js`.
+  - `enlace-core.js` (`Enlace`) — Enlazar acordes, 2.ª consigna de Paralelas
+    y directas: bajo en estado fundamental (`BajoCifrado.generar` con
+    `fundamental` y `evita`) y la solución única de «notas comunes o
+    contrario», que calcula `enlazar` y vigilan los dos comprobadores. Partitura
+    de `Movimientos.toMEI` con `resp[v][k]` (notas de respuesta) y modo por
+    pasos: la página pone `data-paso` en cada nota oculta, y
+    `lineasAdicionales` se lo pasa a sus líneas. `tests/masivo-enlace.js`.
   - `cuatro-voces-core.js` (`CuatroVoces`) — motor genérico SATB para todo
     4.º: modelo de acorde, enumeración de disposiciones y búsqueda bajo las
     normas/preferencias de `curriculum/Minimos-conduccion.md`. Las

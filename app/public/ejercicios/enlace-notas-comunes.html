@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armonía · Enlazar acordes</title>
+<!-- Verovio (render de partitura, WASM) y soundfont-player (audio por samples), en vendor/.
+     Los samples de piano siguen descargándose de la red al primer «Escuchar». -->
+<script src="../vendor/verovio/verovio-toolkit-wasm.js" defer></script>
+<script src="../vendor/soundfont-player/soundfont-player.min.js"></script>
+<script src="../tonalidades.js"></script>
+<script src="contrapunto-core.js"></script>
+<script src="conduccion-check.js"></script>
+<script src="cuatro-voces-core.js"></script>
+<script src="cuatro-voces-check.js"></script>
+<script src="bajo-cifrado-core.js"></script>
+<script src="movimientos-core.js"></script>
+<script src="enlace-core.js"></script>
+<script src="../curriculum-data.js"></script>
+<script src="comun.js"></script>
+<link rel="stylesheet" href="comun.css">
+</head>
+<body>
+<header>
+  <h1>Enlazar acordes</h1>
+  <span class="sub">Paralelas y directas · Unidad 1 · 3.º</span>
+  <a class="back" href="../index.html">← Menú</a>
+  <span class="level"></span>
+</header>
+
+<main>
+  <div class="ej-row">
+    <div class="ej-main">
+      <p class="pregunta">Enlaza los acordes: si hay <b>notas comunes</b>, se mantienen; si no las hay, <b>movimiento contrario</b> al bajo.</p>
+      <div class="score-card"><div id="notation"><span class="ph">Cargando motor de partitura…</span></div></div>
+      <div class="under"><p class="nivel-desc" id="nivelDesc"></p></div>
+      <div class="answer" id="answer">
+        <div class="q" id="ansQ">—</div>
+        <div class="det" id="ansDet"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button id="btnListen" title="Escuchar"><span class="ic">▶</span>Escuchar</button>
+      <button id="btnPaso" class="primary" title="Mostrar el acorde siguiente"><span class="ic">»</span>Siguiente</button>
+      <button id="btnReveal" title="Mostrar todos los acordes"><span class="ic">✓</span>Respuesta</button>
+      <div class="sep"></div>
+      <button id="btnSimilar" title="Otro ejercicio"><span class="ic">↻</span>Otro</button>
+    </div>
+  </div>
+
+  <details class="ayuda">
+    <summary><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Ayuda</summary>
+  <p class="prompt">Un bajo de ocho notas, todas fundamentales de su acorde, y el primer acorde
+     completo. Construye los siguientes de uno en uno, con la fundamental duplicada: si el acorde
+     siguiente tiene <b>notas comunes</b> con el anterior, se mantienen en la misma voz, y las demás
+     voces van por grado conjunto a las notas que faltan; si <b>no las tiene</b>, las tres voces
+     superiores se mueven en <b>dirección contraria al bajo</b>, cada una a la nota más cercana del
+     acorde siguiente. «Siguiente» muestra un acorde más y hace sonar el enlace; «Respuesta», todos.</p>
+  </details>
+</main>
+
+<script>
+/* UI — Enlazar acordes. La lógica musical vive en enlace-core.js (partitura y
+   audio, de movimientos-core.js); lo común de la página (también el modo por
+   pasos), en ArmoniaEj.ejercicio (comun.js). */
+(function(){
+  'use strict';
+  const E = window.Enlace;
+  ArmoniaEj.ejercicio({
+    maxNivel: E.MAX_NIVEL,
+    generar: nivel => E.generar(nivel),
+    mei: inst => E.toMEI(inst),
+    trasRender: (root, inst) => {
+      // cada nota de respuesta, con el paso que la muestra (antes de las
+      // líneas adicionales, que lo heredan)
+      inst.resp.forEach((x,v)=>x.forEach((r,k)=>{
+        const g=r && root.querySelector('#n'+v+'_'+k);
+        if(g) g.setAttribute('data-paso', k);
+      }));
+      const d = E.dibujo(inst);
+      ArmoniaEj.lineasMovimiento(root, d.rayas);
+      ArmoniaEj.rotulosEntre(root, d.rotulos);
+    },
+    pasos: inst => inst.enlaces.length,
+    audioPaso: (inst, k) => E.midisPaso(inst, k),
+    respuesta: inst => {
+      const n = t => inst.enlaces.filter(e=>(e.comunes.length>0)===t).length;
+      const enl = k => k+(k===1 ? ' enlace' : ' enlaces');
+      return {
+        ansQ: inst.grados.join(' – '),
+        ansDet: `${inst.key.nombre} · disposición ${inst.disp} en todos los acordes · `
+          + `${enl(n(true))} con notas comunes, ${n(false)} por movimiento contrario`
+      };
+    },
+    audio: (inst, revelado) => E.midis(inst, revelado),
+    // un sistema estirado a todo el ancho; debajo, sitio para los rótulos (en una fila)
+    verovio: {scale:60, pageWidth:1250, breaks:'auto', minLastJustification:0,
+              pageMarginLeft:40, pageMarginBottom:75}
+  });
+})();
+</script>
+</body>
+</html>

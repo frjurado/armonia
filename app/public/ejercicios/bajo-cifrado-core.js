@@ -162,29 +162,35 @@
   const PESO_INTERVALO = d => ({0:1, 1:3, 2:2, 3:1.2, 4:1, 5:0.4, 7:0.25})[Math.abs(d)] || 0.1;
 
   /* ---------- generación ---------- */
-  // generar(nivel, {key, n}) → instancia, o null si la búsqueda no da con nada
+  // generar(nivel, {key, n, fin, fundamental, evita}) → instancia, o null si
+  // la búsqueda no da con nada.
+  //   fundamental: solo acordes en estado fundamental, empezando en I (y sin
+  //     exigir una inversión): el bajo de Enlazar acordes (enlace-core.js).
+  //   evita: pares [anterior, siguiente] que no pueden ir seguidos.
   function generar(nivel, opts){
     opts=opts||{};
     for(let intento=0; intento<60; intento++){
       const key = opts.key || tonalidades(nivel)[rnd(tonalidades(nivel).length)];
       const n = opts.n || (5 + rnd(2));
       const finV = opts.fin ? opts.fin==='V' : Math.random()<0.35;
-      const r = buscar(key, n, finV);
+      const r = buscar(key, n, finV, opts);
       if(r) return construir(nivel, key, r.ids, r.ps);
       if(opts.key && opts.n && intento>20) return null;
     }
     return null;
   }
 
-  function buscar(key, n, finV){
-    const disp = key.mode==='minor' ? EN_MENOR : EN_MAYOR;
+  function buscar(key, n, finV, opts){
+    const fund = !!(opts && opts.fundamental), evita = (opts && opts.evita) || [];
+    const disp = (key.mode==='minor' ? EN_MENOR : EN_MAYOR).filter(id => !fund || ACORDES[id].inv===0);
     const ch = {}; disp.forEach(id => ch[id]=CV.acorde(key, ACORDES[id]));
     const ids=[], ps=[];
     let pasos=0;
     function candidatos(k){
       let opc;
-      if(k===0) opc=[{x:'I',w:3},{x:'I6',w:1}];
-      else opc=Object.entries(SIGUE[ids[k-1]]).filter(([id])=>disp.includes(id)).map(([x,w])=>({x,w}));
+      if(k===0) opc = fund ? [{x:'I',w:1}] : [{x:'I',w:3},{x:'I6',w:1}];
+      else opc=Object.entries(SIGUE[ids[k-1]]).filter(([id])=>disp.includes(id) && !evita.some(([a,b])=>a===ids[k-1] && b===id))
+                 .map(([x,w])=>({x,w}));
       // final: …V–I, o semicadencia desde un predominante o el 6/4 cadencial
       if(k===n-1) opc=opc.filter(o => finV ? o.x==='V' : (o.x==='I' && ids[k-1]==='V'));
       if(k===n-2) opc=opc.filter(o => finV ? PRE_SC.includes(o.x) : o.x==='V');
@@ -219,7 +225,7 @@
     }
     if(!dfs(0)) return null;
     // al menos una inversión; si no, se repite
-    if(!ids.some(id => ACORDES[id].inv>0)) return null;
+    if(!fund && !ids.some(id => ACORDES[id].inv>0)) return null;
     return {ids, ps};
   }
 

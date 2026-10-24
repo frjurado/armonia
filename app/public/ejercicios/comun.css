@@ -134,6 +134,11 @@ a.apuntes-enlace:active{border-color:var(--ink);color:var(--ink)}
 #notation line.raya{stroke-linecap:round;opacity:.85}
 #notation line.raya.voz-sup{stroke:var(--voz-sup)}
 #notation line.raya.voz-inf{stroke:var(--voz-inf)}
+/* Enlazar acordes: la nota común mantenida, del color del rótulo; el
+   movimiento contrario (rayas en las cuatro voces y su rótulo), en azul */
+#notation line.raya.mantenida{stroke:var(--ok)}
+#notation line.raya.contraria{stroke:var(--voz-sup)}
+#notation text.rotulo.contraria{fill:var(--voz-sup)}
 /* voces que no se preguntan (la pareja resaltada entre cuatro), en gris */
 #notation g.note.gris, #notation g.ledgerLines path.gris{opacity:.32}
 /* 7.ª diatónica: al revelar, en gris las notas superiores que no son de la
