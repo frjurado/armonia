@@ -72,3 +72,37 @@ al lado de donde se quiere poner otra (el motor prefiere 3.as y 6.as): la inyecc
 cambiar dos notas seguidas de una voz, a una 5.ª u 8.ª de la otra en las dos sonoridades,
 siempre que sigan siendo justas. La directa también cabe menos: se intenta primero más a
 menudo.
+
+## Enlazar acordes (2.ª consigna)
+
+> Decidido el 2026-10-24. ⟶ HECHO el mismo día: `enlace-core.js` + `enlace-notas-comunes.html`,
+> oculta con la familia.
+
+**Lo que se da**: un bajo de 8 notas, todo en estado fundamental, y el primer acorde completo
+(disposición cerrada o abierta a partes iguales, nunca mixta; siempre con la fundamental
+duplicada). **Lo que se pide**: enlazar los siete acordes siguientes con la consigna básica
+(c3u1, final de §2.5; Minimos P4): **si hay notas comunes, se mantienen** (y las demás voces van
+por grado a las notas que faltan); **si no las hay, las tres voces superiores van por movimiento
+contrario al bajo**, cada una a la nota más cercana del acorde siguiente en esa dirección.
+
+- La consigna da **una sola solución** desde el primer acorde, y en estado fundamental
+  conserva la fundamental duplicada y la disposición. La genera la propia consigna (no el
+  motor a cuatro voces); los dos comprobadores (general y de 4.º) vigilan que sea correcta.
+- **El bajo**: la gramática de *Morfología* (`bajo-cifrado-core.js`, opción `fundamental`):
+  I, II, III, IV, V, VI (en menor, sin II ni III); empieza en I y acaba en V–I o en un
+  predominante–V. **Fuera V–VI y VI–V**: con la consigna, la sensible bajaría (y en menor habría
+  2.ª aumentada); **y III–IV**, por lo mismo (la sensible del III bajaría al la, N7).
+- **Niveles**: 1, tonalidades mayores; 2, también menores (las del 1.er trimestre, como
+  *Morfología*).
+- **Paso a paso** (modo por pasos de la página común): «Siguiente» muestra el acorde siguiente
+  y hace sonar el enlace; «Respuesta», todos. Bajo cada enlace, un rótulo abreviado —«1 n.c.»,
+  «2 n.c.» o «contr.»: así caben en una sola fila entre blancas seguidas (con «m. contr.», no)— y rayas: en terroso, la que une
+  cada nota mantenida; en azul (como su rótulo), en el movimiento contrario, una por voz, también
+  la del bajo, para que se vea la dirección.
+- Partitura de *Movimientos* (`Movimientos.toMEI`, blancas en un compás sin métrica, S–A en
+  clave de Sol y T–B en clave de Fa), con las voces superiores de los acordes 2–8 como
+  respuesta (`resp`, con su `data-paso`).
+
+Validación: `../../tests/masivo-enlace.js [n]` (por nivel): la solución sigue la consigna
+(recalculada aparte), cero faltas en los dos comprobadores, el primer acorde con la fundamental
+duplicada y la disposición sorteada, sin las sucesiones vetadas, y el render con máscara.

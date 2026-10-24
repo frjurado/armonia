@@ -486,6 +486,7 @@
           const b=(n.querySelector('g.notehead')||n).getBBox();
           return {x0:b.x, x1:b.x+b.width, cy:b.y+b.height/2, tol:b.height*0.25,
                   oculta:!!n.closest('.resp') && !n.classList.contains('dada'),
+                  paso:+(n.getAttribute('data-paso')||0),
                   gris:n.classList.contains('gris'), atenua:n.classList.contains('atenua')};
         }catch(e){ return null; }
       }).filter(Boolean);
@@ -494,7 +495,11 @@
         if(!m) return;
         const x0=+m[1], y=+m[2], x1=+m[3];
         const usan=notas.filter(n=>n.x0<x1 && n.x1>x0 && (arriba ? n.cy<=y+n.tol : n.cy>=y-n.tol));
-        if(usan.length && usan.every(n=>n.oculta)) p.classList.add('resp');
+        if(usan.length && usan.every(n=>n.oculta)){
+          p.classList.add('resp');
+          // modo por pasos: se ve con la primera de sus notas que se muestre
+          if(usan.every(n=>n.paso)) p.setAttribute('data-paso', Math.min(...usan.map(n=>n.paso)));
+        }
         // y en gris, la que solo necesitan notas en gris (las voces que no se
         // preguntan); si la comparte una nota en tinta, en tinta
         if(usan.length && usan.every(n=>n.gris)) p.classList.add('gris');

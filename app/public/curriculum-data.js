@@ -118,12 +118,20 @@ const CURRICULO = {
                  ]}
               ]},
             { nombre:'Paralelas y directas', publico:false,
-              desc:'Encontrar las 5.as y 8.as paralelas y las directas, primero a dos voces y después a cuatro.',
+              desc:'Encontrar las 5.as y 8.as paralelas y las directas, primero a dos voces y después a cuatro; y enlazar acordes sin ellas.',
               consignas:[
                 {key:'faltas', title:'Buscar faltas', icono:'paralelas',
                  url:'ejercicios/paralelas-directas.html',
                  apuntes:['c3u1#quintas-y-octavas-paralelas', 'c3u1#quintas-y-octavas-directas'],
-                 desc:'Ocho sonoridades con 0–2 faltas: 5.as u 8.as paralelas (también por movimiento contrario) y, a cuatro voces, directas entre las extremas.'}
+                 desc:'Ocho sonoridades con 0–2 faltas: 5.as u 8.as paralelas (también por movimiento contrario) y, a cuatro voces, directas entre las extremas.'},
+                {key:'enlazar', title:'Enlazar acordes', icono:'triada',
+                 url:'ejercicios/enlace-notas-comunes.html',
+                 apuntes:['c3u1#quintas-y-octavas-paralelas'],
+                 desc:'Un bajo de ocho notas en estado fundamental y el primer acorde: enlazar los demás manteniendo las notas comunes o, si no las hay, por movimiento contrario al bajo, acorde a acorde.',
+                 niveles:[
+                   'Tonalidades mayores.',
+                   'Mayores y menores (la menor, armónica).'
+                 ]}
               ],
               niveles:[
                 'Dos voces de una pareja del coro: 5.as y 8.as paralelas.',

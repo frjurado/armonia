@@ -274,8 +274,10 @@
     }
     // armónicos (y Paralelas y directas, que lo reutiliza): dos voces, con el
     // nombre de la pareja como dato; o cuatro (pent 'satb'), con las dos que no
-    // se preguntan en gris si hay pareja resaltada (`sel`)
-    const capa = (v,n) => `<layer n="${n}">${inst.voces[v].map((p,k)=>nt(p, idNota(v,k), !inst.sel || inst.sel.includes(v) ? '' : 'gris')).join('')}</layer>`;
+    // se preguntan en gris si hay pareja resaltada (`sel`); con `resp` (Enlazar
+    // acordes: resp[v][k]), las notas que son respuesta
+    const tipoNota = (v,k) => inst.resp && inst.resp[v][k] ? 'resp' : !inst.sel || inst.sel.includes(v) ? '' : 'gris';
+    const capa = (v,n) => `<layer n="${n}">${inst.voces[v].map((p,k)=>nt(p, idNota(v,k), tipoNota(v,k))).join('')}</layer>`;
     const vacia = `<layer n="1">${'<space dur="2"/>'.repeat(N)}</layer>`;
     let staves;
     if(inst.pent==='satb') staves = `<staff n="1">${capa(0,1)}${capa(1,2)}</staff><staff n="2">${capa(2,1)}${capa(3,2)}</staff>`;
