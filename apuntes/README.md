@@ -417,3 +417,23 @@ El flujo está completo y las tres salidas se generan.
 
 Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
 unidad y al revés). `_site/` ya lo permite con rutas relativas.
+
+### Revisión para el curso 2027-28
+
+Cambios decididos que no se hacen ya porque los alumnos de este curso tienen los
+apuntes. Al empezar la revisión, leer esta lista; al hacer cada cambio, quitarlo de
+aquí (y, si mueve un epígrafe citado, corregir su ancla en `curriculum-data.js`).
+
+- **Morfología de c3u1 a c3u0, entera o en parte** (cifrado de grados, bajo cifrado
+  de tríadas). Los ejercicios se mueven solo con datos, en `curriculum-data.js`
+  (`app/docs/Modelo-ejercicios.md` §3; decidido en
+  `informes/2026-10-05-revision-tras-clase.md`).
+- **Cómo enlazar dos acordes en estado fundamental** (añadido el 2026-10-24): si hay
+  notas comunes, se mantienen y las demás voces van por grado; si no, las voces
+  superiores van por movimiento contrario al bajo (Minimos P4). Hoy solo aparece de
+  pasada en el comentario del Chopin, al final de c3u1, y no encaja en c3u2. Lo
+  practica ya la consigna «Enlazar acordes» de la app (Paralelas y directas, 3.º UD
+  1), que de momento enlaza a §2.4: lugar natural, un epígrafe tras §2.5 (o como
+  cierre de §2), como el procedimiento que evita las paralelas y las directas. Ojo:
+  con la consigna, V–VI, VI–V y III–IV no salen bien (la sensible bajaría): conviene
+  decirlo y dejarlos para su unidad.

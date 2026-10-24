@@ -1,11 +1,12 @@
 # Paralelas y directas — diseño
 
 > Decidido el 2026-10-09 (`../../../informes/2026-10-09-plan-ud1.md`). ⟶ HECHO (fase 5e,
-> 2026-10-10): `paralelas-directas-core.js` + `paralelas-directas.html`, con `publico:false`
-> hasta revisarla. Lo común —faltas inyectadas, comprobador general, pareja resaltada— está en
+> 2026-10-10): `paralelas-directas-core.js` + `paralelas-directas.html`, pública desde
+> el 2026-10-24, con su 2.ª consigna. Lo común —faltas inyectadas, comprobador general, pareja resaltada— está en
 > `../motor-contrapunto.md`.
 
-Hoy en el plan: 3.º UD 1, familia *Paralelas y directas*, una consigna con niveles.
+Hoy en el plan: 3.º UD 1, familia *Paralelas y directas*: *Buscar faltas*, con niveles
+(lo que sigue), y *Enlazar acordes* (al final).
 Apuntes: c3u1 §2.4 *Quintas y octavas paralelas* y §2.5 *Quintas y octavas directas*. Va
 detrás de *Movimientos · Armónicos*: una directa es un movimiento directo que llega a 5.ª u
 8.ª, así que primero se identifica el movimiento y después a qué llega.
@@ -75,8 +76,9 @@ menudo.
 
 ## Enlazar acordes (2.ª consigna)
 
-> Decidido el 2026-10-24. ⟶ HECHO el mismo día: `enlace-core.js` + `enlace-notas-comunes.html`,
-> oculta con la familia.
+> Decidido el 2026-10-24. ⟶ HECHO el mismo día: `enlace-core.js` + `enlace-notas-comunes.html`;
+> pública con la familia el 2026-10-24. En los apuntes aún no se explica: anotado para el curso
+> que viene en `../../../apuntes/README.md` (Estado).
 
 **Lo que se da**: un bajo de 8 notas, todo en estado fundamental, y el primer acorde completo
 (disposición cerrada o abierta a partes iguales, nunca mixta; siempre con la fundamental

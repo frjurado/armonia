@@ -117,7 +117,7 @@ const CURRICULO = {
                    'Una pareja resaltada entre las cuatro voces de una realización.'
                  ]}
               ]},
-            { nombre:'Paralelas y directas', publico:false,
+            { nombre:'Paralelas y directas',
               desc:'Encontrar las 5.as y 8.as paralelas y las directas, primero a dos voces y después a cuatro; y enlazar acordes sin ellas.',
               consignas:[
                 {key:'faltas', title:'Buscar faltas', icono:'paralelas',
