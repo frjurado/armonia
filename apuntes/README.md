@@ -415,9 +415,6 @@ El flujo está completo y las tres salidas se generan.
   (cuatro bajos, en serie).
 - **`c3u2.md`** — todavía guion, sin redactar.
 
-Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
-unidad y al revés). `_site/` ya lo permite con rutas relativas.
-
 ### Revisión para el curso 2027-28
 
 Cambios decididos que no se hacen ya porque los alumnos de este curso tienen los

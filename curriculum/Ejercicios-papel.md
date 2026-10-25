@@ -43,6 +43,8 @@ En la consigna:
 | `faltas-melodicas` | Señala con un corchete, encima de las notas, cada falta de la melodía, y di cuál es: un intervalo aumentado o disminuido, un salto demasiado grande, o dos saltos seguidos en la misma dirección que sumen una 7.ª o una 9.ª. Señala también, entre paréntesis, los saltos de 4.ª o mayores que no se compensan. | Una línea melódica, sin compás. | Las faltas melódicas (N12, N13, N15) y los saltos sin compensar (P9). | 3.º UD 1 |
 | `movimientos-armonicos` | Entre cada sonoridad y la siguiente, escribe debajo el movimiento armónico de las dos voces: contrario, oblicuo, directo o paralelo. | Dos voces, cada una en su pentagrama. | El movimiento de cada paso. | 3.º UD 1 |
 | `paralelas` | Busca todos los movimientos paralelos entre cualquier pareja de voces. Escríbelos debajo, entre los dos acordes, con las voces y el intervalo que forman (S–A 3.as), y marca los que sean incorrectos. | Un fragmento a cuatro voces. | Cada paralela, con sus voces y su intervalo; las 5.as y 8.as, como faltas. | 3.º UD 1 |
+| `faltas-paralelas` | Busca las 5.as y 8.as paralelas, también las que se forman por movimiento contrario (8.ª → 15.ª, 5.ª → 12.ª). Escribe cada una debajo, entre las dos sonoridades: el intervalo y, a tres o cuatro voces, entre qué voces (5.as par., S–B). | Fragmentos de dos a cuatro voces, sin compás. | Cada falta de N4, con sus voces; si se pide, también las directas de N5. | 3.º UD 1 |
+| `enlazar-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde. Enlázalos a cuatro voces, duplicando siempre la fundamental: si dos acordes seguidos tienen notas comunes, mantenlas en la misma voz, y lleva las demás por grado a las notas que faltan; si no las tienen, lleva las tres voces superiores por movimiento contrario al bajo, cada una a la nota más cercana del acorde siguiente. | Un bajo en estado fundamental y, si se da, el primer acorde, cerrado o abierto. | Las tres voces superiores de los demás acordes (y del primero, si no se da). | 3.º UD 1 |
 | `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
 | `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
 | `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
@@ -123,6 +125,38 @@ Material: un fragmento sin más faltas que las paralelas que se buscan,
 comprobado con `conduccion-check.js`. Los intervalos, con su amplitud real
 (15.as, 17.as): que el alumno los reconozca como 8.as o 3.as compuestas es
 parte del ejercicio.
+
+### `faltas-paralelas`
+
+La versión en papel de Paralelas y directas › Buscar faltas
+(`app/docs/familias/paralelas-directas.md`), con más sonoridades y la
+textura creciendo de un apartado al siguiente: dos voces en un pentagrama,
+dos en las dos claves, tres (dos arriba y el bajo) y cuatro. Solo se buscan
+faltas: las paralelas correctas (3.as, 6.as) no se escriben, a diferencia
+de `paralelas`. Las directas (N5) entran solo donde la ficha lo dice, en una
+nota tras la consigna («En d), …»), y a cuatro voces.
+
+Material: comprobado con `conduccion-check.js` (y a cuatro voces, con los
+acordes, con `cuatro-voces-check.js`): sin más faltas que las buscadas. Los
+rótulos, los de la app: «5.as par.», «8.as par. contr.», «8.ª dir.», con
+las voces debajo a partir de tres voces («(S–B)»). Conviene que haya
+distractores correctos: directas entre voces interiores, o entre las
+extremas con la soprano por grado conjunto.
+
+### `enlazar-acordes`
+
+La versión en papel de Paralelas y directas › Enlazar acordes: la consigna
+básica (apuntes c3u1, final de §2.5; Minimos P4), que desde el primer
+acorde da una sola solución y conserva la disposición. Si el primer acorde
+no se da, lo elige el alumno, y la solución es una de varias; no todos los
+primeros acordes valen hasta el final (una voz se sale de su tesitura o se
+cruza con el bajo), y eso también se aprende.
+
+Material: el bajo con la gramática de la app (`enlace-core.js`): fuera
+V–VI, VI–V y III–IV, en los que la consigna haría bajar la sensible. La
+solución, calculada con `enlazar` de la app y comprobada con los dos
+comprobadores; los rótulos de cada enlace («1 n.c.», «2 n.c.», «contr.»),
+solo en ella.
 
 ### `analisis`
 
