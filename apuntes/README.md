@@ -234,6 +234,16 @@ Las fichas son **solo PDF** y **no se enlazan desde la web** ni salen a
 `build/sitio/`: se reparten en clase. El espacio en blanco tras cada ejercicio
 lo da la plantilla, en su línea `%% espacio: 1.8cm`.
 
+**Variantes.** Una ficha con el mismo diseño y otro material (para otro
+grupo, para repetir, para examen) lleva el nombre de la original con una
+letra: `c3u1-f3b.md`, `c3u1-f3c.md`… La original no se renombra (es la «a»
+implícita), y el título lo dice: «Ficha 3b». Letra y no `-v2`, para que
+`c3u1-f3-*` no recoja las imágenes de la variante. Su guion empieza por
+«Variante de c3u1-f3: mismo diseño (véase su guion)» y dice solo lo que
+cambia: el diseño —tipos, número y clase de acordes o faltas, `pide=`— está
+en el guion de la original y se respeta; cambian las tonalidades (mismo
+modo), los grados y el orden. Se valida igual que la original.
+
 ## Los ejemplos que no son partitura
 
 No todo ejemplo sale de LilyPond: el círculo de 5.as de 3.º UD 0 es un
@@ -411,7 +421,8 @@ El flujo está completo y las tres salidas se generan.
   El de §1.2 va en los ejemplos para clase. `c3u1-triada-im.ly` (la prueba de
   que una cadena de la app se pega aquí sin retocar) no lo usa ningún texto.
   Fichas: `c3u1-f1` (la de prueba del formato) a `c3u1-f4` (grados y cifrado,
-  en serie; disposición; movimientos). De 4.º UD 0, `c4u0-f1` y `c4u0-f2`
+  en serie; disposición; movimientos), y `c3u1-f3b`, variante de la 3.
+  De 4.º UD 0, `c4u0-f1` y `c4u0-f2`
   (cuatro bajos, en serie).
 - **`c3u2.md`** — todavía guion, sin redactar.
 
