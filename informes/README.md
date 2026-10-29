@@ -23,3 +23,4 @@ no se pierdan entre commits.
 | 2026-10-09 | [Plan de la UD 1](2026-10-09-plan-ud1.md) | Ejercicios de la UD 1 de 3.º (Disposición, Movimientos, Paralelas y directas, Consonancia como cadena); fases 4–6 replanteadas |
 | 2026-10-09 | [Fase 4: UD 0 y «Oír»](2026-10-09-fase4-ud0.md) | «Oír» en la página común (Cadencias · Tipo); Intervalos y Acordes de la UD 0 en pentagrama doble y sin niveles; romano de Bajo cifrado |
 | 2026-10-10 | [Fase 5: la UD 1](2026-10-10-fase5-ud1.md) | Comprobador general y faltas inyectadas; Consonancia, Disposición, Movimientos, Paralelas y directas; regla N15; rótulos fuera del MEI y modo por pasos |
+| 2026-10-29 | [Plan: fichas generadas](2026-10-29-plan-fichas-generadas.md) | Verificador de fichas; fichas de repaso generadas en lote (c3u1), con su solución y enlazadas desde la web; página «Fichas» por unidad |
