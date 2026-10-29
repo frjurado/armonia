@@ -85,6 +85,8 @@ No hace falta `make` (no viene con Windows) ni Quarto.
     node herramientas/comprobar-fichas.js            comprueba todas las fichas
     node herramientas/comprobar-fichas.js c3u1-f3b   solo esa
     node herramientas/comprobar-fichas.js --detalle  con una línea por acorde
+    node herramientas/comprobar-fichas.js --modelo c3u1-repaso         lee el modelo
+    node herramientas/comprobar-fichas.js --modelo c3u1-repaso x.md    x, contra el modelo
 
 El camino completo:
 
@@ -255,7 +257,27 @@ implícita), y el título lo dice: «Ficha 3b». Letra y no `-v2`, para que
 «Variante de c3u1-f3: mismo diseño (véase su guion)» y dice solo lo que
 cambia: el diseño —tipos, número y clase de acordes o faltas, `pide=`— está
 en el guion de la original y se respeta; cambian las tonalidades (mismo
-modo), los grados y el orden. Se valida igual que la original.
+modo), los grados y el orden. Se valida igual que la original, y además
+`comprobar-fichas.js` compara su diseño con el de la original: el mismo
+número de acordes o pasos y de cada clase de falta o disposición.
+
+**Modelos.** Un modelo (`fichas/modelos/c3u1-repaso.md`) es una ficha sin
+material: la misma cabecera, guion y bloques `::: {.ejercicio tipo=…}`, pero
+cada bloque lleva, en lugar del ```` ```lilypond ````, un bloque
+```` ```condiciones ```` con líneas «clave: valor»:
+
+    acordes: 8
+    disposiciones: mixta (5.ª) 2, mixta (3.ª) 2, cerrada 2, abierta 2
+    paralelas: 2–4
+    invertidos: al menos 4
+    primer acorde: dado
+
+Las claves de cada tipo, y qué valores admiten, están en el `VOCABULARIO` de
+`comprobar-fichas.js`: una clave o un valor que no conoce es un error, no se
+ignora. En la cabecera, `tonalidades: 1.er trimestre` (o «hasta el 2.º
+trimestre») y `menores: al menos 1`. De un modelo salen las fichas de repaso
+generadas (plan en `informes/2026-10-29-plan-fichas-generadas.md`); `construir.py`
+no lo construye (no está en `fichas/`, sino en `fichas/modelos/`).
 
 ## Los ejemplos que no son partitura
 
