@@ -82,6 +82,10 @@ No hace falta `make` (no viene con Windows) ni Quarto.
     python herramientas/construir.py --forzar   sin mirar fechas
     python herramientas/construir.py --limpiar  borra build/ y tmp/
 
+    node herramientas/comprobar-fichas.js            comprueba todas las fichas
+    node herramientas/comprobar-fichas.js c3u1-f3b   solo esa
+    node herramientas/comprobar-fichas.js --detalle  con una línea por acorde
+
 El camino completo:
 
     ejemplos/x.ly     --LilyPond-->  tmp/x.cropped.pdf  --pdftocairo-->
@@ -233,6 +237,15 @@ bajo el título (ya está al pie) y tiene márgenes verticales propios, en
 Las fichas son **solo PDF** y **no se enlazan desde la web** ni salen a
 `build/sitio/`: se reparten en clase. El espacio en blanco tras cada ejercicio
 lo da la plantilla, en su línea `%% espacio: 1.8cm`.
+
+**Comprobación.** `herramientas/comprobar-fichas.js` lee cada ficha y contrasta su
+material con los comprobadores de la app (`conduccion-check.js`,
+`cuatro-voces-check.js`): que la solución no tenga faltas que no se pretenden, y que lo
+anotado (la falta, la disposición, el grado, el cifrado, el rótulo del enlace) sea lo
+que hay. Cada tipo de ejercicio tiene su comprobación; los que no la tienen todavía
+(análisis, realizar un bajo, séptimas, secuencias) salen como «sin comprobar». Una
+discrepancia (✗) hace que acabe con error; un aviso (!) es algo que mirar, que puede ser
+a propósito. Al hacer o cambiar una ficha, pasarlo antes de construirla.
 
 **Variantes.** Una ficha con el mismo diseño y otro material (para otro
 grupo, para repetir, para examen) lleva el nombre de la original con una
@@ -445,3 +458,24 @@ aquí (y, si mueve un epígrafe citado, corregir su ancla en `curriculum-data.js
   cierre de §2), como el procedimiento que evita las paralelas y las directas. Ojo:
   con la consigna, V–VI, VI–V y III–IV no salen bien (la sensible bajaría): conviene
   decirlo y dejarlos para su unidad.
+
+### Discrepancias de criterio por resolver
+
+No son cambios decididos, sino diferencias de criterio entre fichas, app y apuntes que
+ha sacado a la luz `herramientas/comprobar-fichas.js` (como avisos, «!»). Hay que
+decidir en cada una qué criterio vale y, después, ajustar lo que no lo siga. Añadido el
+2026-10-29.
+
+- **III en menor** (`c3u1-f1`, ejercicio 2, La menor, acorde 5): la ficha escribe un
+  III con do–mi–sol (menor natural). La app trabaja en menor armónica: su III es
+  do–mi–sol♯ (aumentado), y por eso lo excluye (bajo-cifrado-core.js; también el guion
+  de `c3u1-f2`: «en menor, sin III ni II en estado fundamental»). ¿Se admite el III de
+  la natural en 3.º, y con qué cifrado?
+- **6/4 al final** (`c3u1-f1`, ejercicio 2, acorde 8: IV6/4 sobre la tónica). La app
+  solo genera el 6/4 cadencial o de paso. ¿Vale en un ejercicio de cifrado, donde no
+  hay conducción, un 6/4 que no es ni cadencial ni de paso?
+- **Saltos sin compensar en el material de faltas de paralelas** (`c3u1-f5`, los cuatro
+  apartados: saltos de 4.ª y 5.ª, sobre todo en el bajo, sin cambio de dirección por
+  grado, P9). Su guion los da por admitidos, como preferencia. ¿Basta con que el
+  material solo tenga la falta que se busca, o debería ser además un modelo de buena
+  conducción? Afecta también a las fichas generadas.
