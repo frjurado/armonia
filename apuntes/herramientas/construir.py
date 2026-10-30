@@ -1267,8 +1267,13 @@ def main(argv):
     if objetivo == "ejemplos":
         print("Ejemplos:")
         hechos = grabar_todos()
-    elif objetivo == "fichas" or (FICHAS / f"{objetivo}.md").exists():
-        for ficha in (fichas() if objetivo == "fichas" else [FICHAS / f"{objetivo}.md"]):
+    elif objetivo == "fichas" or (FICHAS / f"{objetivo}.md").exists() or (
+            objetivo and objetivo.endswith(".md") and pathlib.Path(objetivo).is_file()):
+        # una ficha por su nombre, todas, o una por su ruta (las generadas
+        # por generar-fichas.js no están en fichas/)
+        porRuta = objetivo.endswith(".md")
+        for ficha in (fichas() if objetivo == "fichas"
+                      else [pathlib.Path(objetivo).resolve()] if porRuta else [FICHAS / f"{objetivo}.md"]):
             print(f"fichas/{ficha.name}:")
             hechos += documentar_ficha(ficha)
         print("Nada que hacer." if not hechos else f"Listo ({hechos}).")

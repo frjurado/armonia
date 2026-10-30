@@ -354,6 +354,7 @@ function gradosBajoCifrado(ap) {
   if (abajo.length !== arriba.length) throw new Error('arriba y abajo no tienen las mismas notas');
   const firma = CV.keysigAlters(key.sig);
   let invertidos = 0;
+  const acordes = [];
   abajo.forEach((ev, k) => {
     const donde = `acorde ${k + 1}`, bajo = ev.altura;
     const cifras = (etiqueta(ev, 'figuras') || [''])[0].trim();
@@ -371,7 +372,12 @@ function gradosBajoCifrado(ap) {
     }));
     const raiz = tonos[[0, 2, 1][inv]];            // inv 0: el bajo; 1: la 6.ª; 2: la 4.ª
     const g = gradoDe(key, raiz.letter);
-    const romano = ROMANOS[g - 1] + ['', '6', '6/4'][inv];
+    // En estado fundamental, las cifras que lleve el bajo pasan al romano:
+    // «♯» → «V♯» (la sensible), «5/3» o «5/♯» → «V5/3», «V5/♯» (el V tras
+    // el 6/4 cadencial). Así la solución, que da el romano y no las cifras
+    // del bajo, no las pierde.
+    const romano = ROMANOS[g - 1] + (inv ? ['', '6', '6/4'][inv]
+      : /^[♯♮♭]$/.test(cifras) || cifras.startsWith('5/') ? cifras : '');
     const semis = n => mod(midi(CV.altura(LETRAS.indexOf(n.letter) + 28, n.alter)) - midi(CV.altura(LETRAS.indexOf(raiz.letter) + 28, raiz.alter)), 12);
     const tercera = tonos.find(n => mod(LETRAS.indexOf(n.letter) - LETRAS.indexOf(raiz.letter), 7) === 2);
     const quinta = tonos.find(n => mod(LETRAS.indexOf(n.letter) - LETRAS.indexOf(raiz.letter), 7) === 4);
@@ -393,8 +399,15 @@ function gradosBajoCifrado(ap) {
     if (inv === 2 && k === abajo.length - 1) r.ojo(donde, '6/4 al final');
     r.lineas.push(`${k + 1}. ${nombreNota(bajo).padEnd(3)} ${(cifras || '·').padEnd(4)} ${gb.padEnd(3)} ${romano.padEnd(6)} ${americano}`);
     if (inv) invertidos++;
+    acordes.push(romano);
   });
-  r.perfil = { acordes: abajo.length, invertidos, modelo: abajo[0].modelo ? 'sí' : 'no' };
+  // repetidos: cuántas veces vuelve a salir un acorde ya visto (mismo grado
+  // y cifrado, es decir, mismo bajo y cifras): I, I6, I6, I6 → 2. El I en
+  // estado fundamental no cuenta: abrir y cerrar con él es lo normal (si
+  // contara, una sola repetición permitida empujaría a acabar en V).
+  const sinI = acordes.filter(a => a !== 'I');
+  const repetidos = sinI.length - new Set(sinI).size;
+  r.perfil = { acordes: abajo.length, invertidos, repetidos, modelo: abajo[0].modelo ? 'sí' : 'no' };
   return r;
 }
 
@@ -619,7 +632,7 @@ const COMPROBACION = {
 // ellas; {clases}, un recuento («cerrada 2, mixta (5.ª) 1»; una clase que no
 // se nombra, ninguna). `tono` (mayor o menor) vale en todos los tipos.
 const VOCABULARIO = {
-  'grados-bajo-cifrado': { acordes: 'n', invertidos: 'n', modelo: ['sí', 'no'] },
+  'grados-bajo-cifrado': { acordes: 'n', invertidos: 'n', repetidos: 'n', modelo: ['sí', 'no'] },
   'faltas-disposicion': { acordes: 'n', faltas: { clases: null },
                           disposiciones: { clases: ['cerrada', 'abierta', 'mixta'] } },
   'construir-acordes': { acordes: 'n', 'primer acorde': ['dado', 'sin dar'],
@@ -840,4 +853,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { leerFicha, leerModelo, variables, leerVoz, leerRespuestas, COMPROBACION, VOCABULARIO, incumple };
+module.exports = { comprobarApartado, leerFicha, leerModelo, variables, leerVoz, leerRespuestas, COMPROBACION, VOCABULARIO, incumple };

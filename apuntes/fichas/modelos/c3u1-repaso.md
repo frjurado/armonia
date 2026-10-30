@@ -28,6 +28,7 @@ menores: al menos 1
 ```condiciones
 acordes: 8
 invertidos: al menos 4
+repetidos: como mucho 1
 modelo: sí
 ```
 :::

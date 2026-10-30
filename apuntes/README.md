@@ -501,3 +501,12 @@ decidir en cada una qué criterio vale y, después, ajustar lo que no lo siga. A
   grado, P9). Su guion los da por admitidos, como preferencia. ¿Basta con que el
   material solo tenga la falta que se busca, o debería ser además un modelo de buena
   conducción? Afecta también a las fichas generadas.
+
+### Fichas: pendiente de probar
+
+- **Pentagrama más grande en todas las fichas** (pedido el 2026-10-30): el tamaño
+  actual se queda algo pequeño para escribir a mano. Probar a subirlo un poco
+  (`ESCALA` / `CAJA_PT` en `construir.py`, el `line-width` de cada plantilla) y mirar
+  qué se trastoca: sistemas por ejercicio, páginas por ficha (una hoja). Se puede ganar
+  algo de sitio estrechando un poco los márgenes de `_formato/fichas.yaml`, sin
+  pasarse. Aparte de las fichas generadas, para no mezclar cambios.
