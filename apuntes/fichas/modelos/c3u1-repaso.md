@@ -1,7 +1,7 @@
 ---
 title: "3.º — UD 1 · Repaso"
 subtitle: "Morfología y conducción de voces"
-publico: false
+publico: true
 tonalidades: 1.er trimestre
 menores: al menos 1
 ---

@@ -51,6 +51,31 @@ En la consigna:
 | `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
 | `secuencia-triadas` | Di qué secuencia es cada bajo, escribe debajo los grados y realízala a cuatro voces. | Dos o tres secuencias breves en un mismo sistema, cada una con su tonalidad: solo el bajo, sin cifrar. | El tipo de secuencia, los grados y la realización. | 4.º UD 0 |
 
+## Condiciones de cada tipo
+
+Un **modelo** de ficha (`apuntes/fichas/modelos/`) no lleva material, sino las
+condiciones que tiene que cumplir el de cada ejercicio: de él se generan
+fichas, con el material que sacan los núcleos de la app (`apuntes/README.md`,
+«Fichas generadas»). Las condiciones dicen el **diseño** del ejercicio, el que
+aquí se describe en «Se da» y en las notas; son también lo que se compara entre
+una ficha y su variante. Un número vale como `8`, `2–4`, `al menos 4` o `como
+mucho 1`; un recuento, como `cerrada 2, abierta 2`.
+
+| Tipo | Condiciones | Se genera |
+|------|-------------|-----------|
+| `grados-bajo-cifrado` | `acordes`, `invertidos`, `repetidos` (el mismo bajo con la misma cifra; el I en estado fundamental no cuenta), `modelo` (sí/no: el primer acorde resuelto) | Sí |
+| `faltas-disposicion` | `acordes`; `faltas` y `disposiciones`, recuentos (cerrada, abierta, mixta) | No |
+| `construir-acordes` | `acordes`, `primer acorde` (dado/sin dar); `disposiciones`, recuento (cerrada, abierta, mixta, mixta (5.ª), mixta (3.ª)) | Sí |
+| `faltas-melodicas` | `notas`; `faltas`, recuento (N12, N13, N15, P9) | No |
+| `movimientos-armonicos` | `pasos`; `movimientos`, recuento (directo, contrario, oblicuo, paralelo) | No |
+| `paralelas` | `voces`, `pasos`, `paralelas`, `prohibidas` | No |
+| `faltas-paralelas` | `voces`, `sonoridades`, `paralelas` (N4), `directas` (N5). Fuera de las buscadas, buena conducción: a cuatro voces y en 10 sonoridades caben unas 2 paralelas y 1 directa | Sí (a cuatro voces) |
+| `enlazar-acordes` | `acordes`, `primer acorde` (dado/sin dar); `enlaces`, recuento (contr., 1 n.c., 2 n.c.) | Sí |
+
+La lista que manda es la del verificador (`VOCABULARIO` en
+`apuntes/herramientas/comprobar-fichas.js`): una condición que no conoce es un
+error. Al dar condiciones a un tipo nuevo, se añaden en los dos sitios.
+
 ## Notas sobre cada tipo
 
 ### `grados-bajo-cifrado`

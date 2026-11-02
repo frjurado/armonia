@@ -22,6 +22,8 @@ el día que cambie el formato del texto no hay que tocarlos.
 
     fichas/c3u1-f1.md      una ficha de ejercicios: c<curso>u<unidad>-f<n>
     fichas/plantillas/     la partitura de cada tipo de ejercicio (<tipo>.ly)
+    fichas/modelos/        modelos de ficha generada (c3u1-repaso.md)
+    fichas/banco/<modelo>/ sus variantes, generadas y versionadas
 
     _formato/metadatos.yaml  papel, márgenes, tipografía (PDF), y la autoría
                              y licencia de todo (PDF y pie del HTML)
@@ -34,6 +36,8 @@ el día que cambie el formato del texto no hay que tocarlos.
     _formato/indice.html     plantilla de la página de índice de unidades
 
     herramientas/construir.py  todo el flujo
+    herramientas/comprobar-fichas.js  verificador de fichas (y de modelos)
+    herramientas/generar-fichas.js    fichas generadas a partir de un modelo
     herramientas/pdf2svg.py    conversor de reserva, sin binarios de sistema
 
     build/                 generado: todas las unidades compiladas, más
@@ -81,6 +85,8 @@ No hace falta `make` (no viene con Windows) ni Quarto.
     python herramientas/construir.py ejemplos   solo los SVG
     python herramientas/construir.py --forzar   sin mirar fechas
     python herramientas/construir.py --limpiar  borra build/ y tmp/
+    python herramientas/construir.py --generar c3u1-repaso [--cuantas 20]
+                                                rehace el banco de ese modelo
 
     node herramientas/comprobar-fichas.js            comprueba todas las fichas
     node herramientas/comprobar-fichas.js c3u1-f3b   solo esa
@@ -236,8 +242,8 @@ Una ficha tiene que caber en una hoja: por eso no lleva la línea de autoría
 bajo el título (ya está al pie) y tiene márgenes verticales propios, en
 `_formato/fichas.yaml`.
 
-Las fichas son **solo PDF** y **no se enlazan desde la web** ni salen a
-`build/sitio/`: se reparten en clase. El espacio en blanco tras cada ejercicio
+Las fichas de clase son **solo PDF** y **no se enlazan desde la web** ni salen
+a `build/sitio/`: se reparten en clase. Las generadas, sí (ver abajo). El espacio en blanco tras cada ejercicio
 lo da la plantilla, en su línea `%% espacio: 1.8cm`.
 
 **Comprobación.** `herramientas/comprobar-fichas.js` lee cada ficha y contrasta su
@@ -275,9 +281,38 @@ cada bloque lleva, en lugar del ```` ```lilypond ````, un bloque
 Las claves de cada tipo, y qué valores admiten, están en el `VOCABULARIO` de
 `comprobar-fichas.js`: una clave o un valor que no conoce es un error, no se
 ignora. En la cabecera, `tonalidades: 1.er trimestre` (o «hasta el 2.º
-trimestre») y `menores: al menos 1`. De un modelo salen las fichas de repaso
-generadas (plan en `informes/2026-10-29-plan-fichas-generadas.md`); `construir.py`
-no lo construye (no está en `fichas/`, sino en `fichas/modelos/`).
+trimestre») y `menores: al menos 1`. El modelo no se construye: de él salen
+las fichas generadas.
+
+**Fichas generadas.** `herramientas/generar-fichas.js` saca de un modelo tantas
+variantes como se le pidan: para cada ejercicio pide el material al núcleo de la
+app que lo genera, lo escribe como bloque `lilypond` de ficha y lo pasa por el
+verificador, que tiene que darlo sin discrepancias, sin avisos y cumpliendo las
+condiciones; si no, otro intento. En un mismo lote no se repite ningún ejercicio
+(mismo modo y grados del bajo) y las tonalidades se reparten. Donde la solución no
+es única (construir y enlazar acordes), la de la ficha es «Una solución posible.»,
+con las voces superiores en gris (`solucionPosible = ##t`, en `etiquetas.ily`).
+
+El **banco** de un modelo es fijo y se versiona: `fichas/banco/c3u1-repaso/
+c3u1-repaso-01.md`… Se rehace solo cuando se pide,
+
+    python herramientas/construir.py --generar c3u1-repaso
+
+(20 por defecto; unos dos minutos de generación y luego la compilación), y el
+cambio se revisa en el diff como el de una ficha a mano. Así, si un núcleo de la
+app cambia, no cambia en silencio la ficha n.º 17 que ya tiene un alumno. Las
+fichas del banco no se editan a mano: se regeneran. La compilación normal las
+compila como las demás fichas.
+
+**La página «Fichas».** Cada unidad con algún banco tiene una página
+`c3u1-fichas.html`, con una sección por modelo: una variante al azar, «Otra
+ficha», y la solución detrás de un clic con un freno («¿Has hecho ya los
+ejercicios?…»). La variante va en el fragmento (`#repaso=07`), para que recargar
+no la cambie. Se llega a ella desde el «Fichas» de la cabecera de la unidad, el del
+índice y el «Fichas →» de la app (por `enlaces.js`). En `build/` está siempre (la
+versión de trabajo, con DEV en lo que no sale); al sitio sale cuando **la unidad y
+el modelo** llevan `publico: true`. Plan y decisiones:
+`informes/2026-10-29-plan-fichas-generadas.md`.
 
 ## Los ejemplos que no son partitura
 
