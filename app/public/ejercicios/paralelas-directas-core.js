@@ -131,9 +131,11 @@
     }
     return out;
   }
-  function inyectar4(voces, key, acs, tipo, par){
-    const pruebas=[];
-    for(let k=1;k<N-1;k++) for(let v=0; v<3; v++) for(const t of notasDelAcorde(acs[k], ROLES4[v])){
+  // Preferencias incumplidas (P2, P9…: «mejorable» en el comprobador general).
+  const mejorables = voces => K.comprobar(voces, {roles:ROLES4}).filter(f=>f.grado==='mejorable');
+  function inyectar4(voces, key, acs, tipo, par, sinMejorables){
+    const pruebas=[], n=voces[0].length;
+    for(let k=1;k<n-1;k++) for(let v=0; v<3; v++) for(const t of notasDelAcorde(acs[k], ROLES4[v])){
       if(t.abs===voces[v][k].abs) continue;
       const prueba = voces.map(x=>x.slice());
       prueba[v][k] = limpia(CV.altura(t.abs, t.alter));
@@ -141,32 +143,50 @@
     }
     // fuera de las N4/N5 que da el comprobador general, el de 4.º no ha de
     // encontrar nada (duplicaciones, acorde completo, sensible…)
+    // (y, con `sinMejorables`, la nota cambiada no ha de dejar ninguna preferencia incumplida)
     const extra = (prueba, fs) => {
       const nuestras = new Set(fs.map(f=>f.regla+'@'+f.evento));
-      return CK.comprobar(key, acs, prueba).every(f=>(f.regla==='N4' || f.regla==='N5') && nuestras.has(f.regla+'@'+f.evento));
+      return CK.comprobar(key, acs, prueba).every(f=>(f.regla==='N4' || f.regla==='N5') && nuestras.has(f.regla+'@'+f.evento))
+          && !(sinMejorables && mejorables(prueba).length);
     };
     return filtrar(pruebas, faltasDe(voces, ROLES4), ROLES4, tipo, par, extra);
   }
-  function generar4(nivel, cuantas){
-    for(let intento=0; intento<60; intento++){
-      const b = BC.generar(3, {n:N});
+  // opts (para las fichas en papel; la app no los usa): n, sonoridades (si
+  // no, N); key, la tonalidad; tipos, las faltas que se inyectan, en orden
+  // (['N4','N4','N5']): entonces `cuantas` no cuenta; limpia, fuera de las
+  // faltas inyectadas, buena conducción: ni la realización ni las notas
+  // cambiadas dejan preferencias incumplidas (P2, P9…).
+  function generar4(nivel, cuantas, opts){
+    opts = opts || {};
+    const tipos = opts.tipos || null;
+    if(tipos) cuantas = tipos.length;
+    for(let intento=0; intento<(opts.limpia ? 300 : 60); intento++){
+      const b = BC.generar(3, opts.key ? {n:opts.n||N, key:opts.key} : {n:opts.n||N});
       if(!b) continue;
       const acs = b.ids.map(id=>CV.acorde(b.key, BC.ACORDES[id]));
       const r = CV.realizar(b.key, acs, {fija:{voz:3, alturas:b.acordes.map(a=>a.bajo)}});
       if(!r) continue;
-      let voces = r.voces.map(v=>v.map(limpia));
-      if(faltasDe(voces, ROLES4).length || CK.comprobar(b.key, acs, voces).length) continue;
-      let puestas=0, par=null;
-      while(puestas<cuantas){
-        let v2=null;
-        for(const tipo of sorteo(TIPOS4)==='N4' ? ['N4','N5'] : ['N5','N4']){
-          v2 = inyectar4(voces, b.key, acs, tipo, nivel===2 ? par : null);
-          if(v2) break;
+      const base = r.voces.map(v=>v.map(limpia));
+      if(faltasDe(base, ROLES4).length || CK.comprobar(b.key, acs, base).length) continue;
+      if(opts.limpia && mejorables(base).length) continue;
+      // Las faltas se ponen una a una, cada una en un sitio al azar; si alguna
+      // ya no cabe, con `limpia` (las realizaciones limpias escasean) se
+      // vuelve a empezar sobre la misma realización unas cuantas veces.
+      let voces, puestas=0, par=null;
+      for(let vuelta=0; vuelta<(opts.limpia ? 12 : 1) && (vuelta===0 || puestas<cuantas); vuelta++){
+        voces=base; puestas=0; par=null;
+        while(puestas<cuantas){
+          let v2=null;
+          const orden = tipos ? [tipos[puestas]] : sorteo(TIPOS4)==='N4' ? ['N4','N5'] : ['N5','N4'];
+          for(const tipo of orden){
+            v2 = inyectar4(voces, b.key, acs, tipo, nivel===2 ? par : null, opts.limpia);
+            if(v2) break;
+          }
+          if(!v2) break;
+          voces=v2; puestas++;
+          // en el nivel 2, la pareja la fija la primera falta
+          if(nivel===2 && !par){ const f=faltasDe(voces, ROLES4)[0]; par=f.voces; }
         }
-        if(!v2) break;
-        voces=v2; puestas++;
-        // en el nivel 2, la pareja la fija la primera falta
-        if(nivel===2 && !par){ const f=faltasDe(voces, ROLES4)[0]; par=f.voces; }
       }
       if(puestas<cuantas) continue;
       const sel = nivel===2 ? (par || rnd([[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]])) : null;
@@ -213,7 +233,7 @@
     return {rotulos, rayas};
   }
 
-  const api = { generar, dibujo, toMEI:M.toMEI, midis:M.midis, rotulo, N, MAX_NIVEL, REGLAS };
+  const api = { generar, generar4, dibujo, toMEI:M.toMEI, midis:M.midis, rotulo, N, MAX_NIVEL, REGLAS };
   if (esNode) module.exports = api;
   else global.ParalelasDirectas = api;
 })(typeof window !== 'undefined' ? window : globalThis);

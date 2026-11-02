@@ -45,8 +45,8 @@ primer acorde: dado
 ```condiciones
 voces: 4
 sonoridades: 10
-paralelas: 2–4
-directas: 1–2
+paralelas: 2
+directas: 1
 ```
 
 Busca también las 5.as y 8.as directas incorrectas entre las voces extremas

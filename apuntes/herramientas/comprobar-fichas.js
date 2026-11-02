@@ -92,6 +92,7 @@ function leerFicha(fichero) {
 }
 
 // Las variables del bloque: `soprano = { … }`, `soprano = \analitico { … }`.
+// Las que no son música (`solucionPosible = ##t`, `alternativas = "…"`), fuera.
 function variables(codigo) {
   const out = {};
   const re = /^([a-zA-Z]+)\s*=\s*/gm;
@@ -99,6 +100,7 @@ function variables(codigo) {
   while ((m = re.exec(codigo))) {
     let i = re.lastIndex, j = codigo.indexOf('{', i);
     if (j < 0) break;
+    if (!/^(\\analitico\s*)?$/.test(codigo.slice(i, j).trim())) continue;
     let prov = 0, k = j;
     for (; k < codigo.length; k++) {
       if (codigo[k] === '{') prov++;
@@ -591,23 +593,34 @@ function enlazarAcordes(ap) {
   r.perfil = { acordes: vs[0].length, 'primer acorde': voces[0][0].solucion ? 'sin dar' : 'dado', enlaces: cuenta(rotulos) };
   // sin el primer acorde dado: cuántos primeros acordes valen
   if (voces[0][0].solucion) {
-    const validos = [];
-    for (const disp of ['cerrada', 'abierta', 'mixta']) for (const ini of EN.inicios(acs[0], vs[3][0], disp)) {
-      let a = ini, bien = true;
-      const cadena = [[ini[0]], [ini[1]], [ini[2]], [vs[3][0]]];
-      for (let k = 1; k < vs[0].length && bien; k++) {
-        const e = EN.enlazar(a, vs[3][k - 1], vs[3][k], acs[k]);
-        if (!e) { bien = false; break; }
-        e.voces.forEach((q, v) => cadena[v].push(q)); cadena[3].push(vs[3][k]); a = e.voces;
-      }
-      if (bien && !K.comprobar(cadena, { roles, reglas }).length && !CK.comprobar(key, acs, cadena).length
-          && !cadena[0].some((p, k) => p.abs === cadena[1][k].abs || cadena[1][k].abs === cadena[2][k].abs))
-        validos.push(`${disp} ${ini.map(p => (CV.ES[p.letter] + CV.SYM(p.alter)).toLowerCase()).join('–')}`);
-    }
+    const validos = primerosValidos(key, acs, vs[3]).map(v => v.nombre);
     r.lineas.push(`primeros acordes válidos (${validos.length}): ${validos.join('; ')}`);
     if (!validos.length) r.mal('primer acorde', 'ningún primer acorde lleva a una cadena sin faltas');
   }
   return r;
+}
+
+// Los primeros acordes (S, A, T sobre el primer bajo) desde los que la
+// consigna lleva a una cadena sin faltas, cada uno con su cadena y sus
+// rótulos: [{nombre: 'cerrada mi–do–sol', disp, voces, rotulos}].
+// Lo usa también generar-fichas.js, para elegir el primero y dar los demás.
+function primerosValidos(key, acs, bajos) {
+  const reglas = ['N1', 'N2', 'N3', 'N4', 'N5', 'N12', 'N13', 'N15'], out = [];
+  for (const disp of ['cerrada', 'abierta', 'mixta']) for (const ini of EN.inicios(acs[0], bajos[0], disp)) {
+    let a = ini, bien = true;
+    const cadena = [[ini[0]], [ini[1]], [ini[2]], [bajos[0]]], rotulos = [];
+    for (let k = 1; k < bajos.length && bien; k++) {
+      const e = EN.enlazar(a, bajos[k - 1], bajos[k], acs[k]);
+      if (!e) { bien = false; break; }
+      e.voces.forEach((q, v) => cadena[v].push(q)); cadena[3].push(bajos[k]); a = e.voces;
+      rotulos.push(ROTULO_ENLACE[e.comunes.length]);
+    }
+    if (bien && !K.comprobar(cadena, { roles: ROLES4, reglas }).length && !CK.comprobar(key, acs, cadena).length
+        && !cadena[0].some((p, k) => p.abs === cadena[1][k].abs || cadena[1][k].abs === cadena[2][k].abs))
+      out.push({ nombre: `${disp} ${ini.map(p => (CV.ES[p.letter] + CV.SYM(p.alter)).toLowerCase()).join('–')}`,
+                 disp, voces: cadena, rotulos });
+  }
+  return out;
 }
 
 const COMPROBACION = {
@@ -724,7 +737,7 @@ function tonalidadesPermitidas(txt) {
 
 function leerModelo(fichero) {
   const ejs = leerFicha(fichero), errores = [];
-  const aps = ejs.flatMap(e => e.apartados);
+  const aps = ejs.flatMap(e => e.apartados.map(a => ({ ...a, nota: e.nota })));   // con la nota tras la consigna
   aps.forEach((ap, i) => {
     if (!ap.condiciones) { errores.push(`ejercicio ${i + 1}: sin bloque de condiciones`); return; }
     const l = leerCondiciones(ap.attr.tipo, ap.condiciones);
@@ -853,4 +866,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { comprobarApartado, leerFicha, leerModelo, variables, leerVoz, leerRespuestas, COMPROBACION, VOCABULARIO, incumple };
+module.exports = { comprobarApartado, primerosValidos, triada, gradoDe, leerFicha, leerModelo, variables, leerVoz, leerRespuestas, COMPROBACION, VOCABULARIO, incumple };

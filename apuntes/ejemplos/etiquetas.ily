@@ -127,7 +127,39 @@ gradoBajo =
 %% para que el pentagrama conserve su medida.
 analitico =
 #(define-music-function (musica) (ly:music?)
-   (if conAnalisis musica (skip-of-length musica)))
+   (cond ((not conAnalisis) (skip-of-length musica))
+         (solucionPosible
+          #{ \temporary \override NoteHead.color = #colorPosible
+             \temporary \override Stem.color = #colorPosible
+             \temporary \override Accidental.color = #colorPosible
+             \temporary \override Dots.color = #colorPosible
+             #musica
+             \revert NoteHead.color \revert Stem.color
+             \revert Accidental.color \revert Dots.color #})
+         (else musica)))
+
+%% UNA SOLUCIÓN POSIBLE. En una ficha cuyo ejercicio admite más de una
+%% respuesta buena (construir un acorde, elegir el primero de un enlace),
+%% el material lo dice con `solucionPosible = ##t`: entonces, en la
+%% solución, lo que va en \analitico sale en gris, y \rotuloPosible (lo
+%% pone la plantilla al principio de la voz de arriba) escribe encima del
+%% sistema «Una solución posible.» y, si el material las da en
+%% `alternativas`, las otras respuestas buenas. No ensancha la columna.
+solucionPosible = ##f
+alternativas = ##f
+colorPosible = #(rgb-color 0.55 0.55 0.55)
+alturaPosible = #11
+rotuloPosible =
+#(define-music-function () ()
+   (if (and conAnalisis solucionPosible)
+       #{ s1*0 -\tweak outside-staff-priority ##f
+               -\tweak Y-offset #alturaPosible
+               -\tweak extra-spacing-width #'(+inf.0 . -inf.0)
+               -\tweak self-alignment-X #LEFT
+               ^\markup \fontsize #-1 \column {
+                 \italic "Una solución posible."
+                 #(if alternativas (markup alternativas) (markup "")) } #}
+       (make-music 'SequentialMusic 'elements '())))
 
 %% GRADOS CON CIFRADO. Se escribe el código, con la inversión a la
 %% anglosajona, igual que en el texto de los apuntes: \acorde "I6/4",

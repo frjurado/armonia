@@ -12,7 +12,10 @@
 %% El bajo es el dato: sale siempre. De las voces superiores sale el
 %% primer acorde, si se da; el resto va dentro de \analitico:
 %%   soprano = { d''2 \analitico { e''2 d'' … } }
-%% Sin primer acorde, las tres voces superiores enteras en \analitico.
+%% Sin primer acorde, las tres voces superiores enteras en \analitico; la
+%% solución depende entonces del primero que se elija: con `solucionPosible =
+%% ##t` lo dice y sale en gris, y `alternativas = "…"` da los otros primeros
+%% acordes que valen (etiquetas.ily, «Una solución posible»).
 %% Los rótulos de los enlaces, los de Enlazar acordes de la app («1 n.c.»,
 %% «2 n.c.», «contr.»), solo en la solución, a mitad de camino entre los
 %% dos acordes (como en movimientos-armonicos.ly).
@@ -38,7 +41,7 @@ paso =
 \score {
   \new GrandStaff <<
     \new Staff << %%TONALIDAD%% \omit Staff.TimeSignature
-                  \new Voice { \voiceOne \cadenzaOn \soprano \bar "|." }
+                  \new Voice { \voiceOne \cadenzaOn \rotuloPosible \soprano \bar "|." }
                   \new Voice { \voiceTwo \contralto } >>
     \new Staff << \clef bass %%TONALIDAD%% \omit Staff.TimeSignature
                   \new Voice { \voiceOne \tenor }
