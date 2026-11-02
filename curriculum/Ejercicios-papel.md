@@ -37,16 +37,44 @@ En la consigna:
 
 | Tipo | Consigna | Se da | Se pide | Desde |
 |------|----------|-------|---------|-------|
-| `grados-bajo-cifrado` | En {tono}. Debajo de cada nota del bajo, escribe su grado (①, ②…) y el grado del acorde (I, V…). En el pentagrama de Sol, escribe el acorde, y encima, su cifrado americano (C, Dm/F…). | Tonalidad y un bajo cifrado, nota a nota. | Grado del bajo, grado del acorde, el acorde escrito (sin enlazar) y su cifrado americano, que dice el tipo de tríada. | 3.º UD 1 |
+| `grados-bajo-cifrado` | En {tono}. Encima de cada nota del bajo, entre los pentagramas, escribe su grado (①, ②…), y debajo, el grado del acorde (I, V…). En el pentagrama de Sol, escribe el acorde, y encima, su cifrado americano (C, Dm/F…). | Tonalidad y un bajo cifrado, nota a nota. | Grado del bajo, grado del acorde, el acorde escrito (sin enlazar) y su cifrado americano, que dice el tipo de tríada. | 3.º UD 1 |
 | `faltas-disposicion` | Los acordes son independientes: no hay enlace entre ellos. Debajo de cada uno, escribe su falta, si la tiene (una voz fuera de su tesitura, más de una 8.ª entre dos voces contiguas, o un cruce); si está bien, escribe su disposición: cerrada, abierta o mixta. | Tríadas sueltas a cuatro voces, en estado fundamental. | La falta de cada acorde, o su disposición. | 3.º UD 1 |
 | `construir-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde: escribe las otras tres voces en la disposición indicada encima, duplicando la fundamental[mixta:  o, en la mixta, la nota indicada entre paréntesis]. | El bajo de tríadas sueltas en estado fundamental, y la disposición de cada una. | Las tres voces superiores, sin faltas y en la disposición pedida. | 3.º UD 1 |
 | `faltas-melodicas` | Señala con un corchete, encima de las notas, cada falta de la melodía, y di cuál es: un intervalo aumentado o disminuido, un salto demasiado grande, o dos saltos seguidos en la misma dirección que sumen una 7.ª o una 9.ª. Señala también, entre paréntesis, los saltos de 4.ª o mayores que no se compensan. | Una línea melódica, sin compás. | Las faltas melódicas (N12, N13, N15) y los saltos sin compensar (P9). | 3.º UD 1 |
 | `movimientos-armonicos` | Entre cada sonoridad y la siguiente, escribe debajo el movimiento armónico de las dos voces: contrario, oblicuo, directo o paralelo. | Dos voces, cada una en su pentagrama. | El movimiento de cada paso. | 3.º UD 1 |
 | `paralelas` | Busca todos los movimientos paralelos entre cualquier pareja de voces. Escríbelos debajo, entre los dos acordes, con las voces y el intervalo que forman (S–A 3.as), y marca los que sean incorrectos. | Un fragmento a cuatro voces. | Cada paralela, con sus voces y su intervalo; las 5.as y 8.as, como faltas. | 3.º UD 1 |
+| `faltas-paralelas` | Busca las 5.as y 8.as paralelas, también las que se forman por movimiento contrario (8.ª → 15.ª, 5.ª → 12.ª). Escribe cada una debajo, entre las dos sonoridades: el intervalo y, a tres o cuatro voces, entre qué voces (5.as par., S–B). | Fragmentos de dos a cuatro voces, sin compás. | Cada falta de N4, con sus voces; si se pide, también las directas de N5. | 3.º UD 1 |
+| `enlazar-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde. Enlázalos a cuatro voces, duplicando siempre la fundamental: si dos acordes seguidos tienen notas comunes, mantenlas en la misma voz, y lleva las demás por grado a las notas que faltan; si no las tienen, lleva las tres voces superiores por movimiento contrario al bajo, cada una a la nota más cercana del acorde siguiente. | Un bajo en estado fundamental y, si se da, el primer acorde, cerrado o abierto. | Las tres voces superiores de los demás acordes (y del primero, si no se da). | 3.º UD 1 |
 | `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
-| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
+| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.][secuencias:  Señala la secuencia de 7.as.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
 | `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
 | `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
+| `secuencia-triadas` | Di qué secuencia es cada bajo, escribe debajo los grados y realízala a cuatro voces. | Dos o tres secuencias breves en un mismo sistema, cada una con su tonalidad: solo el bajo, sin cifrar. | El tipo de secuencia, los grados y la realización. | 4.º UD 0 |
+
+## Condiciones de cada tipo
+
+Un **modelo** de ficha (`apuntes/fichas/modelos/`) no lleva material, sino las
+condiciones que tiene que cumplir el de cada ejercicio: de él se generan
+fichas, con el material que sacan los núcleos de la app (`apuntes/README.md`,
+«Fichas generadas»). Las condiciones dicen el **diseño** del ejercicio, el que
+aquí se describe en «Se da» y en las notas; son también lo que se compara entre
+una ficha y su variante. Un número vale como `8`, `2–4`, `al menos 4` o `como
+mucho 1`; un recuento, como `cerrada 2, abierta 2`.
+
+| Tipo | Condiciones | Se genera |
+|------|-------------|-----------|
+| `grados-bajo-cifrado` | `acordes`, `invertidos`, `repetidos` (el mismo bajo con la misma cifra; el I en estado fundamental no cuenta), `modelo` (sí/no: el primer acorde resuelto) | Sí |
+| `faltas-disposicion` | `acordes`; `faltas` y `disposiciones`, recuentos (cerrada, abierta, mixta) | No |
+| `construir-acordes` | `acordes`, `primer acorde` (dado/sin dar); `disposiciones`, recuento (cerrada, abierta, mixta, mixta (5.ª), mixta (3.ª)) | Sí |
+| `faltas-melodicas` | `notas`; `faltas`, recuento (N12, N13, N15, P9) | No |
+| `movimientos-armonicos` | `pasos`; `movimientos`, recuento (directo, contrario, oblicuo, paralelo) | No |
+| `paralelas` | `voces`, `pasos`, `paralelas`, `prohibidas` | No |
+| `faltas-paralelas` | `voces`, `sonoridades`, `paralelas` (N4), `directas` (N5). Fuera de las buscadas, buena conducción: a cuatro voces y en 10 sonoridades caben unas 2 paralelas y 1 directa | Sí (a cuatro voces) |
+| `enlazar-acordes` | `acordes`, `primer acorde` (dado/sin dar); `enlaces`, recuento (contr., 1 n.c., 2 n.c.) | Sí |
+
+La lista que manda es la del verificador (`VOCABULARIO` en
+`apuntes/herramientas/comprobar-fichas.js`): una condición que no conoce es un
+error. Al dar condiciones a un tipo nuevo, se añaden en los dos sitios.
 
 ## Notas sobre cada tipo
 
@@ -124,6 +152,38 @@ comprobado con `conduccion-check.js`. Los intervalos, con su amplitud real
 (15.as, 17.as): que el alumno los reconozca como 8.as o 3.as compuestas es
 parte del ejercicio.
 
+### `faltas-paralelas`
+
+La versión en papel de Paralelas y directas › Buscar faltas
+(`app/docs/familias/paralelas-directas.md`), con más sonoridades y la
+textura creciendo de un apartado al siguiente: dos voces en un pentagrama,
+dos en las dos claves, tres (dos arriba y el bajo) y cuatro. Solo se buscan
+faltas: las paralelas correctas (3.as, 6.as) no se escriben, a diferencia
+de `paralelas`. Las directas (N5) entran solo donde la ficha lo dice, en una
+nota tras la consigna («En d), …»), y a cuatro voces.
+
+Material: comprobado con `conduccion-check.js` (y a cuatro voces, con los
+acordes, con `cuatro-voces-check.js`): sin más faltas que las buscadas. Los
+rótulos, los de la app: «5.as par.», «8.as par. contr.», «8.ª dir.», con
+las voces debajo a partir de tres voces («(S–B)»). Conviene que haya
+distractores correctos: directas entre voces interiores, o entre las
+extremas con la soprano por grado conjunto.
+
+### `enlazar-acordes`
+
+La versión en papel de Paralelas y directas › Enlazar acordes: la consigna
+básica (apuntes c3u1, final de §2.5; Minimos P4), que desde el primer
+acorde da una sola solución y conserva la disposición. Si el primer acorde
+no se da, lo elige el alumno, y la solución es una de varias; no todos los
+primeros acordes valen hasta el final (una voz se sale de su tesitura o se
+cruza con el bajo), y eso también se aprende.
+
+Material: el bajo con la gramática de la app (`enlace-core.js`): fuera
+V–VI, VI–V y III–IV, en los que la consigna haría bajar la sensible. La
+solución, calculada con `enlazar` de la app y comprobada con los dos
+comprobadores; los rótulos de cada enlace («1 n.c.», «2 n.c.», «contr.»),
+solo en ella.
+
 ### `analisis`
 
 El fragmento se da tal cual está en la partitura, a su tamaño de piano. La
@@ -155,6 +215,24 @@ tenor; el conjunto se pasa por el comprobador independiente
 Con `pide="septimas"` (4.º UD 1), la consigna pide además una 7.ª que no sea
 la del V: el bajo tiene que dejar sitio para ella, en la prolongación (el ①
 repetido que admite un II4/2) o en la cadencia (④ antes del 6/4 o del V).
+
+Con `pide="secuencias"` (4.º UD 1), el bajo empieza con un círculo de 5.as con 7.as
+(apuntes c4u1 §3.1–3.2), en una de sus variantes —estado fundamental, alternando
+con 6/5, alternando con 4/2— y sigue hasta la cadencia: es la frase (tipo 2) de
+Secuencias en la app. El bajo decide qué acordes llevan 7.ª, salvo en la de 4/2,
+donde los 6/3 pueden ser 6/5 (las dos valen). La solución lleva las ligaduras de
+preparación; la del bajo, con `\ligadura` (solo sale con el análisis).
+
+### `secuencia-triadas`
+
+La versión en papel de Secuencia › Secuencia (4.º UD 0, `app/docs/familias/secuencia.md`):
+la secuencia sola, con la tonalidad como dato. Se pide reconocerla por el bajo
+(cuál y en qué variante), cifrarla y realizarla; la realización tiene que ser
+secuencia de verdad, la misma conducción trasladada en cada módulo.
+
+Material: realizaciones del motor de la app (`secuencia-core.js`, que las busca
+con el traslado exacto y las licencias de la secuencia: N7, N10, N12), en un
+sistema con las armaduras y la doble barra en `global`, como `septima-bajo-cifrado`.
 
 ### `septima-bajo-cifrado`
 

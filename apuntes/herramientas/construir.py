@@ -86,6 +86,12 @@ FICHAS = RAIZ / "fichas"
 PLANTILLAS = FICHAS / "plantillas"
 CATALOGO = RAIZ.parent / "curriculum" / "Ejercicios-papel.md"
 FORMATO_FICHAS = RAIZ / "_formato" / "fichas.yaml"   # márgenes propios
+# Fichas generadas: el modelo de cada una en fichas/modelos/, y sus
+# variantes, ya generadas y revisables en el diff, en fichas/banco/<modelo>/
+# (`--generar`; ver «Fichas generadas» en el README).
+MODELOS = FICHAS / "modelos"
+BANCO = FICHAS / "banco"
+GENERADOR = RAIZ / "herramientas" / "generar-fichas.js"
 
 # Cifrado de grados: la tabla (qué cifras lleva cada código, V6/5…) es de
 # la asignatura, no de los apuntes; la usan el filtro del texto y, vía
@@ -863,6 +869,10 @@ def indice(destino, solo_publicas):
                     estado += (f'<a class="pdf" href="c{curso}u{numero}-ejemplos.pdf"'
                                ' title="Los ejemplos que se analizan en clase, para imprimir">'
                                'Ejemplos</a>')
+                # la página la acaba de escribir montar_fichas(), en cada destino
+                if (destino.parent / f"c{curso}u{numero}-fichas.html").exists():
+                    estado += (f'<a class="pdf" href="c{curso}u{numero}-fichas.html"'
+                               ' title="Fichas para hacer en papel, con su solución">Fichas</a>')
                 titulo_html = f'<a href="c{curso}u{numero}.html">{titulo}</a>'
                 clase = " lista"
             # DEV marca lo compilado que aún no sale; lo que no existe
@@ -969,8 +979,12 @@ def enlazar(html, unidad, curr):
     return html
 
 
-def enlaces_ejercicios(publicas):
-    """Enlaces del sitio y comprobación de anclas (ver arriba)."""
+def enlaces_ejercicios(publicas, con_fichas=()):
+    """Enlaces del sitio y comprobación de anclas (ver arriba).
+
+    `con_fichas`: las unidades publicadas con página «Fichas», para el
+    «Fichas →» de la app.
+    """
     curr = curriculo()
     if curr is None:
         return
@@ -990,10 +1004,11 @@ def enlaces_ejercicios(publicas):
             u, _, id_ = ancla.partition("#")
             if u == md.stem and id_ in ids.get(u, {}):
                 epigrafes[ancla] = ids[u][id_]
-    datos = {"unidades": [p.stem for p in publicas], "epigrafes": epigrafes}
+    datos = {"unidades": [p.stem for p in publicas], "fichas": list(con_fichas), "epigrafes": epigrafes}
     (SITIO / "enlaces.js").write_text(
-        "/* Generado por construir.py: unidades publicadas y títulos de los epígrafes que\n"
-        "   citan los ejercicios (app/public/curriculum-data.js). Lo lee la app. */\n"
+        "/* Generado por construir.py: unidades publicadas, las que tienen fichas, y títulos\n"
+        "   de los epígrafes que citan los ejercicios (app/public/curriculum-data.js).\n"
+        "   Lo lee la app. */\n"
         f"window.ARMONIA_APUNTES = {json.dumps(datos, ensure_ascii=False, indent=1)};\n",
         encoding="utf-8")
     print(f"  {(SITIO / 'enlaces.js').relative_to(RAIZ)} ({len(epigrafes)} epígrafes)")
@@ -1033,7 +1048,8 @@ def montar_sitio():
     for f in sorted(FUENTES.glob("*.woff2")):
         shutil.copy2(f, SITIO / "fuentes" / f.name)
     shutil.copy2(CSS, SITIO / CSS.name)
-    enlaces_ejercicios(publicas)
+    # antes que los enlaces: «Ejercicios» se pone delante de «Fichas»
+    enlaces_ejercicios(publicas, montar_fichas(publicas))
 
     indice(SITIO / "index.html", solo_publicas=True)
     indice(BUILD / "index.html", solo_publicas=False)
@@ -1051,7 +1067,10 @@ def tipos_de_ejercicio():
     """
     if not CATALOGO.exists():
         sys.exit(f"No encuentro {CATALOGO}; los tipos de ejercicio salen de ahí")
-    tipos = dict(RE_TIPO.findall(CATALOGO.read_text(encoding="utf-8")))
+    # Solo la tabla de «## Tipos»: otras secciones (las condiciones de
+    # cada tipo) tienen tablas con la misma primera columna.
+    seccion = re.search(r"^## Tipos\n(.*?)(?=^## )", CATALOGO.read_text(encoding="utf-8"), re.M | re.S)
+    tipos = dict(RE_TIPO.findall(seccion.group(1))) if seccion else {}
     if not tipos:
         sys.exit(f"{CATALOGO.name}: no leo ningún tipo de ejercicio")
     return tipos
@@ -1129,8 +1148,9 @@ def documentar_ficha(ficha):
     va la respuesta), y la solución, con él. Una sola fuente, y la
     solución no puede desencajarse del ejercicio.
 
-    Solo PDF, y sin enlazar desde la web: las fichas se reparten en
-    clase. Un `obra="…"` en el bloque pone la referencia de un fragmento.
+    Solo PDF. Las de clase no se enlazan desde la web (se reparten en
+    clase); las del banco de un modelo, sí, desde la página «Fichas» de
+    su unidad (ver pagina_fichas). Un `obra="…"` en el bloque pone la referencia de un fragmento.
 
     Varios bloques lilypond en un mismo ejercicio son una serie: los
     apartados a), b)… de una sola consigna, cada uno grabado aparte
@@ -1244,6 +1264,187 @@ def fichas():
     return sorted(FICHAS.glob("c[34]u*.md"))
 
 
+# --- fichas generadas: banco y página «Fichas» -------------------------
+#
+# Un modelo (fichas/modelos/c3u1-repaso.md) da un banco fijo de variantes
+# (fichas/banco/c3u1-repaso/c3u1-repaso-01.md…), que se genera solo cuando
+# se pide (`--generar`) y se versiona: si un núcleo de la app cambia, no
+# cambia en silencio la ficha que ya tiene un alumno. La construcción
+# normal solo las compila, como cualquier otra ficha.
+#
+# En la web, cada unidad con algún banco tiene una página «Fichas»
+# (c3u1-fichas.html): una sección por modelo, con una variante al azar,
+# «Otra ficha» y la solución detrás de un clic. Sale al sitio si la unidad
+# y el modelo llevan `publico: true`; en build/ (la versión de trabajo),
+# siempre.
+
+def banco(modelo):
+    return sorted((BANCO / modelo).glob(f"{modelo}-[0-9][0-9].md"))
+
+
+def modelos(unidad=None):
+    """Los modelos con banco, de una unidad o de todas."""
+    return [m for m in sorted(MODELOS.glob("c[34]u*.md"))
+            if banco(m.stem) and (unidad is None or m.stem.startswith(f"{unidad}-"))]
+
+
+def generar(modelo, cuantas):
+    """Rehace el banco de un modelo: borra el anterior, genera y compila."""
+    if not (MODELOS / f"{modelo}.md").exists():
+        sys.exit(f"No existe fichas/modelos/{modelo}.md. Modelos: "
+                 f"{', '.join(m.stem for m in sorted(MODELOS.glob('*.md')))}")
+    destino = BANCO / modelo
+    destino.mkdir(parents=True, exist_ok=True)
+    for viejo in destino.glob("*.md"):
+        viejo.unlink()
+    ejecutar(["node", str(GENERADOR), modelo, "--cuantas", str(cuantas), "--salida", str(destino)])
+    hechos = 0
+    for ficha in banco(modelo):
+        print(f"fichas/banco/{modelo}/{ficha.name}:")
+        hechos += documentar_ficha(ficha)
+    return hechos
+
+
+ICONO_OTRA = ('<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" '
+              'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+              '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/>'
+              '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>')
+
+# El comportamiento de la página: elegir variante, «Otra ficha» (nunca la
+# misma que se ve), y la solución detrás del freno. La variante va en el
+# fragmento (#repaso=07), para que recargar o volver no la cambie.
+JS_FICHAS = """
+document.querySelectorAll('.banco').forEach(function (s) {
+  var n = +s.dataset.n, modelo = s.dataset.modelo;
+  var num = s.querySelector('.numero'), ficha = s.querySelector('.ficha'),
+      sol = s.querySelector('.solucion'), freno = s.querySelector('.freno');
+  var dos = function (k) { return (k < 10 ? '0' : '') + k; };
+  function mostrar(k) {
+    num.textContent = 'n.º ' + dos(k);
+    ficha.href = modelo + '-' + dos(k) + '.pdf';
+    sol.href = modelo + '-' + dos(k) + '-soluciones.pdf';
+    freno.hidden = true;
+    s.dataset.actual = k;
+  }
+  var m = new RegExp('(?:^|[#&])' + s.id + '=(\\\\d+)').exec(location.hash);
+  var k = m && +m[1] >= 1 && +m[1] <= n ? +m[1] : 1 + Math.floor(Math.random() * n);
+  mostrar(k);
+  s.querySelector('.otra').addEventListener('click', function () {
+    var j = 1 + Math.floor(Math.random() * (n - 1));
+    k = j >= +s.dataset.actual ? j + 1 : j;
+    mostrar(k);
+    history.replaceState(null, '', '#' + s.id + '=' + dos(k));
+  });
+  s.querySelector('.ver').addEventListener('click', function () { freno.hidden = false; });
+  s.classList.add('con-js');
+});
+"""
+
+
+def pagina_fichas(unidad, destino, solo_publicas):
+    """La página «Fichas» de una unidad en `destino`; devuelve sus modelos.
+
+    Sin modelos que mostrar, no hay página (y se borra la que hubiera).
+    """
+    md = RAIZ / f"{unidad}.md"
+    lista = [m for m in modelos(unidad)
+             if all((BUILD / f"{f.stem}{s}.pdf").exists() for f in banco(m.stem) for s in ("", "-soluciones"))
+             and (not solo_publicas or es_publica(m))]
+    pagina = destino / f"{unidad}-fichas.html"
+    if not lista or not md.exists():
+        pagina.unlink(missing_ok=True)
+        return []
+    esc = lambda s: s.replace("&", "&amp;").replace("<", "&lt;")
+    secciones = []
+    for m in lista:
+        n = len(banco(m.stem))
+        nombre = dato("title", m).split(" · ")[-1]          # «3.º — UD 1 · Repaso» -> «Repaso»
+        ancla = re.sub(r"\W+", "-", nombre.lower()).strip("-")
+        marca = MARCA_DEV if not solo_publicas and not es_publica(m) else ""
+        secciones.append(f"""
+<section class="banco" id="{ancla}" data-modelo="{m.stem}" data-n="{n}">
+<h2>{esc(nombre)}{marca}</h2>
+<p class="que">{esc(dato("subtitle", m, defecto=""))}</p>
+<p>Una ficha para hacer en papel: imprímela o cópiala en tu cuaderno. Hay {n}
+distintas, todas con los mismos ejercicios; si ya has hecho esta, pide otra.</p>
+<div class="tarjeta">
+  <div class="cual"><span class="titulo-ficha">{esc(nombre)}</span> <span class="numero">n.º 01</span></div>
+  <div class="botones">
+    <a class="boton principal ficha" href="{m.stem}-01.pdf">{ICONO_DESCARGA}Ficha (PDF)</a>
+    <button type="button" class="boton otra">{ICONO_OTRA}Otra ficha</button>
+    <button type="button" class="boton ver">Solución</button>
+  </div>
+  <div class="freno" hidden>
+    <p><strong>¿Has hecho ya los ejercicios?</strong> Si no, ver la solución no te
+    servirá de mucho: hazlos primero, en papel, y luego compara.</p>
+    <a class="boton solucion" href="{m.stem}-01-soluciones.pdf">{ICONO_DESCARGA}Sí, ver la solución (PDF)</a>
+  </div>
+</div>
+</section>""")
+    # «3.º — UD 1. Morfología. Conducción de voces» -> «3.º — UD 1» y el resto
+    curso_ud, _, tema = dato("title", md).partition(". ")
+    html = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fichas · {esc(curso_ud)}</title>
+<link rel="stylesheet" href="{CSS.name}">
+</head>
+<body class="pagina-fichas">
+<header class="masthead">
+  <a class="back" href="index.html">← Apuntes</a>
+  <nav class="acciones">
+    <a class="accion" href="{unidad}.html">La unidad</a>
+  </nav>
+</header>
+<div class="hoja">
+<header id="title-block-header">
+<h1 class="title">Fichas · {esc(curso_ud)}</h1>
+<p class="subtitle">{esc(tema)}</p>
+</header>
+{"".join(secciones)}
+</div>
+<footer class="pie">{pie_html()}</footer>
+<script>{JS_FICHAS}</script>
+</body>
+</html>
+"""
+    escribir_si_cambia(pagina, html)
+    return lista
+
+
+def montar_fichas(unidades_sitio):
+    """Páginas «Fichas»: las del sitio (con sus PDF) y las de build/.
+
+    Devuelve las unidades del sitio que tienen página, para el «Fichas»
+    de su cabecera y el de la app (enlaces.js).
+    """
+    con_fichas = []
+    for md in unidades():
+        pagina_fichas(md.stem, BUILD, solo_publicas=False)
+        publicas = pagina_fichas(md.stem, SITIO, solo_publicas=True) if md in unidades_sitio else []
+        for m in modelos(md.stem):
+            for f in banco(m.stem):
+                for s in ("", "-soluciones"):
+                    pdf = SITIO / f"{f.stem}{s}.pdf"
+                    if m in publicas:
+                        shutil.copy2(BUILD / pdf.name, pdf)
+                    else:
+                        pdf.unlink(missing_ok=True)
+        if publicas:
+            con_fichas.append(md.stem)
+            print(f"  {(SITIO / md.stem).relative_to(RAIZ)}-fichas.html "
+                  f"({', '.join(m.stem for m in publicas)})")
+            f = SITIO / f"{md.stem}.html"
+            f.write_text(f.read_text(encoding="utf-8").replace(
+                '<nav class="acciones">\n',
+                '<nav class="acciones">\n'
+                f'    <a class="accion" href="{md.stem}-fichas.html" title="Fichas para hacer en papel">Fichas</a>\n',
+                1), encoding="utf-8")
+    return con_fichas
+
+
 # --- principal --------------------------------------------------------
 
 def unidades():
@@ -1254,6 +1455,18 @@ def main(argv):
     global forzar
     forzar = "--forzar" in argv
     argv = [a for a in argv if a != "--forzar"]
+
+    if "--generar" in argv:
+        # --generar <modelo> [--cuantas n]: rehace su banco (20 por defecto)
+        i = argv.index("--generar")
+        if i + 1 >= len(argv):
+            sys.exit("Uso: construir.py --generar <modelo> [--cuantas n]")
+        cuantas = int(argv[argv.index("--cuantas") + 1]) if "--cuantas" in argv else 20
+        hechos = generar(argv[i + 1].removesuffix(".md"), cuantas)
+        print("Sitio:")
+        montar_sitio()
+        print(f"Listo ({hechos}).")
+        return
 
     if "--limpiar" in argv:
         for d in (BUILD, TMP):
@@ -1267,8 +1480,13 @@ def main(argv):
     if objetivo == "ejemplos":
         print("Ejemplos:")
         hechos = grabar_todos()
-    elif objetivo == "fichas" or (FICHAS / f"{objetivo}.md").exists():
-        for ficha in (fichas() if objetivo == "fichas" else [FICHAS / f"{objetivo}.md"]):
+    elif objetivo == "fichas" or (FICHAS / f"{objetivo}.md").exists() or (
+            objetivo and objetivo.endswith(".md") and pathlib.Path(objetivo).is_file()):
+        # una ficha por su nombre, todas, o una por su ruta (las generadas
+        # por generar-fichas.js no están en fichas/)
+        porRuta = objetivo.endswith(".md")
+        for ficha in (fichas() if objetivo == "fichas"
+                      else [pathlib.Path(objetivo).resolve()] if porRuta else [FICHAS / f"{objetivo}.md"]):
             print(f"fichas/{ficha.name}:")
             hechos += documentar_ficha(ficha)
         print("Nada que hacer." if not hechos else f"Listo ({hechos}).")
@@ -1289,6 +1507,9 @@ def main(argv):
         for ficha in fichas():
             print(f"fichas/{ficha.name}:")
             hechos += documentar_ficha(ficha)
+        for m in modelos():
+            print(f"fichas/banco/{m.stem}/ ({len(banco(m.stem))}):")
+            hechos += sum(documentar_ficha(f) for f in banco(m.stem))
 
     if objetivo != "ejemplos":
         print("Sitio:")

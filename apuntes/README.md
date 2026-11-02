@@ -22,6 +22,8 @@ el día que cambie el formato del texto no hay que tocarlos.
 
     fichas/c3u1-f1.md      una ficha de ejercicios: c<curso>u<unidad>-f<n>
     fichas/plantillas/     la partitura de cada tipo de ejercicio (<tipo>.ly)
+    fichas/modelos/        modelos de ficha generada (c3u1-repaso.md)
+    fichas/banco/<modelo>/ sus variantes, generadas y versionadas
 
     _formato/metadatos.yaml  papel, márgenes, tipografía (PDF), y la autoría
                              y licencia de todo (PDF y pie del HTML)
@@ -34,6 +36,8 @@ el día que cambie el formato del texto no hay que tocarlos.
     _formato/indice.html     plantilla de la página de índice de unidades
 
     herramientas/construir.py  todo el flujo
+    herramientas/comprobar-fichas.js  verificador de fichas (y de modelos)
+    herramientas/generar-fichas.js    fichas generadas a partir de un modelo
     herramientas/pdf2svg.py    conversor de reserva, sin binarios de sistema
 
     build/                 generado: todas las unidades compiladas, más
@@ -81,6 +85,14 @@ No hace falta `make` (no viene con Windows) ni Quarto.
     python herramientas/construir.py ejemplos   solo los SVG
     python herramientas/construir.py --forzar   sin mirar fechas
     python herramientas/construir.py --limpiar  borra build/ y tmp/
+    python herramientas/construir.py --generar c3u1-repaso [--cuantas 20]
+                                                rehace el banco de ese modelo
+
+    node herramientas/comprobar-fichas.js            comprueba todas las fichas
+    node herramientas/comprobar-fichas.js c3u1-f3b   solo esa
+    node herramientas/comprobar-fichas.js --detalle  con una línea por acorde
+    node herramientas/comprobar-fichas.js --modelo c3u1-repaso         lee el modelo
+    node herramientas/comprobar-fichas.js --modelo c3u1-repaso x.md    x, contra el modelo
 
 El camino completo:
 
@@ -230,9 +242,77 @@ Una ficha tiene que caber en una hoja: por eso no lleva la línea de autoría
 bajo el título (ya está al pie) y tiene márgenes verticales propios, en
 `_formato/fichas.yaml`.
 
-Las fichas son **solo PDF** y **no se enlazan desde la web** ni salen a
-`build/sitio/`: se reparten en clase. El espacio en blanco tras cada ejercicio
+Las fichas de clase son **solo PDF** y **no se enlazan desde la web** ni salen
+a `build/sitio/`: se reparten en clase. Las generadas, sí (ver abajo). El espacio en blanco tras cada ejercicio
 lo da la plantilla, en su línea `%% espacio: 1.8cm`.
+
+**Comprobación.** `herramientas/comprobar-fichas.js` lee cada ficha y contrasta su
+material con los comprobadores de la app (`conduccion-check.js`,
+`cuatro-voces-check.js`): que la solución no tenga faltas que no se pretenden, y que lo
+anotado (la falta, la disposición, el grado, el cifrado, el rótulo del enlace) sea lo
+que hay. Cada tipo de ejercicio tiene su comprobación; los que no la tienen todavía
+(análisis, realizar un bajo, séptimas, secuencias) salen como «sin comprobar». Una
+discrepancia (✗) hace que acabe con error; un aviso (!) es algo que mirar, que puede ser
+a propósito. Al hacer o cambiar una ficha, pasarlo antes de construirla.
+
+**Variantes.** Una ficha con el mismo diseño y otro material (para otro
+grupo, para repetir, para examen) lleva el nombre de la original con una
+letra: `c3u1-f3b.md`, `c3u1-f3c.md`… La original no se renombra (es la «a»
+implícita), y el título lo dice: «Ficha 3b». Letra y no `-v2`, para que
+`c3u1-f3-*` no recoja las imágenes de la variante. Su guion empieza por
+«Variante de c3u1-f3: mismo diseño (véase su guion)» y dice solo lo que
+cambia: el diseño —tipos, número y clase de acordes o faltas, `pide=`— está
+en el guion de la original y se respeta; cambian las tonalidades (mismo
+modo), los grados y el orden. Se valida igual que la original, y además
+`comprobar-fichas.js` compara su diseño con el de la original: el mismo
+número de acordes o pasos y de cada clase de falta o disposición.
+
+**Modelos.** Un modelo (`fichas/modelos/c3u1-repaso.md`) es una ficha sin
+material: la misma cabecera, guion y bloques `::: {.ejercicio tipo=…}`, pero
+cada bloque lleva, en lugar del ```` ```lilypond ````, un bloque
+```` ```condiciones ```` con líneas «clave: valor»:
+
+    acordes: 8
+    disposiciones: mixta (5.ª) 2, mixta (3.ª) 2, cerrada 2, abierta 2
+    paralelas: 2–4
+    invertidos: al menos 4
+    primer acorde: dado
+
+Las claves de cada tipo, y qué valores admiten, están en el `VOCABULARIO` de
+`comprobar-fichas.js`: una clave o un valor que no conoce es un error, no se
+ignora. En la cabecera, `tonalidades: 1.er trimestre` (o «hasta el 2.º
+trimestre») y `menores: al menos 1`. El modelo no se construye: de él salen
+las fichas generadas.
+
+**Fichas generadas.** `herramientas/generar-fichas.js` saca de un modelo tantas
+variantes como se le pidan: para cada ejercicio pide el material al núcleo de la
+app que lo genera, lo escribe como bloque `lilypond` de ficha y lo pasa por el
+verificador, que tiene que darlo sin discrepancias, sin avisos y cumpliendo las
+condiciones; si no, otro intento. En un mismo lote no se repite ningún ejercicio
+(mismo modo y grados del bajo) y las tonalidades se reparten. Donde la solución no
+es única (construir y enlazar acordes), la de la ficha es «Una solución posible.»,
+con las voces superiores en gris (`solucionPosible = ##t`, en `etiquetas.ily`).
+
+El **banco** de un modelo es fijo y se versiona: `fichas/banco/c3u1-repaso/
+c3u1-repaso-01.md`… Se rehace solo cuando se pide,
+
+    python herramientas/construir.py --generar c3u1-repaso
+
+(20 por defecto; unos dos minutos de generación y luego la compilación), y el
+cambio se revisa en el diff como el de una ficha a mano. Así, si un núcleo de la
+app cambia, no cambia en silencio la ficha n.º 17 que ya tiene un alumno. Las
+fichas del banco no se editan a mano: se regeneran. La compilación normal las
+compila como las demás fichas.
+
+**La página «Fichas».** Cada unidad con algún banco tiene una página
+`c3u1-fichas.html`, con una sección por modelo: una variante al azar, «Otra
+ficha», y la solución detrás de un clic con un freno («¿Has hecho ya los
+ejercicios?…»). La variante va en el fragmento (`#repaso=07`), para que recargar
+no la cambie. Se llega a ella desde el «Fichas» de la cabecera de la unidad, el del
+índice y el «Fichas →» de la app (por `enlaces.js`). En `build/` está siempre (la
+versión de trabajo, con DEV en lo que no sale); al sitio sale cuando **la unidad y
+el modelo** llevan `publico: true`. Plan y decisiones:
+`informes/2026-10-29-plan-fichas-generadas.md`.
 
 ## Los ejemplos que no son partitura
 
@@ -411,12 +491,10 @@ El flujo está completo y las tres salidas se generan.
   El de §1.2 va en los ejemplos para clase. `c3u1-triada-im.ly` (la prueba de
   que una cadena de la app se pega aquí sin retocar) no lo usa ningún texto.
   Fichas: `c3u1-f1` (la de prueba del formato) a `c3u1-f4` (grados y cifrado,
-  en serie; disposición; movimientos). De 4.º UD 0, `c4u0-f1` y `c4u0-f2`
+  en serie; disposición; movimientos), y `c3u1-f3b`, variante de la 3.
+  De 4.º UD 0, `c4u0-f1` y `c4u0-f2`
   (cuatro bajos, en serie).
 - **`c3u2.md`** — todavía guion, sin redactar.
-
-Pendiente: los enlaces cruzados con la app (un apunte enlaza al ejercicio de su
-unidad y al revés). `_site/` ya lo permite con rutas relativas.
 
 ### Revisión para el curso 2027-28
 
@@ -437,3 +515,33 @@ aquí (y, si mueve un epígrafe citado, corregir su ancla en `curriculum-data.js
   cierre de §2), como el procedimiento que evita las paralelas y las directas. Ojo:
   con la consigna, V–VI, VI–V y III–IV no salen bien (la sensible bajaría): conviene
   decirlo y dejarlos para su unidad.
+
+### Discrepancias de criterio por resolver
+
+No son cambios decididos, sino diferencias de criterio entre fichas, app y apuntes que
+ha sacado a la luz `herramientas/comprobar-fichas.js` (como avisos, «!»). Hay que
+decidir en cada una qué criterio vale y, después, ajustar lo que no lo siga. Añadido el
+2026-10-29.
+
+- **III en menor** (`c3u1-f1`, ejercicio 2, La menor, acorde 5): la ficha escribe un
+  III con do–mi–sol (menor natural). La app trabaja en menor armónica: su III es
+  do–mi–sol♯ (aumentado), y por eso lo excluye (bajo-cifrado-core.js; también el guion
+  de `c3u1-f2`: «en menor, sin III ni II en estado fundamental»). ¿Se admite el III de
+  la natural en 3.º, y con qué cifrado?
+- **6/4 al final** (`c3u1-f1`, ejercicio 2, acorde 8: IV6/4 sobre la tónica). La app
+  solo genera el 6/4 cadencial o de paso. ¿Vale en un ejercicio de cifrado, donde no
+  hay conducción, un 6/4 que no es ni cadencial ni de paso?
+- **Saltos sin compensar en el material de faltas de paralelas** (`c3u1-f5`, los cuatro
+  apartados: saltos de 4.ª y 5.ª, sobre todo en el bajo, sin cambio de dirección por
+  grado, P9). Su guion los da por admitidos, como preferencia. ¿Basta con que el
+  material solo tenga la falta que se busca, o debería ser además un modelo de buena
+  conducción? Afecta también a las fichas generadas.
+
+### Fichas: pendiente de probar
+
+- **Pentagrama más grande en todas las fichas** (pedido el 2026-10-30): el tamaño
+  actual se queda algo pequeño para escribir a mano. Probar a subirlo un poco
+  (`ESCALA` / `CAJA_PT` en `construir.py`, el `line-width` de cada plantilla) y mirar
+  qué se trastoca: sistemas por ejercicio, páginas por ficha (una hoja). Se puede ganar
+  algo de sitio estrechando un poco los márgenes de `_formato/fichas.yaml`, sin
+  pasarse. Aparte de las fichas generadas, para no mezclar cambios.

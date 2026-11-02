@@ -29,6 +29,13 @@ alturaEncima = #6.5
 
 compas = { \time 4/4 }
 
+%% La ligadura de preparación de una 7.ª en el bajo (el ① del I6 que se
+%% mantiene como 7.ª del IV4/2), que es solución: solo sale con el
+%% análisis. En las voces superiores, dentro de \analitico, basta con ~.
+ligadura =
+#(define-event-function () ()
+   (if conAnalisis (make-music 'TieEvent) (make-music 'PostEvents)))
+
 %%MATERIAL%%
 
 %% Ancho fijo: la caja de texto (CAJA_PT en construir.py) entre la escala

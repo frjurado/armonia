@@ -213,6 +213,39 @@ figure:has(img.aula) figcaption::after {
 .practicar a { color: var(--ink); font-weight: 600; }
 @media print { .practicar { display: none; } }
 
+/* --- página «Fichas» ------------------------------------------------
+   Una por unidad (c3u1-fichas.html, la escribe construir.py): una sección
+   por modelo con la variante que toca, «Otra ficha» y la solución detrás
+   del freno. Los botones, en la letra de la interfaz, como «Para
+   practicar». Sin JS se ve la n.º 01 con sus dos enlaces, y basta. */
+.banco .que { color: var(--suave); font-style: italic; margin-top: -.6rem; }
+/* La marca DEV de build/ (lo que no sale al sitio), como en el índice. */
+.marca-dev { display: inline-block; vertical-align: middle; margin-left: 10px; padding: 2px 7px;
+  border-radius: 6px; background: #f7efe8; color: #8f4a22; border: 1px solid #e0c9b4;
+  font: 700 11px/1.4 "Source Sans 3", system-ui, sans-serif; letter-spacing: .08em; }
+.tarjeta {
+  margin: 1.4rem 0 2.5rem; padding: 1.1rem 1.2rem;
+  border: 1px solid var(--regla); border-radius: 10px; background: var(--fondo-nota);
+  text-align: left;
+  font-family: "Source Sans 3", system-ui, sans-serif;
+}
+.tarjeta .cual { font-size: 1.15rem; font-weight: 600; color: var(--ink); margin-bottom: .8rem; }
+.tarjeta .botones { display: flex; flex-wrap: wrap; gap: .6rem; }
+.boton {
+  display: inline-flex; align-items: center; gap: .4rem; min-height: 40px; padding: 0 14px;
+  border: 1.5px solid var(--ink); border-radius: 10px; background: #fff; color: var(--ink);
+  font: 600 .95rem "Source Sans 3", system-ui, sans-serif; text-decoration: none; cursor: pointer;
+}
+.boton:hover { background: #eef3f0; }
+.boton.principal { background: var(--ink); color: #fff; }
+.boton.principal:hover { background: var(--ink-suave); }
+/* Sin JS no hay ni «Otra ficha» ni freno: la solución, enlazada sin más. */
+.banco:not(.con-js) .otra, .banco:not(.con-js) .ver { display: none; }
+.banco:not(.con-js) .freno { display: block; }
+.freno { margin-top: 1rem; padding-top: .9rem; border-top: 1px solid var(--regla); }
+.freno p { margin: 0 0 .8rem; font-size: .98rem; }
+.freno[hidden] { display: none; }
+
 /* --- pie ----------------------------------------------------------
    Autoría y licencia, el mismo texto que en la portada, el índice de
    apuntes y el menú de la app (lo pone construir.py a partir de

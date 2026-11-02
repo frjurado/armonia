@@ -36,6 +36,7 @@ septiembre (14 commits) y el 16 (9).
 | 9. Estructura | 6 oct | Nombres por material, un solo esquema, menú en filas, enlaces apuntes ↔ ejercicios |
 | 10. Plan de la UD 1 y UD 0 | 9 oct | Plan completo de la UD 1; «Oír»; Intervalos y Acordes en pentagrama doble |
 | 11. La UD 1 | 9–10 oct | Comprobador general; Consonancia, Disposición, Movimientos, Paralelas y directas (ocultas, para revisar) |
+| 12. Fichas generadas | 29 oct – 3 nov | Verificador de fichas, modelos, generador por lotes, banco versionado y página «Fichas» por unidad |
 
 ---
 
@@ -261,6 +262,23 @@ pueden ir como `<harm>` (Verovio ensancha el compás y delata la falta), así qu
 página común los dibuja aparte. De paso entra una regla en los mínimos, **N15** (la suma
 de saltos), y la página común gana un modo por pasos. Todo queda oculto
 (`publico:false`) hasta que el profesor lo revise.
+
+## Fase 12 — Fichas generadas (29 de octubre – 3 de noviembre)
+
+Entre la fase 11 y esta, las fichas en papel crecen a mano (series, variantes como
+`c3u1-f3b`, tipos nuevos de 4.º), y con ellas la pregunta de si la máquina que ya genera
+y comprueba los ejercicios de la app puede hacer también fichas. El plan
+([informe](2026-10-29-plan-fichas-generadas.md)) va en cinco fases, cada una revisada
+antes del commit ([cierre](2026-11-03-fichas-generadas.md)): un **verificador** que
+contrasta las fichas con los comprobadores de la app —y que de paso encuentra
+discrepancias de criterio en fichas ya repartidas—; **modelos** de ficha con condiciones
+en lugar de material; un **generador** que, ejercicio a ejercicio, pide el material a los
+núcleos de la app y solo da por bueno lo que el verificador acepta; y un **banco** fijo
+de 20 repasos de c3u1, versionado, con una página «Fichas» por unidad y la solución
+detrás de un freno. Lo más instructivo fue lo que la revisión del profesor sacó a la luz
+del material generado: correcto no basta (la conducción alrededor de las faltas tiene
+que ser buena, y eso limita cuántas caben), y la variedad hay que medirla (en menor, el
+bajo de enlazar acordes apenas tiene treinta caminos, y el generador repetía).
 
 ---
 

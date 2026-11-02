@@ -13,7 +13,9 @@
 %%   bajo                 pentagrama de Fa: el dato, siempre visible
 %%
 %% El primer acorde puede ir entero fuera de \analitico, como modelo.
-%% La solución es UNA de las posibles (la posición la elige el alumno).
+%% La solución es UNA de las posibles (la posición la elige el alumno): con
+%% `solucionPosible = ##t` en el material, la solución lo dice y sale en gris
+%% (etiquetas.ily, «Una solución posible»).
 %%
 %% espacio: 0.4cm
 
@@ -28,7 +30,7 @@ alturaRotulos = #7
 \score {
   \new GrandStaff <<
     \new Staff << %%TONALIDAD%% \omit Staff.TimeSignature
-                  \new Voice { \voiceOne \cadenzaOn \textLengthOn \soprano }
+                  \new Voice { \voiceOne \cadenzaOn \textLengthOn \rotuloPosible \soprano }
                   \new Voice { \voiceTwo \contralto } >>
     \new Staff << \clef bass %%TONALIDAD%% \omit Staff.TimeSignature
                   \new Voice { \voiceOne \tenor }
