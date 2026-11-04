@@ -47,6 +47,9 @@ const D = require(path.join(APP, 'ejercicios', 'disposicion-core.js'));
 const P = require(path.join(APP, 'ejercicios', 'paralelas-directas-core.js'));
 const EN = require(path.join(APP, 'ejercicios', 'enlace-core.js'));
 const K = require(path.join(APP, 'ejercicios', 'conduccion-check.js'));
+const CK = require(path.join(APP, 'ejercicios', 'cuatro-voces-check.js'));
+const SEC = require(path.join(APP, 'ejercicios', 'secuencia-core.js'));
+const SEPT = require(path.join(APP, 'ejercicios', 'septimas-core.js'));
 const TON = require(path.join(APP, 'tonalidades.js'));
 const LETRAS = 'CDEFGAB';
 const ROLES4 = ['soprano', 'contralto', 'tenor', 'bajo'];
@@ -209,11 +212,38 @@ function enlazarAcordes(reglas, key) {
     `respuestas = {\n  ${elegido.rotulos.map(r => `\\paso "${r}"`).join(' ')}\n}`].join('\n') + '\n';
 }
 
+// Realizar un bajo: una frase de la app, de 4 compases. Con `secuencia: sí`,
+// Secuencia › Frase (nivel 2: 6/3 en la secuencia, V7, 6/4 cadencial); si no,
+// 7.ª diatónica › Bajo dado (nivel 1: la 7.ª, en la cadencia). La licencia de
+// la secuencia, aquí con su final exacto, que la ficha no dice.
+function realizarBajo(reglas, key) {
+  const inst = reglas.secuencia === 'sí' ? SEC.generar(2, 2, { key }) : SEPT.generarFrase(1, { key });
+  if (!inst) return null;
+  if (CK.comprobar(key, inst.acordes, inst.voces, { licencias: inst.licencias }).length) return null;
+  const { voces, acordes, ritmo, est, lineas = [] } = inst;
+  const ligada = v => k => lineas.some(l => l.v === v && l.notas.includes(k) && l.notas.includes(k + 1) &&
+    voces[v][k].abs === voces[v][k + 1].abs);
+  const compases = pinta => ritmo.compases.map(c => c.map(pinta).join(' ')).join(' | ');
+  const sec = est.tramos.find(t => t.tipo === 'sec'), cad = est.tramos.find(t => t.tipo === 'cad');
+  const encima = k => k === 0 && sec ? `\\encima "${sec.sec.nombre.replace('Círculo', 'C.')}" `
+    : k === acordes.length - 1 ? `\\encima "${cad.real || cad.sigla}" ` : '';
+  const superior = v => '\\analitico { ' + compases(({ k, dur }) =>
+    (v === 0 ? encima(k) : '') + ly(voces[v][k]) + dur + (ligada(v)(k) ? '~' : '')) + ' }';
+  const bajo = compases(({ k, dur }) => {
+    const rom = `\\acorde "${acordes[k].romano}"`;
+    return `${k === 0 ? `\\modelo ${rom} \\finModelo` : rom} ${ly(voces[3][k])}${dur}`;
+  });
+  return [`compas = { \\time ${ritmo.time}${ritmo.anacrusa ? ` \\partial ${ritmo.compases[0][0].dur}` : ''} }`,
+    `soprano   = ${superior(0)}`, `contralto = ${superior(1)}`, `tenor     = ${superior(2)}`,
+    `bajo = {\n  ${bajo} \\bar "|."\n}`].join('\n') + '\n';
+}
+
 const ADAPTADOR = {
   'grados-bajo-cifrado': gradosBajoCifrado,
   'construir-acordes': construirAcordes,
   'faltas-paralelas': faltasParalelas,
   'enlazar-acordes': enlazarAcordes,
+  'realizar-bajo': realizarBajo,
 };
 
 /* ---------- una ficha ---------- */
@@ -262,7 +292,7 @@ function ejercicio(ap, tono, reglas, usadas = new Set()) {
     const h = huella(codigo, key);
     if (h && usadas.has(h)) continue;
     const r = V.comprobarApartado({ attr: { ...ap.attr, tono }, codigo });
-    if (r.fallos.length || V.incumple(r.perfil, reglas).length) continue;
+    if (r.fallos.length || r.avisos.length || V.incumple(r.perfil, reglas).length) continue;
     return { codigo, huella: h, avisos: r.avisos, intentos: i + 1 };
   }
   return null;

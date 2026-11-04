@@ -251,7 +251,7 @@ material con los comprobadores de la app (`conduccion-check.js`,
 `cuatro-voces-check.js`): que la solución no tenga faltas que no se pretenden, y que lo
 anotado (la falta, la disposición, el grado, el cifrado, el rótulo del enlace) sea lo
 que hay. Cada tipo de ejercicio tiene su comprobación; los que no la tienen todavía
-(análisis, realizar un bajo, séptimas, secuencias) salen como «sin comprobar». Una
+(análisis, séptimas, secuencias) salen como «sin comprobar». Una
 discrepancia (✗) hace que acabe con error; un aviso (!) es algo que mirar, que puede ser
 a propósito. Al hacer o cambiar una ficha, pasarlo antes de construirla.
 
@@ -506,6 +506,11 @@ aquí (y, si mueve un epígrafe citado, corregir su ancla en `curriculum-data.js
   de tríadas). Los ejercicios se mueven solo con datos, en `curriculum-data.js`
   (`app/docs/Modelo-ejercicios.md` §3; decidido en
   `informes/2026-10-05-revision-tras-clase.md`).
+- **El repaso de c4u1 (`c4u1-repaso`), a caballo con la UD 0** (añadido el 2026-11-04).
+  Se situó en la UD 1, pero su ejercicio 1 es una secuencia en tríadas (materia de c4u0
+  §2.4), y el 2 solo pide una 7.ª de predominante en la cadencia: no llegó a tratarse
+  el resto de la unidad (7.as en la prolongación, secuencias de 7.as). Revisar a qué
+  unidad va cada ejercicio y completar el modelo con lo que falte de la UD 1.
 - **Cómo enlazar dos acordes en estado fundamental** (añadido el 2026-10-24): si hay
   notas comunes, se mantienen y las demás voces van por grado; si no, las voces
   superiores van por movimiento contrario al bajo (Minimos P4). Hoy solo aparece de
@@ -536,6 +541,9 @@ decidir en cada una qué criterio vale y, después, ajustar lo que no lo siga. A
   grado, P9). Su guion los da por admitidos, como preferencia. ¿Basta con que el
   material solo tenga la falta que se busca, o debería ser además un modelo de buena
   conducción? Afecta también a las fichas generadas.
+- **Bajo fuera de tesitura en `c4u0-f1`** (añadido el 2026-11-04, al comprobar también
+  `realizar-bajo`): en el c. 7, el V7 baja a re₂, por debajo del mi₂ de la N1 (Sol
+  mayor, solo en la solución). ¿Se deja como licencia del bajo o se sube la nota?
 
 ### Fichas: pendiente de probar
 
