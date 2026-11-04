@@ -46,7 +46,7 @@ En la consigna:
 | `faltas-paralelas` | Busca las 5.as y 8.as paralelas, también las que se forman por movimiento contrario (8.ª → 15.ª, 5.ª → 12.ª). Escribe cada una debajo, entre las dos sonoridades: el intervalo y, a tres o cuatro voces, entre qué voces (5.as par., S–B). | Fragmentos de dos a cuatro voces, sin compás. | Cada falta de N4, con sus voces; si se pide, también las directas de N5. | 3.º UD 1 |
 | `enlazar-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde. Enlázalos a cuatro voces, duplicando siempre la fundamental: si dos acordes seguidos tienen notas comunes, mantenlas en la misma voz, y lleva las demás por grado a las notas que faltan; si no las tienen, lleva las tres voces superiores por movimiento contrario al bajo, cada una a la nota más cercana del acorde siguiente. | Un bajo en estado fundamental y, si se da, el primer acorde, cerrado o abierto. | Las tres voces superiores de los demás acordes (y del primero, si no se da). | 3.º UD 1 |
 | `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
-| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.][secuencias:  Señala la secuencia de 7.as.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
+| `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.][secuencias:  Señala la secuencia de 7.as.][secuencia:  Señala la secuencia.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
 | `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
 | `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
 | `secuencia-triadas` | Di qué secuencia es cada bajo, escribe debajo los grados y realízala a cuatro voces. | Dos o tres secuencias breves en un mismo sistema, cada una con su tonalidad: solo el bajo, sin cifrar. | El tipo de secuencia, los grados y la realización. | 4.º UD 0 |
@@ -71,6 +71,7 @@ mucho 1`; un recuento, como `cerrada 2, abierta 2`.
 | `paralelas` | `voces`, `pasos`, `paralelas`, `prohibidas` | No |
 | `faltas-paralelas` | `voces`, `sonoridades`, `paralelas` (N4), `directas` (N5). Fuera de las buscadas, buena conducción: a cuatro voces y en 10 sonoridades caben unas 2 paralelas y 1 directa | Sí (a cuatro voces) |
 | `enlazar-acordes` | `acordes`, `primer acorde` (dado/sin dar); `enlaces`, recuento (contr., 1 n.c., 2 n.c.) | Sí |
+| `realizar-bajo` | `compases`, `acordes`, `secuencia` (sí/no), `septimas` (las que no son del V) | Sí, las frases de 4 compases de la app: con `secuencia: sí`, Secuencia › Frase; si no, 7.ª diatónica › Bajo dado |
 
 La lista que manda es la del verificador (`VOCABULARIO` en
 `apuntes/herramientas/comprobar-fichas.js`): una condición que no conoce es un
@@ -202,7 +203,8 @@ armonía a partir del bajo (qué es cadencia, qué prolonga, qué es secuencia)
 y la realiza a cuatro voces. El primer acorde va resuelto como modelo, con
 su disposición y su cifrado.
 
-Material: un bajo de 8 compases con su ritmo, y la solución completa, que
+Material: un bajo de 8 compases con su ritmo (o de 4, como las frases de la
+app: `c4u1-f1`, `c4u1-repaso`), y la solución completa, que
 tiene que cumplir los mínimos de conducción (`Minimos-conduccion.md`) de la
 unidad a la que va. Es **una** solución: en la corrección valen otras
 igual de correctas, y conviene decirlo en clase.
@@ -215,6 +217,10 @@ tenor; el conjunto se pasa por el comprobador independiente
 Con `pide="septimas"` (4.º UD 1), la consigna pide además una 7.ª que no sea
 la del V: el bajo tiene que dejar sitio para ella, en la prolongación (el ①
 repetido que admite un II4/2) o en la cadencia (④ antes del 6/4 o del V).
+
+Con `pide="secuencia"` (4.º UD 0 en adelante), el bajo lleva una secuencia en
+tríadas y la cadencia: es la frase (tipo 2) de Secuencia en la app. La consigna
+pide señalarla.
 
 Con `pide="secuencias"` (4.º UD 1), el bajo empieza con un círculo de 5.as con 7.as
 (apuntes c4u1 §3.1–3.2), en una de sus variantes —estado fundamental, alternando

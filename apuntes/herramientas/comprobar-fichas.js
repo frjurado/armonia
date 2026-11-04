@@ -623,6 +623,59 @@ function primerosValidos(key, acs, bajos) {
   return out;
 }
 
+// Realizar un bajo: cada acorde, el que dice su romano; la solución, sin
+// faltas (los dos comprobadores) y sin ligaduras por comprobar: las 7.as, N8 y
+// N16 de cuatro-voces-check.js. Las licencias de la secuencia (N7, N10, N12),
+// desde su rótulo hasta el final: el rótulo dice dónde empieza, no dónde acaba.
+// Las fichas a mano con notas de paso o varios ritmos por voz no se leen por
+// acordes: quedan sin comprobar. Las preferencias del bajo no son avisos:
+// en un bajo dado, un salto sin compensar es el dato.
+const RE_SECUENCIA = /^(C\. de 5\.as|Romanesca)/;
+const CIFRAS_ROMANO = { '': [0, false], 6: [1, false], '6/4': [2, false],
+                        7: [0, true], '6/5': [1, true], '4/3': [2, true], '4/2': [3, true] };
+function acordeDeRomano(key, romano) {
+  const m = romano.match(/^(VII|VI|V|IV|III|II|I)(.*)$/);
+  if (!m || !(m[2] in CIFRAS_ROMANO)) return null;
+  const [inv, septima] = CIFRAS_ROMANO[m[2]];
+  return { grado: ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'].indexOf(m[1]) + 1, inv, septima };
+}
+const notasDe = ch => ch.tones.map(t => t.letter + t.alter).sort().join();
+function realizarBajo(ap) {
+  const r = informe(), vars = variables(ap.codigo), key = tonalidad(ap.attr.tono);
+  const { roles, voces } = vocesDe(vars, ROLES4);
+  const vs = voces.map(v => v.map(e => e.altura));
+  const inicio = voces[0].findIndex(ev => (etiqueta(ev, 'encima') || []).some(x => RE_SECUENCIA.test(x)));
+  const licencia = k => inicio >= 0 && k > inicio;
+  const acs = voces[3].map((ev, k) => {
+    const romano = (etiqueta(ev, 'acorde') || [''])[0], sp = acordeDeRomano(key, romano);
+    if (!sp) { r.mal(`acorde ${k + 1}`, `no reconozco el romano «${romano}»`); return null; }
+    const sonando = [...new Set(vs.map(v => v[k].letter + v[k].alter))];
+    // en menor, 7̂ natural (la secuencia) o elevada, y 6̂ elevada (de paso a
+    // la sensible): la que suene; en la secuencia, sensible duplicable (N7)
+    const dup = licencia(k) ? { dup: { nunca: [] } } : {};
+    const ch = [sp, { ...sp, baja: [7] }, { ...sp, eleva: [6] }].map(s => CV.acorde(key, { ...s, ...dup }))
+      .find(c => sonando.every(n => c.tones.some(t => t.letter + t.alter === n)));
+    if (!ch) { r.mal(`acorde ${k + 1}`, `${romano}: suenan ${sonando.join(' ')}`); return null; }
+    if (vs[3][k].letter + vs[3][k].alter !== ch.tones[ch.bass].letter + ch.tones[ch.bass].alter)
+      r.mal(`acorde ${k + 1}`, `${romano}: el bajo no es el de esa inversión`);
+    return ch;
+  });
+  if (acs.some(a => !a)) return r;
+  const LIC = new Set(['N7', 'N10', 'N12']);
+  CK.comprobar(key, acs, vs, { licencias: k => licencia(k) ? LIC : null })
+    .forEach(f => r.mal(`evento ${f.evento + 1}`, `cuatro voces: ${f.regla} ${f.texto}`));
+  K.comprobar(vs, { roles }).filter(f => !(LIC.has(f.regla) && licencia(f.evento)))
+    .forEach(f => {
+      if (f.grado !== 'mejorable') r.mal(`evento ${f.evento + 1}`, fmtFalta(f));
+      else if (!f.voces.includes(3)) r.ojo(`evento ${f.evento + 1}`, fmtFalta(f));
+    });
+  const barras = (vars.bajo.replace(/\\bar\s*"[^"]*"/g, '').match(/\|/g) || []).length + 1;
+  r.perfil = { acordes: acs.length, compases: barras - (/\\partial/.test(ap.codigo) ? 1 : 0),
+               secuencia: inicio >= 0 ? 'sí' : 'no',
+               septimas: acs.filter(a => a.septima && a.grado !== 5).length };
+  return r;
+}
+
 const COMPROBACION = {
   'grados-bajo-cifrado': gradosBajoCifrado,
   'faltas-disposicion': faltasDisposicion,
@@ -632,6 +685,7 @@ const COMPROBACION = {
   'paralelas': paralelas,
   'faltas-paralelas': faltasParalelas,
   'enlazar-acordes': enlazarAcordes,
+  'realizar-bajo': realizarBajo,
 };
 
 /* ---------- perfiles y modelos ---------- */
@@ -656,6 +710,7 @@ const VOCABULARIO = {
   'faltas-paralelas': { voces: 'n', sonoridades: 'n', paralelas: 'n', directas: 'n' },
   'enlazar-acordes': { acordes: 'n', 'primer acorde': ['dado', 'sin dar'],
                        enlaces: { clases: ['contr.', '1 n.c.', '2 n.c.'] } },
+  'realizar-bajo': { compases: 'n', acordes: 'n', secuencia: ['sí', 'no'], septimas: 'n' },
 };
 
 function leerCantidad(txt) {
