@@ -162,17 +162,22 @@
   const PESO_INTERVALO = d => ({0:1, 1:3, 2:2, 3:1.2, 4:1, 5:0.4, 7:0.25})[Math.abs(d)] || 0.1;
 
   /* ---------- generación ---------- */
-  // generar(nivel, {key, n, fin, fundamental, evita}) → instancia, o null si
-  // la búsqueda no da con nada.
+  const N_ACORDES = 8, MIN_INVERTIDOS = 4;
+  // generar(nivel, {key, n, fin, fundamental, evita, invertidos}) → instancia,
+  // o null si la búsqueda no da con nada.
+  //   n: acordes (8, como en las fichas: 3.º UD 1, revisión del 2026-11-16).
+  //   invertidos: mínimo de acordes invertidos (4, la mitad, como en las fichas).
   //   fundamental: solo acordes en estado fundamental, empezando en I (y sin
   //     exigir una inversión): el bajo de Enlazar acordes (enlace-core.js).
   //   evita: pares [anterior, siguiente] que no pueden ir seguidos.
   function generar(nivel, opts){
     opts=opts||{};
+    // el final se sortea una vez: con el mínimo de inversiones, los finales
+    // en V salen antes, y resortearlo en cada intento los favorecería
+    const finV = opts.fin ? opts.fin==='V' : Math.random()<0.35;
     for(let intento=0; intento<60; intento++){
       const key = opts.key || tonalidades(nivel)[rnd(tonalidades(nivel).length)];
-      const n = opts.n || (5 + rnd(2));
-      const finV = opts.fin ? opts.fin==='V' : Math.random()<0.35;
+      const n = opts.n || N_ACORDES;
       const r = buscar(key, n, finV, opts);
       if(r) return construir(nivel, key, r.ids, r.ps);
       if(opts.key && opts.n && intento>20) return null;
@@ -224,8 +229,9 @@
       return false;
     }
     if(!dfs(0)) return null;
-    // al menos una inversión; si no, se repite
-    if(!fund && !ids.some(id => ACORDES[id].inv>0)) return null;
+    // un mínimo de inversiones; si no, se repite
+    const minInv = fund ? 0 : (opts && opts.invertidos!=null ? opts.invertidos : MIN_INVERTIDOS);
+    if(ids.filter(id => ACORDES[id].inv>0).length < minInv) return null;
     return {ids, ps};
   }
 

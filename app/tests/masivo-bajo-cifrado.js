@@ -1,7 +1,7 @@
 // Validación masiva de la familia Morfología de 3.º UD 1, variante Bajo cifrado
 // (bajo-cifrado-core.js; docs/familias/bajo-cifrado.md). Comprueba
 // sobre las instancias generadas, con reglas escritas aquí aparte del core:
-//   1. forma: 5–6 acordes; empieza en I o I6; acaba en V–I o en V tras
+//   1. forma: 8 acordes, al menos 4 invertidos; empieza en I o I6; acaba en V–I o en V tras
 //      predominante o 6/4 cadencial; tonalidades del nivel;
 //   2. bajo: rango Mi2–Do4; intervalos sin aumentados, disminuidos, 7.ª ni
 //      6.ª mayor; nota repetida solo en 6/4 cadencial → V y en 5/3 → 6
@@ -44,7 +44,8 @@ for(let i=0;i<N;i++){
   inc(porLong, n); inc(porTon, x.key.nombre);
   A.forEach(a=>inc(porAcorde, a.id));
   // 1. forma
-  if(n<5 || n>6) fallo('longitud', x, n);
+  if(n!==8) fallo('longitud', x, n);
+  if(x.acordes.filter(a=>a.inv>0).length<4) fallo('invertidos', x, x.acordes.filter(a=>a.inv>0).length);
   if(!['I','I6'].includes(x.ids[0])) fallo('inicio', x, x.ids[0]);
   const fin=x.ids.slice(-2).join('-');
   inc(porFinal, x.ids[n-1]==='I' ? 'V–I' : x.ids[n-2]+'–V');
