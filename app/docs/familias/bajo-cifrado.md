@@ -13,8 +13,8 @@ que sigue, salvo lo marcado.
 
 ## 1. Variante *Bajo cifrado* (`bajo-cifrado-lectura.html`)
 
-- **Se da:** la tonalidad (como dato en la partitura, igual que en 4.º) y un bajo de **5 o
-  6 notas**, redondas, un acorde por compás (compás invisible), con su cifrado: solo
+- **Se da:** la tonalidad (como dato en la partitura, igual que en 4.º) y un bajo de **8
+  notas** (5 o 6 hasta el 2026-11-16: ahora, como en las fichas), redondas, un acorde por compás (compás invisible), con su cifrado: solo
   tríadas, sin cifra / 6 / 6/4. Siempre los dos pentagramas; el de Sol, vacío.
 - **Se pide:** el **grado del bajo** (en círculo, encima del pentagrama de Fa) y el
   **acorde** (romano, debajo, delante del cifrado).
@@ -36,7 +36,9 @@ que sigue, salvo lo marcado.
 - **Forma:** empieza en I o I6 (3:1); acaba en **V–I** (65 %) o en **V** precedido de
   predominante o 6/4 cadencial. Sin el mismo acorde dos veces seguidas, sin tres del mismo
   grado (I–I6–I), sin repetir un par (I6–V–I6–V), cada 6/4 una vez como mucho, y al menos
-  una inversión.
+  **4 acordes invertidos** (la mitad; antes, uno). El final se sortea una vez por
+  ejercicio: si se resorteara en cada reintento, el mínimo de inversiones inclinaría la
+  balanza hacia el final en V (que sale antes).
 - **Normas melódicas del bajo:** Mi2–Do4; 2.ª, 3.ª, 4.ª y 5.ª justas, 6.ª menor y 8.ª
   justa (nunca aumentados, disminuidos, 7.ª ni 6.ª mayor); tras salto de 4.ª o más, cambio
   de dirección; dos saltos seguidos en la misma dirección, solo 3.ª + 3.ª; el marco de tres
