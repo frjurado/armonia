@@ -1,27 +1,30 @@
 # Historia del desarrollo — `armonia/`
 
-*Reconstruido a partir de la historia de commits de `armonia/` (53 commits, del 4 de
-septiembre al 5 de octubre de 2026) y de las notas de trabajo. Estado a 5 de octubre de
-2026. Vive en `informes/` desde esa fecha y se actualiza con cada informe (ver
-`README.md`).*
+*Reconstruido a partir de la historia de commits de `armonia/` (85 commits, del 4 de
+septiembre al 16 de noviembre de 2026) y de las notas de trabajo. Estado a 16 de
+noviembre de 2026. Vive en `informes/` desde el 5 de octubre y se actualiza con cada
+informe (ver `README.md`).*
 
 ---
 
 ## Resumen
 
-En un mes, el proyecto ha pasado de un conjunto de documentos normativos a un sitio
-publicado y en uso por los alumnos, con dos patas que derivan del mismo plan de la
-asignatura:
+En dos meses y medio, el proyecto ha pasado de un conjunto de documentos normativos a un
+sitio publicado y en uso por los alumnos, con tres clases de material que derivan del
+mismo plan de la asignatura:
 
-- **App de ejercicios breves** (HTML/JS estático, para pizarra táctil y móvil): UD 0
-  de 3.º y 4.º completas, 3.º UD 1 con su primera familia, y un motor de conducción
-  de voces a cuatro partes que genera y comprueba realizaciones.
-- **Apuntes** (Markdown + LilyPond → HTML y PDF con Pandoc y Typst): c3u0, c3u1 y
-  c4u0 publicados, con ejemplos para clase y fichas de ejercicios en papel.
+- **App de ejercicios breves** (HTML/JS estático, para pizarra táctil y móvil): UD 0 y
+  UD 1 de 3.º y de 4.º completas y públicas, sobre una página común de ejercicio, un
+  motor de conducción de voces a cuatro partes y otro de contrapunto, cada uno con su
+  comprobador independiente.
+- **Apuntes** (Markdown + LilyPond → HTML y PDF con Pandoc y Typst): c3u0, c3u1, c4u0 y
+  c4u1 publicados, con sus ejemplos para clase.
+- **Fichas en papel**: once hechas a mano (para clase, sin enlazar en la web) y dos
+  bancos de veinte fichas de repaso generadas (c3u1 y c4u1), con su solución y su página
+  «Fichas» en el sitio.
 
-Cifras orientativas: unas 21 000 líneas añadidas y 2 200 borradas; ~135 ficheros
-versionados (61 en `app/`, 64 en `apuntes/`). Los días más intensos fueron el 23 de
-septiembre (14 commits) y el 16 (9).
+Cifras orientativas: ~270 ficheros versionados (105 en `app/`, 144 en `apuntes/`). Los
+días más intensos fueron el 23 de septiembre (14 commits) y el 16 (9).
 
 | Fase | Fechas | Qué |
 |---|---|---|
@@ -36,7 +39,9 @@ septiembre (14 commits) y el 16 (9).
 | 9. Estructura | 6 oct | Nombres por material, un solo esquema, menú en filas, enlaces apuntes ↔ ejercicios |
 | 10. Plan de la UD 1 y UD 0 | 9 oct | Plan completo de la UD 1; «Oír»; Intervalos y Acordes en pentagrama doble |
 | 11. La UD 1 | 9–10 oct | Comprobador general; Consonancia, Disposición, Movimientos, Paralelas y directas (ocultas, para revisar) |
-| 12. Fichas generadas | 29 oct – 3 nov | Verificador de fichas, modelos, generador por lotes, banco versionado y página «Fichas» por unidad |
+| 12. 4.º UD 1 y cierre de 3.º UD 1 | 13–28 oct | Secuencia; c4u1 con 7.ª diatónica y Secuencias; Enlazar acordes; todo lo oculto, público; fichas a mano en serie y variantes |
+| 13. Fichas generadas | 29 oct – 4 nov | Verificador de fichas, modelos, generador por lotes, bancos versionados (c3u1, c4u1) y página «Fichas» por unidad |
+| 14. Mínimos, exámenes y sitio | desde 17 nov | Plan: ejercicios mínimos, modelos de examen y un solo inicio por unidad |
 
 ---
 
@@ -263,11 +268,38 @@ página común los dibuja aparte. De paso entra una regla en los mínimos, **N15
 de saltos), y la página común gana un modo por pasos. Todo queda oculto
 (`publico:false`) hasta que el profesor lo revise.
 
-## Fase 12 — Fichas generadas (29 de octubre – 3 de noviembre)
+## Fase 12 — 4.º UD 1 y cierre de 3.º UD 1 (13–28 de octubre)
 
-Entre la fase 11 y esta, las fichas en papel crecen a mano (series, variantes como
-`c3u1-f3b`, tipos nuevos de 4.º), y con ellas la pregunta de si la máquina que ya genera
-y comprueba los ejercicios de la app puede hacer también fichas. El plan
+Sin informe propio: el detalle está en los commits y en `app/docs/familias/`.
+
+**4.º.** La UD 0 gana su tercera familia, **Secuencia** (`b0c98ef`): círculo de 5.as y
+romanesca sobre las frases de Prolongación, con la secuencia realizada **como un modelo
+trasladado** y con licencias (N7, N10, N12) que el motor concede y el comprobador
+conoce; y «Oír» con bajo dado (las cuatro voces, el bajo destacado). Los apuntes de
+**c4u1** (séptimas diatónicas; dieciséis ejemplos, tres de repertorio: Bach, Mozart,
+Corelli) se publican el 13, y la app los sigue con dos familias: **7.ª diatónica**
+(`2f8d219`; norma nueva **N16**, la preparación de la 7.ª) y **Secuencias** (`95b1e40`;
+el círculo de 5.as con 7.as, en estado fundamental y con inversiones). El 18, la unidad
+es pública.
+
+**3.º.** Lo que la fase 11 dejó oculto se revisa en clase y sale por partes:
+Consonancia y Disposición el 14 (`d1f7701`), Movimientos el 17 (`f81418b`) y Paralelas
+y directas el 24 (`4242d12`), ya con una segunda consigna, **Enlazar acordes**
+(`a5de868`): un bajo en estado fundamental que se realiza acorde a acorde por notas
+comunes o por movimiento contrario. Desde ese día no queda nada oculto en la UD 1.
+
+**Fichas a mano.** Crecen a la vez que los ejercicios: las **series** (varios apartados
+en un ejercicio, `f4a82cb`), diez tipos nuevos en `curriculum/Ejercicios-papel.md`
+—entre ellos los de séptimas y secuencias de 4.º—, y la convención de **variantes**
+(`c3u1-f3b`: mismo diseño, otras tonalidades). Once fichas en total, todas para clase y
+sin enlace en la web. Y una lista viva de cambios aplazados en los apuntes
+(`apuntes/README.md`, «Revisión para el curso 2027-28»), porque los alumnos de este
+curso ya los tienen.
+
+## Fase 13 — Fichas generadas (29 de octubre – 4 de noviembre)
+
+Con las fichas en papel creciendo a mano (fase 12), llega la pregunta de si la máquina
+que ya genera y comprueba los ejercicios de la app puede hacer también fichas. El plan
 ([informe](2026-10-29-plan-fichas-generadas.md)) va en cinco fases, cada una revisada
 antes del commit ([cierre](2026-11-03-fichas-generadas.md)): un **verificador** que
 contrasta las fichas con los comprobadores de la app —y que de paso encuentra
@@ -279,6 +311,22 @@ detrás de un freno. Lo más instructivo fue lo que la revisión del profesor sa
 del material generado: correcto no basta (la conducción alrededor de las faltas tiene
 que ser buena, y eso limita cuántas caben), y la variedad hay que medirla (en menor, el
 bajo de enlazar acordes apenas tiene treinta caminos, y el generador repetía).
+
+El 4 de noviembre llega el segundo banco, el **repaso de c4u1** (`9e6d843`): dos bajos
+de cuatro compases para realizar, sacados de las frases de Secuencia y de 7.ª diatónica
+de la app. Los dos repasos están publicados. Y el camino se recorre también al revés: el
+16 de noviembre, el Bajo cifrado de la app pasa a ocho acordes con al menos cuatro
+invertidos, «como en las fichas» (`e290f8a`).
+
+## Fase 14 — Mínimos, exámenes y sitio (desde el 17 de noviembre)
+
+Con el sitio crecido a base de enlaces entre dos índices paralelos (ejercicios y
+apuntes) y dos materiales nuevos en camino, el profesor replantea la estructura
+([plan](2026-11-17-plan-minimos-examenes-sitio.md)): un solo inicio con la **unidad como
+eje** (apuntes, ejercicios y papel en el mismo acordeón), **ejercicios mínimos**
+—consignas de la app marcadas, que se hacen en papel, dos por A4— y **modelos de
+examen** trimestrales generados como los repasos. Con el primer examen a dos o tres
+semanas, el orden lo marca la urgencia: mínimos, examen, y después el sitio.
 
 ---
 
@@ -310,26 +358,31 @@ bajo de enlazar acordes apenas tiene treinta caminos, y el generador repetía).
 - Detalles de flujo: finales de línea que hacen aparecer `c3u1.md` como modificado,
   un `__pycache__` colado.
 
-## Estado actual (5 de octubre de 2026)
+## Estado actual (16 de noviembre de 2026)
 
-Árbol de trabajo limpio; `master` y `publico` en el mismo commit (`b74346d`).
+Árbol de trabajo limpio; `publico` lleva todo `master` (`e290f8a`, fusionado el 16 de
+noviembre). No hay nada oculto en las unidades publicadas.
 
-| | App (ejercicios) | Apuntes |
-|---|---|---|
-| **3.º UD 0** Preliminares | Pública (armaduras, intervalos, acordes) | Publicada |
-| **3.º UD 1** Morfología. Conducción de voces | Pública con Morfología; Intervalos y Mov. armónico ocultas | Publicada + ejemplos para clase + ficha f1 |
-| **3.º UD 2** Tónica y dominante | — | Guion de trabajo |
-| **4.º UD 0** Repaso | Pública (Cadencias ×3, Prolongación) | Publicada + ejemplos para clase + ficha f1 |
-| Resto (3.º UD 3–6, 4.º UD 1–6) | — | — |
+| | App (ejercicios) | Apuntes | Papel |
+|---|---|---|---|
+| **3.º UD 0** Preliminares | Armaduras, Intervalos, Acordes | Publicada | — |
+| **3.º UD 1** Morfología. Conducción de voces | Morfología, Disposición, Movimientos, Paralelas y directas | Publicada + ejemplos para clase | Fichas f1–f6 y f3b (clase); repaso (banco de 20, en la web) |
+| **3.º UD 2** Tónica y dominante | — | Guion de trabajo | — |
+| **4.º UD 0** Repaso | Cadencias, Prolongación, Secuencia | Publicada + ejemplos para clase | Fichas f1 y f2 (clase) |
+| **4.º UD 1** Séptimas diatónicas | 7.ª diatónica, Secuencias | Publicada + ejemplos para clase | Fichas f1 y f2 (clase); repaso (banco de 20, en la web) |
+| Resto (3.º UD 3–6, 4.º UD 2–6) | — | — | — |
 
 ## Pendientes conocidos
 
-- Segunda variante de Morfología (por diseñar) y decidir si el romano revelado lleva
-  la alteración del cifrado («V♯»).
-- Llevar el cifrado francés y los grados en círculo al resto de la app, que en
-  parte sigue con cifrado anglosajón y circunflejo.
-- Redactar c3u2 a partir de su guion.
-- Prueba de impresión de los ejemplos para clase para ajustar `ESCALA_AULA`.
-- Tira deslizante para las partituras largas de la UD 1 en la app.
-- Samples de piano todavía cargados desde la red.
-- Enlaces cruzados apunte ↔ ejercicio (la disposición del sitio ya los permite).
+Las listas vivas están en los documentos vigentes, y son las que valen:
+`app/docs/Modelo-ejercicios.md` §8 (app), `apuntes/README.md` («Estado», «Revisión para
+el curso 2027-28», «Discrepancias de criterio por resolver», «Fichas: pendiente de
+probar»), `curriculum/Plan-Armonia.md` §8 y el «Pendiente» del
+[cierre de las fichas generadas](2026-11-03-fichas-generadas.md). Lo más grueso:
+
+- Redactar c3u2 a partir de su guion, y sus ejercicios.
+- Modelos de examen y ejercicios mínimos exigibles (*hard gates*, Plan §7.2, sin definir).
+- Repasos de otras unidades; análisis en las fichas generadas.
+- Tira deslizante para las partituras largas en la app.
+- Samples de piano todavía cargados desde la red; funcionamiento sin conexión.
+- Revisar en clase las familias de 4.º UD 1 y los pesos del motor.
