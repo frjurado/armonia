@@ -130,7 +130,7 @@ function piezas(src) {
 
 // Comandos de ficha que acompañan a una nota, con su número de cadenas.
 const ETIQUETAS = { falta: 2, mejorable: 1, grado: 1, rotulo: 1, encima: 1, gradoBajo: 1,
-                    acorde: 1, figuras: 1, stopGroup: 0, rotuloAnalisis: 2 };
+                    acorde: 1, otro: 1, figuras: 1, stopGroup: 0, rotuloAnalisis: 2 };
 const DETRAS = new Set(['falta', 'mejorable', 'stopGroup']);   // en una melodía
 
 // Una voz → lista de eventos {altura(s), etiquetas, solucion, modelo}.
@@ -800,7 +800,41 @@ function cadenciaIV(ap) {
   return r;
 }
 
+// Plantear un bajo (mínimos de 4.º): solo el bajo, con la respuesta como
+// análisis. Cada \acorde (y cada \otro, la lectura alternativa) es un acorde
+// de la tonalidad cuyo bajo es la nota escrita; la primera nota lleva encima
+// la tonalidad, y la última nota está en un tramo de cadencia o de secuencia
+// rotulado. El perfil: compases, acordes y si la frase es de secuencia.
+const RE_TRAMO_SEC = /C\. de 5\.as|[Rr]omanesca/;
+function plantearBajo(ap) {
+  const r = informe(), vars = variables(ap.codigo), key = tonalidad(ap.attr.tono);
+  const ev = leerVoz(vars.bajo);
+  const encaja = (romano, p) => {
+    const sp = acordeDeRomano(key, romano);
+    if (!sp) return `no reconozco el romano «${romano}»`;
+    const ok = [sp, { ...sp, baja: [7] }, { ...sp, eleva: [6] }].map(s => CV.acorde(key, s))
+      .some(ch => ch.tones[ch.bass].letter === p.letter && ch.tones[ch.bass].alter === p.alter);
+    return ok ? null : `${romano}: el bajo ${nombreNota(p)} no es el de ese acorde`;
+  };
+  const tramos = [];
+  ev.forEach((e, k) => {
+    const romano = (etiqueta(e, 'acorde') || [''])[0];
+    const otros = e.etiquetas.filter(x => x.cmd === 'otro').map(x => x.args[0]);
+    [romano, ...otros].forEach(x => { const m = encaja(x, e.altura); if (m) r.mal(`acorde ${k + 1}`, m); });
+    const enc = (etiqueta(e, 'encima') || [])[0];
+    if (enc) tramos.push(enc);
+    r.lineas.push(`${k + 1}. ${nombreNota(e.altura)} ${romano}${otros.length ? ' (o ' + otros.join(', ') + ')' : ''}${enc ? '  ← ' + enc : ''}`);
+  });
+  if (!tramos.length || !tramos[0].startsWith(key.nombre)) r.mal('acorde 1', `encima, la tonalidad (${key.nombre})`);
+  if (!tramos.some(t => /(^|· )(CA|SC|CR)$/.test(t))) r.mal('tramos', 'ninguna cadencia rotulada');
+  const barras = (vars.bajo.replace(/\\bar\s*"[^"]*"/g, '').match(/\|/g) || []).length + 1;
+  r.perfil = { compases: barras - (/\\partial/.test(ap.codigo) ? 1 : 0), acordes: ev.length,
+               frase: tramos.some(t => RE_TRAMO_SEC.test(t)) ? 'secuencia' : 'prolongación' };
+  return r;
+}
+
 const COMPROBACION = {
+  'plantear-bajo': plantearBajo,
   'grados-bajo-cifrado': gradosBajoCifrado,
   'leer-bajo-cifrado': gradosBajoCifrado,          // el mismo, sin el pentagrama de Sol
   'faltas-disposicion': faltasDisposicion,
@@ -840,6 +874,7 @@ const VOCABULARIO = {
   'enlazar-acordes': { acordes: 'n', 'primer acorde': ['dado', 'sin dar'],
                        enlaces: { clases: ['contr.', '1 n.c.', '2 n.c.'] } },
   'realizar-bajo': { compases: 'n', acordes: 'n', secuencia: ['sí', 'no'], septimas: 'n' },
+  'plantear-bajo': { compases: 'n', acordes: 'n', frase: ['prolongación', 'secuencia'] },
 };
 
 function leerCantidad(txt) {

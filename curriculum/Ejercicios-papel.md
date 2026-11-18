@@ -51,6 +51,7 @@ En la consigna:
 | `canto-dado-iv` | Escribe el bajo y las voces interiores de cada soprano, con I y V en estado fundamental, y debajo, el grado de cada acorde. | Dos o tres sopranos en un mismo sistema, cada una con su tonalidad: de dos a cuatro notas, por grado, en 7̂ 1̂ 2̂ 3̂. | El bajo (① o ⑤), las voces interiores y los grados. La solución dice, si la hay, la cesión. | 3.º UD 2 |
 | `cadencia-iv` | Escribe a cuatro voces cada cadencia, con I y V en estado fundamental y la soprano por grado, sin 5̂. Si es una CA, di si es perfecta (CAP) o imperfecta (CAI). | Dos o tres casos en un mismo sistema: tonalidad, tipo (CA o SC) y número de acordes (dos o tres), en el rótulo. | La cadencia entera, con sus grados, y si la CA es CAP o CAI. | 3.º UD 2 |
 | `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.][secuencias:  Señala la secuencia de 7.as.][secuencia:  Señala la secuencia.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
+| `plantear-bajo` | Solo el planteamiento, sin realizar: indica la tonalidad; debajo de cada nota del bajo, el grado con su inversión (II6, V4/3…), y encima, los procedimientos de cada tramo (prolongación, secuencia, cadencia). | Un bajo sin cifrar, con su ritmo, solo en clave de Fa. | Tonalidad, grados con inversión y tramos. | 4.º UD 0 |
 | `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
 | `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
 | `secuencia-triadas` | Di qué secuencia es cada bajo, escribe debajo los grados y realízala a cuatro voces. | Dos o tres secuencias breves en un mismo sistema, cada una con su tonalidad: solo el bajo, sin cifrar. | El tipo de secuencia, los grados y la realización. | 4.º UD 0 |
@@ -76,6 +77,7 @@ mucho 1`; un recuento, como `cerrada 2, abierta 2`.
 | `paralelas` | `voces`, `pasos`, `paralelas`, `prohibidas` | No |
 | `faltas-paralelas` | `voces`, `sonoridades`, `paralelas` (N4), `directas` (N5). Fuera de las buscadas, buena conducción: a cuatro voces y en 10 sonoridades caben unas 2 paralelas y 1 directa | Sí (a cuatro voces) |
 | `enlazar-acordes` | `acordes`, `primer acorde` (dado/sin dar); `enlaces`, recuento (contr., 1 n.c., 2 n.c.) | Sí |
+| `plantear-bajo` | `compases`, `acordes`, `frase` (prolongación/secuencia) | Sí, las frases de 4 compases de la app: Prolongación › Frase (4.º UD 0, nivel 2) o Secuencias › Frase (4.º UD 1, círculo con 7.as, nivel 1) |
 | `realizar-bajo` | `compases`, `acordes`, `secuencia` (sí/no), `septimas` (las que no son del V) | Sí, las frases de 4 compases de la app: con `secuencia: sí`, Secuencia › Frase; si no, 7.ª diatónica › Bajo dado |
 
 La lista que manda es la del verificador (`VOCABULARIO` en
@@ -262,6 +264,16 @@ con 6/5, alternando con 4/2— y sigue hasta la cadencia: es la frase (tipo 2) d
 Secuencias en la app. El bajo decide qué acordes llevan 7.ª, salvo en la de 4/2,
 donde los 6/3 pueden ser 6/5 (las dos valen). La solución lleva las ligaduras de
 preparación; la del bajo, con `\ligadura` (solo sale con el análisis).
+
+### `plantear-bajo`
+
+Los mínimos de 4.º (Plan §7.2): el planteamiento de una frase de 4 compases,
+sin realizarla. Por eso solo el pentagrama de Fa, para que no quepa duda de que
+no se pide escribir las voces. La solución da, bajo cada nota, el grado con su
+inversión y, en una segunda fila (`\otro`), la otra lectura que la app da por
+buena con ese mismo bajo («o II6»); encima, la tonalidad y el tramo que empieza
+en cada nota («Prol. I», «C. de 5.as», «CA»). La cadencia, por su sigla: el bajo
+no distingue CAP de CAI.
 
 ### `secuencia-triadas`
 

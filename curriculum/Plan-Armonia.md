@@ -202,6 +202,8 @@ A4, y no va a la web.
 |---|---|---|---|---|
 | 3.º UD 1 | Morfología › Bajo cifrado, nivel 2 | Solo la clave de Fa: grado del bajo y romano de 8 acordes | 2 min | Como mucho un acorde mal |
 | 3.º UD 1 | Paralelas y directas › Enlazar acordes, nivel 2 | 8 acordes, mayor o menor, con el primero dado | 4 min | Como mucho un acorde mal |
+| 4.º UD 0 | Prolongación › Frase, nivel 2 | Solo el planteamiento, con el bajo en clave de Fa: tonalidad, grados con su inversión y tramos | 4 min | Como mucho un acorde mal |
+| 4.º UD 1 | Secuencias › Frase, nivel 1 (círculo con 7.as) | Solo el planteamiento, con el bajo en clave de Fa: tonalidad, grados con su inversión y tramos | 4 min | Como mucho un acorde mal |
 
 ⟶ PENDIENTE: los mínimos de las demás unidades; los exámenes trimestrales (modelos de
 examen, en preparación).
