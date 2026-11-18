@@ -50,6 +50,7 @@ const K = require(path.join(APP, 'ejercicios', 'conduccion-check.js'));
 const CK = require(path.join(APP, 'ejercicios', 'cuatro-voces-check.js'));
 const SEC = require(path.join(APP, 'ejercicios', 'secuencia-core.js'));
 const SEPT = require(path.join(APP, 'ejercicios', 'septimas-core.js'));
+const PROL = require(path.join(APP, 'ejercicios', 'prolongacion-core.js'));
 const TON = require(path.join(APP, 'tonalidades.js'));
 const LETRAS = 'CDEFGAB';
 const ROLES4 = ['soprano', 'contralto', 'tenor', 'bajo'];
@@ -239,7 +240,38 @@ function realizarBajo(reglas, key) {
     `bajo = {\n  ${bajo} \\bar "|."\n}`].join('\n') + '\n';
 }
 
+// Plantear un bajo (mínimos de 4.º): una frase de 4 compases de la app, solo
+// el bajo. `frase: prolongación` → Prolongación › Frase (4.º UD 0, nivel 2);
+// `frase: secuencia` → Secuencias › Frase (4.º UD 1, círculo con 7.as, nivel 1).
+// La respuesta: los grados, las otras lecturas que la app da por buenas con
+// ese bajo (\otro), y encima el tramo que empieza en cada nota, el primero
+// con la tonalidad. El bajo no distingue CAP de CAI: la cadencia, por su sigla.
+function etiquetaPlanteamiento(t) {
+  if (t.tipo === 'prol') return PROL.etiquetaTramo(t);
+  if (t.tipo === 'sec') return t.sec.nombre.replace('Círculo', 'C.');
+  return t.sigla;
+}
+function plantearBajo(reglas, key) {
+  const inst = reglas.frase === 'secuencia' ? SEC.generar(2, 1, { key, septimas: true }) : PROL.generar(2, 2, { key });
+  if (!inst) return null;
+  const { voces, acordes, ritmo, est, alternativas = [] } = inst;
+  const romano = id => { try { return PROL.acordeDe(key, id).romano; } catch (e) { return null; } };
+  const otros = k => (alternativas[k] || []).map(romano);
+  if (acordes.some((_, k) => otros(k).some(r => !r))) return null;
+  const encima = k => {
+    const t = est.tramos.find(x => x.desde === k);
+    const txt = [k === 0 ? key.nombre : '', t ? etiquetaPlanteamiento(t) : ''].filter(Boolean).join(' · ');
+    return txt ? `\\encima "${txt}" ` : '';
+  };
+  const bajo = ritmo.compases.map(c => c.map(({ k, dur }) =>
+    `${encima(k)}\\acorde "${acordes[k].romano}" ${otros(k).map(r => `\\otro "${r}" `).join('')}${ly(voces[3][k])}${dur}`
+  ).join(' ')).join(' |\n  ');
+  return [`compas = { \\time ${ritmo.time}${ritmo.anacrusa ? ` \\partial ${ritmo.compases[0][0].dur}` : ''} }`,
+    `bajo = {\n  ${bajo} \\bar "|."\n}`].join('\n') + '\n';
+}
+
 const ADAPTADOR = {
+  'plantear-bajo': plantearBajo,
   'grados-bajo-cifrado': gradosBajoCifrado,
   'leer-bajo-cifrado': (reglas, key, ctx) => gradosBajoCifrado(reglas, key, ctx, false),
   'construir-acordes': construirAcordes,

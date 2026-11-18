@@ -318,7 +318,8 @@ el modelo** llevan `publico: true`. Plan y decisiones:
 
 Un ejercicio mínimo es una consigna de la app que se hace en papel en clase, con
 tiempo y un acierto alto (`curriculum/Plan-Armonia.md` §7.2). Su modelo es uno más
-de `fichas/modelos/` (`c3u1-minimo-bajo.md`, `c3u1-minimo-enlazar.md`), con tres
+de `fichas/modelos/` (`c3u1-minimo-bajo.md`, `c3u1-minimo-enlazar.md`,
+`c4u0-minimo-frase.md`, `c4u1-minimo-frase.md`), con tres
 claves más en la cabecera: `minimo: true`, `tiempo` y `criterio` (salen tras el
 subtítulo). Un solo ejercicio, sin «Ejercicio 1».
 
