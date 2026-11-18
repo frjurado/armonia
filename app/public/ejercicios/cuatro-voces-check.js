@@ -56,7 +56,9 @@
 
   // opts.licencias(k) → Set de normas que no se señalan en el evento k (el
   // acorde k o la transición k-1 → k): dentro de una secuencia, N7, N10 y
-  // N12 (Minimos-conduccion.md §6, licencias de las secuencias).
+  // N12 (Minimos-conduccion.md §6, licencias de las secuencias). 'N11I': el I
+  // en estado fundamental puede ir sin 5.ª, con la fundamental triplicada
+  // (3.º UD 2, soprano 2̂–1̂ o 1̂–2̂); no silencia ninguna otra falta de N11.
   function comprobar(key, acordes, voces, opts){
     const faltas=[];
     const n=acordes.length;
@@ -101,6 +103,9 @@
           const prevRoles=new Set(roles[k-1].filter(Boolean).map(t=>t.rol));
           if(prevRoles.size===4) ok=true;                                              // I final tras V7 completo
         }
+        const s=lic(k);
+        if(s && s.has('N11I') && !ch.septima && ch.grado===1 && ch.inv===0
+           && falta.length===1 && falta[0]==='5' && cuenta.F===3) ok=true;                 // I sin 5.ª (licencia)
         if(!ok) f('N11',k,[],'acorde incompleto (falta '+falta.join(',')+')');
       }
       ch.dup.nunca.forEach(rol=>{ if((cuenta[rol]||0)>1) f('DUP',k,[],'duplicación prohibida de la '+rol+' en '+ch.romano); });

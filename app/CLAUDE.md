@@ -123,7 +123,7 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   - `<material>-core.js` — IIFE que expone un global (`Armaduras`,
     `Intervalos`, `Acordes`, `BajoCifrado`, `Cadencias`, `Prolongacion`,
     `Movimientos`, `Contrapunto`, `Consonancia`, `Disposicion`,
-    `ParalelasDirectas`, `Enlace`, `Secuencia`) con TODA la
+    `ParalelasDirectas`, `Enlace`, `Secuencia`, `TonicaDominante`) con TODA la
     lógica musical: generación, cálculo de respuestas, exportador a MEI.
     **Sin DOM.**
   - Una página HTML por consigna (`<material>-<consigna>.html`) que solo
@@ -272,6 +272,13 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
     type="gradobajo">` con la cifra sola: el círculo lo dibuja
     `ArmoniaEj.circularGrados` tras el render (ninguna de las fuentes trae
     ①…⑦). `tests/masivo-bajo-cifrado.js [nivel] [n]` es su validación masiva.
+  - `tonica-dominante-core.js` (`TonicaDominante`) — familia Estado fundamental
+    de 3.º UD 2 (`docs/familias/tonica-dominante.md`): I y V alternados en
+    estado fundamental; Bajo dado, Canto dado y Cadencia. Las realizaciones
+    se **enumeran todas** (candidatos y normas de transición del motor, y el
+    comprobador) y se elige por lo que ceden (`rasgos`); el I sin 5.ª va con
+    la licencia `N11I`, que hay que pasar también al comprobador.
+    `tests/masivo-tonica-dominante.js [n]`.
   - `intervalos-core.js` (`Intervalos`) y `acordes-core.js` (`Acordes`) — 3.º
     UD 0, sin niveles y en pentagrama doble (salvo *Con inversión*, en un
     pentagrama). Sus validaciones masivas: `tests/masivo-intervalos.js [n]`

@@ -47,6 +47,9 @@ En la consigna:
 | `faltas-paralelas` | Busca las 5.as y 8.as paralelas, también las que se forman por movimiento contrario (8.ª → 15.ª, 5.ª → 12.ª). Escribe cada una debajo, entre las dos sonoridades: el intervalo y, a tres o cuatro voces, entre qué voces (5.as par., S–B). | Fragmentos de dos a cuatro voces, sin compás. | Cada falta de N4, con sus voces; si se pide, también las directas de N5. | 3.º UD 1 |
 | `enlazar-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde. Enlázalos a cuatro voces, duplicando siempre la fundamental: si dos acordes seguidos tienen notas comunes, mantenlas en la misma voz, y lleva las demás por grado a las notas que faltan; si no las tienen, lleva las tres voces superiores por movimiento contrario al bajo, cada una a la nota más cercana del acorde siguiente. | Un bajo en estado fundamental y, si se da, el primer acorde, cerrado o abierto. | Las tres voces superiores de los demás acordes (y del primero, si no se da). | 3.º UD 1 |
 | `analisis` | Analiza el fragmento: indica la tonalidad y, debajo, el grado de cada acorde con su cifra[cadencias: . Señala también las cadencias]. | Un fragmento de repertorio. | Tonalidad y grado de cada acorde. Las notas extrañas, cuando se hayan visto. | 3.º UD 1 |
+| `bajo-dado-iv` | Cada caso empieza con su primer acorde escrito. Realiza los demás a cuatro voces: la nota común se mantiene, las demás voces van por grado a las notas que faltan y la sensible sube a la tónica. Escribe debajo el grado de cada acorde. | Dos o tres casos en un mismo sistema, cada uno con su tonalidad: I y V en estado fundamental (dos o tres acordes), el bajo y el primer acorde. | Las tres voces superiores de los demás acordes, con la conducción obvia, y los grados. | 3.º UD 2 |
+| `canto-dado-iv` | Escribe el bajo y las voces interiores de cada soprano, con I y V en estado fundamental, y debajo, el grado de cada acorde. | Dos o tres sopranos en un mismo sistema, cada una con su tonalidad: de dos a cuatro notas, por grado, en 7̂ 1̂ 2̂ 3̂. | El bajo (① o ⑤), las voces interiores y los grados. La solución dice, si la hay, la cesión. | 3.º UD 2 |
+| `cadencia-iv` | Escribe a cuatro voces cada cadencia, con I y V en estado fundamental y la soprano por grado, sin 5̂. Si es una CA, di si es perfecta (CAP) o imperfecta (CAI). | Dos o tres casos en un mismo sistema: tonalidad, tipo (CA o SC) y número de acordes (dos o tres), en el rótulo. | La cadencia entera, con sus grados, y si la CA es CAP o CAI. | 3.º UD 2 |
 | `realizar-bajo` | Armoniza el bajo dado, y realiza a cuatro voces. Indica la tonalidad, los grados y el cifrado[cadencias: , así como las cadencias que realices].[septimas:  Utiliza al menos un acorde de 7.ª distinto del V7.][secuencias:  Señala la secuencia de 7.as.][secuencia:  Señala la secuencia.] | Un bajo sin cifrar, con su ritmo. | Elegir la armonía (cadencias, prolongaciones, secuencias), escribir las tres voces superiores y cifrar. | 3.º UD 2 |
 | `septima-bajo-cifrado` | Cada gesto cadencial empieza con su primer acorde escrito. Primero, escribe la 7.ª del acorde de séptima, ligada a su preparación, y su resolución; después, completa las cuatro voces. | Dos o tres gestos cadenciales en un mismo sistema, cada uno en su tonalidad: el bajo cifrado y el primer acorde. | La voz de la 7.ª, preparada y resuelta, y el resto de la realización. | 4.º UD 1 |
 | `septima-ligadura` | Cada gesto cadencial empieza con su primer acorde escrito, y la ligadura señala la nota que se prepara como 7.ª. Escribe debajo del bajo el grado de cada acorde con su cifrado; después, la 7.ª y su resolución, y por último completa las cuatro voces. | Como el anterior, con el bajo sin cifrar y la ligadura de preparación. | II o IV y su inversión, la 7.ª resuelta y el resto de la realización. | 4.º UD 1 |
@@ -204,6 +207,28 @@ se vean las notas extrañas.
 Material: fragmentos de repertorio de dominio público. Si la fuente es una
 edición moderna con licencia (Mutopia, p. ej.), se cita en un comentario del
 material.
+
+### `bajo-dado-iv`, `canto-dado-iv`, `cadencia-iv`
+
+La versión en papel de la familia Estado fundamental de 3.º UD 2 (Bajo dado,
+Canto dado, Cadencia; `app/docs/familias/tonica-dominante.md`): solo I y V,
+sin 7.ª, en estado fundamental y alternados; el bajo, ① y ⑤ por 4.ª o 5.ª; la
+soprano, por grado en 7̂ 1̂ 2̂ 3̂. Blancas sin compás, varios casos en un sistema,
+como `secuencia-triadas`: las armaduras y las dobles barras, en `global`, y la
+tonalidad de cada caso en el rótulo que la soprano lleva delante
+(`\rotuloAnalisis "a) Do mayor" …`), que es también como el verificador sabe
+dónde empieza cada caso y en qué tonalidad está.
+
+- **Bajo dado**: la realización obvia es única desde el primer acorde (el
+  verificador la recalcula con el núcleo de la app). La soprano del primer
+  acorde, en 1̂ o 3̂ (I) o en 7̂ o 2̂ (V): así no sale nunca 2̂–1̂ ni 1̂–2̂.
+- **Canto dado**: un caso obvio y uno que cede (con 2̂–1̂ o 1̂–2̂). La cesión, en
+  la solución, con `\encima` sobre el acorde que cede («I sin 5.ª», «sens. →
+  5̂»); la otra salida, en el guion. El I sin 5.ª (fundamental triplicada) es
+  la licencia N11I de `Minimos-conduccion.md`.
+- **Cadencia**: las cuatro voces en `\analitico`, que reservan el sitio; el
+  rótulo da tonalidad, tipo y número de acordes, y con análisis dice CAP, CAI
+  o SC (`\rotuloAnalisis "a) Do mayor: CA de tres acordes" "a) Do mayor: CAP"`).
 
 ### `realizar-bajo`
 

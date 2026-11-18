@@ -47,6 +47,7 @@ const K  = require(path.join(APP, 'ejercicios', 'conduccion-check.js'));
 const CK = require(path.join(APP, 'ejercicios', 'cuatro-voces-check.js'));
 const CV = require(path.join(APP, 'ejercicios', 'cuatro-voces-core.js'));
 const EN = require(path.join(APP, 'ejercicios', 'enlace-core.js'));
+const TD = require(path.join(APP, 'ejercicios', 'tonica-dominante-core.js'));
 const TON = require(path.join(APP, 'tonalidades.js'));
 
 const ROLES4 = ['soprano', 'contralto', 'tenor', 'bajo'];
@@ -681,6 +682,124 @@ function realizarBajo(ap) {
   return r;
 }
 
+// I y V en estado fundamental (3.º UD 2, familia Estado fundamental):
+// bajo-dado-iv, canto-dado-iv y cadencia-iv. Varios casos en un sistema; cada
+// uno empieza donde la soprano lleva el rótulo «a) Do mayor[: …]», que da la
+// tonalidad. En cada caso: I y V alternados, el bajo ①/⑤ por 4.ª o 5.ª, la
+// soprano por grado en 7̂ 1̂ 2̂ 3̂, los grados escritos (\acorde) y cero faltas
+// en el comprobador con la licencia N11I (el I sin 5.ª). Lo propio de cada
+// tipo lo recalcula el núcleo de la app (tonica-dominante-core.js).
+function casosIV(ap, r) {
+  const vars = variables(ap.codigo);
+  const { voces } = vocesDe(vars, ROLES4);
+  const inicios = voces[0].map((ev, k) => [k, etiqueta(ev, 'rotuloAnalisis') || etiqueta(ev, 'rotulo')])
+    .filter(([, t]) => t);
+  if (!inicios.length) { r.mal('rótulos', 'ningún caso: falta «a) Tonalidad» en la soprano'); return []; }
+  return inicios.map(([k0, textos], i) => {
+    const k1 = i + 1 < inicios.length ? inicios[i + 1][0] : voces[0].length;
+    const m = textos[0].match(/^\s*([a-z])\)\s*([^:]+?)\s*(?::\s*(.*))?$/);
+    const letra = m ? m[1] : '?';
+    const key = m && TON.porNombre(m[2]);
+    if (!key) { r.mal(`caso ${letra}`, `no leo la tonalidad en «${textos[0]}»`); return null; }
+    const ev = voces.map(v => v.slice(k0, k1));
+    return { letra, key, dato: m[3] || '', analisis: textos[1] || textos[0], ev, vs: ev.map(v => v.map(e => e.altura)) };
+  }).filter(Boolean);
+}
+function comprobarCasoIV(c, r) {
+  const donde = `caso ${c.letra}`, n = c.vs[0].length, { key, vs } = c;
+  const grados = vs[3].map(p => gradoDe(key, p.letter));
+  if (grados.some(g => g !== 1 && g !== 5)) { r.mal(donde, `el bajo no es ① ni ⑤ (${grados.join(' ')})`); return null; }
+  if (grados.some((g, k) => k && g === grados[k - 1])) r.mal(donde, 'acorde repetido');
+  vs[3].forEach((p, k) => { if (k && ![3, 4].includes(Math.abs(p.abs - vs[3][k - 1].abs))) r.mal(donde, `el bajo no va por 4.ª o 5.ª (${k}–${k + 1})`); });
+  vs[0].forEach((p, k) => {
+    if (![7, 1, 2, 3].includes(gradoDe(key, p.letter))) r.mal(donde, `soprano en ${gradoDe(key, p.letter)}̂`);
+    if (k && Math.abs(p.abs - vs[0][k - 1].abs) !== 1) r.mal(donde, 'la soprano no va por grado');
+  });
+  const romanos = grados.map(g => g === 1 ? 'I' : 'V');
+  c.ev[3].forEach((e, k) => {
+    const a = (etiqueta(e, 'acorde') || [''])[0];
+    if (a !== romanos[k]) r.mal(donde, `acorde ${k + 1}: escrito «${a}», es ${romanos[k]}`);
+  });
+  const acs = TD.acordesDe(key, grados);
+  CK.comprobar(key, acs, vs, { licencias: TD.licencias })
+    .forEach(f => r.mal(donde, `evento ${f.evento + 1}: ${f.regla} ${f.texto}`));
+  const rasgos = TD.rasgos(acs, vs[0].map((_, k) => vs.map(v => v[k])));
+  const linea = vs[0].map(p => gradoDe(key, p.letter));
+  r.lineas.push(`${c.letra}) ${key.nombre}: ${romanos.join('–')}, soprano ${linea.join('-')}`
+    + (TD.cesiones(rasgos, grados).length ? ` · cede: ${TD.cesiones(rasgos, grados).join('; ')}` : ' · obvia'));
+  return { acs, grados, rasgos, linea, n };
+}
+const igualAltura = (p, q) => p.abs === q.abs && p.alter === q.alter;
+
+// Bajo dado: el primer acorde dado y los demás en solución; la realización
+// escrita es la obvia, y es la única obvia desde ese primer acorde.
+function bajoDadoIV(ap) {
+  const r = informe(), casos = casosIV(ap, r);
+  casos.forEach(c => {
+    const x = comprobarCasoIV(c, r), donde = `caso ${c.letra}`;
+    if (!x) return;
+    c.ev.forEach((v, i) => v.forEach((e, k) => {
+      if (i < 3 && e.solucion !== (k > 0)) r.mal(donde, `${ROLES4[i]}, acorde ${k + 1}: ${k ? 'tendría que ser solución' : 'tendría que darse'}`);
+      if (i === 3 && e.solucion) r.mal(donde, 'el bajo es dato');
+    }));
+    const primero = c.vs.map(v => v[0]);
+    const obvias = TD.realizaciones(c.key, x.acs, { primero }).filter(o => o.principal === 'obvia'
+      && o.v.every((d, k) => igualAltura(d[3], c.vs[3][k])));
+    if (obvias.length !== 1) r.mal(donde, `${obvias.length} realizaciones obvias desde el primer acorde`);
+    else if (!obvias[0].v.every((d, k) => d.every((p, v) => igualAltura(p, c.vs[v][k]))))
+      r.mal(donde, 'la escrita no es la obvia');
+    if (x.rasgos.principal !== 'obvia') r.mal(donde, 'cede: no es la realización obvia');
+  });
+  r.perfil = { casos: casos.length };
+  return r;
+}
+// Canto dado: la soprano dada y lo demás en solución; si la línea tiene
+// 2̂–1̂ o 1̂–2̂, la solución cede y lo dice con \encima; si no, es la obvia.
+function cantoDadoIV(ap) {
+  const r = informe(), casos = casosIV(ap, r);
+  let ceden = 0;
+  casos.forEach(c => {
+    const x = comprobarCasoIV(c, r), donde = `caso ${c.letra}`;
+    if (!x) return;
+    c.ev.forEach((v, i) => v.forEach((e, k) => {
+      if ((i === 0) === e.solucion) r.mal(donde, `${ROLES4[i]}, acorde ${k + 1}: ${i ? 'tendría que ser solución' : 'la soprano es dato'}`);
+    }));
+    const dificil = TD.dificil(x.linea), marca = c.ev[0].some(e => etiqueta(e, 'encima'));
+    if (dificil) {
+      ceden++;
+      if (x.rasgos.principal === 'obvia') r.mal(donde, 'línea con 2̂–1̂ o 1̂–2̂ realizada sin ceder (¿?)');
+      if (!marca) r.mal(donde, 'cede, y la solución no lo dice (\\encima)');
+    } else {
+      if (x.rasgos.principal !== 'obvia') r.mal(donde, `la línea admite la obvia y la escrita cede (${TD.cesiones(x.rasgos, x.grados).join('; ')})`);
+      if (marca) r.ojo(donde, '\\encima en un caso que no cede');
+    }
+  });
+  r.perfil = { casos: casos.length, ceden };
+  return r;
+}
+// Cadencia: todo en solución; el tipo pedido (CA = … V–I, SC = … I–V) y el
+// número de acordes, en el rótulo; con análisis, CAP/CAI según la soprano final.
+const NUM_ACORDES = { dos: 2, tres: 3, cuatro: 4 };
+function cadenciaIV(ap) {
+  const r = informe(), casos = casosIV(ap, r);
+  casos.forEach(c => {
+    const x = comprobarCasoIV(c, r), donde = `caso ${c.letra}`;
+    if (!x) return;
+    if (c.ev.some(v => v.some(e => !e.solucion))) r.mal(donde, 'todo es solución');
+    const m = c.dato.match(/^(CA|SC) de (\w+) acordes$/);
+    if (!m) { r.mal(donde, `rótulo «${c.dato}»: se espera «CA de tres acordes»`); return; }
+    if (NUM_ACORDES[m[2]] !== x.n) r.mal(donde, `${m[2]} acordes en el rótulo, ${x.n} escritos`);
+    const fin = x.grados.slice(-2).join('-');
+    if (m[1] === 'CA' && fin !== '5-1') r.mal(donde, 'una CA acaba en V–I');
+    if (m[1] === 'SC' && fin !== '1-5') r.mal(donde, 'una SC acaba en I–V');
+    const exacto = m[1] === 'SC' ? 'SC' : x.linea[x.n - 1] === 1 ? 'CAP' : 'CAI';
+    if (!new RegExp(`:\\s*${exacto}$`).test(c.analisis)) r.mal(donde, `con análisis, «${c.analisis}»: es ${exacto}`);
+    if (x.rasgos.principal !== 'obvia') r.ojo(donde, `cede (${TD.cesiones(x.rasgos, x.grados).join('; ')})`);
+  });
+  r.perfil = { casos: casos.length };
+  return r;
+}
+
 const COMPROBACION = {
   'grados-bajo-cifrado': gradosBajoCifrado,
   'leer-bajo-cifrado': gradosBajoCifrado,          // el mismo, sin el pentagrama de Sol
@@ -692,6 +811,9 @@ const COMPROBACION = {
   'faltas-paralelas': faltasParalelas,
   'enlazar-acordes': enlazarAcordes,
   'realizar-bajo': realizarBajo,
+  'bajo-dado-iv': bajoDadoIV,
+  'canto-dado-iv': cantoDadoIV,
+  'cadencia-iv': cadenciaIV,
 };
 
 /* ---------- perfiles y modelos ---------- */

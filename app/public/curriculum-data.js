@@ -143,7 +143,27 @@ const CURRICULO = {
                 'Cuatro voces, sin resaltar: hay que buscar en todas las parejas.'
               ]}
           ]},
-        { id:'c3u2', n:2, titulo:'Tónica y dominante', familias:[] },
+        { id:'c3u2', n:2, titulo:'Tónica y dominante', publico:true,
+          familias:[
+            { nombre:'Estado fundamental',
+              desc:'Fragmentos de dos a cuatro acordes con I y V (sin 7.ª) en estado fundamental, alternados: el bajo, ① y ⑤; la soprano, por grado en 7̂ 1̂ 2̂ 3̂. Tonalidades del 1.er trimestre, mayores y menores.',
+              consignas:[
+                {key:'bajo', title:'Bajo dado', icono:'clavefa',
+                 url:'ejercicios/tonica-dominante-bajo.html', apuntes:['c3u2#la-progresión-ivi'],
+                 desc:'El bajo (I–V, V–I, I–V–I o V–I–V) y el primer acorde: enlazar los demás con la conducción obvia (nota común, las demás por grado, la sensible a la tónica). Solución única.'},
+                {key:'canto', title:'Canto dado', icono:'clavesol',
+                 url:'ejercicios/tonica-dominante-canto.html', apuntes:['c3u2#escritura-y-conducción'],
+                 desc:'Una soprano de dos a cuatro notas: escribir bajo y voces interiores. Con 2̂–1̂ o 1̂–2̂ hay que ceder (el I sin 5.ª, la sensible interior a 5̂ o un salto); al revelar, una realización, lo que cede y otra solución.',
+                 niveles:[
+                   'Dos o tres notas, con realización obvia.',
+                   'Dos o tres notas, con 2̂–1̂ o 1̂–2̂: hay que ceder algo.',
+                   'Cuatro notas, sin repetir el mismo gesto (7̂–1̂–7̂–1̂).'
+                 ]},
+                {key:'cadencia', title:'Cadencia', icono:'cadencia',
+                 url:'ejercicios/tonica-dominante-cadencia.html', apuntes:['c3u2#la-cadencia-como-contraste-tratamiento-informal'],
+                 desc:'Se dan tonalidad, tipo (CA, que acaba en V–I, o SC, en I–V) y número de acordes (dos o tres): escribirla entera. Al revelar, una realización y, si es CA, si es CAP o CAI.'}
+              ]}
+          ]},
         { id:'c3u3', n:3, titulo:'Subdominante. Cadencias', familias:[] },
         { id:'c3u4', n:4, titulo:'Séptima de dominante y 6/4', familias:[] },
         { id:'c3u5', n:5, titulo:'Otros grados. Cadencia rota', familias:[] },

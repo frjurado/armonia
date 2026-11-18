@@ -63,7 +63,7 @@
 | **N8** | **7.ª de un acorde de séptima** (desde 4.º UD 1, también las diatónicas: apuntes c4u1 §1.2). Nunca duplicada. **Resuelve descendiendo por grado** (en el V7, 4̂ → 3̂) en el acorde siguiente, en la misma voz; o se **mantiene** como nota común si el acorde siguiente la contiene (V7 → IV6). Complemento: si la 7.ª baja 4̂ → 3̂, **ninguna otra voz baja 5̂ → 3̂** (la fundamental no dobla la resolución). Excepción: en **V4/3 → I6**, con el bajo subiendo ②–③, la 7.ª puede **subir por grado** a 5̂ (10.as paralelas con el bajo). |
 | **N9** | **6/4 cadencial** (I6/4 → V). El bajo (5̂) va **duplicado** y en la V **se mantiene o salta de 8.ª**; la 6.ª y la 4.ª (1̂ y 3̂) **bajan por grado** a 7̂ y 2̂ en las **mismas voces**; cae en parte métrica **más fuerte** que la V que la sigue; en compás **ternario** se admite también el 6/4 en el **2.º tiempo** y la V en el 3.º. |
 | **N10** | **Tríadas disminuidas** (II en menor, VII) **solo en 1.ª inversión**. |
-| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: un acorde de séptima **en estado fundamental** (el V7 y, desde 4.º UD 1, el II7 y el IV7) puede omitir la 5.ª (fundamental duplicada) —sus inversiones van **siempre completas**—; el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada). |
+| **N11** | **Acordes completos.** Toda tríada lleva sus tres notas. Excepciones: un acorde de séptima **en estado fundamental** (el V7 y, desde 4.º UD 1, el II7 y el IV7) puede omitir la 5.ª (fundamental duplicada) —sus inversiones van **siempre completas**—; el I final tras un V7 completo puede omitir la 5.ª (fundamental triplicada); y, desde 3.º UD 2, **cualquier I en estado fundamental** puede omitir la 5.ª (fundamental triplicada) cuando la conducción lo pide, con la soprano 2̂–1̂ o 1̂–2̂ (licencia N11I). |
 | **N14** | **6/4 de paso y de bordadura.** El bajo va **duplicado**. **De paso**: el bajo llega y sale **por grado conjunto en la misma dirección** (I–V6/4–I6). **De bordadura**: el bajo **se mantiene** antes, durante y después (I–IV6/4–I, V–I6/4–V). En los dos, las voces superiores entran y salen del 6/4 **por grado conjunto o nota común**, y el 6/4 cae en **parte débil** (lo garantiza el ritmo de cada familia, como en N9). |
 | **N16** | **Preparación de la 7.ª diatónica** (toda séptima que no sea de dominante: II7, IV7…). La 7.ª se **prepara** en la misma voz: por **nota común** (ya suena en el acorde anterior, como consonancia) o como **nota de paso descendente** desde la fundamental del mismo grado (II–II7: 8–7). **Nunca por salto ni por grado ascendente.** Con N8, la 7.ª se prepara y se resuelve en la misma voz (PRMV, apuntes c4u1 §1.2). |
 | **P6** | La 7.ª de V7 se toma por **nota común o grado conjunto**. |
@@ -91,6 +91,7 @@ no penaliza; *nunca* es norma (N7, N8, N9).
 | II6/5, II4/3, II4/2, IV6/5 | **completos** (N11) | — | cualquiera |
 | V6/5, V4/3, V4/2 | **completos** (N11) | — | cualquiera |
 | I final tras V7 completo | fundamental (triple, sin 5.ª) | completo (sensible interna baja a 5̂) | — |
+| I con la soprano 2̂–1̂ o 1̂–2̂ (desde 3.º UD 2) | completo | fundamental (triple, sin 5.ª) | 3.ª |
 
 ## 5. Conducción melódica de cada voz
 
@@ -141,6 +142,13 @@ las séptimas diatónicas, como proponían los apuntes (c4u1 §1.2). La aplican 
 comprobador a cuatro voces (familia *7.ª diatónica*, `app/docs/familias/septimas.md`). La
 duplicación de la 3.ª en el II7 incompleto (apuntes c4u1 §1.2, «menos a menudo») no se
 admite de momento.
+
+⟶ AÑADIDA (2026-11-18): en N11, el **I en estado fundamental sin 5.ª** (fundamental
+triplicada) desde 3.º UD 2, para la soprano 2̂–1̂ o 1̂–2̂, donde la conducción obvia (nota común
+y la sensible a la tónica) dejaría un acorde sin 3.ª. Las otras salidas son la sensible
+interior a 5̂ (N7) y un salto en una voz interior. En la app es la licencia `N11I` del motor y
+del comprobador (familia *Estado fundamental*, `app/docs/familias/tonica-dominante.md`); el
+V, de momento, siempre completo.
 
 ⟶ PROVISIONAL (2026-09-30): N14 entra en 3.º UD 4, con el 6/4 de paso; el plan pone el de
 bordadura en UD 5. Revisar cuando se llegue a esas unidades.
