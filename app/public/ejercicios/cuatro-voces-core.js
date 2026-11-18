@@ -286,8 +286,10 @@
   function normasTransicion(prev, cand, chPrev, chCand, path, esUltimo, ignora){
     const lic = r => !!(ignora && ignora.has(r));
     const P=prev.v, C=cand.v;
-    // N11 (omisión de la 5.ª en el I final): solo tras un V7 completo
-    if(cand.omision && !chCand.septima && !(esUltimo && chCand.grado===1 && chPrev.septima && prev.completo)) return 'N11';
+    // N11 (omisión de la 5.ª en el I final): solo tras un V7 completo; con la
+    // licencia 'N11I' (3.º UD 2), cualquier I en estado fundamental
+    if(cand.omision && !chCand.septima && !(esUltimo && chCand.grado===1 && chPrev.septima && prev.completo)
+       && !(lic('N11I') && chCand.grado===1 && chCand.inv===0)) return 'N11';
     for(let v=0;v<4;v++){
       // N3: superposición
       if(v>0 && C[v].midi > P[v-1].midi) return 'N3';

@@ -30,6 +30,10 @@ const casos=[
  ['N9 6/4 bajo a otra nota', C, ['I64','V'],   "c'' b'|e' d'|g' g'|g b,", ['N9']],
  ['limpio 6/4 con 8.ª en el bajo', C, ['I64','V'], "c'' b'|e' d'|g g|g g,", []],
  ['N11 incompleto',    C, ['I','V'],           "c'' b'|e' d'|c' g|c g,", ['N11']],
+ // licencia N11I (3.º UD 2): el I sin 5.ª, fundamental triplicada; nada más
+ ['limpio N11I, I sin 5.ª', C, ['V','I'],      "d'' c''|b' c''|g' e'|g c", [], {licencias:()=>new Set(['N11I'])}],
+ ['N11 con N11I, I sin 3.ª', C, ['V','I'],     "d'' c''|b' c''|g' g'|g c", ['N11'], {licencias:()=>new Set(['N11I'])}],
+ ['N11 con N11I, V sin 5.ª', C, ['I','V'],     "c'' b'|g' g'|e' g'|c g,", ['N11'], {licencias:()=>new Set(['N11I'])}],
  ['DUP sensible doblada', C, ['V','I'],        "b' c''|d' e'|b c'|g c", ['N7']],
  ['DUP 6/4 sin doblar bajo', C, ['I64','V'],   "e'' d''|c'' b'|e' d'|g g", ['DUP']],
  ['acorde ajena',      C, ['I','V'],           "c'' a'|e' d'|g g|c g,", ['acorde']],
@@ -50,8 +54,8 @@ const casos=[
  ['N16 7.ª por salto',  C, ['I','II65','V','I'], "e'' c'' b' c''|g' a' g' g'|c' d' d' e'|c f g c", ['N16']],
 ];
 let ok=0;
-casos.forEach(([nombre,key,ids,v,esperado])=>{
-  const f=CK.comprobar(key, ac(key,ids), voces(v));
+casos.forEach(([nombre,key,ids,v,esperado,opts])=>{
+  const f=CK.comprobar(key, ac(key,ids), voces(v), opts);
   const reglas=[...new Set(f.map(x=>x.regla))];
   const bien = esperado.every(e=>reglas.includes(e)) && (esperado.length>0 || reglas.length===0);
   ok+=bien;
