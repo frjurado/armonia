@@ -8,6 +8,8 @@
     python herramientas/construir.py ejemplos     solo los SVG
     python herramientas/construir.py --forzar     sin mirar fechas
     python herramientas/construir.py --limpiar    borra build/ y tmp/
+    python herramientas/construir.py --minimos c3u1-minimo-bajo [--cuantas 10] [--semilla s]
+                                                  un mínimo para imprimir (dos por A4)
 
 El camino es este:
 
@@ -92,6 +94,14 @@ FORMATO_FICHAS = RAIZ / "_formato" / "fichas.yaml"   # márgenes propios
 MODELOS = FICHAS / "modelos"
 BANCO = FICHAS / "banco"
 GENERADOR = RAIZ / "herramientas" / "generar-fichas.js"
+# Mínimos: modelos con `minimo: true`, que no van a la web. Cada variante,
+# en media hoja (A5 apaisado, _formato/minimos.yaml), y dos copias por A4
+# para cortar (ver minimos()).
+FORMATO_MINIMOS = RAIZ / "_formato" / "minimos.yaml"
+RE_MINIMO = re.compile(r"^minimo:\s*true\b", re.M)
+# Sin cabecera ni pie (contexto, licencia, QR): no caben en media hoja, y
+# es una hoja de clase, no un documento. Va tras pdf.typ, que los pone.
+PAGINA_MINIMO = "\n#set page(flipped: true, header: none, footer: none)\n"
 
 # Cifrado de grados: la tabla (qué cifras lleva cada código, V6/5…) es de
 # la asignatura, no de los apuntes; la usan el filtro del texto y, vía
@@ -769,7 +779,7 @@ def curso_academico(hoy=None):
     return f"{inicio}–{(inicio + 1) % 100:02d}"
 
 
-def portada_pdf(md, nombre=None, subtitulo=None, despues="", autoria=True):
+def portada_pdf(md, nombre=None, subtitulo=None, despues="", autoria=True, pagina=""):
     """Opciones de Pandoc para la portada y las cabeceras del PDF.
 
     Escribe dos ficheros typst en tmp/: la cabecera —`datos` con la
@@ -784,7 +794,8 @@ def portada_pdf(md, nombre=None, subtitulo=None, despues="", autoria=True):
     (ejemplos para clase, fichas); `despues`, typst que va tras la
     autoría (la línea de nombre y fecha de una ficha). Sin `autoria`, no
     va la línea de autoría bajo el título: una ficha tiene que caber en
-    una hoja, y la autoría ya está al pie.
+    una hoja, y la autoría ya está al pie. `pagina`, typst que va tras
+    pdf.typ y puede deshacer lo suyo (la media hoja de un mínimo).
     """
     nombre = nombre or md.stem
     def cadena(texto):
@@ -808,7 +819,7 @@ def portada_pdf(md, nombre=None, subtitulo=None, despues="", autoria=True):
     cabecera.write_text(
         "#let datos = (\n"
         + "".join(f"  {k}: {cadena(v)},\n" for k, v in datos.items())
-        + ")\n\n" + PDF_TYP.read_text(encoding="utf-8"),
+        + ")\n\n" + PDF_TYP.read_text(encoding="utf-8") + pagina,
         encoding="utf-8")
     antes = TMP / f"antes-{nombre}.typ"
     antes.write_text(("#autoria()\n" if autoria else "") + despues, encoding="utf-8")
@@ -1126,7 +1137,7 @@ def escribir_si_cambia(fichero, texto):
         fichero.write_text(texto, encoding="utf-8")
 
 
-def documentar_ficha(ficha):
+def documentar_ficha(ficha, minimo=None):
     """Una ficha -> build/<ficha>.pdf y build/<ficha>-soluciones.pdf.
 
     La ficha es Markdown con su cabecera YAML, y cada ejercicio un bloque
@@ -1156,6 +1167,10 @@ def documentar_ficha(ficha):
     apartados a), b)… de una sola consigna, cada uno grabado aparte
     (`<ficha>-<k><letra>.svg`) y con sus propios atributos, si los lleva
     en la línea de apertura (```lilypond tono="La menor").
+
+    Con `minimo` (el texto «2 minutos · como mucho un acorde mal», que va
+    tras el subtítulo), la ficha es un ejercicio mínimo: media hoja, sin
+    «Ejercicio 1» (solo hay uno). Ver minimos().
     """
     catalogo = tipos_de_ejercicio()
     texto = sin_fuentes(sin_guion(ficha.read_text(encoding="utf-8")))
@@ -1163,7 +1178,7 @@ def documentar_ficha(ficha):
     trozos = []
     svgs = []
     dependencias = [ficha, CATALOGO, METADATOS, FORMATO_FICHAS, YO, PDF_TYP, QR, CIFRADO_LUA,
-                    *sorted(FUENTES.glob("*"))]
+                    *sorted(FUENTES.glob("*"))] + ([FORMATO_MINIMOS] if minimo else [])
     pos = 0
     for k, m in enumerate(RE_EJERCICIO.finditer(texto), 1):
         trozos.append(texto[pos:m.start()])
@@ -1219,6 +1234,8 @@ def documentar_ficha(ficha):
 
     titulo = dato("title", ficha, defecto=ficha.stem)
     subtitulo = dato("subtitle", ficha, defecto="")
+    if minimo:
+        subtitulo = f"{subtitulo} · {minimo}"
     # Nombre y fecha, solo en la que se reparte.
     linea = ("#v(0.4em)\n#grid(columns: (auto, 1fr, auto, 3.5cm), column-gutter: 0.5em,\n"
              "  align: bottom, [Nombre], line(length: 100%, stroke: 0.4pt),\n"
@@ -1241,8 +1258,8 @@ def documentar_ficha(ficha):
             # uno de los demás es un bloque aparte.
             for j, apartado in enumerate(trozo["apartados"]):
                 svg = f"{apartado['nombre']}{'-sol' if solucion else ''}.svg"
-                cabeza = "" if j else (f"## Ejercicio {trozo['k']} {{.unnumbered .unlisted}}\n\n"
-                                       f"{obra}{trozo['consigna']} {trozo['nota']}\n\n")
+                titulo_ej = "" if minimo else f"## Ejercicio {trozo['k']} {{.unnumbered .unlisted}}\n\n"
+                cabeza = "" if j else f"{titulo_ej}{obra}{trozo['consigna']} {trozo['nota']}\n\n"
                 partes.append(f"```{{=typst}}\n#block(breakable: false)[\n```\n\n"
                               f"{cabeza}{imagen_typst(svg, ficha, rotulo=apartado['rotulo'])}\n"
                               f"```{{=typst}}\n]\n#v({trozo['espacio']})\n```\n\n")
@@ -1253,8 +1270,10 @@ def documentar_ficha(ficha):
                [*opciones_typst(), f"--metadata=subtitle:{sub}",
                 # después de metadatos.yaml, así que lo que declara gana
                 f"--metadata-file=../_formato/{FORMATO_FICHAS.name}",
+                *([f"--metadata-file=../_formato/{FORMATO_MINIMOS.name}"] if minimo else []),
                 *portada_pdf(ficha, nombre=pdf.stem, subtitulo=sub,
-                             despues="" if solucion else linea, autoria=False)],
+                             despues="" if solucion else linea, autoria=False,
+                             pagina=PAGINA_MINIMO if minimo else "")],
                indice=False)
         hechos += 1
     return hechos
@@ -1445,6 +1464,61 @@ def montar_fichas(unidades_sitio):
     return con_fichas
 
 
+# --- mínimos: dos por A4, fuera de la web ------------------------------
+#
+# Un mínimo es un ejercicio de la app que se hace en papel en clase, con
+# tiempo y un acierto alto (curriculum/Plan-Armonia.md §7.2). Su modelo
+# (fichas/modelos/c3u1-minimo-bajo.md) lleva `minimo: true`, `tiempo` y
+# `criterio`. No tiene banco ni página: cada tirada se genera al pedirla,
+# en tmp/ (no se versiona), con una semilla nueva cada día, y sale a
+# build/, que no se publica:
+#
+#   build/c3u1-minimo-bajo.pdf              una variante por A4, dos copias
+#   build/c3u1-minimo-bajo-soluciones.pdf   dos variantes por A4
+#
+# Cada variante se compila como una ficha en media hoja (A5 apaisado);
+# luego Typst coloca dos medias hojas en cada A4, con la línea de corte.
+
+def imponer(medias, salida):
+    """Los PDF de media hoja de `medias`, de dos en dos, en un A4."""
+    typ = TMP / "minimos" / f"{salida.stem}.typ"
+    def imagen(pdf):
+        return f'image("../../{pdf.relative_to(RAIZ).as_posix()}", width: 100%)'
+    paginas = []
+    for k in range(0, len(medias), 2):
+        par = medias[k:k + 2]
+        abajo = f"#place(bottom, {imagen(par[1])})\n" if len(par) > 1 else ""
+        paginas.append(f"#place(top, {imagen(par[0])})\n{abajo}"
+                       "#place(horizon, line(length: 100%, stroke: (paint: gray, thickness: 0.4pt, dash: \"dashed\")))\n")
+    typ.write_text('#set page(paper: "a4", margin: 0pt)\n' + "#pagebreak()\n".join(paginas),
+                   encoding="utf-8")
+    ejecutar(["typst", "compile", "--root", ".", typ.relative_to(RAIZ).as_posix(),
+              salida.relative_to(RAIZ).as_posix()])
+    print(f"  {salida.relative_to(RAIZ)} ({(len(medias) + 1) // 2} páginas)")
+
+
+def minimos(modelo, cuantas, semilla):
+    """Una tirada de un mínimo: `cuantas` variantes, cada una en un A4."""
+    fichero = MODELOS / f"{modelo}.md"
+    if not fichero.exists():
+        sys.exit(f"No existe fichas/modelos/{modelo}.md")
+    if not RE_MINIMO.search(fichero.read_text(encoding="utf-8")):
+        sys.exit(f"{modelo} no es un mínimo: su cabecera no lleva «minimo: true»")
+    rotulo = f'{dato("tiempo", fichero)} · {dato("criterio", fichero)}'
+    destino = TMP / "minimos" / modelo
+    shutil.rmtree(destino, ignore_errors=True)
+    destino.mkdir(parents=True)
+    ejecutar(["node", GENERADOR.relative_to(RAIZ).as_posix(), modelo, "--cuantas", cuantas,
+              "--semilla", semilla, "--salida", destino.relative_to(RAIZ).as_posix()])
+    hechas = sorted(destino.glob(f"{modelo}-[0-9][0-9].md"))
+    for f in hechas:
+        print(f"tmp/minimos/{modelo}/{f.name}:")
+        documentar_ficha(f, minimo=rotulo)
+    print("Dos por A4:")
+    imponer([BUILD / f"{f.stem}.pdf" for f in hechas for _ in (1, 2)], BUILD / f"{modelo}.pdf")
+    imponer([BUILD / f"{f.stem}-soluciones.pdf" for f in hechas], BUILD / f"{modelo}-soluciones.pdf")
+
+
 # --- principal --------------------------------------------------------
 
 def unidades():
@@ -1466,6 +1540,19 @@ def main(argv):
         print("Sitio:")
         montar_sitio()
         print(f"Listo ({hechos}).")
+        return
+
+    if "--minimos" in argv:
+        # --minimos <modelo> [--cuantas n] [--semilla s]: una tirada, en build/
+        i = argv.index("--minimos")
+        if i + 1 >= len(argv):
+            sys.exit("Uso: construir.py --minimos <modelo> [--cuantas n] [--semilla s]")
+        def opcion(nombre, defecto):
+            return int(argv[argv.index(nombre) + 1]) if nombre in argv else defecto
+        # Por defecto, la fecha: una tirada distinta cada día, y la de hoy
+        # se puede rehacer igual.
+        minimos(argv[i + 1].removesuffix(".md"), opcion("--cuantas", 10),
+                opcion("--semilla", int(datetime.date.today().strftime("%Y%m%d"))))
         return
 
     if "--limpiar" in argv:

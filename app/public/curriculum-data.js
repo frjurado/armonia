@@ -13,7 +13,7 @@
      familias sin `niveles` no tienen niveles de dificultad. Este es
      el único sitio donde se dice qué incluye cada nivel.
    · consigna: {key, title, icono, texto?, url, desc, apuntes?,
-     oir?, niveles?, publico?}. `niveles` en la consigna, cuando
+     oir?, niveles?, minimo?, publico?}. `niveles` en la consigna, cuando
      no los tienen todas las de su familia (manda sobre los de ella). `url` null = todavía no disponible. `oir:true`: la
      consigna admite la presentación «Oír» (solo audio hasta revelar). `icono` es una
      clave de TIPO_ICONS (index.html), o 'apilado' para el icono
@@ -21,7 +21,10 @@
      que la explican, como 'c3u1#cifrado-de-grados' (el ancla que
      Pandoc da al título); el primero es el del botón «Apuntes» de la
      página, y todos reciben en el apunte su «Para practicar».
-     construir.py avisa si un ancla no existe.
+     construir.py avisa si un ancla no existe. `minimo:{nivel}`: es el
+     ejercicio mínimo de su unidad (hay que superarlo en clase, en papel:
+     curriculum/Plan-Armonia.md §7.2), en ese nivel (nivel:null si la
+     familia no tiene niveles); el menú y la página lo marcan con un punto.
 
    Qué ven los alumnos: una unidad, cuando lleva `publico:true`. En
    modo 'publico' (modo.js) el menú trata las demás como
@@ -84,6 +87,7 @@ const CURRICULO = {
               consignas:[
                 {key:'bajo', label:'BAJO', title:'Bajo cifrado', icono:'cifrado',
                  url:'ejercicios/bajo-cifrado-lectura.html', apuntes:['c3u1#cifrado-de-grados'],
+                 minimo:{nivel:2},
                  desc:'Un bajo de 8 notas, al menos la mitad invertidas, con su cifrado (solo tríadas: sin cifra, 6 y 6/4) y la tonalidad: se pide el grado de cada nota del bajo (en círculo, encima) y el acorde (romano, debajo, delante del cifrado). Empieza en I o I6 y acaba en V–I o en V; el 6/4, solo cadencial o de paso. Al revelar, cada acorde en clave de Sol (estado fundamental, posición cerrada) con su cifrado americano.'},
                 {key:'consonancia', title:'Consonancia', icono:'consonancia',
                  url:'ejercicios/consonancia-cadena.html', apuntes:['c3u1#consonancia-y-disonancia'],
@@ -126,7 +130,7 @@ const CURRICULO = {
                  desc:'Ocho sonoridades con 0–2 faltas: 5.as u 8.as paralelas (también por movimiento contrario) y, a cuatro voces, directas entre las extremas.'},
                 {key:'enlazar', title:'Enlazar acordes', icono:'triada',
                  url:'ejercicios/enlace-notas-comunes.html',
-                 apuntes:['c3u1#quintas-y-octavas-paralelas'],
+                 apuntes:['c3u1#quintas-y-octavas-paralelas'], minimo:{nivel:2},
                  desc:'Un bajo de ocho notas en estado fundamental y el primer acorde: enlazar los demás manteniendo las notas comunes o, si no las hay, por movimiento contrario al bajo, acorde a acorde.',
                  niveles:[
                    'Tonalidades mayores.',

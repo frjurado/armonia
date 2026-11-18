@@ -85,8 +85,9 @@ const CIRCULOS = { 1: '①', 2: '②', 3: '③', 4: '④', 5: '⑤', 6: '⑥', 7
 // El final (en I o en V) se sortea una vez por ejercicio, en `ctx`, con la
 // proporción de la app: si se sorteara en cada intento, los que descarta el
 // verificador (los finales en I gastan antes la repetición) lo desviarían.
+// Sin `conArriba` (leer-bajo-cifrado), solo el bajo: grado y romano.
 const FINAL_EN_V = 0.35;
-function gradosBajoCifrado(reglas, key, ctx) {
+function gradosBajoCifrado(reglas, key, ctx, conArriba = true) {
   if (!ctx.fin) ctx.fin = Math.random() < FINAL_EN_V ? 'V' : 'I';
   const inst = BC.generar(2, { key, n: numero(reglas.acordes, 8), fin: ctx.fin });
   if (!inst) return null;
@@ -102,7 +103,7 @@ function gradosBajoCifrado(reglas, key, ctx) {
     const grado = `\\gradoBajo "${a.gradoBajo.acc}${CIRCULOS[a.gradoBajo.num]}" \\acorde "${a.romano}${cifrasRomano}"`;
     abajo.push(`  ${figuras}${ini}${grado}${fin} ${ly(a.bajo)}1`);
   });
-  return `arriba = {\n${arriba.join('\n')}\n}\nabajo = {\n${abajo.join('\n')}\n}\n`;
+  return (conArriba ? `arriba = {\n${arriba.join('\n')}\n}\n` : '') + `abajo = {\n${abajo.join('\n')}\n}\n`;
 }
 
 // Una voz de blancas: la primera con su duración, las demás sin ella.
@@ -240,6 +241,7 @@ function realizarBajo(reglas, key) {
 
 const ADAPTADOR = {
   'grados-bajo-cifrado': gradosBajoCifrado,
+  'leer-bajo-cifrado': (reglas, key, ctx) => gradosBajoCifrado(reglas, key, ctx, false),
   'construir-acordes': construirAcordes,
   'faltas-paralelas': faltasParalelas,
   'enlazar-acordes': enlazarAcordes,

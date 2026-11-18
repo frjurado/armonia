@@ -352,8 +352,10 @@ function construirAcordes(ap) {
 function gradosBajoCifrado(ap) {
   const r = informe(), key = tonalidad(ap.attr.tono);
   const vars = variables(ap.codigo);
-  const abajo = leerVoz(vars.abajo), arriba = leerVoz(vars.arriba);
-  if (abajo.length !== arriba.length) throw new Error('arriba y abajo no tienen las mismas notas');
+  // Sin `arriba` (leer-bajo-cifrado: solo la clave de Fa), ni acorde
+  // escrito ni americano que comprobar.
+  const abajo = leerVoz(vars.abajo), arriba = vars.arriba ? leerVoz(vars.arriba) : null;
+  if (arriba && abajo.length !== arriba.length) throw new Error('arriba y abajo no tienen las mismas notas');
   const firma = CV.keysigAlters(key.sig);
   let invertidos = 0;
   const acordes = [];
@@ -387,13 +389,16 @@ function gradosBajoCifrado(ap) {
     const americano = nombreNota(raiz) + (cal === undefined ? '?' : cal) + (inv ? '/' + nombreNota(bajo) : '');
     const gb = CV.SYM(bajo.alter - firma[bajo.letter]) + CIRCULOS[gradoDe(key, bajo.letter) - 1];
     // lo anotado
-    const anot = { gradoBajo: etiqueta(ev, 'gradoBajo'), acorde: etiqueta(ev, 'acorde'), encima: etiqueta(arriba[k], 'encima') };
+    const anot = { gradoBajo: etiqueta(ev, 'gradoBajo'), acorde: etiqueta(ev, 'acorde') };
     if (!anot.gradoBajo || anot.gradoBajo[0] !== gb) r.mal(donde, `grado del bajo «${anot.gradoBajo}», es ${gb}`);
     if (!anot.acorde || anot.acorde[0].replace(/\s/g, '') !== romano) r.mal(donde, `acorde «${anot.acorde}», es ${romano}`);
-    if (!anot.encima || anot.encima[0] !== americano) r.mal(donde, `americano «${anot.encima}», es ${americano}`);
-    const escritas = arriba[k].alturas.map(nombreNota).sort().join(' ');
-    if (escritas !== tonos.map(nombreNota).sort().join(' '))
-      r.mal(donde, `acorde escrito ${escritas}, se espera ${tonos.map(nombreNota).join(' ')}`);
+    if (arriba) {
+      const encima = etiqueta(arriba[k], 'encima');
+      if (!encima || encima[0] !== americano) r.mal(donde, `americano «${encima}», es ${americano}`);
+      const escritas = arriba[k].alturas.map(nombreNota).sort().join(' ');
+      if (escritas !== tonos.map(nombreNota).sort().join(' '))
+        r.mal(donde, `acorde escrito ${escritas}, se espera ${tonos.map(nombreNota).join(' ')}`);
+    }
     // contra el modelo de acorde de la app (en menor, la armónica)
     const app = CV.acorde(key, { grado: g, inv });
     if (app.tones.map(nombreNota).sort().join() !== tonos.map(nombreNota).sort().join())
@@ -678,6 +683,7 @@ function realizarBajo(ap) {
 
 const COMPROBACION = {
   'grados-bajo-cifrado': gradosBajoCifrado,
+  'leer-bajo-cifrado': gradosBajoCifrado,          // el mismo, sin el pentagrama de Sol
   'faltas-disposicion': faltasDisposicion,
   'construir-acordes': construirAcordes,
   'faltas-melodicas': faltasMelodicas,
@@ -700,6 +706,7 @@ const COMPROBACION = {
 // se nombra, ninguna). `tono` (mayor o menor) vale en todos los tipos.
 const VOCABULARIO = {
   'grados-bajo-cifrado': { acordes: 'n', invertidos: 'n', repetidos: 'n', modelo: ['sí', 'no'] },
+  'leer-bajo-cifrado': { acordes: 'n', invertidos: 'n', repetidos: 'n', modelo: ['sí', 'no'] },
   'faltas-disposicion': { acordes: 'n', faltas: { clases: null },
                           disposiciones: { clases: ['cerrada', 'abierta', 'mixta'] } },
   'construir-acordes': { acordes: 'n', 'primer acorde': ['dado', 'sin dar'],

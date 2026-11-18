@@ -20,6 +20,7 @@
   --ink:#2f4f42; --ink-hover:#264137;
   --accent:var(--ink); --accent-soft:#e8f0ec;
   --ok:#8f4a22; --ok-bg:#f7efe8; --ok-line:#e0c9b4;
+  --minimo:var(--ok);   /* el punto del ejercicio mínimo, de momento el terroso */
   --voz-sup:#3a5a78; --voz-inf:#b06c3a;
   --serif:'Leland Alteraciones','Source Serif 4',Georgia,serif;
   --sans:'Leland Alteraciones','Source Sans 3',system-ui,-apple-system,sans-serif;
@@ -42,6 +43,9 @@ header{background:var(--ink);color:#fff;
 header h1{grid-area:title;font-family:var(--serif);font-size:24px;font-weight:600;
        margin:0;line-height:1.2;align-self:end}
 header .sub{grid-area:sub;font-size:13px;color:rgba(255,255,255,.6);align-self:start}
+/* ejercicio mínimo: punto tras el título; el borde blanco lo separa de la tinta */
+header h1 .punto-minimo{display:inline-block;width:15px;height:15px;border-radius:50%;
+       background:var(--minimo);border:2px solid #fff;margin-left:10px;vertical-align:middle}
 header a.back{grid-area:back;display:inline-flex;align-items:center;height:52px;
        padding:0 20px;border-radius:12px;background:rgba(255,255,255,.14);
        color:#fff;font-size:16px;font-weight:600;text-decoration:none;

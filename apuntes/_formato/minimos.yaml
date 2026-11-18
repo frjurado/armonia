@@ -1,0 +1,10 @@
+# Formato de un ejercicio mínimo, sobre metadatos.yaml y fichas.yaml (van
+# antes y de esto solo cambia lo que declara): media hoja A4, es decir, un
+# A5 apaisado (lo gira PAGINA_MINIMO en construir.py, que quita también la
+# cabecera y el pie). Mismo margen lateral que una ficha: así el ancho de
+# la caja, contra el que se escalan las partituras (CAJA_PT), es el mismo.
+papersize: a5
+margin:
+  x: 3cm
+  top: 1cm
+  bottom: 0.8cm
