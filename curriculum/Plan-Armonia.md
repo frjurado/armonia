@@ -191,7 +191,20 @@ Esto es a medio plazo:
 
 Cada unidad o trimestre incluye un *hard gate*, a la manera de "The Big 18": hay que superarla para avanzar. 
 
-⟶ PENDIENTE: definir.
+**Ejercicios mínimos** (decidido el 2026-11-17; `../informes/2026-11-17-plan-minimos-examenes-sitio.md`).
+Son consignas de la app —se practican en ella— que en clase se hacen **en papel**, con
+tiempo limitado y un acierto alto, y que hay que superar para aprobar. En principio, uno
+por unidad. En la app llevan una marca (`minimo` en `app/public/curriculum-data.js`); el
+papel lo genera `apuntes/herramientas/construir.py --minimos <modelo>`, dos copias por
+A4, y no va a la web.
+
+| Unidad | Mínimo (consigna de la app) | En papel | Tiempo | Aprobado |
+|---|---|---|---|---|
+| 3.º UD 1 | Morfología › Bajo cifrado, nivel 2 | Solo la clave de Fa: grado del bajo y romano de 8 acordes | 2 min | Como mucho un acorde mal |
+| 3.º UD 1 | Paralelas y directas › Enlazar acordes, nivel 2 | 8 acordes, mayor o menor, con el primero dado | 4 min | Como mucho un acorde mal |
+
+⟶ PENDIENTE: los mínimos de las demás unidades; los exámenes trimestrales (modelos de
+examen, en preparación).
 
 ---
 

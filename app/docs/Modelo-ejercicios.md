@@ -195,6 +195,11 @@ y el conmutador pueden recordarse en `localStorage` como comodidad, nunca como d
   `curriculum-data.js`, sin renombrar nada y sin cambiar URL.
 - **Visibilidad** en cascada unidad → familia → consigna (`publico`), ⟶ HECHO; detalle en
   `../CLAUDE.md`.
+- **Ejercicios mínimos** ⟶ HECHO (2026-11-18): `minimo:{nivel}` en la consigna
+  (`curriculum/Plan-Armonia.md` §7.2). El menú pone un punto terroso al final del botón,
+  con el nivel en su `title`, y una leyenda en el pie; la página, un punto tras el título
+  y «Mínimo · nivel 2» en el subtítulo (`marcaMinimo`, `comun.js`). Su versión en papel
+  no es de la app: `apuntes/README.md`, «Mínimos».
 - **Menú en filas** ⟶ HECHO (2026-10-06): cada familia es una fila —su nombre a la
   izquierda, sus consignas como botones a la derecha, que bajan de línea si no caben—, en
   lugar de tres columnas fijas. Admite cualquier número de familias y de consignas sin

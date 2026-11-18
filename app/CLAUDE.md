@@ -101,6 +101,9 @@ generación (core.js) → cadena mini-LilyPond → MiniLily.parseVoice()
   como «próximamente»; sin marca, heredan. Ojo: lo que no lleva
   marca **sale**: una familia nueva en una unidad ya pública llega a los
   alumnos en la siguiente publicación salvo que se le ponga `publico:false`.
+  `minimo:{nivel}` en una consigna la marca como ejercicio mínimo (punto
+  terroso en el menú y en la página); qué consignas lo son lo dice
+  `../curriculum/Plan-Armonia.md` §7.2, no la app.
   `modo.js` (`'dev'` en el repo;
   `'publico'` lo escribe `sitio/montar.sh`) es lo único que distingue ambas
   versiones: **nunca ramificar comportamiento por URL ni por rama**, y no

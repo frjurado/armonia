@@ -21,6 +21,7 @@
     --soft:#a5a59e; --disabled:#c9c9c2;
     --line:#dcdcd6; --line-soft:#e6e6df; --row-hover:#f2f1ec;
     --ink:#2f4f42; --ink-hover:#264137;
+    --minimo:#8f4a22;   /* el terroso de «acierto», de momento (informes/2026-11-17) */
     --serif:'Leland Alteraciones','Source Serif 4',Georgia,serif;
     --sans:'Leland Alteraciones','Source Sans 3',system-ui,-apple-system,sans-serif;
     --max-w:1240px;
@@ -105,6 +106,15 @@
   .btn-modo .ic-fb{display:flex;flex-direction:column;align-items:center;
         font-family:var(--serif);font-size:8.5px;line-height:1;font-weight:600}
 
+  /* ejercicio mínimo (curriculum-data.js, `minimo`): un punto al final del
+     botón, y otro en la leyenda del pie */
+  .punto-minimo{display:inline-block;width:10px;height:10px;border-radius:50%;
+        background:var(--minimo);flex:none;vertical-align:middle}
+  .btn-modo .punto-minimo{margin-left:auto}
+  .btn-modo .punto-minimo + .marca-dev.ej{margin-left:8px}
+  footer .leyenda-minimo{margin-left:18px;white-space:nowrap}
+  footer .leyenda-minimo .punto-minimo{margin-right:6px}
+
   /* unidad colapsada */
   .ud-row{display:grid;grid-template-columns:120px 1fr auto;gap:24px;align-items:center;
         padding:22px 0;border-bottom:1px solid var(--line);border-radius:2px}
@@ -182,6 +192,7 @@
     .ud-row .estado svg{width:18px;height:18px}
     footer{padding:0 20px 28px;flex-direction:column;gap:6px}
     footer a{margin-left:0}
+    footer .leyenda-minimo{margin-left:0}
   }
 </style>
 </head>
@@ -203,6 +214,7 @@
 
 <footer>
   <span>Los botones con borde discontinuo aún no están disponibles.</span>
+  <span class="leyenda-minimo"><span class="punto-minimo"></span>Ejercicio mínimo: hay que superarlo en clase, en papel.</span>
   <a href="curriculum.html">Currículum (dev) →</a>
 </footer>
 <!-- Autoría: el mismo texto que el pie de los apuntes, que sale de
@@ -309,9 +321,15 @@ function tipoIcono(t){
   if(t.icono==='apilado') return `<span class="ic"><span class="ic-fb">${t.texto.split('/').map(x=>`<span>${x}</span>`).join('')}</span></span>`;
   return `<span class="ic">${TIPO_ICONS[t.icono] || ''}</span>`;
 }
+// El punto del ejercicio mínimo, con el nivel en el título.
+function puntoMinimo(t){
+  if(!t.minimo) return '';
+  const nivel = t.minimo.nivel ? ` (nivel ${t.minimo.nivel})` : '';
+  return `<span class="punto-minimo" title="Ejercicio mínimo${nivel}: hay que superarlo en clase, en papel" aria-label="Ejercicio mínimo${nivel}"></span>`;
+}
 function tipoHTML(ud, fam, t){
   const url = urlEj(ud, fam, t);
-  const inner = `${tipoIcono(t)}<span>${t.title}</span>${url ? marcaEj(ud, fam, t) : ''}`;
+  const inner = `${tipoIcono(t)}<span>${t.title}</span>${url ? puntoMinimo(t) + marcaEj(ud, fam, t) : ''}`;
   return url
     ? `<a class="btn-modo" href="${url}" title="${t.title}: ${fam.nombre}">${inner}</a>`
     : `<span class="btn-modo locked" title="${t.title}: próximamente">${inner}</span>`;

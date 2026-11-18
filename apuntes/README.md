@@ -314,6 +314,32 @@ versión de trabajo, con DEV en lo que no sale); al sitio sale cuando **la unida
 el modelo** llevan `publico: true`. Plan y decisiones:
 `informes/2026-10-29-plan-fichas-generadas.md`.
 
+## Mínimos
+
+Un ejercicio mínimo es una consigna de la app que se hace en papel en clase, con
+tiempo y un acierto alto (`curriculum/Plan-Armonia.md` §7.2). Su modelo es uno más
+de `fichas/modelos/` (`c3u1-minimo-bajo.md`, `c3u1-minimo-enlazar.md`), con tres
+claves más en la cabecera: `minimo: true`, `tiempo` y `criterio` (salen tras el
+subtítulo). Un solo ejercicio, sin «Ejercicio 1».
+
+    python herramientas/construir.py --minimos c3u1-minimo-bajo [--cuantas 10] [--semilla s]
+
+genera `cuantas` variantes en `tmp/minimos/<modelo>/` (con el generador y el
+verificador de siempre) y las compila en media hoja (A5 apaisado,
+`_formato/minimos.yaml`, sin cabecera ni pie). Luego Typst las coloca en A4:
+
+- `build/c3u1-minimo-bajo.pdf`: una variante por hoja, dos copias, con la línea de
+  corte. Cada hoja da dos alumnos.
+- `build/c3u1-minimo-bajo-soluciones.pdf`: dos variantes por hoja.
+
+**No van a la web ni se versionan**: no tienen banco, y `build/` y `tmp/` no salen
+(para practicar está la app). La semilla por defecto es la fecha (`AAAAMMDD`): cada
+día sale una tirada distinta, y la del día se puede rehacer igual.
+
+El de bajo cifrado usa un tipo propio, `leer-bajo-cifrado` (el de `grados-bajo-cifrado`
+sin el pentagrama de Sol, como en la app); el de enlazar, `enlazar-acordes` con el
+primer acorde dado.
+
 ## Los ejemplos que no son partitura
 
 No todo ejemplo sale de LilyPond: el círculo de 5.as de 3.º UD 0 es un

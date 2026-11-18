@@ -38,6 +38,7 @@ En la consigna:
 | Tipo | Consigna | Se da | Se pide | Desde |
 |------|----------|-------|---------|-------|
 | `grados-bajo-cifrado` | En {tono}. Encima de cada nota del bajo, entre los pentagramas, escribe su grado (①, ②…), y debajo, el grado del acorde (I, V…). En el pentagrama de Sol, escribe el acorde, y encima, su cifrado americano (C, Dm/F…). | Tonalidad y un bajo cifrado, nota a nota. | Grado del bajo, grado del acorde, el acorde escrito (sin enlazar) y su cifrado americano, que dice el tipo de tríada. | 3.º UD 1 |
+| `leer-bajo-cifrado` | En {tono}. Encima de cada nota del bajo, escribe su grado (①, ②…), y debajo, el grado del acorde (I, V…). | Tonalidad y un bajo cifrado, nota a nota, solo en clave de Fa. | Grado del bajo y grado del acorde. | 3.º UD 1 |
 | `faltas-disposicion` | Los acordes son independientes: no hay enlace entre ellos. Debajo de cada uno, escribe su falta, si la tiene (una voz fuera de su tesitura, más de una 8.ª entre dos voces contiguas, o un cruce); si está bien, escribe su disposición: cerrada, abierta o mixta. | Tríadas sueltas a cuatro voces, en estado fundamental. | La falta de cada acorde, o su disposición. | 3.º UD 1 |
 | `construir-acordes` | En {tono}. Cada nota del bajo es la fundamental de un acorde: escribe las otras tres voces en la disposición indicada encima, duplicando la fundamental[mixta:  o, en la mixta, la nota indicada entre paréntesis]. | El bajo de tríadas sueltas en estado fundamental, y la disposición de cada una. | Las tres voces superiores, sin faltas y en la disposición pedida. | 3.º UD 1 |
 | `faltas-melodicas` | Señala con un corchete, encima de las notas, cada falta de la melodía, y di cuál es: un intervalo aumentado o disminuido, un salto demasiado grande, o dos saltos seguidos en la misma dirección que sumen una 7.ª o una 9.ª. Señala también, entre paréntesis, los saltos de 4.ª o mayores que no se compensan. | Una línea melódica, sin compás. | Las faltas melódicas (N12, N13, N15) y los saltos sin compensar (P9). | 3.º UD 1 |
@@ -64,6 +65,7 @@ mucho 1`; un recuento, como `cerrada 2, abierta 2`.
 | Tipo | Condiciones | Se genera |
 |------|-------------|-----------|
 | `grados-bajo-cifrado` | `acordes`, `invertidos`, `repetidos` (el mismo bajo con la misma cifra; el I en estado fundamental no cuenta), `modelo` (sí/no: el primer acorde resuelto) | Sí |
+| `leer-bajo-cifrado` | Las de `grados-bajo-cifrado` | Sí |
 | `faltas-disposicion` | `acordes`; `faltas` y `disposiciones`, recuentos (cerrada, abierta, mixta) | No |
 | `construir-acordes` | `acordes`, `primer acorde` (dado/sin dar); `disposiciones`, recuento (cerrada, abierta, mixta, mixta (5.ª), mixta (3.ª)) | Sí |
 | `faltas-melodicas` | `notas`; `faltas`, recuento (N12, N13, N15, P9) | No |
@@ -93,6 +95,13 @@ alteraciones que pida la tonalidad (la sensible del menor) van en la cifra
 
 Va bien en serie (varios apartados con una sola consigna; ver
 `apuntes/README.md`): cuatro bajos de ocho acordes caben en una hoja.
+
+### `leer-bajo-cifrado`
+
+El anterior sin el pentagrama de Sol: solo las dos primeras operaciones (grado del
+bajo y grado del acorde), como en Morfología › Bajo cifrado de la app. Es el mínimo
+de 3.º UD 1 (`Plan-Armonia.md` §7.2), y por eso va sin acorde modelo: es lo mismo
+que se practica en la app.
 
 ### `faltas-disposicion`
 

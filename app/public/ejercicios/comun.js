@@ -752,8 +752,22 @@
     };
     document.head.appendChild(s);
   }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', enlaceApuntes);
-  else enlaceApuntes();
+  // Ejercicio mínimo (`minimo` en curriculum-data.js): un punto tras el
+  // título, y «Mínimo · nivel 2» en el subtítulo.
+  function marcaMinimo(){
+    const d=deEstaPagina(), h1=document.querySelector('header h1');
+    if(!d || !d.consigna.minimo || !h1) return;
+    const nivel=d.consigna.minimo.nivel;
+    const p=document.createElement('span');
+    p.className='punto-minimo';
+    p.title=`Ejercicio mínimo${nivel ? ` (nivel ${nivel})` : ''}: hay que superarlo en clase, en papel`;
+    h1.appendChild(p);
+    const sub=document.querySelector('header .sub');
+    if(sub) sub.append(` · Mínimo${nivel ? ` · nivel ${nivel}` : ''}`);
+  }
+  function alCargar(){ enlaceApuntes(); marcaMinimo(); }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', alCargar);
+  else alCargar();
   // auriculares (el mismo icono que la audición en el menú)
   const ICONO_OIDO='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>';
   const esc=s=>String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
